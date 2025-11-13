@@ -5,21 +5,149 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elamkulam Local Weather Observation and Information Centre</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Favicon: place a PNG named "favicon.png" at the repository root -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    /* ===== STYLE SECTION ===== */
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f8fb;
+      color: #222;
+    }
+
+    /* Header Top Section */
+    .imd-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #e8f1fb;
+      border-bottom: 2px solid #bcd2e8;
+    }
+
+    .imd-logo-left,
+    .imd-logo-right {
+      width: 65px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .imd-title {
+      text-align: center;
+      flex: 1;
+    }
+
+    .imd-title h2 {
+      margin: 4px 0;
+      font-size: 20px;
+      color: #004a80;
+    }
+
+    .imd-title h3 {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .imd-title h4 {
+      margin: 2px 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    /* Navigation Bar */
+    .imd-nav {
+      background: #004a80;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .imd-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    .imd-nav a:hover {
+      background: #0265b4;
+    }
+
+    /* Main Sections */
+    main {
+      padding: 20px;
+    }
+
+    .intro {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .intro h2 {
+      color: #004a80;
+      margin-bottom: 10px;
+    }
+
+    .links {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .links h3 {
+      color: #004a80;
+    }
+
+    .links ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .links li {
+      margin: 6px 0;
+    }
+
+    .links a {
+      color: #0265b4;
+      text-decoration: none;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #004a80;
+      color: white;
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+  </style>
 </head>
 
 <body>
   <!-- ===== HEADER ===== -->
   <header class="imd-header">
     <div class="imd-top">
-      <img src="D:\PICTURES\ELWOIC.png" class="imd-logo-left" />
+      <img src="D:\PICTURES\ELWOIC.png" class="imd-logo-left" alt="Left Logo" />
       <div class="imd-title">
         <h3>Ministry of Earth Sciences</h3>
         <h2>Elamkulam Local Weather Observation & Information Centre</h2>
         <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
       </div>
-      <img src="D:\PICTURES\Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo" class="ELWOIC.png" />
+      <img src="D:\PICTURES\Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo" class="imd-logo-right" />
     </div>
 
     <nav class="imd-nav">
@@ -62,3 +190,4 @@
   </footer>
 </body>
 </html>
+
