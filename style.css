@@ -1,0 +1,106 @@
+/* ====== GENERAL STYLES ====== */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #eaf4fc;
+  color: #000;
+}
+
+/* ====== HEADER ====== */
+.imd-header {
+  background-color: #004c99;
+  color: white;
+  text-align: center;
+  border-bottom: 4px solid #f26522;
+}
+
+.imd-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+.imd-logo-left,
+.imd-logo-right {
+  width: 70px;
+  height: auto;
+}
+
+.imd-title h2 {
+  font-size: 1.4rem;
+  margin: 2px 0;
+}
+
+.imd-title h3 {
+  margin: 0;
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+.imd-title h4 {
+  margin-top: 4px;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: #d9e6f2;
+}
+
+/* ====== NAVIGATION ====== */
+.imd-nav {
+  background-color: #003366;
+  padding: 8px 0;
+}
+
+.imd-nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.imd-nav a:hover {
+  color: #ffcc00;
+}
+
+/* ====== CONTENT ====== */
+.intro {
+  max-width: 900px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.intro h2 {
+  color: #004c99;
+}
+
+.links {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.links a {
+  color: #004c99;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* ====== FOOTER ====== */
+footer {
+  background-color: #003366;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.8rem;
+}
