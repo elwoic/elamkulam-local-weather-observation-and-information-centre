@@ -268,7 +268,23 @@ document.getElementById("refresh-time").textContent = refreshTime;
 </div>
 
     </section>
-   <script src="elwoic-manual-update.js"></script>
+   <section id="manual-update" class="notice-box" style="
+    width: 100%;
+    background: #ffffff;
+    border-left: 6px solid #004a80;
+    padding: 18px 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+">
+    <h2 style="margin-top:0; color:#004a80;">ELWOIC Manual Update</h2>
+
+    <p id="weather-message" style="margin:8px 0; font-size:1rem; color:#00315c;"></p>
+    <p id="preupdate-message" style="margin:8px 0; font-size:0.95rem; color:#004a80;"></p>
+    <p id="info-message" style="margin:8px 0; font-size:0.9rem; color:#555;"></p>
+</section>
+
     <section class="links">
       <h3>Useful Links</h3>
       <ul>
@@ -286,6 +302,7 @@ document.getElementById("refresh-time").textContent = refreshTime;
 
     <img src="House Public Board Seal of AswanthKK.pn" alt="HPBD Logo" class="imd-logo-footer" />
   </footer>
+<script src="elwoic-manual-update.js"></script>
 
 </body>
 </html>
