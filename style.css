@@ -1,4 +1,6 @@
-/* ====== GENERAL STYLES ====== */
+/* =============================
+   GLOBAL STYLES
+============================== */
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
@@ -6,19 +8,29 @@ body {
   color: #000;
 }
 
-/* ====== HEADER ====== */
+/* Smooth fonts */
+* {
+  box-sizing: border-box;
+}
+
+/* =============================
+   HEADER
+============================== */
 .imd-header {
   background-color: #004c99;
   color: white;
   text-align: center;
   border-bottom: 4px solid #f26522;
+  width: 100%;
 }
 
+/* Top section inside header */
 .imd-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 30px;
+  padding: 12px 25px;
+  flex-wrap: wrap;
 }
 
 .imd-logo-left,
@@ -27,35 +39,41 @@ body {
   height: auto;
 }
 
+/* Title text */
 .imd-title h2 {
-  font-size: 1.4rem;
-  margin: 2px 0;
+  font-size: 1.5rem;
+  margin: 4px 0;
+  font-weight: 600;
 }
 
 .imd-title h3 {
   margin: 0;
+  font-size: 1rem;
   font-weight: 400;
-  font-size: 0.95rem;
 }
 
 .imd-title h4 {
-  margin-top: 4px;
-  font-weight: 400;
-  font-size: 0.8rem;
+  margin-top: 5px;
+  font-size: 0.85rem;
   color: #d9e6f2;
 }
 
-/* ====== NAVIGATION ====== */
+/* =============================
+   NAVIGATION
+============================== */
 .imd-nav {
   background-color: #003366;
-  padding: 8px 0;
+  padding: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .imd-nav a {
   color: white;
   text-decoration: none;
-  margin: 0 15px;
-  font-size: 0.9rem;
+  margin: 6px 12px;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
@@ -63,18 +81,21 @@ body {
   color: #ffcc00;
 }
 
-/* ====== CONTENT ====== */
+/* =============================
+   MAIN CONTENT
+============================== */
 .intro {
   max-width: 900px;
-  margin: 40px auto;
+  margin: 35px auto;
   background: white;
-  padding: 20px;
+  padding: 22px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 .intro h2 {
   color: #004c99;
+  margin-top: 0;
 }
 
 .links {
@@ -85,22 +106,97 @@ body {
 .links ul {
   list-style: none;
   padding: 0;
+  margin: 0;
+}
+
+.links li {
+  margin: 8px 0;
 }
 
 .links a {
   color: #004c99;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .links a:hover {
   text-decoration: underline;
 }
 
-/* ====== FOOTER ====== */
+/* =============================
+   FOOTER
+============================== */
 footer {
   background-color: #003366;
   color: white;
   text-align: center;
-  padding: 10px;
-  font-size: 0.8rem;
+  padding: 12px;
+  font-size: 0.85rem;
+  margin-top: 40px;
 }
+
+.imd-logo-footer {
+  width: 45px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  opacity: 0.7;
+}
+
+/* =============================
+   RESPONSIVE DESIGN
+============================== */
+
+/* ---- Tablets & Small Screens ---- */
+@media (max-width: 900px) {
+  .imd-title h2 {
+    font-size: 1.3rem;
+  }
+  .imd-title h3 {
+    font-size: 0.9rem;
+  }
+}
+
+/* ---- Mobile: header layout fixes ---- */
+@media (max-width: 600px) {
+  .imd-top {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .imd-logo-left,
+  .imd-logo-right {
+    width: 55px;
+  }
+
+  .imd-title h2 {
+    font-size: 1.2rem;
+  }
+
+  .imd-nav a {
+    margin: 5px 8px;
+    font-size: 0.85rem;
+  }
+
+  .intro {
+    width: 92%;
+    padding: 16px;
+  }
+}
+
+/* ---- Extra Small Mobiles ---- */
+@media (max-width: 400px) {
+  .imd-title h2 {
+    font-size: 1.05rem;
+  }
+  
+  .imd-title h3 {
+    font-size: 0.8rem;
+  }
+  
+  .imd-title h4 {
+    font-size: 0.7rem;
+  }
+}
+
