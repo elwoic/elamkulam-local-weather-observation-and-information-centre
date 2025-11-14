@@ -1,63 +1,86 @@
-// === ELWOIC AUTOMATIC UPDATE SCRIPT ===
+// =============================================
+//        ELWOIC AUTOMATIC UPDATE SYSTEM
+//  Updated: Includes default text + headings
+// =============================================
 
-// Get the current date/time
+// Current date/time
 const today = new Date();
 
-/* ================================
-    🌦️ MANUAL UPDATE SECTION
-    Shows ONLY on the exact set date
-================================= */
-// FIX: Changed manualDate to today's date (Nov 14, 2025)
-const manualDate = new Date("2025-11-14T18:30:00"); 
-const manualMessage = "Weather Status: **Currently light rain happens in Kerala.** The local temperature is 24°C."; // Added text from your previous example for clarity
-const manualNormal = "Check live weather updates on ELWOIC.";
+/* ==================================================
+    🌦️ MANUAL UPDATE SECTION — Shows ONLY if today 
+       matches the configured manual update date
+================================================== */
 
+const manualDate = new Date("2025-11-14T18:30:00");
+
+// Write here your manual update text (or leave empty)
+const manualMessage =
+    "Weather Status: **Currently light rain happens in Kerala.** The local temperature is 24°C.";
+
+const defaultManual =
+    "No manual updates available. Check live updates on ELWOIC.";
+
+// Target paragraph
 const manualDiv = document.getElementById("weather-message");
 
 if (today.toDateString() === manualDate.toDateString()) {
-    // Note: I recommend using .innerHTML and <b> tags for bolding (like the previous answer)
-    // to match the appearance of your overall site more effectively.
-    manualDiv.innerHTML = manualMessage.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    manualDiv.innerHTML = manualMessage.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
     manualDiv.style.color = "red";
-    manualDiv.style.animation = "flash 1s infinite";
 
-    const style = document.createElement("style");
-    style.innerHTML = `
+    // Flash effect
+    const flash = document.createElement("style");
+    flash.innerHTML = `
         @keyframes flash {
             0%, 50%, 100% { opacity: 1; }
             25%, 75% { opacity: 0.2; }
         }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(flash);
 
+    manualDiv.style.animation = "flash 1s infinite";
 } else {
-    manualDiv.innerText = manualNormal;
+    manualDiv.innerText = defaultManual;
     manualDiv.style.color = "#333";
     manualDiv.style.animation = "none";
 }
 
-/* ================================
-    🌤️ PRE-UPDATE SECTION
-    Shows until a specific date/time
-================================= */
-// FIX: Changed preUpdateEnd to a date/time in the future (Nov 15, 2025)
-const preUpdateEnd = new Date("2025-11-15T23:59:59"); 
+/* ==================================================
+    🌤️ PRE-UPDATE SECTION — Visible UNTIL set date
+================================================== */
+
+const preUpdateEnd = new Date("2025-11-15T23:59:59");
+
+// Write here your pre-update text (or leave empty)
 const preUpdateMessage =
-    "29/10/2025: Heavy rainfall expected continues at 8 AM, 11 AM, 2 PM, 5 PM, 8 PM, and 11 PM. Take precautions. (Updated: 28/10/2025)";
-const preUpdateNormal = "No new pre-updates available at the moment.";
+    "29/10/2025: Heavy rainfall expected continues at 8 AM, 11 AM, 2 PM, 5 PM, 8 PM, and 11 PM. Take precautions.";
+
+// Default if empty or expired
+const defaultPre = "No new pre-updates available at the moment.";
 
 const preDiv = document.getElementById("preupdate-message");
 
-if (today < preUpdateEnd) {
+if (today < preUpdateEnd && preUpdateMessage.trim() !== "") {
     preDiv.innerText = preUpdateMessage;
     preDiv.style.color = "#cc9900";
 } else {
-    preDiv.innerText = preUpdateNormal;
+    preDiv.innerText = defaultPre;
     preDiv.style.color = "#999";
 }
 
-/* ================================
+/* ==================================================
     💧 REGULAR INFORMATION SECTION
-================================= */
-const infoMessage = "This section holds supplementary information about the observation center.";
-document.getElementById("info-message").innerText = infoMessage;
+================================================== */
+
+const infoMessage =
+    "This section holds supplementary information about the observation center.";
+
+const defaultInfo = "No additional information available at this moment.";
+
+const infoDiv = document.getElementById("info-message");
+
+// Use provided infoMessage or fallback
+infoDiv.innerText =
+    infoMessage.trim() !== "" ? infoMessage : defaultInfo;
+
+infoDiv.style.color = "#555";
+
