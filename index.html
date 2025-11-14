@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elamkulam Local Weather Observation and Information Centre</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Favicon -->
   <link rel="dns-prefetch" href="https://github.githubassets.com">
   <style>
     /* ===== STYLE SECTION ===== */
@@ -124,8 +123,12 @@
       text-decoration: underline;
     }
 
-    /* Footer */
+    /* Footer - MODIFIED */
     footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative; /* Added to allow absolute positioning of the logo */
       text-align: center;
       padding: 15px;
       background: #004a80;
@@ -133,12 +136,22 @@
       font-size: 13px;
       margin-top: 20px;
     }
+    
+    /* NEW: Style for the logo in the footer */
+    .imd-logo-footer {
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      width: 40px;
+      height: auto;
+      border-radius: 4px;
+      opacity: 0.8;
+    }
 
   </style>
 </head>
 
 <body>
-  <!-- ===== HEADER ===== -->
   <header class="imd-header">
     <div class="imd-top">
       <img src="" />
@@ -161,7 +174,6 @@
     </nav>
   </header>
 
-  <!-- ===== MAIN CONTENT ===== -->
   <main>
     <section class="intro">
       <h2>About ELWOIC</h2>
@@ -183,11 +195,10 @@
     </section>
   </main>
 
-  <!-- ===== FOOTER ===== -->
   <footer>
     <p>© 2025 Elamkulam Local Weather Observation & Information Centre</p>
     <p>Designed and Managed by AswanthKK</p>
+    <img src="" class="imd-logo-footer" />
   </footer>
 </body>
 </html>
-
