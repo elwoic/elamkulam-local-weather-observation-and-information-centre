@@ -180,6 +180,51 @@
       <a href="#"></a>
       <a href="#">OTHERS</a>
     </nav>
+    <!-- ===== ELWOIC SCROLLING MARQUEE ===== -->
+<div class="marquee-container">
+  <div class="scroll-text" id="info-marquee">
+    ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
+    In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
+    <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
+    Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed. 
+    Contact No: 04933316750. ⚠️ Both ELWOIC and HPBD are a student-made project, not an official one. ⚠️
+  </div>
+</div>
+
+<style>
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #004080; /* Blue background */
+  padding: 10px 0;
+  box-sizing: border-box;
+  border-bottom: 2px solid #ffa200; /* Orange line bottom */
+}
+
+.scroll-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: bold;
+  color: yellow;
+  animation: scroll 50s linear infinite;
+  font-size: 16px;
+}
+
+.highlight {
+  color: #00ffff;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(20%); }
+  100% { transform: translateX(-100%); }
+}
+</style>
+
+<script>
+const refreshTime = 30;
+document.getElementById("refresh-time").textContent = refreshTime;
+</script>
+
   </header>
 
   <!-- ===== MAIN CONTENT ===== -->
