@@ -1,4 +1,6 @@
 // imd-marquee.js
+
+// Preset alert data
 const alerts = {
   "2025-11-15": { text: "IMD Alert For Malappuram District: y" },
   "2025-11-16": { text: "IMD Alert For Malappuram District: y" },
@@ -7,8 +9,10 @@ const alerts = {
   "2025-11-19": { text: "IMD Alert For Malappuram District: g" }
 };
 
+// Last updated time (manual)
 const lastUpdated = "2025-11-15 12:26 PM";
 
+// Function to update the marquee
 function updateMarquee(marqueeTextEl, marqueeContainerEl) {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -31,16 +35,35 @@ function updateMarquee(marqueeTextEl, marqueeContainerEl) {
     r: { color: "red", full: "Red" }
   };
 
-  if (alerts[todayKey]) {
+  // Find the latest alert date
+  const alertDates = Object.keys(alerts).sort(); // ascending order
+  const lastAlertDate = alertDates[alertDates.length - 1];
+
+  let displayText;
+  let bgColor;
+
+  if (todayKey in alerts) {
+    // Today has an alert
     let alertText = alerts[todayKey].text;
     const shortCode = alertText.slice(-1).toLowerCase();
     const mapping = levelMap[shortCode] || { color: "default", full: "Unknown" };
     alertText = alertText.replace(/([oyrg])$/i, mapping.full);
 
-    marqueeTextEl.textContent = `Today ${dd}/${mm}/${yyyy}, ${alertText}  |  Last Updated: ${lastUpdated}`;
-    marqueeContainerEl.style.background = bgColors[mapping.color] || bgColors.default;
+    displayText = `Today ${dd}/${mm}/${yyyy}, ${alertText}  |  Last Updated: ${lastUpdated}`;
+    bgColor = bgColors[mapping.color] || bgColors.default;
+
+  } else if (todayKey > lastAlertDate) {
+    // All preset alert dates are over
+    displayText = `Today ${dd}/${mm}/${yyyy}: IMD alert for Malappuram District is not available`;
+    bgColor = bgColors.default;
+
   } else {
-    marqueeTextEl.textContent = `⚠️ Updated data unavailable for ${dd}/${mm}/${yyyy}.  |  Last Updated: ${lastUpdated}`;
-    marqueeContainerEl.style.background = bgColors.default;
+    // Date is within preset range but no alert for today
+    displayText = `⚠️ Updated data unavailable for ${dd}/${mm}/${yyyy}.  |  Last Updated: ${lastUpdated}`;
+    bgColor = bgColors.default;
   }
+
+  // Update marquee
+  marqueeTextEl.textContent = displayText;
+  marqueeContainerEl.style.background = bgColor;
 }
