@@ -996,9 +996,51 @@ document.getElementById("refresh-time").textContent = refreshTime;
         });
     </script>
 </section>
- <section class="weather-dashboard-section">
+  <section class="unified-header-section">
+    <style>
+        .unified-header-section {
+            /* Using the same styles as the .unified-header-bar class */
+            /* Replicates the bright to dark blue gradient */
+            background: linear-gradient(90deg, #1d4ed8, #0a3d91); 
+            padding: 20px 10px;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 30px; /* Space below the header before content starts */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Gives it a slight lift/depth */
+        }
 
-  <!-- ===== MARQUEES ===== -->
+        .unified-header-section h1 {
+            color: #ffffff; /* White text */
+            font-family: 'Roboto', sans-serif; /* Matches the font used in your site */
+            font-size: 32px;
+            font-weight: 500; /* Medium weight, readable */
+            margin: 0;
+            padding: 0;
+            white-space: nowrap; /* Prevents the text from wrapping if possible */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unified-header-section .weather-icon {
+            margin-right: 15px; /* Spacing between the icon and the text */
+            font-size: 1.1em;
+        }
+
+        /* Responsive adjustment for smaller screens */
+        @media (max-width: 600px) {
+            .unified-header-section h1 {
+                font-size: 24px;
+            }
+            .unified-header-section {
+                padding: 15px 10px;
+            }
+        }
+    </style>
+
+    <h1>
+        <span class="weather-icon">☁️</span>Unified Weather Dashboard
+    </h1>
+<!-- ===== MARQUEES ===== -->
   <div class="marquee-container">
     <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
   </div>
