@@ -445,55 +445,113 @@ document.getElementById("refresh-time").textContent = refreshTime;
       allowfullscreen>
     </iframe>
   </div>
+<section>
+<style>
+  /* Your existing styles here */
+  .weather-hours-box { max-width: 1000px; margin: 30px auto; background: #ffffff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: "Poppins", sans-serif; }
+  .weather-hours-box h2 { text-align: center; color: #0277BD; margin-bottom: 20px; font-size: 26px; }
+  .weather-table { width: 100%; border-collapse: collapse; text-align: center; }
+  .weather-table th { background: #0277BD; color: white; padding: 12px; }
+  .weather-table td { border: 1px solid #ccc; padding: 12px; background: #fafafa; }
+  @media (max-width: 700px) { .weather-table td, .weather-table th { padding: 6px; font-size: 12px; } }
+  .weather-param { font-weight: 500; }
+</style>
 
-  <script>
-    const LAT = 10.9081;
-    const LON = 76.2296;
+<div class="weather-hours-box">
+  <h2>Elamkulam Weather – Current & Next 9 Hours</h2>
+  <table class="weather-table">
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Current</th>
+        <th>+3 Hours</th>
+        <th>+6 Hours</th>
+        <th>+9 Hours</th>
+      </tr>
+    </thead>
+    <tbody id="weatherRows">
+      <tr><td class="weather-param">Temperature (°C)</td><td id="temp-current">--</td><td id="temp-3h">--</td><td id="temp-6h">--</td><td id="temp-9h">--</td></tr>
+      <tr><td class="weather-param">Feels Like (°C)</td><td id="feels-current">--</td><td id="feels-3h">--</td><td id="feels-6h">--</td><td id="feels-9h">--</td></tr>
+      <tr><td class="weather-param">Humidity (%)</td><td id="humidity-current">--</td><td id="humidity-3h">--</td><td id="humidity-6h">--</td><td id="humidity-9h">--</td></tr>
+      <tr><td class="weather-param">Condition</td><td id="cond-current">--</td><td id="cond-3h">--</td><td id="cond-6h">--</td><td id="cond-9h">--</td></tr>
+      <tr><td class="weather-param">Wind (km/h)</td><td id="wind-current">--</td><td id="wind-3h">--</td><td id="wind-6h">--</td><td id="wind-9h">--</td></tr>
+      <tr><td class="weather-param">Visibility (km)</td><td id="vis-current">--</td><td id="vis-3h">--</td><td id="vis-6h">--</td><td id="vis-9h">--</td></tr>
+      <tr><td class="weather-param">Rain (mm)</td><td id="rain-current">--</td><td id="rain-3h">--</td><td id="rain-6h">--</td><td id="rain-9h">--</td></tr>
+    </tbody>
+  </table>
+  <p style="text-align:center;margin-top:12px;font-size:12px;color:#555;">
+    Last Updated: <span id="updated">--:--</span>
+  </p>
+</div>
 
-    function updateUI(data) {
-      document.getElementById("temp").textContent = data.temperature ?? "--";
-      document.getElementById("feels").textContent = data.temperature ?? "--"; // Open-Meteo doesn't provide feels_like
-      document.getElementById("humidity").textContent = data.humidity ?? "--";
-      document.getElementById("wind").textContent = data.windspeed ?? "--";
-      document.getElementById("rain").textContent = data.precipitation ?? "--";
-      document.getElementById("pressure").textContent = data.pressure ?? "--";
-      document.getElementById("clouds").textContent = data.cloudcover ?? "--";
-      document.getElementById("visibility").textContent = data.visibility ?? "--";
-      document.getElementById("updated").textContent = new Date().toLocaleTimeString();
-    }
+<script>
+const LAT = 10.9081;
+const LON = 76.2296;
 
-    async function fetchWeather() {
-      try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,precipitation,pressure_msl,visibility,windspeed_10m,cloudcover&timezone=auto`;
-        const res = await fetch(url);
-        const data = await res.json();
-        const cw = data.current_weather;
+// Fill a table row for current + 3,6,9 hours
+function fillTable(hourlyData) {
+  const times = [0,3,6,9]; // index offsets
+  const temp = hourlyData.temperature_2m;
+  const humidity = hourlyData.relativehumidity_2m;
+  const wind = hourlyData.windspeed_10m;
+  const rain = hourlyData.precipitation;
+  const visibility = hourlyData.visibility;
+  const cond = hourlyData.condition || ["Clear","Clear","Clear","Clear"]; // placeholder
 
-        // Hourly values fallback
-        const humidity = data.hourly?.relativehumidity_2m?.[0] ?? null;
-        const pressure = data.hourly?.pressure_msl?.[0] ?? null;
-        const cloudcover = data.hourly?.cloudcover?.[0] ?? null;
-        const visibility = data.hourly?.visibility?.[0] ?? null;
+  document.getElementById("temp-current").textContent = temp[times[0]] ?? "--";
+  document.getElementById("temp-3h").textContent = temp[times[1]] ?? "--";
+  document.getElementById("temp-6h").textContent = temp[times[2]] ?? "--";
+  document.getElementById("temp-9h").textContent = temp[times[3]] ?? "--";
 
-        updateUI({
-          temperature: cw?.temperature ?? null,
-          windspeed: cw?.windspeed ?? null,
-          precipitation: cw?.precipitation ?? null,
-          humidity,
-          pressure,
-          cloudcover,
-          visibility
-        });
-      } catch (err) {
-        console.error("Weather fetch error:", err);
-      }
-    }
+  document.getElementById("feels-current").textContent = temp[times[0]] ?? "--";
+  document.getElementById("feels-3h").textContent = temp[times[1]] ?? "--";
+  document.getElementById("feels-6h").textContent = temp[times[2]] ?? "--";
+  document.getElementById("feels-9h").textContent = temp[times[3]] ?? "--";
 
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchWeather();
-      setInterval(fetchWeather, 120000); // update every 2 minutes
-    });
-  </script>
+  document.getElementById("humidity-current").textContent = humidity[times[0]] ?? "--";
+  document.getElementById("humidity-3h").textContent = humidity[times[1]] ?? "--";
+  document.getElementById("humidity-6h").textContent = humidity[times[2]] ?? "--";
+  document.getElementById("humidity-9h").textContent = humidity[times[3]] ?? "--";
+
+  document.getElementById("wind-current").textContent = wind[times[0]] ?? "--";
+  document.getElementById("wind-3h").textContent = wind[times[1]] ?? "--";
+  document.getElementById("wind-6h").textContent = wind[times[2]] ?? "--";
+  document.getElementById("wind-9h").textContent = wind[times[3]] ?? "--";
+
+  document.getElementById("rain-current").textContent = rain[times[0]] ?? "--";
+  document.getElementById("rain-3h").textContent = rain[times[1]] ?? "--";
+  document.getElementById("rain-6h").textContent = rain[times[2]] ?? "--";
+  document.getElementById("rain-9h").textContent = rain[times[3]] ?? "--";
+
+  document.getElementById("vis-current").textContent = visibility[times[0]] ?? "--";
+  document.getElementById("vis-3h").textContent = visibility[times[1]] ?? "--";
+  document.getElementById("vis-6h").textContent = visibility[times[2]] ?? "--";
+  document.getElementById("vis-9h").textContent = visibility[times[3]] ?? "--";
+
+  document.getElementById("cond-current").textContent = cond[times[0]] ?? "--";
+  document.getElementById("cond-3h").textContent = cond[times[1]] ?? "--";
+  document.getElementById("cond-6h").textContent = cond[times[2]] ?? "--";
+  document.getElementById("cond-9h").textContent = cond[times[3]] ?? "--";
+
+  document.getElementById("updated").textContent = new Date().toLocaleTimeString();
+}
+
+async function fetchWeather() {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,relativehumidity_2m,precipitation,windspeed_10m,visibility&timezone=auto`;
+    const res = await fetch(url);
+    const data = await res.json();
+    fillTable(data.hourly);
+  } catch (err) {
+    console.error("Weather fetch error:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchWeather();
+  setInterval(fetchWeather, 120000); // update every 2 minutes
+});
+</script>
 </section>
 
 <section>
