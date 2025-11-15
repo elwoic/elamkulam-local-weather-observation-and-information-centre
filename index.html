@@ -611,7 +611,219 @@ document.getElementById("refresh-time").textContent = refreshTime;
     <div id="ww_306f1b351ac5d" v='1.3' loc='id' a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_306f1b351ac5d_u" target="_blank">Free weather widget for website</a></div><script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
 
 </section>
-  
+ <section class="weather-dashboard-section">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        /* --- General Styling --- */
+        .weather-dashboard-section {
+            font-family: 'Roboto', sans-serif;
+            background-color: transparent;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+            text-align: center;
+        }
+        .weather-dashboard-section h1 {
+            color: #1f3a93;
+            margin-bottom: 35px;
+            font-size: 32px;
+            font-weight: 500;
+        }
+
+        /* --- Dashboard Container & Table --- */
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* --- Table Wrapper for Mobile Scroll --- */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-wrapper table {
+            width: 100%;
+            min-width: 700px; /* Ensures content fits */
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #eef1f5;
+            transition: background-color 0.3s ease;
+        }
+
+        th {
+            background-color: #e6eef7;
+            color: #1f3a93;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-label {
+            font-weight: 500;
+            color: #444;
+            width: 1000px;
+            background-color: #f7f9fb;
+        }
+
+        td {
+            font-size: 15px;
+            color: #555;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: #fcfdff;
+        }
+
+        .source-info-row td {
+            font-weight: 400;
+            font-size: 13px;
+            background-color: #007bff1a;
+            color: #1f3a93;
+            padding: 10px 20px;
+            border-bottom: 2px solid #e6eef7;
+        }
+
+        .rain-status {
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        .rain-status.yes { 
+            background: #d9edf7; 
+            color: #31708f; 
+            border: 1px solid #bce8f1;
+        }
+        .rain-status.no { 
+            background: #dff0d8; 
+            color: #3c763d; 
+            border: 1px solid #d6e9c6;
+        }
+        .error-status { 
+            color: #a94442; 
+            font-weight: 700;
+        }
+
+        tfoot td {
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-size: 11px;
+            color: #888;
+            background-color: #f0f4f8;
+            border-top: 1px solid #eef1f5;
+            text-align: center;
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .weather-dashboard-section h1 { font-size: 24px; }
+            th, td { padding: 12px 15px; font-size: 14px; }
+            .data-label { width: 140px; font-size: 14px; }
+            .rain-status { font-size: 12px; }
+        }
+
+        @media (max-width: 500px) {
+            .data-label { width: 100px; }
+        }
+    </style>
+
+    <h1>☁️ Elamkulam OpenWeather Forecast Dashboard</h1>
+
+    <div class="dashboard-container">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Current Conditions</th>
+                        <th>Next 3 Hours</th>
+                        <th>Next 6 Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="source-info-row">
+                        <td class="data-label">Data Scope</td>
+                        <td>Live Data</td>
+                        <td>Forecast Point 1</td>
+                        <td>Forecast Point 2</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">🌡️ Temperature</td>
+                        <td id="owTemp0">--°C</td>
+                        <td id="owTemp1">--°C</td>
+                        <td id="owTemp2">--°C</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">Feels Like</td>
+                        <td id="owFeels0">--°C</td>
+                        <td id="owFeels1">--°C</td>
+                        <td id="owFeels2">--°C</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">Condition</td>
+                        <td id="owCond0">Loading...</td>
+                        <td id="owCond1">Loading...</td>
+                        <td id="owCond2">Loading...</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">💧 Humidity</td>
+                        <td id="owHum0">--%</td>
+                        <td id="owHum1">--%</td>
+                        <td id="owHum2">--%</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">⏲️ Pressure</td>
+                        <td id="owPress0">-- hPa</td>
+                        <td id="owPress1">-- hPa</td>
+                        <td id="owPress2">-- hPa</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">💨 Wind Speed</td>
+                        <td id="owWind0">-- km/h</td>
+                        <td id="owWind1">-- km/h</td>
+                        <td id="owWind2">-- km/h</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">👁️ Visibility</td>
+                        <td id="owVis0">-- km</td>
+                        <td id="owVis1">-- km</td>
+                        <td id="owVis2">-- km</td>
+                    </tr>
+                    <tr>
+                        <td class="data-label">🌧️ Rain/PCPN</td>
+                        <td id="owRainBox0">Checking...</td>
+                        <td id="owRainBox1">Checking...</td>
+                        <td id="owRainBox2">Checking...</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4">Data powered by OpenWeatherMap API.</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="table.js"></script>
+    
   <!-- ===== FOOTER ===== -->
   <footer>
     <p>© 2025 Elamkulam Local Weather Observation & Information Centre</p>
