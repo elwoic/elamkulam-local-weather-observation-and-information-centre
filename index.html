@@ -995,208 +995,167 @@ document.getElementById("refresh-time").textContent = refreshTime;
         });
     </script>
 </section>
-  <section class="unified-weather-dashboard">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+ <section class="weather-dashboard-section">
 
-        .unified-weather-dashboard {
-            font-family: 'Poppins', sans-serif;
-            background: #f0f4fb;
-            color: #333;
-            padding: 10px;
-        }
+  <!-- ===== MARQUEES ===== -->
+  <div class="marquee-container">
+    <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
+  </div>
+  <div class="marquee-container">
+    <div class="scroll-text" id="weather-marquee-2">Loading forecast...</div>
+  </div>
 
-        /* --- Header inside section --- */
-        .unified-weather-dashboard header {
-            text-align: center;
-            background: linear-gradient(135deg, #004080, #0073e6);
-            color: #fff;
-            padding: 18px;
-            font-size: 1.4em;
-            font-weight: 600;
-            border-radius: 10px;
-        }
+  <div class="dashboard-container">
+    <!-- ===== CURRENT WEATHER TABLE ===== -->
+    <div class="dashboard-section">
+      <h2>Current Weather Data (OpenWeather)</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Temperature</th>
+              <th>Humidity</th>
+              <th>Wind Speed</th>
+              <th>Condition</th>
+            </tr>
+          </thead>
+          <tbody id="weather-table-body">
+            <tr><td colspan="5">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-        /* --- Marquee --- */
-        .marquee-container {
-            width: 95%;
-            max-width: 950px;
-            margin: 8px auto;
-            overflow: hidden;
-            background-color: #004080;
-            padding: 8px 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-        }
-        .marquee-container:nth-of-type(2) { background-color: #0073e6; }
-        .scroll-text {
-            display: inline-block;
-            white-space: nowrap;
-            animation: scroll 25s linear infinite;
-            font-weight: 500;
-            color: #ecf0f1;
-            font-size: 14px;
-        }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        /* --- Main container --- */
-        .unified-container {
-            max-width: 950px;
-            margin: 10px auto;
-            padding: 0 10px;
-        }
-
-        /* --- Dashboard Sections --- */
-        .dashboard-section {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-        }
-        .dashboard-section h2 {
-            text-align: center;
-            font-size: 1.2em;
-            color: #004080;
-            margin-top: 0;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #f0f5ff;
-            padding-bottom: 5px;
-        }
-
-        /* --- Table --- */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            text-align: center;
-            min-width: 600px;
-            font-size: 0.9em;
-        }
-        th, td { padding: 8px 6px; border-bottom: 1px solid #ddd; }
-        th { background: #004080; color: #fff; font-weight: 500; }
-
-        /* --- Chart --- */
-        #chart-container {
-            width: 100%;
-            height: 250px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            padding: 8px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        canvas { width: 100% !important; height: 100% !important; }
-
-        /* --- Extra Details --- */
-        .weather-widget-box {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .extra-details {
-            width: 100%;
-            text-align: left;
-            font-size: 14px;
-            color: #555;
-            background-color: #f7f9fc;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-            margin-top: 10px;
-        }
-        .extra-details span { font-weight: 600; color: #333; }
-        .details-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-        .details-item:not(:last-child) { border-bottom: 1px dashed #e0e0e0; margin-bottom: 5px; }
-
-        /* --- Windy Map --- */
-        .windy-box { padding: 15px; margin-bottom: 15px; }
-        .windy-box iframe { width: 100%; height: 300px; border: none; border-radius: 8px; }
-
-        /* --- Bottom Sections Responsive --- */
-        @media (min-width: 768px) {
-            .bottom-sections { display: flex; gap: 15px; }
-            .weather-widget-box, .windy-box { flex: 1; margin-bottom: 0; }
-        }
-
-        footer {
-            text-align: center;
-            padding: 10px;
-            color: #777;
-            font-size: 0.85em;
-            margin-top: 15px;
-        }
-    </style>
-
-    <header>🌤 Elamkulam Unified Weather Dashboard</header>
-
-    <div class="marquee-container">
-        <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
-    </div>
-    <div class="marquee-container">
-        <div class="scroll-text" id="weather-marquee-2">Loading forecast...</div>
+      <!-- ===== 24-HOUR TEMPERATURE CHART ===== -->
+      <h2 style="margin-top:15px;">24-Hour Temperature Trend</h2>
+      <div id="chart-container">
+        <canvas id="trendChart"></canvas>
+      </div>
     </div>
 
-    <div class="unified-container">
-        <div class="dashboard-section">
-            <h2>Current Weather Data (OpenWeather)</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Source</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
-                            <th>Wind Speed</th>
-                            <th>Condition</th>
-                        </tr>
-                    </thead>
-                    <tbody id="weather-table-body">
-                        <tr><td colspan="5">Loading data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- ===== BOTTOM SECTIONS: WIDGETS & WINDY MAP ===== -->
+    <div class="bottom-sections">
 
-            <h2 style="margin-top:15px;">24-Hour Temperature Trend</h2>
-            <div id="chart-container">
-                <canvas id="trendChart"></canvas>
-            </div>
+      <!-- WEATHER WIDGET & EXTRA DETAILS -->
+      <div class="weather-widget-box dashboard-section">
+        <h2>Elamkulam Weather Forecast (Widget)</h2>
+        <div class="weather-widget">
+          <a class="weatherwidget-io"
+             href="https://forecast7.com/en/10d9176d23/elamkulam/"
+             data-label_1="ELAMKULAM"
+             data-label_2="FORECAST"
+             data-icons="Climacons Animated"
+             data-theme="pure">ELAMKULAM WEATHER</a>
         </div>
 
-        <div class="bottom-sections">
-            <div class="weather-widget-box dashboard-section">
-                <h2>Elamkulam Weather Forecast (Widget)</h2>
-                <div class="weather-widget">
-                    <a class="weatherwidget-io"
-                        href="https://forecast7.com/en/10d9176d23/elamkulam/"
-                        data-label_1="ELAMKULAM"
-                        data-label_2="FORECAST"
-                        data-icons="Climacons Animated"
-                        data-theme="pure">ELAMKULAM WEATHER</a>
-                </div>
-
-                <h2 style="margin-top: 15px;">Additional Details (OpenWeather)</h2>
-                <div class="extra-details" id="extraWeather">
-                    Loading extra details...
-                </div>
-            </div>
-
-            <div class="windy-box dashboard-section">
-                <h2>🌬️ Live Wind & Radar Map</h2>
-                <iframe src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=10.9077&detailLon=76.2315&metricTemp=%C2%B0C&metricRain=mm&metricWind=km/h&width=100%"></iframe>
-            </div>
+        <h2 style="margin-top: 15px;">Additional Details (OpenWeather)</h2>
+        <div class="extra-details" id="extraWeather">
+          Loading extra details...
         </div>
-    </div>
+      </div>
 
-    <footer>Powered by OpenWeather, WeatherWidget.io, and Windy • Updated in real-time for Elamkulam</footer>
+      <!-- WINDY MAP -->
+      <div class="windy-box dashboard-section">
+        <h2>🌬️ Live Wind & Radar Map</h2>
+        <iframe src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=10.9077&detailLon=76.2315&metricTemp=%C2%B0C&metricRain=mm&metricWind=km/h&width=100%"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>Powered by OpenWeather, WeatherWidget.io, and Windy • Updated in real-time for Elamkulam</footer>
+
+  <!-- ===== STYLES INSIDE SECTION ===== -->
+  <style>
+    .weather-dashboard-section {
+      font-family: 'Poppins', sans-serif;
+      background-color: transparent;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #004080;
+      margin: 10px 0;
+      font-size: 1.2em;
+      border-bottom: 2px solid #f0f5ff;
+      padding-bottom: 5px;
+    }
+
+    .marquee-container {
+      width: 95%;
+      max-width: 950px;
+      margin: 8px auto;
+      overflow: hidden;
+      background-color: #004080;
+      padding: 8px 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .marquee-container:nth-of-type(2) {
+      background-color: #0073e6;
+    }
+
+    .scroll-text {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scroll 25s linear infinite;
+      font-weight: 500;
+      color: #ecf0f1;
+      font-size: 14px;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .dashboard-container {
+      max-width: 950px;
+      margin: 10px auto;
+      padding: 0 10px;
+    }
+
+    .dashboard-section {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+    }
+
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: center; min-width: 600px; font-size: 0.9em; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid #ddd; }
+    th { background: #004080; color: #fff; font-weight: 500; }
+    .extra-details {
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      color: #555;
+      background-color: #f7f9fc;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      margin-top: 10px;
+    }
+
+    .extra-details span { font-weight: 600; }
+    .details-item { display: flex; justify-content: space-between; padding: 5px 0; }
+    .details-item:not(:last-child) { border-bottom: 1px dashed #e0e0e0; margin-bottom: 5px; }
+
+    .windy-box iframe { width: 100%; height: 300px; border: none; border-radius: 8px; }
+
+    .bottom-sections { display: flex; flex-direction: column; gap: 15px; }
+    @media(min-width:768px){ .bottom-sections { flex-direction: row; } .weather-widget-box,.windy-box{flex:1;} }
+
+    #chart-container { width: 100%; height: 250px; margin-top: 15px; }
+    canvas { width: 100% !important; height: 100% !important; }
+  </style>
 </section>
+
 <script src="weather-dashboard.js"></script>
 
   <!-- ===== FOOTER ===== -->
