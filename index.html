@@ -348,78 +348,200 @@ document.getElementById("refresh-time").textContent = refreshTime;
   ELWOIC- Easy Way To Watch Live Weather condition Of Elamkulam
 </h2>
 <section>
-  <!-- Weather Mini Dashboard (updated with Windy radar) -->
-<div class="weather-mini-dashboard">
-  <h2>🌦 Elamkulam Weather Snapshot</h2>
+  <!-- ELWOIC WEATHER DASHBOARD -->
+<section>
+<style>
+  .weather-hours-box {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: "Poppins", sans-serif;
+  }
 
-  <div class="info-boxes">
-    <div class="info-box">
-      <div class="info-title">Temperature</div>
-      <div class="info-value" id="temp">--</div>
-      <div class="info-unit">°C</div>
-    </div>
+  .weather-hours-box h2 {
+    text-align: center;
+    color: #0277BD;
+    margin-bottom: 20px;
+    font-size: 26px;
+  }
 
-    <div class="info-box">
-      <div class="info-title">Feels Like</div>
-      <div class="info-value" id="feels">--</div>
-      <div class="info-unit">°C</div>
-    </div>
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
 
-    <div class="info-box">
-      <div class="info-title">Humidity</div>
-      <div class="info-value" id="humidity">--</div>
-      <div class="info-unit">%</div>
-    </div>
+  .weather-table th {
+    background: #0277BD;
+    color: white;
+    padding: 12px;
+  }
 
-    <div class="info-box">
-      <div class="info-title">Wind Speed</div>
-      <div class="info-value" id="wind">--</div>
-      <div class="info-unit">km/h</div>
-    </div>
+  .weather-table td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    background: #fafafa;
+  }
 
-    <div class="info-box">
-      <div class="info-title">Rain (1h)</div>
-      <div class="info-value" id="rain">--</div>
-      <div class="info-unit">mm</div>
-    </div>
+  @media (max-width: 700px) {
+    .weather-table td, .weather-table th {
+      padding: 6px;
+      font-size: 12px;
+    }
+  }
 
-    <div class="info-box">
-      <div class="info-title">Pressure</div>
-      <div class="info-value" id="pressure">--</div>
-      <div class="info-unit">hPa</div>
-    </div>
+  .weather-param {
+    font-weight: 500;
+  }
+</style>
 
-    <div class="info-box">
-      <div class="info-title">Cloud Cover</div>
-      <div class="info-value" id="clouds">--</div>
-      <div class="info-unit">%</div>
-    </div>
+<div class="weather-hours-box">
+  <h2>Elamkulam Weather – Current & Next 9 Hours</h2>
 
-    <div class="info-box">
-      <div class="info-title">Visibility</div>
-      <div class="info-value" id="visibility">--</div>
-      <div class="info-unit">km</div>
-    </div>
-
-    <div class="info-box">
-      <div class="info-title">Air Quality (AQI)</div>
-      <div class="info-value" id="aqi">--</div>
-      <div class="info-unit" id="aqi-desc">--</div>
-    </div>
-  </div>
-
-  <p class="last-update">Last updated: <span id="updated">--</span></p>
-
-  <!-- ⭐ Windy Radar BELOW the boxes -->
-  <div class="windy-container">
-    <iframe
-      src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=9&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true"
-      frameborder="0"
-      allowfullscreen>
-    </iframe>
-  </div>
-
+  <table class="weather-table">
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Current</th>
+        <th>+3 Hours</th>
+        <th>+6 Hours</th>
+        <th>+9 Hours</th>
+      </tr>
+    </thead>
+    <tbody id="weatherRows">
+      <tr>
+        <td class="weather-param">Temperature (°C)</td>
+        <td id="temp-current">--</td>
+        <td id="temp-3h">--</td>
+        <td id="temp-6h">--</td>
+        <td id="temp-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Feels Like (°C)</td>
+        <td id="feels-current">--</td>
+        <td id="feels-3h">--</td>
+        <td id="feels-6h">--</td>
+        <td id="feels-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Humidity (%)</td>
+        <td id="humidity-current">--</td>
+        <td id="humidity-3h">--</td>
+        <td id="humidity-6h">--</td>
+        <td id="humidity-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Condition</td>
+        <td id="cond-current">--</td>
+        <td id="cond-3h">--</td>
+        <td id="cond-6h">--</td>
+        <td id="cond-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Wind (km/h)</td>
+        <td id="wind-current">--</td>
+        <td id="wind-3h">--</td>
+        <td id="wind-6h">--</td>
+        <td id="wind-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Visibility (km)</td>
+        <td id="vis-current">--</td>
+        <td id="vis-3h">--</td>
+        <td id="vis-6h">--</td>
+        <td id="vis-9h">--</td>
+      </tr>
+      <tr>
+        <td class="weather-param">Rain (mm)</td>
+        <td id="rain-current">--</td>
+        <td id="rain-3h">--</td>
+        <td id="rain-6h">--</td>
+        <td id="rain-9h">--</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="text-align:center;margin-top:12px;font-size:12px;color:#555;">
+    Last Updated: <span id="updated">--:--</span>
+  </p>
 </div>
+
+<script>
+// --- Weather Loader ---
+const OPENWEATHER_KEY = "856b819166fedc7df9e65814b23e0970";
+const LAT = 10.9081;
+const LON = 76.2296;
+
+async function fetchOpenWeather() {
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${OPENWEATHER_KEY}&units=metric`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("OpenWeather failed");
+  return await res.json();
+}
+
+// Helper: check value
+function safeVal(v) { return v ?? "--"; }
+
+async function loadWeatherTable() {
+  try {
+    const data = await fetchOpenWeather();
+    // current + next 3 forecasts (3h, 6h, 9h)
+    const list = data.list;
+    const current = list[0];
+    const f3 = list[1];
+    const f6 = list[2];
+    const f9 = list[3];
+
+    // Fill table
+    document.getElementById("temp-current").textContent = safeVal(current.main.temp.toFixed(1));
+    document.getElementById("temp-3h").textContent = safeVal(f3.main.temp.toFixed(1));
+    document.getElementById("temp-6h").textContent = safeVal(f6.main.temp.toFixed(1));
+    document.getElementById("temp-9h").textContent = safeVal(f9.main.temp.toFixed(1));
+
+    document.getElementById("feels-current").textContent = safeVal(current.main.feels_like.toFixed(1));
+    document.getElementById("feels-3h").textContent = safeVal(f3.main.feels_like.toFixed(1));
+    document.getElementById("feels-6h").textContent = safeVal(f6.main.feels_like.toFixed(1));
+    document.getElementById("feels-9h").textContent = safeVal(f9.main.feels_like.toFixed(1));
+
+    document.getElementById("humidity-current").textContent = safeVal(current.main.humidity);
+    document.getElementById("humidity-3h").textContent = safeVal(f3.main.humidity);
+    document.getElementById("humidity-6h").textContent = safeVal(f6.main.humidity);
+    document.getElementById("humidity-9h").textContent = safeVal(f9.main.humidity);
+
+    document.getElementById("cond-current").textContent = safeVal(current.weather[0].description);
+    document.getElementById("cond-3h").textContent = safeVal(f3.weather[0].description);
+    document.getElementById("cond-6h").textContent = safeVal(f6.weather[0].description);
+    document.getElementById("cond-9h").textContent = safeVal(f9.weather[0].description);
+
+    document.getElementById("wind-current").textContent = safeVal((current.wind.speed * 3.6).toFixed(1));
+    document.getElementById("wind-3h").textContent = safeVal((f3.wind.speed * 3.6).toFixed(1));
+    document.getElementById("wind-6h").textContent = safeVal((f6.wind.speed * 3.6).toFixed(1));
+    document.getElementById("wind-9h").textContent = safeVal((f9.wind.speed * 3.6).toFixed(1));
+
+    document.getElementById("vis-current").textContent = safeVal((current.visibility/1000).toFixed(1));
+    document.getElementById("vis-3h").textContent = safeVal((f3.visibility/1000).toFixed(1));
+    document.getElementById("vis-6h").textContent = safeVal((f6.visibility/1000).toFixed(1));
+    document.getElementById("vis-9h").textContent = safeVal((f9.visibility/1000).toFixed(1));
+
+    const rain = r => r.rain && r.rain["3h"] ? r.rain["3h"].toFixed(2) : "0.00";
+    document.getElementById("rain-current").textContent = rain(current);
+    document.getElementById("rain-3h").textContent = rain(f3);
+    document.getElementById("rain-6h").textContent = rain(f6);
+    document.getElementById("rain-9h").textContent = rain(f9);
+
+    document.getElementById("updated").textContent = new Date().toLocaleTimeString();
+  } catch (e) {
+    console.error("Weather load failed:", e);
+  }
+}
+
+// Initial load + refresh every 2 minutes
+loadWeatherTable();
+setInterval(loadWeatherTable, 120000);
+</script>
+</section>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
@@ -768,7 +890,6 @@ getWeatherData();
     <img src="House Public Board Seal of AswanthKK.pn" alt="HPBD Logo" class="imd-logo-footer" />
   </footer>
 <script src="elwoic-manual-update.js"></script>
-<script src="snapshot.js"></script>
 </body>
 </html>
 
