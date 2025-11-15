@@ -428,6 +428,47 @@ document.getElementById("refresh-time").textContent = refreshTime;
     });
   </script>
 </section>
+<section id="weather-snapshot">
+  <div class="weather-mini-dashboard">
+    <h2>🌦 Elamkulam Weather Snapshot</h2>
+
+    <div class="info-boxes">
+      <div class="info-box">
+        <div class="info-title">Temperature</div>
+        <div class="info-value" id="temp">--</div>
+        <div class="info-unit">°C</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">Feels Like</div>
+        <div class="info-value" id="feels">--</div>
+        <div class="info-unit">°C</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">Humidity</div>
+        <div class="info-value" id="humidity">--</div>
+        <div class="info-unit">%</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">Wind Speed</div>
+        <div class="info-value" id="wind">--</div>
+        <div class="info-unit">km/h</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">Visibility</div>
+        <div class="info-value" id="visibility">--</div>
+        <div class="info-unit">km</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">Condition</div>
+        <div class="info-value" id="condition">--</div>
+        <div class="info-unit">☁</div>
+      </div>
+    </div>
+
+    <p class="last-update">Last updated: <span id="updated">--</span></p>
+  </div>
+  <script src="snapshot.js" type="module"></script>
+</section>
 
   <!-- ===== FOOTER ===== -->
   <footer>
