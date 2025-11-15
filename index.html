@@ -1096,7 +1096,106 @@ document.getElementById("refresh-time").textContent = refreshTime;
         }
     </style>
 </section>
+<section class="aqi-dashboard-section">
+    <h2>🌫️ Air Quality Index (AQI)</h2>
 
+    <!-- AQI Circle + Value -->
+    <div class="aqi-status-container">
+        <div class="aqi-circle" id="aqiCircle"></div>
+        <div class="aqi-text" id="aqiValue">Loading AQI...</div>
+    </div>
+
+    <!-- AQI Legend -->
+    <div class="aqi-legend">
+        <div class="legend-item aqi-good"><span>1 — Excellent</span></div>
+        <div class="legend-item aqi-fair"><span>2 — Fair</span></div>
+        <div class="legend-item aqi-moderate"><span>3 — Moderate</span></div>
+        <div class="legend-item aqi-poor"><span>4 — Poor</span></div>
+        <div class="legend-item aqi-very-poor"><span>5 — Very Poor</span></div>
+    </div>
+
+    <!-- Health Advice -->
+    <div class="aqi-health-advice" id="aqiAdvice">
+        Loading health advice...
+    </div>
+
+    <style>
+        .aqi-dashboard-section {
+            font-family: 'Poppins', sans-serif;
+            max-width: 950px;
+            margin: 15px auto;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .aqi-dashboard-section h2 {
+            color: #004080;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .aqi-status-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .aqi-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: grey;
+            transition: background-color 0.3s ease;
+        }
+
+        .aqi-text {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        /* AQI Colors */
+        .aqi-good { background-color: #4caf50; }        /* Green */
+        .aqi-fair { background-color: #8bc34a; }        /* Light Green */
+        .aqi-moderate { background-color: #ffc107; }    /* Yellow */
+        .aqi-poor { background-color: #ff9800; }        /* Orange */
+        .aqi-very-poor { background-color: #f44336; }   /* Red */
+
+        /* Legend Styling */
+        .aqi-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .legend-item span {
+            margin-left: 5px;
+        }
+
+        /* Health Advice */
+        .aqi-health-advice {
+            margin-top: 10px;
+            font-size: 0.95em;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</section>
 
 <script src="aqi.js"></script>
 
