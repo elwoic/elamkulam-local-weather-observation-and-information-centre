@@ -593,6 +593,72 @@ document.getElementById("refresh-time").textContent = refreshTime;
   <script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
 </div>
 </section>
+      <section>
+        <!-- NEXT HOURS WEATHER TABLE (HTML + CSS TOGETHER) -->
+<style>
+  .weather-hours-box {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: "Poppins", sans-serif;
+  }
+
+  .weather-hours-box h2 {
+    text-align: center;
+    color: #0277BD;
+    margin-bottom: 20px;
+    font-size: 26px;
+  }
+
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+
+  .weather-table th {
+    background: #0277BD;
+    color: white;
+    padding: 12px;
+  }
+
+  .weather-table td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    background: #fafafa;
+  }
+
+  @media (max-width: 700px) {
+    .weather-table td, .weather-table th {
+      padding: 6px;
+      font-size: 12px;
+    }
+  }
+</style>
+
+<div class="weather-hours-box">
+  <h2>Elamkulam Weather – Next 9 Hours</h2>
+
+  <table class="weather-table">
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Current</th>
+        <th>+3 Hours</th>
+        <th>+6 Hours</th>
+        <th>+9 Hours</th>
+      </tr>
+    </thead>
+    <tbody id="weatherRows"></tbody>
+  </table>
+</div>
+
+<script src="weather-hours.js" defer></script>
+
+      </section>
     <section class="links">
       <h3>Useful Links</h3>
       <ul>
