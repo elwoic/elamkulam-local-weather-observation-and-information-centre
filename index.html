@@ -380,52 +380,19 @@ document.getElementById("refresh-time").textContent = refreshTime;
     }
   </style>
 </section>
-
-<section id="imd-marquee-section">
+  <section id="imd-marquee-section">
   <div class="marquee-container" id="marqueeContainer">
-    <div class="marquee-text" id="marqueeText">
-      Loading alert data...
-    </div>
+    <div class="marquee-text" id="marqueeText">Loading alert data...</div>
   </div>
-
-  <style>
-    #imd-marquee-section .marquee-container {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(90deg, red, yellow, green);
-      color: white;
-      padding: 10px 0;
-      border-radius: 5px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
-
-    #imd-marquee-section .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll 18s linear infinite;
-      font-weight: 600;
-      font-size: 1.1em;
-      letter-spacing: 0.5px;
-    }
-
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-100%); }
-    }
-
-    #imd-marquee-section .marquee-container:hover .marquee-text {
-      animation-play-state: paused;
-    }
-  </style>
-
   <script src="imd-marquee.js"></script>
   <script>
-    const marqueeTextEl = document.getElementById("marqueeText");
-    const marqueeContainerEl = document.getElementById("marqueeContainer");
-
-    // Call the function from the external file
-    updateMarquee(marqueeTextEl, marqueeContainerEl);
+    document.addEventListener("DOMContentLoaded", function() {
+      const marqueeTextEl = document.getElementById("marqueeText");
+      const marqueeContainerEl = document.getElementById("marqueeContainer");
+      if (typeof updateMarquee === "function") {
+        updateMarquee(marqueeTextEl, marqueeContainerEl);
+      }
+    });
   </script>
 </section>
 
