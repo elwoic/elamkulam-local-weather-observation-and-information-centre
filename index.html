@@ -821,7 +821,180 @@ document.getElementById("refresh-time").textContent = refreshTime;
 </section>
 
 <script src="table.js"></script>
-    
+    <section class="radar-window-section">
+    <style>
+        .radar-window-section {
+            font-family: 'Roboto', sans-serif; /* Using Roboto to match your main site */
+            margin: 40px auto;
+            padding: 0 20px 20px;
+            color: #333;
+            max-width: 1000px;
+            max-height:700px;/* Matching the max-width of your weather table container */
+        }
+        
+        .radar-window-section .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        }
+
+        .radar-window-section .header {
+            /* Using the deep blue from your weather table header for consistency */
+            background-color: #1f3a93; 
+            color: #fff;
+            padding: 18px 20px;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .radar-window-section .tabs {
+            display: flex;
+            gap: 10px;
+            background: #e6eef7; /* Using a light blue/gray that matches your table header background */
+            padding: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .radar-window-section .tab {
+            padding: 10px 16px;
+            background: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .radar-window-section .tab.active {
+            background: #2563eb; /* Active button blue */
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+        }
+
+        .radar-window-section .view {
+            display: none;
+            height: 60vh;
+        }
+
+        .radar-window-section .view iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .radar-window-section .panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .radar-window-section .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+            transition: 0.2s;
+            margin: 4px;
+        }
+
+        .radar-window-section .btn:hover {
+            background: #1d4ed8;
+        }
+
+        @media(max-width:768px) {
+            .radar-window-section .view {
+                height: 50vh;
+            }
+            .radar-window-section .tab {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
+
+        <div class="tabs">
+            <div class="tab active" data-i="0">Windy Forecast</div>
+            <div class="tab" data-i="1">Windy Radar</div>
+            <div class="tab" data-i="2">AccuWeather Links</div>
+            <div class="tab" data-i="3">IMD Radar Links</div>
+        </div>
+
+        <div class="view" data-view-id="0" style="display:block;">
+            <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <div class="view" data-view-id="1">
+            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <div class="view" data-view-id="2">
+            <div class="panel">
+                <div>
+                    <p style="margin-bottom:12px;"> Click below to open the official pages of Accuweather:</p>
+                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
+                    <p style="margin-bottom:12px;">See what the air quality of Elamkulam is now:</p>
+                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="view" data-view-id="3">
+            <div class="panel">
+                <div>
+                    <p style="margin-bottom:12px;"> To see IMD animated weather radar Koich Click below:</p>
+                    <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab switching logic for the radar section
+        document.addEventListener('DOMContentLoaded', () => {
+            // Scope selectors to the containing section for safety
+            const container = document.querySelector('.radar-window-section');
+            if (!container) return; // Exit if the section wasn't found
+
+            const tabs = Array.from(container.querySelectorAll('.tab'));
+            const views = Array.from(container.querySelectorAll('.view'));
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const i = Number(tab.getAttribute('data-i'));
+
+                    // Deactivate all tabs and hide all views
+                    tabs.forEach(t => t.classList.remove('active'));
+                    views.forEach(v => v.style.display = 'none');
+
+                    // Activate the clicked tab and show the corresponding view
+                    tab.classList.add('active');
+                    views[i].style.display = 'block';
+
+                    // Optional: Scroll to the top of the container
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+        });
+    </script>
+</section>
   <!-- ===== FOOTER ===== -->
   <footer>
     <p>© 2025 Elamkulam Local Weather Observation & Information Centre</p>
