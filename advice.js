@@ -1,99 +1,82 @@
-// ---------------------------
-// WEATHER API CONFIG
-// ---------------------------
+// ------------------------------------
+// CONFIG
+// ------------------------------------
 const openWeatherApiKey = "856b819166fedc7df9e65814b23e0970";
 const latitude = 10.9081;
 const longitude = 76.2296;
 
-async function loadWeatherSnapshot() {
+const weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherApiKey}&units=metric`;
+
+// ------------------------------------
+// HEALTH + ACTIVITY ADVICE LOGIC
+// ------------------------------------
+function generateAdvice(temp, humidity, wind, condition) {
+  let health = "";
+  let activity = "";
+
+  // ---------- HEALTH ----------
+  if (temp >= 35) {
+    health = "Very hot. Stay hydrated, avoid long outdoor exposure, and use sunscreen.";
+  } else if (temp >= 28) {
+    health = "Warm weather. Drink extra water and avoid heavy outdoor work in noon.";
+  } else if (temp <= 20) {
+    health = "Cool weather. Wear light warm clothing if going outside.";
+  } else {
+    health = "Weather is generally safe for all activities.";
+  }
+
+  if (humidity >= 80) {
+    health += " High humidity may cause discomfort.";
+  }
+
+  // ---------- ACTIVITY ----------
+  if (condition.includes("Rain") || condition.includes("Drizzle")) {
+    activity =
+      "Rainy conditions. Avoid cycling and motorbike trips. Driving requires caution. Fishing may be disturbed.";
+  } else if (wind >= 25) {
+    activity =
+      "Windy. Avoid flying kites, cycling, or fishing in open waters. Driving may feel unstable.";
+  } else {
+    activity =
+      "Good weather for cycling, outdoor walking, light traveling, and fishing.";
+  }
+
+  return { health, activity };
+}
+
+// ------------------------------------
+// LOAD + UPDATE UI
+// ------------------------------------
+async function loadHealthAdvice() {
   try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherApiKey}&units=metric`;
-    const res = await fetch(url);
+    const res = await fetch(weatherURL);
     const data = await res.json();
 
     const temp = data.main.temp;
-    const feels = data.main.feels_like;
     const humidity = data.main.humidity;
     const wind = (data.wind.speed * 3.6).toFixed(1);
-    const visibility = (data.visibility / 1000).toFixed(1);
     const condition = data.weather[0].main;
 
-    // Update Snapshot (IF you are using the IDs in your page)
-    if (document.getElementById("temp")) {
-      document.getElementById("temp").textContent = temp.toFixed(1);
-      document.getElementById("feels").textContent = feels.toFixed(1);
-      document.getElementById("humidity").textContent = humidity;
-      document.getElementById("wind").textContent = wind;
-      document.getElementById("visibility").textContent = visibility;
-      document.getElementById("condition").textContent = condition;
-      document.getElementById("updated").textContent =
-        new Date().toLocaleTimeString();
-    }
+    const { health, activity } = generateAdvice(temp, humidity, wind, condition);
 
-    generateAdvice(temp, humidity, wind, visibility, condition);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("advice-output").innerHTML =
-      "⚠ Unable to load weather data.";
+    document.getElementById("ha-temp").textContent = temp.toFixed(1);
+    document.getElementById("ha-humidity").textContent = humidity;
+    document.getElementById("ha-wind").textContent = wind;
+    document.getElementById("ha-condition").textContent = condition;
+
+    document.getElementById("health-advice").textContent = health;
+    document.getElementById("activity-advice").textContent = activity;
+
+    document.getElementById("ha-updated").textContent =
+      new Date().toLocaleTimeString();
+  } catch (error) {
+    console.error("Advice fetch error:", error);
+    document.getElementById("health-advice").textContent =
+      "Error loading health advice.";
+    document.getElementById("activity-advice").textContent =
+      "Error loading activity advice.";
   }
 }
 
-// ---------------------------
-// ADVICE GENERATOR
-// ---------------------------
-function generateAdvice(temp, humidity, wind, visibility, condition) {
-  let html = "";
-
-  // HEALTH
-  html += `<div class="advice-box"><strong>Health Advice:</strong><br>`;
-  if (temp >= 32) html += "• Very hot — Drink more water.<br>";
-  else if (temp <= 20) html += "• Cool weather — Keep warm.<br>";
-  else html += "• Comfortable temperature.<br>";
-
-  if (humidity >= 80) html += "• High humidity — Sweating & discomfort.<br>";
-  else if (humidity <= 40) html += "• Low humidity — Dry skin & throat.<br>";
-  html += "</div>";
-
-  // OUTDOOR
-  html += `<div class="advice-box"><strong>Outdoor Activities:</strong><br>`;
-  if (condition === "Rain" || wind >= 35)
-    html += "• Avoid outdoor activities.<br>";
-  else html += "• Good for outdoor activities.<br>";
-  html += "</div>";
-
-  // DRIVING
-  html += `<div class="advice-box"><strong>Driving Conditions:</strong><br>`;
-  if (visibility <= 2 || condition === "Rain")
-    html += `<span class="warning">• Poor visibility — Drive carefully.</span><br>`;
-  else html += "• Driving is normal.<br>";
-  html += "</div>";
-
-  // FISHING
-  html += `<div class="advice-box"><strong>Fishing:</strong><br>`;
-  if (wind >= 30) html += "• Unsafe — Strong winds.<br>";
-  else if (condition === "Rain") html += "• Be cautious — Rain possible.<br>";
-  else html += "• Good fishing conditions.<br>";
-  html += "</div>";
-
-  // CYCLING
-  html += `<div class="advice-box"><strong>Cycling / Biking:</strong><br>`;
-  if (wind >= 30) html += "• Avoid cycling — Strong winds.<br>";
-  else if (condition === "Rain") html += "• Slippery roads — Ride safely.<br>";
-  else html += "• Good for cycling.<br>";
-  html += "</div>";
-
-  // BEACH
-  html += `<div class="advice-box"><strong>Beach & Pool:</strong><br>`;
-  if (condition === "Rain") html += "• Not suitable — Rainy.<br>";
-  else if (temp >= 30) html += "• Great for beach & pool.<br>";
-  else html += "• Okay, but water may be cool.<br>";
-  html += "</div>";
-
-  document.getElementById("advice-output").innerHTML = html;
-}
-
-// ---------------------------
-// AUTO UPDATE EVERY 10 MIN
-// ---------------------------
-loadWeatherSnapshot();
-setInterval(loadWeatherSnapshot, 10 * 60 * 1000);
+loadHealthAdvice();
+setInterval(loadHealthAdvice, 10 * 60 * 1000); // refresh every 10 min
