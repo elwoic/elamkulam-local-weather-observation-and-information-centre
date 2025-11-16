@@ -1,7 +1,7 @@
 // ------------------------------------
 // CONFIG
 // ------------------------------------
-const openWeatherApiKey = "856b819166fedc7df9e65814b23e0970";
+const openWeatherApiKey = "ca13a2cbdc07e7613b6af82cff262295";
 const latitude = 10.9081;
 const longitude = 76.2296;
 
