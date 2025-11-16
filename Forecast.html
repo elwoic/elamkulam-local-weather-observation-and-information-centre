@@ -1,16 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forecast - ELWOIC</title>
-  <link rel="stylesheet" href="style.css"> <!-- if you use a separate CSS file -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELWOIC | Forecast</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f8fb;
+  }
+
+  /* Same Header Style From Home Page */
+  .imd-header {
+    background: #004a80;
+    color: white;
+  }
+
+  .imd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+  }
+
+  .imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    padding: 10px 25px;
+  }
+
+  .imd-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .imd-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Forecast Box */
+  .forecast-box {
+    max-width: 850px;
+    background: #fff;
+    padding: 20px;
+    margin: 25px auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .forecast-box h2 {
+    color: #004a80;
+    border-bottom: 2px solid #e3effa;
+    padding-bottom: 6px;
+  }
+
+  iframe {
+    width: 100%;
+    height: 450px;
+    border: none;
+    border-radius: 10px;
+  }
+</style>
+
 </head>
 <body>
 
-  <h1>Weather Forecast</h1>
+<header class="imd-header">
+  <div class="imd-top">
+    <img src="ELWOIC.png" class="imd-logo-left" width="65">
+    <div class="imd-title">
+      <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+      <h4>Community Weather Monitoring Initiative, Elamkulam</h4>
+    </div>
+    <img src="Elamkulam Weather Logo Design.1.png" class="imd-logo-right" width="65">
+  </div>
 
-  <p>This page will show upcoming weather predictions.</p>
+  <nav class="imd-nav">
+    <a href="index.html">Home</a>
+    <a href="Forecast.html">Forecast</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+
+<div class="forecast-box">
+  <h2>📡 Elamkulam Detailed Weather Forecast</h2>
+
+   <style>
+        /* Custom styles are prefixed or scoped where possible to minimize conflicts */
+        .weather-mini-dashboard {
+            /* Using a max-width and margin for centering */
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .weather-mini-dashboard h2 {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #004080;
+            margin-bottom: 8px;
+        }
+
+        .info-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .info-box {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            text-align: center;
+            padding: 8px 5px;
+            flex: 1 1 90px;
+            min-width: 90px;
+        }
+
+        .info-title {
+            font-size: 0.70em;
+            color: #004080;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .info-unit {
+            font-size: 0.70em;
+            color: #777;
+        }
+
+        .last-update {
+            text-align: center;
+            color: #666;
+            font-size: 0.75em;
+            margin-top: 5px;
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 480px) {
+            .info-box { flex: 1 1 80px; min-width: 80px; }
+            .info-value { font-size: 1.1em; }
+        }
+    </style>
+
+    <div class="weather-mini-dashboard">
+        <h2>🌦 Current condition</h2>
+ <div class="info-boxes">
+            <div class="info-box">
+                <div class="info-title">Temperature</div>
+                <div class="info-value" id="temp">--</div>
+                <div class="info-unit">°C</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Feels Like</div>
+                <div class="info-value" id="feels">--</div>
+                <div class="info-unit">°C</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Humidity</div>
+                <div class="info-value" id="humidity">--</div>
+                <div class="info-unit">%</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Wind Speed</div>
+                <div class="info-value" id="wind">--</div>
+                <div class="info-unit">km/h</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Visibility</div>
+                <div class="info-value" id="visibility">--</div>
+                <div class="info-unit">km</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Condition</div>
+                <div class="info-value" id="condition">--</div>
+                <div class="info-unit">☁</div>
+            </div>
+        </div>
+
+        <p class="last-update">Last updated: <span id="updated">--</span></p>
+    </div>
+
+    <script>
+        const apiKey = "856b819166fedc7df9e65814b23e0970";
+        const lat = 10.9081;
+        const lon = 76.2296;
+
+        async function loadWeather() {
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+                if (!res.ok) throw new Error("API request failed");
+                const data = await res.json();
+                
+                // Update text content with fetched data
+                document.getElementById("temp").textContent = data.main.temp.toFixed(1);
+                document.getElementById("feels").textContent = data.main.feels_like.toFixed(1);
+                document.getElementById("humidity").textContent = data.main.humidity;
+                // m/s to km/h conversion
+                document.getElementById("wind").textContent = (data.wind.speed * 3.6).toFixed(1); 
+                // meters to km conversion
+                document.getElementById("visibility").textContent = (data.visibility / 1000).toFixed(1);
+                
+                // Capitalize first letter of condition description
+                const conditionText = data.weather[0].description;
+                document.getElementById("condition").textContent = conditionText.charAt(0).toUpperCase() + conditionText.slice(1);
+
+                document.getElementById("updated").textContent = new Date().toLocaleTimeString();
+            } catch (err) {
+                console.error("Error loading weather data:", err);
+                // Optionally set values to "Error" or "N/A" on failure
+                document.getElementById("updated").textContent = "Update Error";
+            }
+        }
+
+        loadWeather();
+        setInterval(loadWeather, 600000); // update every 10 mins (600000ms)
+    </script>
+
+</div>
 
 </body>
 </html>
