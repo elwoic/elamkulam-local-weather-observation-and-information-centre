@@ -3,7 +3,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     /* --- CONSTANTS --- */
-    const OPENWEATHER_API_KEY = "856b819166fedc7df9e65814b23e0970";
+    const OPENWEATHER_API_KEY = "ca13a2cbdc07e7613b6af82cff262295";
     const ELAMKULAM_CITY = "Elamkulam,IN";
     const ELAMKULAM_LAT_GENERAL = 10.9081;
     const ELAMKULAM_LON_GENERAL = 76.2296;
