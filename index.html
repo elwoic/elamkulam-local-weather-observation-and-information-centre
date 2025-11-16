@@ -63,28 +63,27 @@
       font-size: 13px;
       color: #c2d7eb;
     }
+/* --- FIXED NAVIGATION BAR --- */
+.imd-nav {
+  background: #003a63;
+  display: flex;
+  justify-content: flex-end;   /* Align to RIGHT */
+  gap: 20px;                   /* Space between links */
+  padding: 10px 25px;
+}
 
-    /* Navigation Bar */
-    .imd-nav {
-      background: #003a63;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+.imd-nav a {
+  color: #ffffff !important;   /* Make links WHITE */
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
 
-    .imd-nav a {
-      color: white;
-      text-decoration: none;
-      padding: 10px 15px;
-      display: inline-block;
-      font-size: 14px;
-    }
-
-    .imd-nav a:hover {
-      background: #0265b4;
-    }
-
-    /* Main Sections */
+.imd-nav a:hover {
+  text-decoration: underline;
+  background: none;
+}
+   /* Main Sections */
     main {
       padding: 20px;
     }
@@ -173,13 +172,10 @@
       <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
     </div>
 
-    <nav class="elwoic-nav">
+    <nav class="imd-nav">
       <a href="Forecast.html">Forecast</a>
       <a href="#">ABOUT US</a>
-      <a href="#"></a>
-      <a href="#"></a>
       <a href="#">CONTACT US</a>
-      <a href="#"></a>
       <a href="#">OTHERS</a>
     </nav>
    <section id="elwoic-marquee-section">
