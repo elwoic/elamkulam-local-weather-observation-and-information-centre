@@ -1,83 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Information - ELWOIC</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ELWOIC | Information</title>
 
-    <!-- Main CSS file -->
-    <link rel="stylesheet" href="style.css">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f8fb;
+  }
 
-    <style>
-        /* Page-specific CSS (you can move this to style.css later) */
+  /* Same Header Style From Home Page */
+  .imd-header {
+    background: #004a80;
+    color: white;
+  }
 
-        body {
-            font-family: "Poppins", sans-serif;
-            background: #f5f7fa;
-            margin: 0;
-            padding: 0;
-        }
+  .imd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+  }
 
-        section.info-page {
-            max-width: 1200px;
-            margin: auto;
-            padding: 40px 20px;
-        }
+  .imd-logo-left,
+  .imd-logo-right {
+    width: 65px;
+    height: auto;
+    border-radius: 6px;
+    background: transparent;
+  }
 
-        .info-section {
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-            margin-bottom: 30px;
-        }
+  .imd-title {
+    text-align: center;
+    flex: 1;
+    color: white;
+  }
 
-        .info-section h2 {
-            margin-top: 0;
-            font-size: 24px;
-            color: #003366;
-        }
+  .imd-title h2 {
+    margin: 4px 0;
+    font-size: 20px;
+    color: #ffffff;
+  }
 
-        .info-section p {
-            line-height: 1.6;
-            color: #333;
-            font-size: 16px;
-        }
-    </style>
+  .imd-title h4 {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #d8e8f5;
+  }
+
+  .imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    padding: 10px 25px;
+  }
+
+  .imd-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .imd-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Information page content box */
+  .info-box {
+    max-width: 900px;
+    background: #fff;
+    padding: 22px;
+    margin: 28px auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .info-box h2 {
+    color: #004a80;
+    border-bottom: 2px solid #e3effa;
+    padding-bottom: 8px;
+    margin: 0 0 14px;
+    font-size: 20px;
+  }
+
+  .info-box p {
+    color: #333;
+    line-height: 1.6;
+    margin: 8px 0;
+    font-size: 15px;
+  }
+
+  /* Responsive */
+  @media(max-width:600px){
+    .imd-top { padding: 12px; }
+    .imd-nav { padding: 8px 12px; gap: 12px; justify-content: center; }
+    .info-box { padding: 16px; margin: 16px; }
+  }
+</style>
 </head>
-
 <body>
 
-    <!-- 🔗 Navigation (optional, same as home page) -->
-    <header>
-        <!-- Add your nav links here -->
-    </header>
+<header class="imd-header">
+  <div class="imd-top">
+    <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
+    <div class="imd-title">
+      <h2>Elamkulam Local Weather Observation &amp; Information Centre</h2>
+      <h4>Community Weather Monitoring Initiative, Elamkulam</h4>
+    </div>
+    <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
+  </div>
 
-    <!-- ⭐ FULL INFORMATION PAGE CONTENT WILL GO INSIDE THIS SECTION -->
-    <section class="info-page">
+  <nav class="imd-nav">
+    <a href="index.html">Home</a>
+    <a href="Forecast.html">Forecast</a>
+    <a href="information.html">Information</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
 
-        <div class="info-section">
-            <h2>Section Title 1</h2>
-            <p>Your content goes here...</p>
-        </div>
+<!-- ===== Information content (same simple style as your Forecast) ===== -->
+<div class="info-box">
+  <h2>About ELWOIC</h2>
+  <!-- 🌥️ INFORMATION INTRO BOX -->
+<section class="info-intro-box" style="background-image: url('YOUR_BACKGROUND_IMAGE_HERE');">
 
-        <div class="info-section">
-            <h2>Section Title 2</h2>
-            <p>Your content goes here...</p>
-        </div>
+  <div class="info-left">
+    <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo">
+  </div>
 
-        <div class="info-section">
-            <h2>Section Title 3</h2>
-            <p>Your content goes here...</p>
-        </div>
+  <div class="info-right">
+    <h1>ELWOIC</h1>
+    <h2>Elamkulam Weather Station</h2>
 
-        <!-- You can add more as needed -->
+    <p>Real-Time Weather Monitoring System</p>
+    <p>Malappuram District, Kerala, India</p>
+    <p>In coordination with House Public Board Department (HPBD)</p>
+    <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
 
-    </section>
+    <a href="#" class="info-btn">Learn More</a>
+  </div>
 
-    <footer>
-        <!-- Footer (optional) -->
-    </footer>
+</section>
+
+<style>
+/* INFO INTRO BOX */
+.info-intro-box {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 40px 30px;
+    display: flex;
+    gap: 40px;
+    border-radius: 14px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    backdrop-filter: blur(3px);
+}
+
+/* Logo Area */
+.info-left img {
+    width: 260px;
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+/* Text Area */
+.info-right {
+    flex: 1;
+}
+
+.info-right h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #002f5e;
+}
+
+.info-right h2 {
+    margin: 5px 0 15px 0;
+    font-size: 26px;
+    color: #003a63;
+}
+
+.info-right p {
+    margin: 8px 0;
+    font-size: 17px;
+    color: #111;
+}
+
+/* Button */
+.info-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: #004a80;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.info-btn:hover {
+    background: #0060a6;
+}
+</style>
+
+
+  <h2>Data Sources</h2>
+  <p>
+    Our data is aggregated from multiple sources (Open-Meteo, Weather widgets, Windy embeds and local sensors when available).
+    This page documents the partners and sources used for forecasts and live snapshots.
+  </p>
+
+  <h2>Equipment &amp; Methods</h2>
+  <p>
+    We use a combination of web APIs and community sensors. Data is refreshed periodically and displayed on the site.
+    Measurements may vary from official government sources and are provided for local awareness only.
+  </p>
+
+  <h2>Disclaimer</h2>
+  <p>
+    ELWOIC is a student project and not an official meteorological authority. For official warnings and advisories,
+    always refer to the India Meteorological Department (IMD) or local authorities.
+  </p>
+</div>
 
 </body>
 </html>
