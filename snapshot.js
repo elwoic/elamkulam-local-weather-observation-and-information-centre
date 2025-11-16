@@ -1,7 +1,7 @@
 // ---------------------------
 // CONFIGURATION
 // ---------------------------
-const openWeatherApiKey = "856b819166fedc7df9e65814b23e0970"; // <-- Add your OpenWeatherMap API key
+const openWeatherApiKey = "ca13a2cbdc07e7613b6af82cff262295"; // <-- Add your OpenWeatherMap API key
 const latitude = 10.9081;     // Elamkulam latitude
 const longitude = 76.2296;    // Elamkulam longitude
 
