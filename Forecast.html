@@ -75,7 +75,8 @@
     <img src="ELWOIC.png" class="imd-logo-left" width="65">
     <div class="imd-title">
       <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-      <h4>Community Weather Monitoring Initiative, Elamkulam</h4>
+      <center>
+      <h4>ELWOIC Forecast section</h4>
     </div>
     <img src="Elamkulam Weather Logo Design.1.png" class="imd-logo-right" width="65">
   </div>
@@ -90,7 +91,7 @@
 
 
 <div class="forecast-box">
-  <center><
+  <center>
   <h2>📡 Elamkulam Detailed Weather Forecast</h2>
 
    <style>
@@ -537,6 +538,49 @@
   load();
   setInterval(load, 30 * 60 * 1000);
 })();
+</script>
+<div style="
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#0077ff,#00c853);
+  padding: 12px;
+  border-radius: 12px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+  max-width: 480px;
+  margin: 0 auto;
+">
+  <h3 style="margin:0 0 8px 0; font-size:1.05rem;">🌦️ IMD KERALA</h3>
+  <center>
+<h4>Met Center Thiruvananthapuram</h4>
+<p style="margin:6px 0 10px 0; font-size:0.9rem;">
+    Click the button below to open the official IMD District wise alert (external site).
+  </p>
+
+  <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
+     target="_blank"
+     rel="noopener noreferrer"
+     style="display:inline-block; padding:10px 14px; border-radius:10px; background:#ffffff; color:#004080; font-weight:600; text-decoration:none; box-shadow:0 4px 8px rgba(0,0,0,0.08);">
+    Open District-wise-warnings ↗
+  </a>
+
+  <p style="margin:10px 0 0 0; font-size:0.85rem; opacity:0.95;">
+    🕒 <span id="imd-update-time">Last updated: —</span>
+  </p>
+</div>
+
+<script>
+  // show local update time (Asia/Kolkata)
+  (function(){
+    const now = new Date();
+    const timeStr = now.toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true, year: 'numeric', month: 'short', day: 'numeric'
+    });
+    const el = document.getElementById('imd-update-time');
+    if (el) el.textContent = 'Last checked: ' + timeStr;
+  })();
 </script>
 
 </body>
