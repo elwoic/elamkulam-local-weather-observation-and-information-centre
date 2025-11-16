@@ -206,26 +206,21 @@
       color: white;
       padding: 10px 0;
       box-sizing: border-box;
-      border-bottom: 2px solid #ffa200; /* Orange line bottom */
+      border-bottom: px solid #ffa200; /* Orange line bottom */
     }
+#elwoic-marquee-section .scroll-text {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 0; /* remove delay */
+  animation: scroll 40s linear infinite; /* smoother + faster */
+  font-weight: bold;
+  font-size: 16px;
+}
 
-    #elwoic-marquee-section .scroll-text {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll 70s linear infinite;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    #elwoic-marquee-section .highlight {
-      color: #00ffff;
-    }
-
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-100%); }
-    }
+@keyframes scroll {
+  from { transform: translateX(0%); }  /* start from right */
+  to { transform: translateX(-100%); }   /* end fully left */
+}
   </style>
 
   <script>
@@ -387,35 +382,38 @@ document.getElementById("refresh-time").textContent = refreshTime;
   </div>
 
   <style>
-    #imd-marquee-section .marquee-container {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(90deg, red, yellow, green);
-      color: white;
-      padding: 10px 0;
-      border-radius: 5px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
+   #imd-marquee-section .marquee-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, red, yellow, green);
+  color: white;
+  padding: 10px 0;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
 
-    #imd-marquee-section .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll 35s linear infinite;
-      font-weight: 600;
-      font-size: 1.1em;
-      letter-spacing: 0.5px;
-    }
+#imd-marquee-section .marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  /* remove pad-left delay */
+  padding-left: 0;
 
-    @keyframes scroll {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
+  /* NEW continuous marquee */
+  animation: scroll 18s linear infinite;
+  font-weight: 600;
+  font-size: 1.1em;
+  letter-spacing: 0.5px;
+}
 
-    /* Optional: pause on hover */
-    #imd-marquee-section .marquee-container:hover .marquee-text {
-      animation-play-state: paused;
-    }
+/* Continuous scroll (no long restart gap) */
+@keyframes scroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+#imd-marquee-section .marquee-container:hover .marquee-text {
+  animation-play-state: paused;
+}
   </style>
 
   <script src="imd-marquee.js"></script>
