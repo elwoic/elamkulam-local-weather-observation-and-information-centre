@@ -1,6 +1,6 @@
 const ELAMKULAM_LAT_GENERAL = 10.9081;
 const ELAMKULAM_LON_GENERAL = 76.2296;
-const OPENWEATHER_API_KEY = "856b819166fedc7df9e65814b23e0970";
+const OPENWEATHER_API_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
 async function loadAQIBox() {
     const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${ELAMKULAM_LAT_GENERAL}&lon=${ELAMKULAM_LON_GENERAL}&appid=${OPENWEATHER_API_KEY}`;
