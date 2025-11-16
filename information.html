@@ -126,10 +126,91 @@
 <!-- ===== Information content (same simple style as your Forecast) ===== -->
 <div class="info-box">
   <h2>About ELWOIC</h2>
-  <p>
-    ELWOIC (Elamkulam Local Weather Observation &amp; Information Centre) is a student-run community project
-    dedicated to providing near real-time local weather information for Elamkulam, Kerala.
-  </p>
+<!-- 🌥️ INFORMATION INTRO BOX -->
+<section class="info-intro-box" style="background-image: url('YOUR_BACKGROUND_IMAGE_HERE');">
+
+  <div class="info-left">
+    <img src="YOUR_LOGO_HERE" alt="ELWOIC Logo">
+  </div>
+
+  <div class="info-right">
+    <h1>ELWOIC</h1>
+    <h2>Elamkulam Weather Station</h2>
+
+    <p>Real-Time Weather Monitoring System</p>
+    <p>Malappuram District, Kerala, India</p>
+    <p>In coordination with House Public Board Department (HPBD)</p>
+    <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
+
+    <a href="#" class="info-btn">Learn More</a>
+  </div>
+
+</section>
+
+<style>
+/* INFO INTRO BOX */
+.info-intro-box {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 40px 30px;
+    display: flex;
+    gap: 40px;
+    border-radius: 14px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    backdrop-filter: blur(3px);
+}
+
+/* Logo Area */
+.info-left img {
+    width: 260px;
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+/* Text Area */
+.info-right {
+    flex: 1;
+}
+
+.info-right h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #002f5e;
+}
+
+.info-right h2 {
+    margin: 5px 0 15px 0;
+    font-size: 26px;
+    color: #003a63;
+}
+
+.info-right p {
+    margin: 8px 0;
+    font-size: 17px;
+    color: #111;
+}
+
+/* Button */
+.info-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: #004a80;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.info-btn:hover {
+    background: #0060a6;
+}
+</style>
+
 
   <h2>Data Sources</h2>
   <p>
