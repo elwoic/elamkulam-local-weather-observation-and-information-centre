@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ELWOIC | Information</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f8fb;
+  }
+
+  /* Same Header Style From Home Page */
+  .imd-header {
+    background: #004a80;
+    color: white;
+  }
+
+  .imd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+  }
+
+  .imd-logo-left,
+  .imd-logo-right {
+    width: 65px;
+    height: auto;
+    border-radius: 6px;
+    background: transparent;
+  }
+
+  .imd-title {
+    text-align: center;
+    flex: 1;
+    color: white;
+  }
+
+  .imd-title h2 {
+    margin: 4px 0;
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  .imd-title h4 {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #d8e8f5;
+  }
+
+  .imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    padding: 10px 25px;
+  }
+
+  .imd-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .imd-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Information page content box */
+  .info-box {
+    max-width: 900px;
+    background: #fff;
+    padding: 22px;
+    margin: 28px auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .info-box h2 {
+    color: #004a80;
+    border-bottom: 2px solid #e3effa;
+    padding-bottom: 8px;
+    margin: 0 0 14px;
+    font-size: 20px;
+  }
+
+  .info-box p {
+    color: #333;
+    line-height: 1.6;
+    margin: 8px 0;
+    font-size: 15px;
+  }
+
+  /* Responsive */
+  @media(max-width:600px){
+    .imd-top { padding: 12px; }
+    .imd-nav { padding: 8px 12px; gap: 12px; justify-content: center; }
+    .info-box { padding: 16px; margin: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="imd-header">
+  <div class="imd-top">
+    <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
+    <div class="imd-title">
+      <h2>Elamkulam Local Weather Observation &amp; Information Centre</h2>
+      <h4>Community Weather Monitoring Initiative, Elamkulam</h4>
+    </div>
+    <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
+  </div>
+
+  <nav class="imd-nav">
+    <a href="index.html">Home</a>
+    <a href="Forecast.html">Forecast</a>
+    <a href="information.html">Information</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+
+
+</body>
+</html>
