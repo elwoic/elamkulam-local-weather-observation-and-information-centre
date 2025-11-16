@@ -547,7 +547,7 @@
   color: #fff;
   text-align: center;
   box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-  max-width: 480px;
+  max-width: 1000px;
   margin: 0 auto;
 ">
   <h3 style="margin:0 0 8px 0; font-size:1.05rem;">🌦️ IMD KERALA</h3>
@@ -581,6 +581,99 @@
     const el = document.getElementById('imd-update-time');
     if (el) el.textContent = 'Last checked: ' + timeStr;
   })();
+</script>
+<div id="historyBox" style="
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  font-family: Arial, sans-serif;
+  color: #333;
+">
+
+  <h2 style="text-align:center; margin-top:0; color:#0056b3;">
+    📅 Past Weather Reports – Elamkulam
+  </h2>
+
+  <div style="text-align:center; margin-bottom:15px;">
+    <button onclick="loadHistory(7)" style="padding:8px 16px; margin:5px; border:0; background:#007bff; color:#fff; border-radius:6px; cursor:pointer;">Last 7 Days</button>
+    <button onclick="loadHistory(30)" style="padding:8px 16px; margin:5px; border:0; background:#28a745; color:#fff; border-radius:6px; cursor:pointer;">Last 30 Days</button>
+  </div>
+
+  <div id="loading" style="text-align:center; display:none; font-size:14px;">
+    ⏳ Loading data, please wait...
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table id="historyTable" style="width:100%; border-collapse:collapse; display:none;">
+      <thead>
+        <tr style="background:#f0f0f0;">
+          <th style="padding:8px; border:1px solid #ddd;">Date</th>
+          <th style="padding:8px; border:1px solid #ddd;">Temp (°C)</th>
+          <th style="padding:8px; border:1px solid #ddd;">Wind (km/h)</th>
+          <th style="padding:8px; border:1px solid #ddd;">Pressure (hPa)</th>
+          <th style="padding:8px; border:1px solid #ddd;">Rain (mm)</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const LAT = 10.908;
+  const LON = 76.229;
+
+  async function loadHistory(days) {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("historyTable").style.display = "none";
+
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - (days - 1));
+
+    const startDate = start.toISOString().split("T")[0];
+    const endDate = end.toISOString().split("T")[0];
+
+    const url =
+      `https://archive-api.open-meteo.com/v1/archive?latitude=${LAT}&longitude=${LON}` +
+      `&start_date=${startDate}&end_date=${endDate}` +
+      `&daily=temperature_2m_mean,pressure_msl_mean,precipitation_sum,windspeed_10m_max` +
+      `&timezone=Asia/Kolkata`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const dates = data.daily.time;
+    const temp = data.daily.temperature_2m_mean;
+    const wind = data.daily.windspeed_10m_max;
+    const pressure = data.daily.pressure_msl_mean;
+    const rain = data.daily.precipitation_sum;
+
+    const body = document.getElementById("historyBody");
+    body.innerHTML = "";
+
+    for (let i = 0; i < dates.length; i++) {
+      const row = `
+        <tr>
+          <td style="padding:8px; border:1px solid #ddd;">${dates[i]}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${temp[i] ?? "-"}°C</td>
+          <td style="padding:8px; border:1px solid #ddd;">${wind[i] ?? "-"} km/h</td>
+          <td style="padding:8px; border:1px solid #ddd;">${pressure[i] ?? "-"} hPa</td>
+          <td style="padding:8px; border:1px solid #ddd;">${rain[i] ?? "-"} mm</td>
+        </tr>
+      `;
+      body.innerHTML += row;
+    }
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("historyTable").style.display = "table";
+  }
+
+  loadHistory(7); // Load 7-day data by default
 </script>
 
 </body>
