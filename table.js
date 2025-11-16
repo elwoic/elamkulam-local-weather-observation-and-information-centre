@@ -1,7 +1,7 @@
 // table.js
 const lat = 10.9081;
 const lon = 76.2296;
-const OWM_KEY = "856b819166fedc7df9e65814b23e0970"; // OpenWeather API Key
+const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295"; // OpenWeather API Key
 
 // --- Helper Functions ---
 
