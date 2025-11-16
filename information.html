@@ -147,7 +147,157 @@
 
 </section>
 <p>ELWOIC (Elamkulam Local Weather Observation & Information Centre) is a student-run community project dedicated to providing near real-time local weather information for Elamkulam, Kerala. </p>
-<style>
+<section class="info-intro-wrapper">
+    <!-- 1. Include Tailwind for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Setup Inter font and apply responsive sizing */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        .info-intro-wrapper {
+            font-family: 'Inter', sans-serif;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Core Box Styling */
+        .info-intro-box {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 900px;
+            min-height: 400px;
+            background-color: #3f3f46; /* Default gray/blue background */
+            background-size: cover;
+            background-position: center;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Overlay for Readability */
+        .overlay {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+        }
+
+        /* Left side (Logo container) */
+        .info-left {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .info-left img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Right side (Text content) */
+        .info-right h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #fde047; /* Tailwind yellow-300 for emphasis */
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+        .info-right h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #e5e7eb; /* Tailwind gray-200 */
+            margin-bottom: 1rem;
+        }
+        .info-right p {
+            color: #d1d5db; /* Tailwind gray-300 */
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .info-right strong {
+            color: #f3f4f6; /* Tailwind gray-100 */
+        }
+
+        .info-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: white;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: center;
+            width: max-content;
+        }
+        .info-btn:hover {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            transform: translateY(-1px);
+        }
+
+        /* Desktop Layout (above 640px) */
+        @media (min-width: 640px) {
+            .info-intro-box {
+                flex-direction: row;
+                min-height: 300px;
+            }
+            .overlay {
+                flex-direction: row;
+                align-items: flex-start;
+                padding: 2.5rem;
+            }
+            .info-left {
+                flex: 0 0 160px; /* Fixed width for logo area */
+                margin-right: 2.5rem;
+                margin-bottom: 0;
+            }
+            .info-left img {
+                width: 160px;
+                height: 160px;
+            }
+            .info-right {
+                flex-grow: 1;
+                text-align: left;
+            }
+            .info-right h1 {
+                font-size: 3rem; /* text-5xl */
+            }
+        }
+    </style>
+
+    <!-- 🌥️ INFORMATION INTRO BOX -->
+    <div class="info-intro-box" style="background-image: url('YOUR_BACKGROUND_IMAGE_PATH_HERE.png');">
+        <div class="overlay">
+            
+            <div class="info-left">
+                <!-- IMPORTANT: Replace the src with your actual Logo image path/URL -->
+                <img src="YOUR_LOGO_IMAGE_PATH_HERE.png" alt="HPBD Logo">
+            </div>
+
+            <div class="info-right">
+                <!-- Based on "House Public Board Department" -->
+                <h1>HPBD</h1>
+                <h2>House Public Board Department</h2>
+
+                <p>A house-owned operating Board established since **2023**.</p>
+                <p>Helps run the house **systematically and without collisions**.</p>
+                <p>Coordinates with ELWOIC for smooth operation (Head Office in the same building).</p>
+                <p><strong>Head Office Coordinates:</strong> 10.8923431009004°N, 76.23438262663473°E</p>
+
+                <a href="#" class="info-btn">Read the Charter</a>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+  <style>
 /* INFO INTRO BOX */
 .info-intro-box {
     max-width: 1100px;
