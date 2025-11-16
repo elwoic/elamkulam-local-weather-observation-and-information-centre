@@ -90,6 +90,7 @@
 
 
 <div class="forecast-box">
+  <center><
   <h2>📡 Elamkulam Detailed Weather Forecast</h2>
 
    <style>
@@ -230,8 +231,313 @@
         loadWeather();
         setInterval(loadWeather, 600000); // update every 10 mins (600000ms)
     </script>
-
 </div>
+<!-- Open-Meteo Full Widget: Elamkulam (10.908, 76.229) -->
+<div id="elam-widget" style="font-family: Poppins, Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; max-width:760px;margin:0 auto;">
+  <style>
+    /* --- Card layout --- */
+    #elam-widget .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+      padding: 14px;
+      margin-bottom: 12px;
+      color: #0f172a;
+    }
+    #elam-widget .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    #elam-widget .col { flex:1 1 0; min-width:0; }
+    #elam-widget .title { font-weight:700; color:#0b4b8a; font-size:1rem; margin:0 0 6px 0; }
+    #elam-widget .muted { color:#6b7280; font-size:0.87rem; }
+
+    /* --- Current weather --- */
+    .current {
+      display:flex; align-items:center; gap:14px;
+    }
+    .current .temp {
+      font-size:38px; font-weight:700; color:#0b4b8a;
+      line-height:1;
+    }
+    .current .meta { font-size:0.95rem; color:#374151; }
+    .small-badge {
+      background:#eef2ff; color:#0b4b8a; padding:6px 8px; border-radius:8px; font-weight:600; font-size:0.85rem;
+      display:inline-block;
+    }
+
+    /* --- Hourly strip --- */
+    .hourly-strip {
+      display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-top:8px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .hour-card {
+      min-width:68px;
+      background:#fbfcfe; border-radius:10px; padding:8px; text-align:center; border:1px solid #f1f5f9;
+      box-shadow:0 2px 6px rgba(16,24,40,0.03);
+      font-size:12px; color:#0f172a;
+    }
+    .hour-card .hour { font-weight:600; color:#0b4b8a; margin-bottom:6px; }
+    .hour-card .htemp { font-size:14px; font-weight:700; }
+    .rain-dot { display:block; margin-top:6px; font-size:11px; color:#0369a1; }
+
+    /* --- 7-day list --- */
+    .day-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+    .day-item { display:flex; align-items:center; justify-content:space-between; padding:8px; border-radius:8px; background:#fbfcfe; border:1px solid #f1f5f9; }
+    .day-left { display:flex; align-items:center; gap:12px; }
+    .day-name { font-weight:700; color:#0b4b8a; min-width:86px; }
+    .temp-range { font-weight:600; color:#1f2937; }
+    .precip { font-size:12px; color:#065f46; font-weight:600; background:#ecfdf5; padding:4px 8px; border-radius:999px; }
+
+    /* --- footer and attribution --- */
+    .widget-footer { text-align:center; font-size:12px; color:#6b7280; margin-top:6px; }
+
+    /* responsive tweaks */
+    @media (max-width:420px){
+      .current .temp { font-size:32px; }
+      .hour-card { min-width:62px; padding:6px; }
+    }
+  </style>
+
+  <!-- Card: Header -->
+  <div class="card">
+    <div class="row" style="align-items:center;justify-content:space-between;">
+      <div class="col">
+        <div class="title">🌤️ Elamkulam — Local Weather</div>
+        <div class="muted">Location: 10.908°N, 76.229°E — Timezone: Asia/Kolkata</div>
+      </div>
+      <div style="flex:0 0 auto; text-align:right;">
+        <div class="small-badge" id="elam-updated">Updating…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Current -->
+  <div class="card">
+    <div class="current">
+      <div>
+        <div id="elam-current-temp" class="temp">--°C</div>
+        <div id="elam-current-cond" class="meta muted">Loading condition…</div>
+      </div>
+      <div style="flex:1;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="muted">Feels: <strong id="elam-current-feels">--°C</strong></div>
+          <div class="muted">Humidity: <strong id="elam-current-hum">--%</strong></div>
+          <div class="muted">Wind: <strong id="elam-current-wind">-- km/h</strong></div>
+          <div class="muted">Pressure: <strong id="elam-current-press">-- hPa</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hourly strip -->
+    <div style="margin-top:12px;">
+      <div class="muted" style="margin-bottom:6px; font-size:0.95rem; font-weight:600;">Next 24 hours</div>
+      <div id="elam-hourly" class="hourly-strip" aria-hidden="false">
+        <!-- Hour cards injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: 7-day -->
+  <div class="card">
+    <div class="muted" style="font-weight:700; margin-bottom:8px;">7-Day Forecast</div>
+    <div id="elam-7day" class="day-list">
+      <!-- day items injected here -->
+    </div>
+    <div class="widget-footer" style="margin-top:10px;">
+      Data provided by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" style="color:#0b4b8a; text-decoration:underline;">Open-Meteo</a>.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const lat = 10.908;
+  const lon = 76.229;
+  const tz = "Asia/Kolkata";
+
+  // Request variables (we omitted dew point and UV index as requested)
+  const hourlyVars = [
+    "temperature_2m",
+    "relativehumidity_2m",
+    "precipitation",
+    "precipitation_probability",
+    "wind_speed_10m",
+    "wind_direction_10m",
+    "pressure_msl",
+    "cloudcover",
+    "visibility"
+  ].join(",");
+
+  const dailyVars = [
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "precipitation_sum",
+    "windspeed_10m_max",
+    "sunrise",
+    "sunset"
+  ].join(",");
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+              `&hourly=${encodeURIComponent(hourlyVars)}` +
+              `&daily=${encodeURIComponent(dailyVars)}` +
+              `&current_weather=true&timezone=${encodeURIComponent(tz)}`;
+
+  const el = {
+    updated: document.getElementById("elam-updated"),
+    curTemp: document.getElementById("elam-current-temp"),
+    curCond: document.getElementById("elam-current-cond"),
+    curFeels: document.getElementById("elam-current-feels"),
+    curHum: document.getElementById("elam-current-hum"),
+    curWind: document.getElementById("elam-current-wind"),
+    curPress: document.getElementById("elam-current-press"),
+    hourlyStrip: document.getElementById("elam-hourly"),
+    dayList: document.getElementById("elam-7day")
+  };
+
+  function kmh(ms) { return (ms * 3.6).toFixed(1); }
+  function toShortTime(s) {
+    // s is like "2025-11-08T14:00"
+    const d = new Date(s);
+    return d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true, timeZone:tz});
+  }
+  function toShortDate(s) {
+    const d = new Date(s);
+    return d.toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', timeZone:tz});
+  }
+  function safeText(v){ return (v===null||v===undefined) ? "--" : v; }
+
+  async function load() {
+    try {
+      el.updated.textContent = "Updating…";
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("Network response not ok: " + res.status);
+      const data = await res.json();
+
+      // Current weather (Open-Meteo's current_weather)
+      const cur = data.current_weather || {};
+      // Note: Open-Meteo current_weather contains temperature, windspeed, winddirection, weathercode, time
+      el.curTemp.textContent = (cur.temperature !== undefined) ? cur.temperature.toFixed(1) + "°C" : "--°C";
+      el.curWind.textContent = (cur.windspeed !== undefined) ? cur.windspeed.toFixed(1) + " km/h" : "-- km/h";
+      el.curPress.textContent = safeText((data.hourly && data.hourly.pressure_msl) ? data.hourly.pressure_msl[0] + " hPa" : "-- hPa");
+
+      // For "feels like" and humidity, use hourly at current hour approximation
+      const nowISO = cur.time || (new Date()).toISOString().slice(0,16);
+      let idx = -1;
+      if (data.hourly && data.hourly.time) {
+        idx = data.hourly.time.indexOf(nowISO) ;
+        if (idx === -1) {
+          // try matching without seconds
+          const nowShort = new Date().toISOString().slice(0,13); // YYYY-MM-DDTHH
+          idx = data.hourly.time.findIndex(t => t.slice(0,13) === nowShort);
+        }
+      }
+
+      if (idx >= 0) {
+        const temp = data.hourly.temperature_2m[idx];
+        const hum = data.hourly.relativehumidity_2m[idx];
+        el.curFeels.textContent = (temp!==undefined) ? temp.toFixed(1) + "°C" : "--°C";
+        el.curHum.textContent = (hum!==undefined) ? Math.round(hum) + "%" : "--%";
+        // Update pressure if available at same index
+        if (data.hourly.pressure_msl && data.hourly.pressure_msl[idx] !== undefined) {
+          el.curPress.textContent = Math.round(data.hourly.pressure_msl[idx]) + " hPa";
+        }
+      } else {
+        el.curFeels.textContent = "--°C";
+        el.curHum.textContent = "--%";
+      }
+
+      // human-friendly condition from weathercode (simple mapping)
+      const code = cur.weathercode;
+      const codeMap = {
+        0: "Clear",
+        1: "Mainly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+        45: "Fog",
+        48: "Depositing rime fog",
+        51: "Light drizzle",
+        53: "Moderate drizzle",
+        55: "Dense drizzle",
+        61: "Slight rain",
+        63: "Moderate rain",
+        65: "Heavy rain",
+        80: "Rain showers",
+        95: "Thunderstorm",
+        99: "Severe thunderstorm"
+      };
+      el.curCond.textContent = codeMap[code] || "Weather";
+
+      // Hourly strip -> next 24 hours starting at current hour
+      el.hourlyStrip.innerHTML = "";
+      if (data.hourly && data.hourly.time) {
+        // find current index again
+        const times = data.hourly.time;
+        const startIndex = (idx >= 0) ? idx : 0;
+        const hoursToShow = 24;
+        for (let i = startIndex; i < Math.min(times.length, startIndex + hoursToShow); i++) {
+          const time = times[i];
+          const tLabel = toShortTime(time);
+          const tVal = (data.hourly.temperature_2m && data.hourly.temperature_2m[i] !== undefined) ? data.hourly.temperature_2m[i].toFixed(1) + "°" : "--";
+          const pop = (data.hourly.precipitation_probability && data.hourly.precipitation_probability[i] !== undefined) ? Math.round(data.hourly.precipitation_probability[i]) : 0;
+          const rain = (data.hourly.precipitation && data.hourly.precipitation[i] !== undefined) ? (data.hourly.precipitation[i]).toFixed(1) : "0.0";
+
+          const hourCard = document.createElement("div");
+          hourCard.className = "hour-card";
+          hourCard.innerHTML = `<div class="hour">${tLabel}</div>
+                                 <div class="htemp">${tVal}</div>
+                                 <div class="rain-dot">${pop}%</div>
+                                 <div style="font-size:11px;color:#6b7280;margin-top:4px;">${rain} mm</div>`;
+          el.hourlyStrip.appendChild(hourCard);
+        }
+      } else {
+        el.hourlyStrip.innerHTML = '<div style="padding:8px;color:#6b7280;">Hourly data unavailable</div>';
+      }
+
+      // 7-day forecast
+      el.dayList.innerHTML = "";
+      if (data.daily && data.daily.time) {
+        for (let i = 0; i < data.daily.time.length; i++) {
+          const dtime = data.daily.time[i];
+          const dayName = toShortDate(dtime);
+          const tmax = data.daily.temperature_2m_max[i];
+          const tmin = data.daily.temperature_2m_min[i];
+          const prec = (data.daily.precipitation_sum && data.daily.precipitation_sum[i] !== undefined) ? data.daily.precipitation_sum[i].toFixed(1) : "0.0";
+          const wmax = (data.daily.windspeed_10m_max && data.daily.windspeed_10m_max[i] !== undefined) ? data.daily.windspeed_10m_max[i].toFixed(1) + " km/h" : "--";
+
+          const item = document.createElement("div");
+          item.className = "day-item";
+          item.innerHTML = `<div class="day-left">
+                              <div class="day-name">${dayName}</div>
+                              <div style="font-size:13px;color:#374151;">Sunrise ${new Date(data.daily.sunrise[i]).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true, timeZone:tz})}</div>
+                            </div>
+                            <div style="text-align:right;">
+                              <div class="temp-range">${tmax.toFixed(1)}° / ${tmin.toFixed(1)}°</div>
+                              <div style="margin-top:6px; display:flex; gap:8px; justify-content:flex-end; align-items:center;">
+                                <div class="precip">${prec} mm</div>
+                                <div style="font-size:12px;color:#6b7280;">${wmax}</div>
+                              </div>
+                            </div>`;
+          el.dayList.appendChild(item);
+        }
+      } else {
+        el.dayList.innerHTML = '<div style="padding:8px;color:#6b7280;">Daily data unavailable</div>';
+      }
+
+      const now = new Date();
+      el.updated.textContent = `Last checked: ${now.toLocaleString('en-IN', {timeZone:tz, hour:'2-digit', minute:'2-digit', hour12:true, day:'numeric', month:'short', year:'numeric'})}`;
+    } catch (err) {
+      console.error("Open-Meteo load error:", err);
+      el.curTemp.textContent = "--°C";
+      el.curCond.textContent = "Data unavailable";
+      el.hourlyStrip.innerHTML = '<div style="padding:8px;color:#ef4444;font-weight:600;">Failed to load hourly data</div>';
+      el.dayList.innerHTML = '<div style="padding:8px;color:#ef4444;font-weight:600;">Failed to load daily data</div>';
+      el.updated.textContent = "Data could not be loaded";
+    }
+  }
+
+  // initial load and refresh every 30 minutes
+  load();
+  setInterval(load, 30 * 60 * 1000);
+})();
+</script>
 
 </body>
 </html>
