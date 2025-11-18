@@ -1,25 +1,28 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+  
+  <link rel="stylesheet" href="style.css"> 
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elamkulam Local Weather Observation and Information Centre</title>
   <link rel="icon" type="image/png" href="favicon.png">
-<meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
-<meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
-<meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> 
-<meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
-<meta property="og:type" content="website">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@ELWOIC">
+  <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
+  <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
+  <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> 
+  <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ELWOIC">
 
-  <link rel="stylesheet" href="style.css" />
   <style>
-    /* ===== STYLE SECTION ===== */
-
+    /* ===================================================
+    CONSOLIDATED STYLES
+    ===================================================
+    */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -29,7 +32,7 @@
 
     /* Header Container */
     .imd-header {
-      background: #004a80;  /* FULL DARK BLUE */
+      background: #004a80;
       color: white;
     }
 
@@ -46,8 +49,8 @@
       width: 65px;
       height: auto;
       border-radius: 8px;
-      background: white;      /* optional, remove if not needed */
-      padding: 4px;           /* optional */
+      background: white;
+      padding: 4px;
     }
 
     .imd-title {
@@ -73,74 +76,156 @@
       font-size: 13px;
       color: #c2d7eb;
     }
-/* --- FIXED NAVIGATION BAR --- */
-.imd-nav {
-  background: #003a63;
-  display: flex;
-  justify-content: flex-end;   /* Align to RIGHT */
-  gap: 20px;                   /* Space between links */
-  padding: 10px 25px;
-}
 
-.imd-nav a {
-  color: #ffffff !important;   /* Make links WHITE */
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-}
+    /* --- NAVIGATION BAR --- */
+    .imd-nav {
+      background: #003a63;
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+      padding: 10px 25px;
+    }
 
-.imd-nav a:hover {
-  text-decoration: underline;
-  background: none;
-}
-   /* Main Sections */
+    .imd-nav a {
+      color: #ffffff !important;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 5px 0; /* Space for the underline */
+      position: relative;
+    }
+
+    .imd-nav a:hover {
+      text-decoration: none;
+      background: none;
+    }
+
+    /* === ACTIVE PAGE STYLE === */
+    .imd-nav a.active-nav {
+      font-weight: bold;
+    }
+
+    /* Custom Underline for Active/Hover */
+    .imd-nav a.active-nav::after, 
+    .imd-nav a:hover::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: white;
+      left: 0;
+      bottom: 0;
+      transition: width 0.3s ease;
+    }
+    
+    /* Hide line for non-active links by default */
+    .imd-nav a:not(.active-nav)::after {
+        width: 0;
+    }
+    
+    /* Show line on hover for non-active links */
+    .imd-nav a:not(.active-nav):hover::after {
+        width: 100%;
+    }
+
+    /* --- MARQUEE STYLES (IMMEDIATE START FIX) --- */
+    #elwoic-marquee-section {
+      width: 100%;
+      margin: 0;
+    }
+
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      background-color: #004080;
+      padding: 10px 0;
+      box-sizing: border-box;
+      border-bottom: 2px solid #ffa200;
+      position: relative;
+    }
+
+    .scroll-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: bold;
+      color: yellow;
+      animation: scroll 35s linear infinite; 
+      font-size: 16px;
+      /* FIX: Initial position set to 100% (off-screen right) */
+      transform: translateX(100%); 
+      /* Ensures text is ready for animation start without a delay */
+    }
+
+    .highlight {
+      color: #00ffff;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(20%); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    /* --- DEVELOPMENT MODAL STYLES (Redesigned) --- */
+    #development-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        /* Default state: hidden. Display is controlled by JavaScript */
+        display: none; 
+    }
+    .modal-content {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        max-width: 350px;
+        margin: 20px;
+        text-align: center;
+        animation: modal-fade-in 0.3s ease-out;
+    }
+    .modal-content h3 {
+        color: #004a80;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .modal-content p {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+    .modal-content button {
+        width: 100%;
+        padding: 12px;
+        background: #0275d8;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .modal-content button:hover {
+        background: #005bb5;
+    }
+    @keyframes modal-fade-in {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+
+    /* --- MAIN & FOOTER STYLES --- */
     main {
       padding: 20px;
     }
 
-    .intro {
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    .intro h2 {
-      color: #004a80;
-      margin-bottom: 10px;
-    }
-
-    .links {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .links h3 {
-      color: #004a80;
-    }
-
-    .links ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .links li {
-      margin: 6px 0;
-    }
-
-    .links a {
-      color: #0265b4;
-      text-decoration: none;
-    }
-
-    .links a:hover {
-      text-decoration: underline;
-    }
-
-    /* Footer */
     footer {
       display: flex;
       flex-direction: column;
@@ -167,25 +252,23 @@
 </head>
 
 <body>
-  <div id="development-modal" class="fixed inset-0 bg-gray-600 bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300">
-        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm mx-4 transform scale-100 transition-transform duration-300">
-            <div class="text-center mb-4">
-                <span class="text-4xl">🛠️</span>
-            </div>
-            <h3 class="text-2xl font-extrabold text-gray-900 mb-2 text-center">
-                Site Under Development
-            </h3>
-            <p class="text-gray-600 mb-6 text-center">
-                The website is still under development. We appreciate your patience and cooperation as we finalize new features.
-            </p>
-            <button onclick="document.getElementById('development-modal').style.display='none'" 
-                    class="w-full py-3 bg-blue-600 text-white font-semibold text-lg tracking-wide rounded-lg hover:bg-blue-700 transition duration-200 shadow-md">
-                Continue to Site
-            </button>
-        </div>
+  <div id="development-modal">
+    <div class="modal-content">
+      <div class="text-center mb-4">
+        <span style="font-size: 40px;">🛠️</span>
+      </div>
+      <h3>
+        Site Under Development
+      </h3>
+      <p>
+        The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.
+      </p>
+      <button onclick="hideModal()">
+        Continue to Site
+      </button>
     </div>
+  </div>
 
-  <!-- ===== HEADER SECTION ===== -->
   <header class="imd-header">
     <div class="imd-top">
       <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" />
@@ -199,94 +282,27 @@
       <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
     </div>
 
-    <nav class="imd-nav">
+    <nav class="imd-nav" id="main-nav">
       <a href="index.html">HOME</a>
       <a href="Forecast.html">FORECAST</a>
       <a href="information.html">INFORMATION</a>
       <a href="#">CONTACT US</a>
       <a href="#">OTHERS</a>
     </nav>
-   <section id="elwoic-marquee-section">
-  <div class="marquee-container">
-    <div class="scroll-text" id="info-marquee">
-      ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
-      In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
-      <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
-      Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed. 
-      Contact No: 04933316750. ⚠️ Both ELWOIC and HPBD are a student-made project, not an official one. ⚠️
-    </div>
-  </div>
-<style>
-  #elwoic-marquee-section {
-    width: 100%;
-    margin: 20px 0;
-  }
 
-  #elwoic-marquee-section .marquee-container {
-    position: relative;
-    overflow: hidden;
-    background-color: #004080; /* Blue strip */
-    color: white;
-
-    padding: 5px 0; 
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  #elwoic-marquee-section .scroll-text {
-    display: inline-block;
-    white-space: nowrap;
-    padding-left: 0;
-    animation: scroll 50s linear infinite;
-    font-weight: bold;
-    font-size: 16px;
-  }
-
-  @keyframes scroll {
-    from { transform: translateX(0%); }
-    to { transform: translateX(-100%); }
-  }
-</style>
-
-</section>
-<style>
-.marquee-container {
-  width: 1000%;
-  overflow: hidden;
-  background-color: #004080; /* Blue background */
-  padding: 10px 0;
-  box-sizing: border-box;
-  border-bottom: 2px solid #ffa200; /* Orange line bottom */
-}
-
-.scroll-text {
-  display: inline-block;
-  white-space: nowrap;
-  font-weight: bold;
-  color: yellow;
-  animation: scroll 70s linear infinite;
-  font-size: 16px;
-}
-
-.highlight {
-  color: #00ffff;
-}
-
-@keyframes scroll {
-  0% { transform: translateX(20%); }
-  100% { transform: translateX(-100%); }
-}
-</style>
-
-<script>
-const refreshTime = 30;
-document.getElementById("refresh-time").textContent = refreshTime;
-</script>
-
+    <section id="elwoic-marquee-section">
+      <div class="marquee-container">
+        <div class="scroll-text" id="info-marquee">
+          ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
+          In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
+          <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
+          Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed. 
+          Contact No: 04933316750. ⚠️ Both ELWOIC and HPBD are a student-made project, not an official one. ⚠️
+        </div>
+      </div>
+    </section>
   </header>
-
-
+  
   <!-- ===== MAIN CONTENT ===== -->
   <main>
     <section>
