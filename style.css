@@ -1,172 +1,243 @@
 /* ===================================================
-   BASE STYLES: CORE DESIGN AND LAYOUT
+   ELWOIC — Modern, Clean, Optimized Stylesheet
+   Designed for GitHub Pages
    =================================================== */
 
-/* --- GLOBAL STYLES --- */
-body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background-color: #eaf4fc;
-    color: #000;
-}
-
+/* ------------------ GLOBAL RESET ------------------ */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-/* --- HEADER & TOP SECTION --- */
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f4f8fb;
+    color: #222;
+}
+
+/* ===================================================
+   HEADER SECTION
+   =================================================== */
 .imd-header {
-    background: #004c99;
+    background: #004a80;
     color: white;
-    border-bottom: 4px solid #f26522;
+    border-bottom: 4px solid #ffa200;
     width: 100%;
 }
 
+/* Top Header Layout */
 .imd-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 25px;
+    padding: 14px 25px;
     flex-wrap: wrap;
 }
 
+/* Logo Styling (Professional — White padded box) */
 .imd-logo-left,
 .imd-logo-right {
     width: 70px;
     height: auto;
-    /* Added back from previous inline style for white background/padding */
-    border-radius: 8px; 
-    background: white; 
-    padding: 4px; 
+    background: white;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
 }
 
+/* Title Centering */
 .imd-title {
     text-align: center;
     flex: 1;
-    color: white;
 }
 
 .imd-title h2 {
-    font-size: 1.5rem;
-    margin: 4px 0;
+    font-size: 1.6rem;
     font-weight: 600;
-    color: #ffffff;
+    margin-bottom: 4px;
 }
 
 .imd-title h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 400;
     color: #d8e8f5;
+    font-size: 1rem;
 }
 
 .imd-title h4 {
-    margin-top: 5px;
+    color: #c2d7eb;
+    margin-top: 4px;
     font-size: 0.85rem;
-    color: #d9e6f2;
 }
 
-/* --- NAVIGATION BAR --- */
+/* ===================================================
+   NAVIGATION BAR
+   Professional Blue: #003f73
+   =================================================== */
 .imd-nav {
-    background: #003366;
+    background: #003f73;
     display: flex;
     justify-content: flex-end;
-    gap: 20px; 
-    padding: 10px 25px; 
+    gap: 25px;
+    padding: 12px 30px;
 }
 
 .imd-nav a {
-    color: #ffffff !important;
+    color: #ffffff;
     text-decoration: none;
-    font-size: 0.95rem;
     font-weight: 500;
-    /* Removed padding/position/relative for underline effect, which stays in index.html <style> */
+    font-size: 0.96rem;
+    padding-bottom: 4px;
+    position: relative;
 }
 
+/* Hover Color */
 .imd-nav a:hover {
-    color: #ffcc00;
-    text-decoration: none;
-    background: none;
+    color: #00e5ff;
 }
 
-/* --- MAIN CONTENT --- */
+/* ACTIVE NAV UNDERLINE */
+.imd-nav a.active-nav::after,
+.imd-nav a:hover::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #ffa200;
+    bottom: 0;
+    left: 0;
+}
+
+.imd-nav a:not(.active-nav)::after {
+    width: 0;
+}
+
+/* ===================================================
+   MARQUEE SECTION
+   =================================================== */
+#elwoic-marquee-section {
+    width: 100%;
+}
+
+.marquee-container {
+    overflow: hidden;
+    background: #004080;
+    padding: 10px 0;
+    border-bottom: 2px solid #ffa200;
+}
+
+.scroll-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    color: yellow;
+    font-size: 16px;
+    transform: translateX(100%);
+    animation: scroll-left 35s linear infinite;
+}
+
+.highlight {
+    color: #00ffff;
+}
+
+@keyframes scroll-left {
+    0%   { transform: translateX(20%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* ===================================================
+   MODAL / DEVELOPMENT NOTICE
+   =================================================== */
+#development-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+    color: #004a80;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background: #0275d8;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background: #0062b8;
+}
+
+/* ===================================================
+   MAIN CONTENT
+   =================================================== */
 main {
-    padding: 20px;
+    padding: 25px;
 }
 
 .intro {
     max-width: 900px;
-    margin: 35px auto;
+    margin: 30px auto;
     background: white;
     padding: 22px;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 .intro h2 {
-    color: #004c99;
-    margin-top: 0;
+    color: #004a80;
+    margin-bottom: 10px;
 }
 
-.links {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.links li {
-    margin: 8px 0;
-}
-
-.links a {
-    color: #004c99;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.links a:hover {
-    text-decoration: underline;
-}
-
-/* --- FOOTER STYLES --- */
+/* ===================================================
+   FOOTER
+   =================================================== */
 footer {
-    background-color: #003366;
+    background: #004a80;
     color: white;
     text-align: center;
-    padding: 12px;
+    padding: 16px;
     font-size: 0.85rem;
-    margin-top: 40px;
-    /* Added back from previous inline style */
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    position: relative; 
+    position: relative;
 }
 
 .imd-logo-footer {
     width: 45px;
     position: absolute;
-    right: 10px;
     bottom: 10px;
-    opacity: 0.7;
+    right: 10px;
+    opacity: 0.8;
 }
 
-/* =============================
-   RESPONSIVE DESIGN 
-   ============================== */
-
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
 @media (max-width: 900px) {
-    .imd-title h2 {
-        font-size: 1.3rem;
-    }
-    .imd-title h3 {
-        font-size: 0.9rem;
-    }
+    .imd-title h2 { font-size: 1.3rem; }
 }
 
 @media (max-width: 600px) {
@@ -181,27 +252,13 @@ footer {
         width: 55px;
     }
 
-    .imd-title h2 {
-        font-size: 1.2rem;
-    }
-
-    .imd-nav a {
-        margin: 5px 8px;
-        font-size: 0.85rem;
-    }
-
-    .intro {
-        width: 92%;
-        padding: 16px;
+    .imd-nav {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 }
 
 @media (max-width: 400px) {
-    .imd-title h2 {
-        font-size: 1.05rem;
-    }
-    
-    .imd-title h3 {
-        font-size: 0.8rem;
-    }
+    .imd-title h2 { font-size: 1.1rem; }
 }
