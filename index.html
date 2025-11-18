@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Elamkulam Local Weather Observation and Information Centre</title>
   <link rel="icon" type="image/png" href="favicon.png">
 
+  <!-- OpenGraph -->
   <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
   <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
   <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png">
   <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
   <meta property="og:type" content="website">
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@ELWOIC">
-</head>
 
+  <!-- CSS should load AFTER meta tags -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
 
 <body>
   <div id="development-modal">
@@ -27,39 +31,34 @@
       <div class="text-center mb-4">
         <span style="font-size: 40px;">🛠️</span>
       </div>
-      <h3>
-        Site Under Development
-      </h3>
-      <p>
-        The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.
-      </p>
-      <button onclick="hideModal()">
-        Continue to Site
-      </button>
+      <h3>Site Under Development</h3>
+      <p>The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.</p>
+      <button onclick="hideModal()">Continue to Site</button>
     </div>
   </div>
 
- <header class="imd-header">
-  <div class="imd-top">
-    <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" />
+  <header class="imd-header">
+    <div class="imd-top">
+      <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" />
 
-    <div class="imd-title">
-      <h3></h3>
-      <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-      <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+      <div class="imd-title">
+        <h3></h3>
+        <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+        <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+      </div>
+
+      <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
     </div>
 
-    <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
-  </div>
+    <nav class="imd-nav" id="main-nav">
+      <a href="index.html">HOME</a>
+      <a href="Forecast.html">FORECAST</a>
+      <a href="information.html">INFORMATION</a>
+      <a href="#">CONTACT US</a>
+      <a href="#">OTHERS</a>
+    </nav>
+  </header>
 
-  <nav class="imd-nav" id="main-nav">
-    <a href="index.html">HOME</a>
-    <a href="Forecast.html">FORECAST</a>
-    <a href="information.html">INFORMATION</a>
-    <a href="#">CONTACT US</a>
-    <a href="#">OTHERS</a>
-  </nav>
-</header>
 <section id="elwoic-marquee-section">
   <div class="marquee-container">
     <div class="scroll-text" id="info-marquee">
