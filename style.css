@@ -1,202 +1,207 @@
-/* =============================
-   GLOBAL STYLES
-============================== */
+/* ===================================================
+   BASE STYLES: CORE DESIGN AND LAYOUT
+   =================================================== */
+
+/* --- GLOBAL STYLES --- */
 body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background-color: #eaf4fc;
-  color: #000;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background-color: #eaf4fc;
+    color: #000;
 }
 
-/* Smooth fonts */
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-/* =============================
-   HEADER
-============================== */
+/* --- HEADER & TOP SECTION --- */
 .imd-header {
-  background-color: #004c99;
-  color: white;
-  text-align: center;
-  border-bottom: 4px solid #f26522;
-  width: 100%;
+    background: #004c99;
+    color: white;
+    border-bottom: 4px solid #f26522;
+    width: 100%;
 }
 
-/* Top section inside header */
 .imd-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 25px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 25px;
+    flex-wrap: wrap;
 }
 
 .imd-logo-left,
 .imd-logo-right {
-  width: 70px;
-  height: auto;
+    width: 70px;
+    height: auto;
+    /* Added back from previous inline style for white background/padding */
+    border-radius: 8px; 
+    background: white; 
+    padding: 4px; 
 }
 
-/* Title text */
+.imd-title {
+    text-align: center;
+    flex: 1;
+    color: white;
+}
+
 .imd-title h2 {
-  font-size: 1.5rem;
-  margin: 4px 0;
-  font-weight: 600;
+    font-size: 1.5rem;
+    margin: 4px 0;
+    font-weight: 600;
+    color: #ffffff;
 }
 
 .imd-title h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 400;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #d8e8f5;
 }
 
 .imd-title h4 {
-  margin-top: 5px;
-  font-size: 0.85rem;
-  color: #d9e6f2;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #d9e6f2;
 }
 
-/* =============================
-   NAVIGATION
-============================== */
+/* --- NAVIGATION BAR --- */
 .imd-nav {
-  background-color: #003366;
-  padding: 10px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+    background: #003366;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px; 
+    padding: 10px 25px; 
 }
 
 .imd-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 6px 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    /* Removed padding/position/relative for underline effect, which stays in index.html <style> */
 }
 
 .imd-nav a:hover {
-  color: #ffcc00;
+    color: #ffcc00;
+    text-decoration: none;
+    background: none;
 }
 
-/* =============================
-   MAIN CONTENT
-============================== */
+/* --- MAIN CONTENT --- */
+main {
+    padding: 20px;
+}
+
 .intro {
-  max-width: 900px;
-  margin: 35px auto;
-  background: white;
-  padding: 22px;
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: 35px auto;
+    background: white;
+    padding: 22px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 .intro h2 {
-  color: #004c99;
-  margin-top: 0;
+    color: #004c99;
+    margin-top: 0;
 }
 
 .links {
-  text-align: center;
-  margin-bottom: 40px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .links ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .links li {
-  margin: 8px 0;
+    margin: 8px 0;
 }
 
 .links a {
-  color: #004c99;
-  text-decoration: none;
-  font-weight: 500;
+    color: #004c99;
+    text-decoration: none;
+    font-weight: 500;
 }
 
 .links a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
-/* =============================
-   FOOTER
-============================== */
+/* --- FOOTER STYLES --- */
 footer {
-  background-color: #003366;
-  color: white;
-  text-align: center;
-  padding: 12px;
-  font-size: 0.85rem;
-  margin-top: 40px;
+    background-color: #003366;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-size: 0.85rem;
+    margin-top: 40px;
+    /* Added back from previous inline style */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    position: relative; 
 }
 
 .imd-logo-footer {
-  width: 45px;
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  opacity: 0.7;
+    width: 45px;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    opacity: 0.7;
 }
 
 /* =============================
-   RESPONSIVE DESIGN
-============================== */
+   RESPONSIVE DESIGN 
+   ============================== */
 
-/* ---- Tablets & Small Screens ---- */
 @media (max-width: 900px) {
-  .imd-title h2 {
-    font-size: 1.3rem;
-  }
-  .imd-title h3 {
-    font-size: 0.9rem;
-  }
+    .imd-title h2 {
+        font-size: 1.3rem;
+    }
+    .imd-title h3 {
+        font-size: 0.9rem;
+    }
 }
 
-/* ---- Mobile: header layout fixes ---- */
 @media (max-width: 600px) {
-  .imd-top {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-  }
+    .imd-top {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
 
-  .imd-logo-left,
-  .imd-logo-right {
-    width: 55px;
-  }
+    .imd-logo-left,
+    .imd-logo-right {
+        width: 55px;
+    }
 
-  .imd-title h2 {
-    font-size: 1.2rem;
-  }
+    .imd-title h2 {
+        font-size: 1.2rem;
+    }
 
-  .imd-nav a {
-    margin: 5px 8px;
-    font-size: 0.85rem;
-  }
+    .imd-nav a {
+        margin: 5px 8px;
+        font-size: 0.85rem;
+    }
 
-  .intro {
-    width: 92%;
-    padding: 16px;
-  }
+    .intro {
+        width: 92%;
+        padding: 16px;
+    }
 }
 
-/* ---- Extra Small Mobiles ---- */
 @media (max-width: 400px) {
-  .imd-title h2 {
-    font-size: 1.05rem;
-  }
-  
-  .imd-title h3 {
-    font-size: 0.8rem;
-  }
-  
-  .imd-title h4 {
-    font-size: 0.7rem;
-  }
+    .imd-title h2 {
+        font-size: 1.05rem;
+    }
+    
+    .imd-title h3 {
+        font-size: 0.8rem;
+    }
 }
-
