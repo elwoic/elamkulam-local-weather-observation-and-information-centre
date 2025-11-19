@@ -1,100 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    
-    <link rel="stylesheet" href="style.css"> 
-    
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Elamkulam Local Weather Observation and Information Centre</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
-    <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
-    <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> 
-    <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@ELWOIC">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elamkulam Local Weather Observation and Information Centre</title>
+  <link rel="icon" type="image/png" href="favicon.png">
 
-    </head>
+  <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
+  <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
+  <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> 
+  <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ELWOIC">
+
+  <style>
+    /* ===================================================
+    FUNCTIONAL CSS ONLY (Marquee, Modal, Active Link)
+    ===================================================
+    */
+
+    /* --- NAVIGATION BAR (Underline Effect ONLY) --- */
+    .imd-nav a {
+      padding: 5px 0; /* Space for the underline */
+      position: relative;
+    }
+
+    .imd-nav a.active-nav {
+      font-weight: bold;
+    }
+
+    .imd-nav a.active-nav::after, 
+    .imd-nav a:hover::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: white;
+      left: 0;
+      bottom: 0;
+      transition: width 0.3s ease;
+    }
+    
+    .imd-nav a:not(.active-nav)::after {
+        width: 0;
+    }
+    
+    .imd-nav a:not(.active-nav):hover::after {
+        width: 100%;
+    }
+
+    /* --- MARQUEE STYLES --- */
+    #elwoic-marquee-section {
+      width: 100%;
+      margin: 0;
+    }
+
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      background-color: #004080;
+      padding: 10px 0;
+      box-sizing: border-box;
+      border-bottom: 2px solid #ffa200;
+      position: relative;
+    }
+
+    .scroll-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: bold;
+      color: yellow;
+      animation: scroll 35s linear infinite; 
+      font-size: 16px;
+      transform: translateX(100%); 
+    }
+
+    .highlight {
+      color: #00ffff;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(20%); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    /* --- DEVELOPMENT MODAL STYLES --- */
+    #development-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none; /* MUST be 'none' by default, script will change to 'flex' */
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .modal-content {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        max-width: 350px;
+        margin: 20px;
+        text-align: center;
+        animation: modal-fade-in 0.3s ease-out;
+    }
+    /* Modal content styles simplified to rely on default body styles */
+    .modal-content h3 { color: #004a80; margin: 10px 0; font-size: 24px; font-weight: bold; }
+    .modal-content p { color: #666; margin-bottom: 20px; font-size: 15px; }
+    .modal-content button {
+        width: 100%; padding: 12px; background: #0275d8; color: white;
+        font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s;
+    }
+    .modal-content button:hover { background: #005bb5; }
+
+    @keyframes modal-fade-in {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
 
 <body>
-    <div id="development-modal" style="display: none;">
-        <div class="modal-content">
-            <div class="text-center mb-4">
-                <span style="font-size: 40px;">🛠️</span>
-            </div>
-            <h3>
-                Site Under Development
-            </h3>
-            <p>
-                The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.
-            </p>
-            <button onclick="document.getElementById('development-modal').style.display='none'">
-                Continue to Site
-            </button>
-        </div>
+  <div id="development-modal">
+    <div class="modal-content">
+      <div class="text-center mb-4">
+        <span style="font-size: 40px;">🛠️</span>
+      </div>
+      <h3>
+        Site Under Development
+      </h3>
+      <p>
+        The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.
+      </p>
+      <button onclick="hideModal()">
+        Continue to Site
+      </button>
+    </div>
+  </div>
+
+  <header class="imd-header">
+    <div class="imd-top">
+      <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" />
+
+      <div class="imd-title">
+        <h3></h3>
+        <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+        <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+      </div>
+
+      <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
     </div>
 
-    <header class="imd-header">
-        <div class="imd-top">
-            <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" />
+    <nav class="imd-nav" id="main-nav">
+      <a href="index.html">HOME</a>
+      <a href="Forecast.html">FORECAST</a>
+      <a href="information.html">INFORMATION</a>
+      <a href="#">CONTACT US</a>
+      <a href="#">OTHERS</a>
+    </nav>
 
-            <div class="imd-title">
-                <h3></h3>
-                <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-                <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
-            </div>
-
-            <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" />
+    <section id="elwoic-marquee-section">
+      <div class="marquee-container">
+        <div class="scroll-text" id="info-marquee">
+          ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
+          In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
+          <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
+          Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed. 
+          Contact No: 04933316750. ⚠️ Both ELWOIC and HPBD are a student-made project, not an official one. ⚠️
         </div>
-
-        <nav class="imd-nav" id="main-nav">
-            <a href="index.html">HOME</a>
-            <a href="Forecast.html">FORECAST</a>
-            <a href="information.html">INFORMATION</a>
-            <a href="#">CONTACT US</a>
-            <a href="#">OTHERS</a>
-        </nav>
-
-        <section id="elwoic-marquee-section">
-            <div class="marquee-container">
-                <div class="scroll-text" id="info-marquee">
-                    ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
-                    In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
-                    <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
-                    Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed. 
-                    Contact No: 04933316750. ⚠️ Both ELWOIC and HPBD are a student-made project, not an official one. ⚠️
-                </div>
-            </div>
-        </section>
-    </header>
-    
-    <script>
-        // --- MARQUEE REFRESH TIME SCRIPT ---
-        const refreshTime = 30;
-        document.getElementById("refresh-time").textContent = refreshTime;
-
-        // --- ACTIVE NAVIGATION SCRIPT ---
-        document.addEventListener("DOMContentLoaded", function() {
-            const currentPath = window.location.pathname.split('/').pop();
-            const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
-            
-            for (let i = 0; i < navLinks.length; i++) {
-                const linkPath = navLinks[i].getAttribute('href').split('/').pop();
-
-                if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
-                    navLinks[i].classList.add('active-nav');
-                    break;
-                }
-            }
-            
-            // --- MODAL DISPLAY SCRIPT (NEW) ---
-            // Show the modal after the page content is loaded
-            document.getElementById('development-modal').style.display = 'flex';
-        });
-    </script>
+      </div>
+    </section>
+  </header>
   <!-- ===== MAIN CONTENT ===== -->
   <main>
     <section>
@@ -1164,27 +1246,66 @@
 
 </aside>
 
-  <!-- ===== FOOTER ===== -->
   <footer>
     <p>© 2025 Elamkulam Local Weather Observation And Information Center. All rights reserved. This is a student project for educational and informational purposes. </p>
     <p style="color:#ffffff;">
-  <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/privacy-policy/" style="color:#ffffff; text-decoration:none;">
-    <u>Privacy Policy</u>
-  </a> 
-  |
-  <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/terms-of-service/" style="color:#ffffff; text-decoration:none;">
-    <u>Terms Of Service</u>
-  </a>
-  |  
-    <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" style="color:#ffffff; text-decoration:none;">
-    <u>Introduction & Disclaimer</u>  
-</p>
+      <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/privacy-policy/" style="color:#ffffff; text-decoration:none;">
+        <u>Privacy Policy</u>
+      </a> 
+      |
+      <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/terms-of-service/" style="color:#ffffff; text-decoration:none;">
+        <u>Terms Of Service</u>
+      </a>
+      |  
+      <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" style="color:#ffffff; text-decoration:none;">
+        <u>Introduction & Disclaimer</u>  
+      </a>
+    </p>
 
     <p>Designed and Managed by Aswanthkrishna K</p>
 
     <img src="House Public Board Seal of AswanthKK.png" alt="HPBD Logo" class="imd-logo-footer" />
   </footer>
-<script src="elwoic-manual-update.js"></script>
+
+  <script src="elwoic-manual-update.js"></script>
+  
+  <script>
+    // --- MARQUEE REFRESH TIME SCRIPT ---
+    const refreshTime = 30;
+    document.getElementById("refresh-time").textContent = refreshTime;
+
+    // --- ONE-TIME MODAL LOGIC ---
+    const modal = document.getElementById('development-modal');
+    const modalKey = 'elwoicModalDismissed';
+
+    function hideModal() {
+        modal.style.display = 'none';
+        localStorage.setItem(modalKey, 'true');
+    }
+    
+    // Check localStorage when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem(modalKey) !== 'true') {
+            modal.style.display = 'flex';
+        }
+    });
+
+    // --- ACTIVE NAVIGATION SCRIPT ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname.split('/').pop();
+        const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
+        
+        for (let i = 0; i < navLinks.length; i++) {
+            const linkHref = navLinks[i].getAttribute('href');
+            const linkPath = linkHref ? linkHref.split('/').pop() : '';
+
+            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
+                navLinks[i].classList.add('active-nav');
+                break;
+            }
+        }
+    });
+  </script>
 </body>
 </html>
 
