@@ -129,7 +129,7 @@ body {
     =================================================== */
 #elwoic-marquee-section {
     width: 100%;
-    margin: 20px 0; /* Added margin from inline style */
+    margin: px 0; /* Added margin from inline style */
 }
 
 .marquee-container {
@@ -142,14 +142,14 @@ body {
     border-radius: 0; /* Added from inline style */
     box-shadow: none; /* Added from inline style */
     box-sizing: border-box; /* Retained from external CSS */
-    border-bottom: 2px solid #ffa200;
+    border-bottom: px solid #ffa200;
 }
 
 .scroll-text {
     display: inline-block;
     white-space: nowrap;
     /* Adjusted animation to use 'scroll' keyframes and linear speed from inline style */
-    animation: scroll 27s linear infinite;
+    animation: scroll 40s linear infinite;
     font-weight: bold;
     color: yellow;
     font-size: 16px;
