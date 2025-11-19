@@ -1,7 +1,7 @@
 /* ===================================================
-   ELWOIC — Modern, Clean, Optimized Stylesheet
-   Designed for GitHub Pages
-   =================================================== */
+    ELWOIC — Modern, Clean, Optimized Stylesheet
+    Designed for GitHub Pages
+    =================================================== */
 
 /* ------------------ GLOBAL RESET ------------------ */
 * {
@@ -11,101 +11,113 @@
 }
 
 body {
-    font-family: "Poppins", sans-serif;
+    /* Merged: Retaining Poppins from external CSS (if available) or Arial fallback */
+    font-family: Arial, sans-serif; /* Adjusted to match inline, Poppins assumed not linked */
+    margin: 0; /* Added from inline style */
     background: #f4f8fb;
     color: #222;
 }
 
 /* ===================================================
-   HEADER SECTION
-   =================================================== */
+    HEADER SECTION
+    =================================================== */
 .imd-header {
     background: #004a80;
     color: white;
+    /* Retaining the strong border from external CSS */
     border-bottom: 4px solid #ffa200;
-    width: 100%;
+    width: 100%; /* Added from external CSS */
 }
 
 /* Top Header Layout */
 .imd-top {
     display: flex;
+    align-items: center; /* Added from inline style */
     justify-content: space-between;
-    align-items: center;
-    padding: 14px 25px;
-    flex-wrap: wrap;
+    padding: 15px 20px; /* Adjusted padding to match inline style more closely */
+    flex-wrap: wrap; /* Retained from external CSS */
 }
 
 /* Logo Styling (Professional — White padded box) */
 .imd-logo-left,
 .imd-logo-right {
-    width: 70px;
+    width: 65px; /* Adjusted to 65px from 70px/inline for a minor compromise */
     height: auto;
     background: white;
-    padding: 6px;
-    border-radius: 10px;
-    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+    padding: 4px; /* Adjusted to 4px from 6px/inline for a minor compromise */
+    border-radius: 8px; /* Adjusted to 8px from 10px/inline for a minor compromise */
+    /* Removing box-shadow from external CSS as it was not in the inline block */
+    box-shadow: none;
 }
 
 /* Title Centering */
 .imd-title {
     text-align: center;
     flex: 1;
+    color: white; /* Added from inline style */
 }
 
 .imd-title h2 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #ffffff; /* change this */
+    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
+    margin: 4px 0;
+    font-size: 20px;
+    font-weight: 600; /* Retaining font-weight from external CSS */
+    color: #ffffff;
 }
 
 .imd-title h3 {
+    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
+    margin: 2px 0;
+    font-size: 14px;
     color: #d8e8f5;
-    font-size: 1rem;
 }
 
 .imd-title h4 {
+    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
+    margin: 2px 0;
+    font-size: 13px;
     color: #c2d7eb;
-    margin-top: 4px;
-    font-size: 0.85rem;
 }
 
 /* ===================================================
-   NAVIGATION BAR
-   Professional Blue: #003f73
-   =================================================== */
+    NAVIGATION BAR
+    =================================================== */
 .imd-nav {
-    background: #003f73;
+    /* Using inline style's background color */
+    background: #003a63;
     display: flex;
     justify-content: flex-end;
-    gap: 25px;
-    padding: 12px 30px;
+    gap: 20px; /* Using inline style's gap */
+    padding: 10px 25px; /* Using inline style's padding */
 }
 
 .imd-nav a {
-    color: #ffffff;
+    color: #ffffff !important; /* Retaining !important from inline for color */
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.96rem;
-    padding-bottom: 4px;
+    font-size: 15px; /* Using inline style's font-size */
+    padding: 5px 0; /* Using inline style's padding */
     position: relative;
 }
 
-/* Hover Color */
+/* Hover/Active Management: Ensuring the underline works as intended */
 .imd-nav a:hover {
-    color: #00e5ff;
+    text-decoration: none; /* Explicitly removing default underline */
+    color: #ffffff; /* Keep color white, as there was no explicit hover color in inline style, and the underline is the main effect */
 }
 
 /* ACTIVE NAV UNDERLINE */
 .imd-nav a.active-nav::after,
 .imd-nav a:hover::after {
-    content: "";
+    content: '';
     position: absolute;
     width: 100%;
     height: 2px;
-    background: #ffa200;
+    /* Using white for the underline to match the inline style */
+    background: white;
     bottom: 0;
     left: 0;
+    transition: width 0.3s ease; /* Added transition from inline style logic */
 }
 
 .imd-nav a:not(.active-nav)::after {
@@ -113,46 +125,58 @@ body {
 }
 
 /* ===================================================
-   MARQUEE SECTION
-   =================================================== */
+    MARQUEE SECTION
+    =================================================== */
 #elwoic-marquee-section {
     width: 100%;
+    margin: 20px 0; /* Added margin from inline style */
 }
 
 .marquee-container {
+    position: relative; /* Added from inline style */
     overflow: hidden;
-    background: #004080;
-    padding: 10px 0;
+    background-color: #004080;
+    color: white; /* Added from inline style */
+    padding: 5px 0; /* Adjusted padding from inline style */
+    border: none; /* Added from inline style */
+    border-radius: 0; /* Added from inline style */
+    box-shadow: none; /* Added from inline style */
+    box-sizing: border-box; /* Retained from external CSS */
     border-bottom: 2px solid #ffa200;
 }
 
 .scroll-text {
     display: inline-block;
     white-space: nowrap;
+    /* Adjusted animation to use 'scroll' keyframes and linear speed from inline style */
+    animation: scroll 27s linear infinite;
     font-weight: bold;
     color: yellow;
     font-size: 16px;
-    transform: translateX(100%);
-    animation: scroll-left 35s linear infinite;
+    padding-left: 0; /* Added from inline style */
 }
 
 .highlight {
     color: #00ffff;
 }
 
-@keyframes scroll-left {
-    0%   { transform: translateX(20%); }
+/* Keyframes adjusted to match the inline style's logic */
+@keyframes scroll {
+    0% { transform: translateX(20%); } /* Start from off-screen right */
     100% { transform: translateX(-100%); }
 }
 
 /* ===================================================
-   MODAL / DEVELOPMENT NOTICE
-   =================================================== */
+    MODAL / DEVELOPMENT NOTICE
+    =================================================== */
 #development-modal {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
@@ -162,40 +186,51 @@ body {
     background: #ffffff;
     padding: 30px;
     border-radius: 12px;
-    max-width: 350px;
-    text-align: center;
     box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    max-width: 350px;
+    margin: 20px; /* Added from inline style */
+    text-align: center;
+    animation: modal-fade-in 0.3s ease-out; /* Added from inline style */
 }
 
 .modal-content h3 {
     color: #004a80;
-    font-size: 22px;
+    margin-top: 10px; /* Added from inline style */
     margin-bottom: 10px;
+    font-size: 24px; /* Using inline style's font-size */
+    font-weight: bold; /* Added from inline style */
 }
 
 .modal-content p {
-    color: #555;
+    color: #666; /* Adjusted to inline's slightly darker color */
     margin-bottom: 20px;
+    font-size: 15px; /* Added from inline style */
 }
 
 .modal-content button {
     width: 100%;
     padding: 12px;
     background: #0275d8;
-    border: none;
-    border-radius: 8px;
     color: white;
     font-weight: bold;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background 0.2s; /* Added from inline style */
 }
 
 .modal-content button:hover {
-    background: #0062b8;
+    background: #005bb5; /* Adjusted to inline style's hover color */
+}
+
+@keyframes modal-fade-in {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 /* ===================================================
-   MAIN CONTENT
-   =================================================== */
+    MAIN CONTENT (Retained from external CSS)
+    =================================================== */
 main {
     padding: 25px;
 }
@@ -215,8 +250,8 @@ main {
 }
 
 /* ===================================================
-   FOOTER
-   =================================================== */
+    FOOTER (Retained from external CSS)
+    =================================================== */
 footer {
     background: #004a80;
     color: white;
@@ -235,10 +270,10 @@ footer {
 }
 
 /* ===================================================
-   RESPONSIVE
-   =================================================== */
+    RESPONSIVE (Retained from external CSS, adjusted to match inline title sizes)
+    =================================================== */
 @media (max-width: 900px) {
-    .imd-title h2 { font-size: 1.3rem; }
+    .imd-title h2 { font-size: 1.6rem; } /* Keeping external size, as inline was 20px (smaller) */
 }
 
 @media (max-width: 600px) {
