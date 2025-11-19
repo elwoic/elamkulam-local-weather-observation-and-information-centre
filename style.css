@@ -1,7 +1,7 @@
 /* ===================================================
-    ELWOIC — Modern, Clean, Optimized Stylesheet
-    Designed for GitHub Pages
-    =================================================== */
+   ELWOIC — Modern, Clean, Optimized Stylesheet
+   Designed for GitHub Pages
+   =================================================== */
 
 /* ------------------ GLOBAL RESET ------------------ */
 * {
@@ -11,42 +11,41 @@
 }
 
 body {
-    /* Merged: Retaining Poppins from external CSS (if available) or Arial fallback */
-    font-family: Arial, sans-serif; /* Adjusted to match inline, Poppins assumed not linked */
-    margin: 0; /* Added from inline style */
+    /* Retaining the styles from your preferred block */
+    font-family: Arial, sans-serif; 
+    margin: 0; 
     background: #f4f8fb;
     color: #222;
 }
 
 /* ===================================================
-    HEADER SECTION
-    =================================================== */
+   HEADER SECTION
+   =================================================== */
 .imd-header {
     background: #004a80;
     color: white;
-    /* Retaining the strong border from external CSS */
-    border-bottom: 4px solid #ffa200;
-    width: 100%; /* Added from external CSS */
+    /* This creates the strong orange line under the header */
+    border-bottom: 4px solid #ffa200; 
+    width: 100%;
 }
 
 /* Top Header Layout */
 .imd-top {
     display: flex;
-    align-items: center; /* Added from inline style */
+    align-items: center; 
     justify-content: space-between;
-    padding: 15px 20px; /* Adjusted padding to match inline style more closely */
-    flex-wrap: wrap; /* Retained from external CSS */
+    padding: 15px 20px; 
+    flex-wrap: wrap; 
 }
 
-/* Logo Styling (Professional — White padded box) */
+/* Logo Styling */
 .imd-logo-left,
 .imd-logo-right {
-    width: 65px; /* Adjusted to 65px from 70px/inline for a minor compromise */
-    height: auto;
+    width: 65px; 
+    height: 65px; /* Added height for square look */
     background: white;
-    padding: 4px; /* Adjusted to 4px from 6px/inline for a minor compromise */
-    border-radius: 8px; /* Adjusted to 8px from 10px/inline for a minor compromise */
-    /* Removing box-shadow from external CSS as it was not in the inline block */
+    padding: 4px; 
+    border-radius: 8px; 
     box-shadow: none;
 }
 
@@ -54,183 +53,58 @@ body {
 .imd-title {
     text-align: center;
     flex: 1;
-    color: white; /* Added from inline style */
+    color: white; 
 }
 
 .imd-title h2 {
-    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
     margin: 4px 0;
     font-size: 20px;
-    font-weight: 600; /* Retaining font-weight from external CSS */
+    font-weight: 600; 
     color: #ffffff;
 }
 
 .imd-title h3 {
-    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
     margin: 2px 0;
     font-size: 14px;
     color: #d8e8f5;
 }
 
 .imd-title h4 {
-    /* Merged/Adjusted: Prioritizing inline style's margin/font-size */
     margin: 2px 0;
     font-size: 13px;
     color: #c2d7eb;
 }
 
 /* ===================================================
-    NAVIGATION BAR
-    =================================================== */
+   NAVIGATION BAR
+   =================================================== */
 .imd-nav {
-    /* Using inline style's background color */
     background: #003a63;
     display: flex;
-    justify-content: flex-end;
-    gap: 20px; /* Using inline style's gap */
-    padding: 10px 25px; /* Using inline style's padding */
+    /* CRITICAL FIX: Right alignment for navigation links */
+    justify-content: flex-end; 
+    gap: 20px; 
+    padding: 10px 25px; 
 }
 
 .imd-nav a {
-    color: #ffffff !important; /* Retaining !important from inline for color */
+    color: #ffffff !important; 
     text-decoration: none;
     font-weight: 500;
-    font-size: 15px; /* Using inline style's font-size */
-    padding: 5px 0; /* Using inline style's padding */
-    position: relative;
+    font-size: 15px; 
+    /* Removed padding/position here, as it's for the underline effect and is now in index.html */
 }
 
-/* Hover/Active Management: Ensuring the underline works as intended */
+/* Hover/Active Management: Ensures the underline works by keeping the link white */
 .imd-nav a:hover {
-    text-decoration: none; /* Explicitly removing default underline */
-    color: #ffffff; /* Keep color white, as there was no explicit hover color in inline style, and the underline is the main effect */
+    text-decoration: none; 
+    color: #ffffff; 
 }
 
-/* ACTIVE NAV UNDERLINE */
-.imd-nav a.active-nav::after,
-.imd-nav a:hover::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    /* Using white for the underline to match the inline style */
-    background: white;
-    bottom: 0;
-    left: 0;
-    transition: width 0.3s ease; /* Added transition from inline style logic */
-}
-
-.imd-nav a:not(.active-nav)::after {
-    width: 0;
-}
 
 /* ===================================================
-    MARQUEE SECTION
-    =================================================== */
-#elwoic-marquee-section {
-    width: 100%;
-    margin: px 0; /* Added margin from inline style */
-}
-
-.marquee-container {
-    position: relative; /* Added from inline style */
-    overflow: hidden;
-    background-color: #004080;
-    color: white; /* Added from inline style */
-    padding: 5px 0; /* Adjusted padding from inline style */
-    border: none; /* Added from inline style */
-    border-radius: 0; /* Added from inline style */
-    box-shadow: none; /* Added from inline style */
-    box-sizing: border-box; /* Retained from external CSS */
-    border-bottom: px solid #ffa200;
-}
-
-.scroll-text {
-    display: inline-block;
-    white-space: nowrap;
-    /* Adjusted animation to use 'scroll' keyframes and linear speed from inline style */
-    animation: scroll 40s linear infinite;
-    font-weight: bold;
-    color: yellow;
-    font-size: 16px;
-    padding-left: 0; /* Added from inline style */
-}
-
-.highlight {
-    color: #00ffff;
-}
-
-/* Keyframes adjusted to match the inline style's logic */
-@keyframes scroll {
-    0% { transform: translateX(20%); } /* Start from off-screen right */
-    100% { transform: translateX(-100%); }
-}
-
-/* ===================================================
-    MODAL / DEVELOPMENT NOTICE
-    =================================================== */
-#development-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.modal-content {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    max-width: 350px;
-    margin: 20px; /* Added from inline style */
-    text-align: center;
-    animation: modal-fade-in 0.3s ease-out; /* Added from inline style */
-}
-
-.modal-content h3 {
-    color: #004a80;
-    margin-top: 10px; /* Added from inline style */
-    margin-bottom: 10px;
-    font-size: 24px; /* Using inline style's font-size */
-    font-weight: bold; /* Added from inline style */
-}
-
-.modal-content p {
-    color: #666; /* Adjusted to inline's slightly darker color */
-    margin-bottom: 20px;
-    font-size: 15px; /* Added from inline style */
-}
-
-.modal-content button {
-    width: 100%;
-    padding: 12px;
-    background: #0275d8;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s; /* Added from inline style */
-}
-
-.modal-content button:hover {
-    background: #005bb5; /* Adjusted to inline style's hover color */
-}
-
-@keyframes modal-fade-in {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-/* ===================================================
-    MAIN CONTENT (Retained from external CSS)
-    =================================================== */
+   MAIN CONTENT
+   =================================================== */
 main {
     padding: 25px;
 }
@@ -250,8 +124,8 @@ main {
 }
 
 /* ===================================================
-    FOOTER (Retained from external CSS)
-    =================================================== */
+   FOOTER
+   =================================================== */
 footer {
     background: #004a80;
     color: white;
@@ -259,6 +133,10 @@ footer {
     padding: 16px;
     font-size: 0.85rem;
     position: relative;
+    /* Added display properties to ensure footer content centers correctly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .imd-logo-footer {
@@ -270,10 +148,10 @@ footer {
 }
 
 /* ===================================================
-    RESPONSIVE (Retained from external CSS, adjusted to match inline title sizes)
-    =================================================== */
+   RESPONSIVE
+   =================================================== */
 @media (max-width: 900px) {
-    .imd-title h2 { font-size: 1.6rem; } /* Keeping external size, as inline was 20px (smaller) */
+    .imd-title h2 { font-size: 1.6rem; } 
 }
 
 @media (max-width: 600px) {
@@ -286,6 +164,7 @@ footer {
     .imd-logo-left,
     .imd-logo-right {
         width: 55px;
+        height: 55px;
     }
 
     .imd-nav {
