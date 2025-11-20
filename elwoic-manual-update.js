@@ -11,11 +11,11 @@ const today = new Date();
        matches the configured manual update date
 ================================================== */
 
-const manualDate = new Date("2025-11-14T18:30:00");
+const manualDate = new Date("2025-11-20T18:30:00");
 
 // Write here your manual update text (or leave empty)
 const manualMessage =
-    "Weather Status: **Currently light rain happens in Kerala.** The local temperature is 24°C.";
+    "No manual updates available, site under checking";
 
 const defaultManual =
     "No manual updates available. Check live updates on ELWOIC.";
@@ -48,11 +48,11 @@ if (today.toDateString() === manualDate.toDateString()) {
     🌤️ PRE-UPDATE SECTION — Visible UNTIL set date
 ================================================== */
 
-const preUpdateEnd = new Date("2025-11-15T23:59:59");
+const preUpdateEnd = new Date("2025-11-20T23:59:59");
 
 // Write here your pre-update text (or leave empty)
 const preUpdateMessage =
-    "29/10/2025: Heavy rainfall expected continues at 8 AM, 11 AM, 2 PM, 5 PM, 8 PM, and 11 PM. Take precautions.";
+    "No pre updates, site under cheking";
 
 // Default if empty or expired
 const defaultPre = "No new pre-updates available at the moment.";
