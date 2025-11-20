@@ -1429,5 +1429,23 @@
         }
     });
   </script>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const footer = document.querySelector("footer");
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.body.classList.add("show-logo");
+      } else {
+        document.body.classList.remove("show-logo");
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(footer);
+});
+</script>
+
 </body>
 </html>
