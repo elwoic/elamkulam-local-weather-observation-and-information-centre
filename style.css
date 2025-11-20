@@ -11,7 +11,6 @@
 }
 
 body {
-    /* Retaining the styles from your preferred block */
     font-family: Arial, sans-serif; 
     margin: 0; 
     background: #f4f8fb;
@@ -42,7 +41,7 @@ body {
 .imd-logo-left,
 .imd-logo-right {
     width: 65px; 
-    height: 65px; /* Added height for square look */
+    height: 65px; 
     background: white;
     padding: 4px; 
     border-radius: 8px; 
@@ -92,7 +91,6 @@ body {
     text-decoration: none;
     font-weight: 500;
     font-size: 15px; 
-    /* Removed padding/position here, as it's for the underline effect and is now in index.html */
 }
 
 /* Hover/Active Management: Ensures the underline works by keeping the link white */
@@ -100,7 +98,6 @@ body {
     text-decoration: none; 
     color: #ffffff; 
 }
-
 
 /* ===================================================
    MAIN CONTENT
