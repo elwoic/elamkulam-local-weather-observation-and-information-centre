@@ -17,12 +17,38 @@
 
   <style>
     /* ===== BASE STYLE SECTION (FROM YOUR CODE) ===== */
+    html, body {
+      height: 100%; /* FIX 1: Ensure full viewport height */
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background: #f4f8fb;
       color: #222;
+      display: flex; /* FIX 2: Enable Flexbox layout */
+      flex-direction: column; /* Stack elements vertically */
     }
+
+    /* FIX 3: Main content container to expand and fill space */
+    .main-content {
+      flex-grow: 1; /* Key fix: This section takes up all remaining vertical space */
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Footer styling */
+    footer {
+        background: #004a80; /* Match header background */
+        color: white;
+        padding: 15px 20px;
+        text-align: center;
+        /* margin-top: auto; /* Not strictly necessary with flex-grow: 1 on main-content, but good practice */
+    }
+    
     .imd-header {
       background: #004a80;
       color: white;
@@ -75,12 +101,12 @@
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
-      padding: 5px 0; /* Added padding for better underline visibility */
-      position: relative; /* Needed for the ::after pseudo-element */
+      padding: 5px 0;
+      position: relative;
     }
 
     .imd-nav a:hover {
-      text-decoration: none; /* Removed default underline on hover */
+      text-decoration: none;
     }
 
     /* === ACTIVE PAGE STYLE (NEW) === */
@@ -94,20 +120,20 @@
       content: '';
       position: absolute;
       width: 100%;
-      height: 2px; /* Thickness of the line */
-      background: white; /* Color of the line */
+      height: 2px;
+      background: white;
       left: 0;
-      bottom: 0; /* Position the line at the bottom */
+      bottom: 0;
       transition: width 0.3s ease;
     }
     
     /* Ensure only the active one or the hovered one shows the line */
     .imd-nav a:not(.active-nav)::after {
-        width: 0; /* Hide line for non-active links by default */
+        width: 0;
     }
     
     .imd-nav a:not(.active-nav):hover::after {
-        width: 100%; /* Show line on hover for non-active links */
+        width: 100%;
     }
 
     /* --- MARQUEE STYLES (FROM YOUR CODE) --- */
@@ -134,7 +160,7 @@
       font-size: 16px;
     }
     .marquee-container {
-      width: 100%; /* Changed from 1000% to 100% for proper layout */
+      width: 100%;
       overflow: hidden;
       background-color: #004080;
       padding: 10px 0;
@@ -153,7 +179,7 @@
       color: #00ffff;
     }
     @keyframes scroll {
-      0% { transform: translateX(20%); } /* Start from off-screen right */
+      0% { transform: translateX(20%); }
       100% { transform: translateX(-100%); }
     }
 
@@ -164,11 +190,11 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8); /* Darker overlay */
+        background: rgba(0, 0, 0, 0.8);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 9999; /* Ensure it is on top */
+        z-index: 9999;
     }
     .modal-content {
         background: #ffffff;
@@ -195,7 +221,7 @@
     .modal-content button {
         width: 100%;
         padding: 12px;
-        background: #0275d8; /* Brighter Blue */
+        background: #0275d8;
         color: white;
         font-weight: bold;
         border: none;
@@ -225,7 +251,7 @@
       <p>
         The website is currently being finalized. We appreciate your patience as we prepare new features and real-time data integration.
       </p>
-      <button onclick="document.getElementById('development-modal').style.display='none'">
+      <button onclick="hideModal()">
         Continue to Site
       </button>
     </div>
@@ -264,31 +290,6 @@
       </div>
     </section>
   </header>
-  
-  <script>
-    // --- MARQUEE REFRESH TIME SCRIPT ---
-    const refreshTime = 30;
-    document.getElementById("refresh-time").textContent = refreshTime;
-
-    // --- ACTIVE NAVIGATION SCRIPT (NEW) ---
-    // Finds the current page and adds the 'active-nav' class to the correct link
-    document.addEventListener("DOMContentLoaded", function() {
-        const currentPath = window.location.pathname.split('/').pop();
-        const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
-        
-        for (let i = 0; i < navLinks.length; i++) {
-            const linkPath = navLinks[i].getAttribute('href').split('/').pop();
-
-            // Check if the link's href matches the current file name (e.g., 'index.html' === 'index.html')
-            // Special case: If currentPath is empty (root), treat it as 'index.html'
-            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
-                navLinks[i].classList.add('active-nav');
-                break; // Stop after finding the active link
-            }
-        }
-    });
-  </script>
-
 
   <!-- ===== MAIN CONTENT ===== -->
   <main>
@@ -1359,7 +1360,7 @@
 
 </aside>
 
-  <footer>
+ <footer>
     <p>© 2025 Elamkulam Local Weather Observation And Information Center. All rights reserved. This is a student project for educational and informational purposes. </p>
     <p style="color:#ffffff;">
       <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/privacy-policy/" style="color:#ffffff; text-decoration:none;">
@@ -1398,8 +1399,14 @@
     
     // Check localStorage when the page loads
     document.addEventListener("DOMContentLoaded", function() {
+        // Attach hideModal to the button click event
+        document.querySelector('#development-modal button').onclick = hideModal;
+        
         if (localStorage.getItem(modalKey) !== 'true') {
             modal.style.display = 'flex';
+        } else {
+            // Hide modal if it has been dismissed before
+            modal.style.display = 'none';
         }
     });
 
@@ -1412,7 +1419,10 @@
             const linkHref = navLinks[i].getAttribute('href');
             const linkPath = linkHref ? linkHref.split('/').pop() : '';
 
-            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
+            // Handle root index.html vs empty path
+            const normalizedCurrentPath = currentPath === '' ? 'index.html' : currentPath;
+
+            if (linkPath === normalizedCurrentPath) {
                 navLinks[i].classList.add('active-nav');
                 break;
             }
@@ -1421,4 +1431,3 @@
   </script>
 </body>
 </html>
-
