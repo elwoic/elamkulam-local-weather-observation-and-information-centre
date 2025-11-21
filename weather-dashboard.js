@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let rainStatus = "No";
             if (data.weather[0].main.includes("Rain") || data.weather[0].description.includes("rain")) rainStatus = "Yes (Current Condition)";
             else if (data.rain && data.rain['1h'] > 0) rainStatus = `${data.rain['1h']} mm in the last hour`;
-            else if (data.clouds && data.clouds.all > 75) rainStatus = "High chance of rain (Heavy Clouds)";
+            else if (data.clouds && data.clouds.all > 75) rainStatus = "Heavy Clouds are seen";
 
             let sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             let sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="details-item"><span>🌡️ Feels like:</span><span>${data.main.feels_like.toFixed(1)}°C</span></div>
                 <div class="details-item"><span>🌬️ Wind:</span><span>${data.wind.speed.toFixed(1)} m/s, Dir: ${data.wind.deg}°</span></div>
                 <div class="details-item"><span>💧 Pressure:</span><span>${data.main.pressure} hPa</span></div>
-                <div class="details-item"><span>🌧️ Rain Status:</span><span>${rainStatus}</span></div>
+                <div class="details-item"><span>🌧️  Status:</span><span>${rainStatus}</span></div>
                 <div class="details-item"><span>☀️ Sunrise:</span><span>${sunrise}</span></div>
                 <div class="details-item"><span>🌙 Sunset:</span><span>${sunset}</span></div>
             `;
