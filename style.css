@@ -1,183 +1,97 @@
-/* ------------------------------------------------
-   GLOBAL RESET — SAFE VERSION
------------------------------------------------- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ===============================
+   RESPONSIVE ONLY - DOES NOT 
+   CHANGE DESKTOP DESIGN
+   =============================== */
 
-body {
-  font-family: "Poppins", sans-serif;
-  background: #f4f8fb;
-  line-height: 1.5;
-  overflow-x: hidden;
-}
-
-
-
-/* ------------------------------------------------
-   UNIVERSAL PAGE WRAPPER
------------------------------------------------- */
-.page-container {
-  max-width: 1400px;
-  padding: 20px;
-  margin: auto;
-}
-
-
-
-/* ------------------------------------------------
-   UNIVERSAL CONTENT BOXES
------------------------------------------------- */
-.section-box {
-  background: #ffffff;
-  padding: 22px;
-  margin: 25px auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-}
-
-.section-box h2 {
-  color: #004a80;
-  border-bottom: 2px solid #e3effa;
-  padding-bottom: 6px;
-  margin-bottom: 15px;
-}
-
-
-
-/* ------------------------------------------------
-   RESPONSIVE IFRAMES
------------------------------------------------- */
-.responsive-frame,
-iframe {
-  width: 100%;
-  height: 450px;
-  border: none;
-  border-radius: 10px;
-}
-
-
-
-/* ------------------------------------------------
-   IMAGES INSIDE CONTENT
------------------------------------------------- */
-.section-box img,
-.page-container img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-
-
-/* ------------------------------------------------
-   GENERAL TEXT
------------------------------------------------- */
-h1, h2, h3, h4 {
-  font-weight: 700;
-  color: #004a80;
-}
-
-p, li {
-  font-size: 1rem;
-  color: #333;
-}
-
-
-
-/* ------------------------------------------------
-   TABLES (GLOBAL SAFE STYLE)
------------------------------------------------- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-
-table th,
-table td {
-  padding: 10px;
-  border: 1px solid #d9e4f2;
-  text-align: left;
-}
-
-table th {
-  background: #eef5ff;
-  font-weight: 600;
-}
-
-
-
-/* ------------------------------------------------
-   RESPONSIVENESS: TABLET
------------------------------------------------- */
-@media (max-width: 900px) {
-  .page-container {
-    padding: 14px;
-  }
-
-  .section-box {
-    padding: 18px;
-  }
-
-  iframe, .responsive-frame {
-    height: 380px;
-  }
-
-  p, li {
-    font-size: 0.95rem;
-  }
-}
-
-
-
-/* ------------------------------------------------
-   RESPONSIVENESS: MOBILE
------------------------------------------------- */
+/* ----------- Phones (under 600px) ----------- */
 @media (max-width: 600px) {
 
-  .page-container {
-    padding: 10px;
+  /* Header top section */
+  .imd-top {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 
-  .section-box {
-    padding: 16px;
+  .imd-logo {
+    width: 55px !important;
+    height: 55px !important;
+    margin: 5px 0;
   }
 
-  h1 { font-size: 1.6rem; }
-  h2 { font-size: 1.4rem; }
-  h3 { font-size: 1.2rem; }
-
-  iframe, .responsive-frame {
-    height: 320px;
+  .imd-title h2 {
+    font-size: 18px;
+    width: 100%;
   }
 
-  p, li {
-    font-size: 0.9rem;
+  .imd-title h4 {
+    font-size: 13px;
   }
 
-  table th, table td {
-    padding: 8px;
+  /* Navigation */
+  .imd-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .imd-nav a {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  /* Marquee */
+  .scroll-text {
+    font-size: 14px;
+    animation-duration: 40s; /* slower on mobile */
+  }
+
+  /* Forecast / content boxes */
+  .forecast-box {
+    margin: 15px 10px;
+    padding: 15px;
+  }
+
+  iframe {
+    height: 350px;
+  }
+
+  /* Footer */
+  footer {
+    font-size: 12px;
+    padding: 15px 8px;
+  }
+
+  .footer-logo {
+    width: 35px !important;
+    height: 35px !important;
+    bottom: 15px;
+    right: 15px;
   }
 }
 
 
+/* ----------- Tablets (600px - 900px) ----------- */
+@media (max-width: 900px) {
 
-/* ------------------------------------------------
-   LARGE SCREENS (1600px+)
------------------------------------------------- */
-@media (min-width: 1600px) {
-  .page-container {
-    max-width: 1600px;
+  .imd-title h2 {
+    font-size: 20px;
   }
 
-  .section-box {
-    padding: 30px;
+  .imd-title h4 {
+    font-size: 14px;
   }
 
-  iframe, .responsive-frame {
-    height: 520px;
+  .imd-nav {
+    gap: 5px;
+  }
+
+  .imd-nav a {
+    padding: 8px 15px;
+    font-size: 15px;
+  }
+
+  iframe {
+    height: 400px;
   }
 }
