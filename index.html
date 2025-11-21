@@ -1,4 +1,292 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Elamkulam Local Weather Observation And Information Center</title> <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> <link rel="stylesheet" href="style.css"> <link rel="icon" type="image/png" href="favicon.png"> <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center"> <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India."> <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/"> <meta property="og:type" content="website"> <meta name="twitter:card" content="summary_large_image"> <meta name="twitter:site" content="@ELWOIC"> <style> /* -------------------------------------- */ /* 1. BASE AND RESET */ /* -------------------------------------- */ body { font-family: Arial, sans-serif; margin: 0; background: #f4f8fb; } /* -------------------------------------- */ /* 2. HEADER AND NAVIGATION STYLES */ /* -------------------------------------- */ .imd-header { background: #004a80; color: white; } .imd-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; } .imd-logo { background: white; border-radius: 8px; padding: 4px; margin: 0 15px; width: 45px; height: 45px; align-self: center; } .imd-title { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; } /* FIX: H2 with the white line separator */ .imd-title h2 { margin: 0 auto; /* Centers content */ font-size: 20px; border-bottom: 2px solid white; /* <--- THE NEW WHITE LINE */ width: 100%; padding-bottom: 2px; margin-bottom: 3px; } .imd-title h4 { margin: 0; font-size: 14px; } .imd-nav { background: #003a63; display: flex; justify-content: flex-end; gap: 2px; padding: 10px 0; } .imd-nav a { color: #fff; text-decoration: none; font-size: 15px; font-weight: 500; padding: 5px 15px; } .imd-nav a:hover { text-decoration: none; border-bottom: 2px solid #fff; padding-bottom: 8px; } .imd-nav a.active-nav { text-align: right; color: #ffcc00; font-weight: bold; border-bottom: 2px solid #ffcc00; } /* -------------------------------------- */ /* 3. MARQUEE STYLES */ /* -------------------------------------- */ .marquee-container { width: 100%; overflow: hidden; background-color: #004080; padding: 10px 0; box-sizing: border-box; border-bottom: 2px solid #ffcc00; } .scroll-text { display: inline-block; white-space: nowrap; font-weight: bold; color: yellow; animation: scroll 30s linear infinite; font-size: 16px; } .highlight { color: #00ffff; } @keyframes scroll { 0% { transform: translateX(20%); } 100% { transform: translateX(-100%); } } /* -------------------------------------- */ /* 4. FOOTER STYLES */ /* -------------------------------------- */ footer { background: #004a80; color: white; padding: 20px 10px; text-align: center; font-size: 13px; position: relative; } footer p { margin: 5px 0; line-height: 1.4; } footer a { color: white; text-decoration: none; } .footer-logo { position: absolute; bottom:30px; right: 30px; width: 20px; height: 20px; background:transparent; border-radius: 2px; } /* -------------------------------------- */ /* 5. MAIN CONTENT STYLES */ /* -------------------------------------- */ .forecast-box { max-width: 850px; background: #fff; padding: 20px; margin: 25px auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } .forecast-box h2 { color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 6px; } iframe { width: 100%; height: 450px; border: none; border-radius: 10px; } </style> </head> <body> <header class="imd-header"> <div class="imd-top"> <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo" width="55" height="55"> <div class="imd-title"> <h2>Elamkulam Local Weather Observation & Information Centre</h2> <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4> </div> <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo" width="55" height="55"> </div> <nav class="imd-nav" id="main-nav"> <a href="index.html">HOME</a> <a href="Forecast.html">FORECAST</a> <a href="information.html">INFORMATION</a> <a href="#">ABOUT</a> <a href="#">CONTACT</a> </nav> <div class="marquee-container"> <div class="scroll-text" id="info-marquee"> ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750. "⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️" </div> </div> </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
+  <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
+  <meta property="og:image" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/favicon.png"> 
+  <meta property="og:url" content="https://elwoic.github.io/Elamkulam-Local-Weather-Observation-And-Information-Center/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ELWOIC">
+  <title>Elamkulam Local Weather Observation And Information Center</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- MAIN CSS -->
+  <style>
+
+  /* -------------------------------------- */
+  /* BASE */
+  /* -------------------------------------- */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f8fb;
+  }
+
+  /* -------------------------------------- */
+  /* BLUE–WHITE ALERT BOX (A) */
+  /* -------------------------------------- */
+  .site-alert {
+    background: #ffffff;
+    color: #003a63;
+    padding: 15px 20px;
+    font-size: 15px;
+    font-family: "Poppins", sans-serif;
+
+    border-left: 6px solid #004a80;
+    border-radius: 6px;
+
+    margin: 15px auto;
+    max-width: 900px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    animation: fadeIn 0.5s ease;
+  }
+
+  .alert-content {
+    line-height: 1.5;
+  }
+
+  .alert-btn {
+    background: #004a80;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    align-self: flex-start;
+    transition: 0.3s;
+  }
+
+  .alert-btn:hover {
+    background: #003a63;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile alert button */
+  @media (max-width: 600px) {
+    .alert-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* -------------------------------------- */
+  /* HEADER + NAVIGATION */
+  /* -------------------------------------- */
+
+  .imd-header {
+    background: #004a80;
+    color: white;
+  }
+
+  .imd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+  }
+
+  .imd-logo {
+    background: white;
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0 15px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .imd-title {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .imd-title h2 {
+    margin: 0;
+    font-size: 20px;
+    border-bottom: 2px solid white;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
+  }
+
+  .imd-title h4 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  /* NAVIGATION */
+  .imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: 10px 0;
+  }
+
+  .imd-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px 15px;
+  }
+
+  .imd-nav a:hover {
+    border-bottom: 2px solid #fff;
+    padding-bottom: 8px;
+  }
+
+  .imd-nav a.active-nav {
+    color: #ffcc00;
+    font-weight: bold;
+    border-bottom: 2px solid #ffcc00;
+  }
+
+  /* -------------------------------------- */
+  /* MARQUEE */
+  /* -------------------------------------- */
+
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background-color: #004080;
+    padding: 10px 0;
+    border-bottom: 2px solid #ffcc00;
+  }
+
+  .scroll-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    color: yellow;
+    animation: scroll 30s linear infinite;
+    font-size: 16px;
+  }
+
+  .highlight {
+    color: #00ffff;
+  }
+
+  @keyframes scroll {
+    0%   { transform: translateX(20%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* -------------------------------------- */
+  /* RESPONSIVE FIXES */
+  /* -------------------------------------- */
+
+  @media (max-width: 600px) {
+
+    .imd-top {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .imd-logo {
+      width: 55px;
+      height: 55px;
+      margin: 5px 0;
+    }
+
+    .imd-title h2 {
+      font-size: 18px;
+    }
+
+    .imd-title h4 {
+      font-size: 13px;
+    }
+
+    .imd-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 8px 0;
+    }
+
+    .imd-nav a {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    .scroll-text {
+      font-size: 14px;
+      animation-duration: 40s;
+    }
+  }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ALERT BOX -->
+  <div class="site-alert" id="siteAlert">
+    <div class="alert-content">
+      <strong>⚠️ Website Update in Progress</strong><br>
+      Some features and pages may not function correctly during this update period.
+    </div>
+
+    <button class="alert-btn" onclick="document.getElementById('siteAlert').style.display='none'">
+      Continue to Site
+    </button>
+  </div>
+
+  <!-- HEADER -->
+  <header class="imd-header">
+
+    <div class="imd-top">
+      <img src="ELWOIC.png" class="imd-logo" alt="ELWOIC Logo">
+
+      <div class="imd-title">
+        <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+        <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+      </div>
+
+      <img src="Elamkulam Weather Logo Design.1.png" class="imd-logo" alt="Weather Logo">
+    </div>
+
+    <!-- NAV -->
+    <nav class="imd-nav">
+      <a href="index.html" class="active-nav">HOME</a>
+      <a href="Forecast.html">FORECAST</a>
+      <a href="information.html">INFORMATION</a>
+      <a href="#">ABOUT</a>
+      <a href="#">CONTACT</a>
+    </nav>
+
+    <!-- MARQUEE -->
+    <div class="marquee-container">
+      <div class="scroll-text">
+        ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
+        | Real-Time Weather Monitoring | Data refresh every 30 minutes | Location: 10.908°N, 76.229°E
+        | Contact: 04933316750 | ⚠️ Both ELWOIC and HPBD are student projects (not official) ⚠️
+      </div>
+    </div>
+
+  </header>
 
   <!-- ===== MAIN CONTENT ===== -->
   <main>
