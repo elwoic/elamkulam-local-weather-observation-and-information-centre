@@ -1,1 +1,80 @@
+/* -----------------------------------
+    GLOBAL RESET AND BASE STYLES
+----------------------------------- */
+* {
+  /* Crucial for preventing padding/borders from expanding element width/height */
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+}
 
+body {
+  /* Set a fallback font-family for general readability */
+  font-family: Arial, sans-serif; 
+}
+
+/* -----------------------------------
+    NAVIGATION ALIGNMENT FIX 🧭
+    (This ensures links are aligned to the right edge as requested)
+----------------------------------- */
+.imd-nav {
+  display: flex; /* Ensure flexbox is active for alignment */
+  justify-content: flex-end; /* Pushes content to the right */
+  gap: 20px; /* Restores sensible spacing between links */
+  padding-right: 15px; /* Adds space from the right edge */
+}
+
+/* -----------------------------------
+    MARQUEE ANIMATION 📢
+    (Crucial for its movement)
+----------------------------------- */
+@keyframes scroll {
+  0% { transform: translateX(20%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* -----------------------------------
+    RESPONSIVE BREAKPOINTS 📱 (Essential for site function)
+----------------------------------- */
+
+/* Mobiles/Small Screens */
+@media (max-width: 600px) {
+  /* Stack header elements vertically on small screens for better viewing */
+  .imd-top {
+    flex-direction: column; 
+    text-align: center;
+  }
+  /* Adjust logo size for mobile for better fit */
+  .imd-logo {
+    width: 45px; 
+    height: 45px;
+  }
+  
+  /* Make sure navigation centers when stacking */
+  .imd-nav {
+    justify-content: center; 
+    padding: 10px 0;
+  }
+  .imd-nav a { 
+    font-size: 14px; 
+    padding: 5px 10px; 
+  }
+  
+  /* Adjust text sizes for readability on mobile */
+  .imd-title h2 { font-size: 18px; }
+  .imd-title h4 { font-size: 12px; }
+  .scroll-text { font-size: 14px; }
+  
+  /* Reposition footer logo slightly */
+  .footer-logo {
+    bottom: 10px; 
+    right: 10px;
+  }
+}
+
+/* Tablets/Medium Screens */
+@media (max-width: 900px) {
+  .imd-title h2 { font-size: 20px; }
+  .imd-title h4 { font-size: 14px; }
+  .imd-nav { gap: 15px; }
+}
