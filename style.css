@@ -1,12 +1,125 @@
-/* ===============================
-   RESPONSIVE ONLY - DOES NOT 
-   CHANGE DESKTOP DESIGN
-   =============================== */
+/* -------------------------------------- */
+/* BASE */
+/* -------------------------------------- */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f8fb;
+}
 
-/* ----------- Phones (under 600px) ----------- */
+/* -------------------------------------- */
+/* HEADER + NAVIGATION */
+/* -------------------------------------- */
+
+.imd-header {
+  background: #004a80;
+  color: white;
+}
+
+.imd-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+}
+
+.imd-logo {
+  background: white;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 0 15px;
+  width: 45px;
+  height: 45px;
+}
+
+.imd-title {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.imd-title h2 {
+  margin: 0;
+  font-size: 20px;
+  border-bottom: 2px solid white;
+  padding-bottom: 2px;
+  margin-bottom: 3px;
+}
+
+.imd-title h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* -------------------------------------- */
+/* NAVIGATION */
+/* -------------------------------------- */
+
+.imd-nav {
+  background: #003a63;
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 10px 0;
+}
+
+.imd-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 5px 15px;
+}
+
+.imd-nav a:hover {
+  border-bottom: 2px solid #fff;
+  padding-bottom: 8px;
+}
+
+.imd-nav a.active-nav {
+  color: #ffcc00;
+  font-weight: bold;
+  border-bottom: 2px solid #ffcc00;
+}
+
+/* -------------------------------------- */
+/* MARQUEE */
+/* -------------------------------------- */
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #004080;
+  padding: 10px 0;
+  border-bottom: 2px solid #ffcc00;
+}
+
+.scroll-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: bold;
+  color: yellow;
+  animation: scroll 30s linear infinite;
+  font-size: 16px;
+}
+
+.highlight {
+  color: #00ffff;
+}
+
+@keyframes scroll {
+  0%   { transform: translateX(20%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* -------------------------------------- */
+/* RESPONSIVE FIXES */
+/* -------------------------------------- */
+
 @media (max-width: 600px) {
 
-  /* Header top section */
   .imd-top {
     flex-direction: column;
     gap: 10px;
@@ -14,21 +127,19 @@
   }
 
   .imd-logo {
-    width: 55px !important;
-    height: 55px !important;
+    width: 55px;
+    height: 55px;
     margin: 5px 0;
   }
 
   .imd-title h2 {
     font-size: 18px;
-    width: 100%;
   }
 
   .imd-title h4 {
     font-size: 13px;
   }
 
-  /* Navigation */
   .imd-nav {
     flex-wrap: wrap;
     justify-content: center;
@@ -40,58 +151,8 @@
     font-size: 14px;
   }
 
-  /* Marquee */
   .scroll-text {
     font-size: 14px;
-    animation-duration: 40s; /* slower on mobile */
-  }
-
-  /* Forecast / content boxes */
-  .forecast-box {
-    margin: 15px 10px;
-    padding: 15px;
-  }
-
-  iframe {
-    height: 350px;
-  }
-
-  /* Footer */
-  footer {
-    font-size: 12px;
-    padding: 15px 8px;
-  }
-
-  .footer-logo {
-    width: 35px !important;
-    height: 35px !important;
-    bottom: 15px;
-    right: 15px;
-  }
-}
-
-
-/* ----------- Tablets (600px - 900px) ----------- */
-@media (max-width: 900px) {
-
-  .imd-title h2 {
-    font-size: 20px;
-  }
-
-  .imd-title h4 {
-    font-size: 14px;
-  }
-
-  .imd-nav {
-    gap: 5px;
-  }
-
-  .imd-nav a {
-    padding: 8px 15px;
-    font-size: 15px;
-  }
-
-  iframe {
-    height: 400px;
+    animation-duration: 40s;
   }
 }
