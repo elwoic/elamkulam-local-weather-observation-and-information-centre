@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELWOIC | Contact Message Admin View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* General body styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f8fb;
+            min-height: 100vh;
+        }
+        .header-bg-main { background-color: #004a80; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+<header class="header-bg-main text-white p-4 shadow-lg sticky top-0 z-10">
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold">ELWOIC Contact Message Admin View</h1>
+        <p class="text-sm opacity-80">Real-time view of submissions in Firestore</p>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 py-8">
+    
+    <!-- Status Indicator -->
+    <div id="statusIndicator" class="mb-6 p-3 rounded-lg text-center font-medium bg-blue-100 text-blue-800">
+        Initializing...
+    </div>
+
+    <!-- Messages Container -->
+    <div id="messagesContainer" class="space-y-4">
+        <!-- Messages will be injected here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center p-12 bg-white rounded-xl shadow-md border-2 border-dashed border-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-2 4v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7" />
+        </svg>
+        <h3 class="mt-2 text-xl font-medium text-gray-900">No Messages Yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Submissions will appear here in real-time.</p>
+    </div>
+
+</main>
+
+<!-- Firebase Initialization and Data Fetching Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, setLogLevel } } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    setLogLevel('Debug');
+
+    // Global variables from the environment
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // UI elements
+    const statusIndicator = document.getElementById('statusIndicator');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const emptyState = document.getElementById('emptyState');
+
+    let db;
+    let auth;
+    let isAuthReady = false;
+
+    function updateStatus(text, type = 'info') {
+        statusIndicator.textContent = text;
+        statusIndicator.classList.remove('bg-blue-100', 'text-blue-800', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+        if (type === 'info') {
+            statusIndicator.classList.add('bg-blue-100', 'text-blue-800');
+        } else if (type === 'success') {
+            statusIndicator.classList.add('bg-green-100', 'text-green-800');
+        } else if (type === 'error') {
+            statusIndicator.classList.add('bg-red-100', 'text-red-800');
+        }
+    }
+
+    // Function to render the messages
+    function renderMessages(messages) {
+        messagesContainer.innerHTML = ''; // Clear existing messages
+
+        if (messages.length === 0) {
+            emptyState.classList.remove('hidden');
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+
+        // Sort messages by timestamp descending (newest first)
+        messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        messages.forEach((doc) => {
+            const data = doc.data;
+            const element = document.createElement('div');
+            element.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500 transition hover:shadow-2xl';
+
+            // Format date nicely
+            const date = new Date(data.timestamp);
+            const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+
+            element.innerHTML = `
+                <div class="flex justify-between items-start mb-3 border-b pb-2">
+                    <h3 class="text-xl font-bold text-gray-800">${data.subject || 'No Subject'}</h3>
+                    <span class="text-sm text-gray-500">${formattedDate}</span>
+                </div>
+                <div class="space-y-1 text-gray-600">
+                    <p class="text-sm">
+                        <span class="font-semibold text-gray-700">From:</span> ${data.name} &lt;<a href="mailto:${data.email}" class="text-blue-500 hover:underline">${data.email}</a>&gt;
+                    </p>
+                    <p class="text-xs text-gray-400">User ID: ${data.userId || 'N/A'}</p>
+                    <p class="pt-4 text-gray-800 whitespace-pre-wrap">${data.message}</p>
+                </div>
+            `;
+            messagesContainer.appendChild(element);
+        });
+    }
+
+    // Function to set up the real-time listener
+    function subscribeToMessages() {
+        if (!db || !isAuthReady) return;
+
+        const collectionPath = `artifacts/${appId}/public/data/contact_messages`;
+        const messagesQuery = collection(db, collectionPath);
+        
+        updateStatus(`Listening for messages on: ${collectionPath}`, 'info');
+
+        onSnapshot(messagesQuery, (snapshot) => {
+            const messages = [];
+            snapshot.forEach(doc => {
+                messages.push({ id: doc.id, data: doc.data() });
+            });
+            renderMessages(messages);
+            updateStatus(`Successfully loaded ${messages.length} messages.`, 'success');
+
+        }, (error) => {
+            console.error("Firestore real-time listener error:", error);
+            updateStatus(`Error loading messages: ${error.message}`, 'error');
+        });
+    }
+
+    // Initialization sequence
+    async function setupFirebase() {
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Authenticate user
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+            isAuthReady = true;
+            console.log("Firebase initialized and user authenticated.");
+            
+            subscribeToMessages();
+
+        } catch (error) {
+            console.error("Error setting up Firebase:", error);
+            updateStatus(`System Error: Could not initialize services. Details: ${error.message}`, 'error');
+        }
+    }
+
+    // Start setup when the page loads
+    document.addEventListener("DOMContentLoaded", setupFirebase);
+</script>
+
+</body>
+</html>
