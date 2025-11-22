@@ -1,142 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ELWOIC | Information</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ELWOIC | Information</title>
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f4f8fb;
-  }
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+    </style>
 
-  /* Same Header Style From Home Page */
-  .imd-header {
-    background: #004a80;
-    color: white;
-  }
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Use Inter font */
+            margin: 0;
+            background: #f4f8fb;
+        }
 
-  .imd-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-  }
+        /* Header Styles (kept from original) */
+        .imd-header { background: #004a80; color: white; }
+        .imd-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; }
+        .imd-logo-left, .imd-logo-right { width: 65px; height: auto; border-radius: 6px; background: transparent; }
+        .imd-title { text-align: center; flex: 1; color: white; }
+        .imd-title h2 { margin: 4px 0; font-size: 20px; color: #ffffff; }
+        .imd-title h4 { margin: 2px 0; font-size: 14px; color: #d8e8f5; }
+        .imd-nav { background: #003a63; display: flex; justify-content: flex-end; gap: 20px; padding: 10px 25px; }
+        .imd-nav a { color: #fff; text-decoration: none; font-size: 15px; }
+        .imd-nav a:hover { text-decoration: underline; }
 
-  .imd-logo-left,
-  .imd-logo-right {
-    width: 65px;
-    height: auto;
-    border-radius: 6px;
-    background: transparent;
-  }
+        /* General Content Box */
+        .info-box {
+            max-width: 900px;
+            background: #fff;
+            padding: 22px;
+            margin: 28px auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-  .imd-title {
-    text-align: center;
-    flex: 1;
-    color: white;
-  }
+        /* Headings within info-box */
+        .info-box h2 {
+            color: #004a80;
+            border-bottom: 2px solid #e3effa;
+            padding-bottom: 8px;
+            margin: 0 0 14px;
+            font-size: 20px;
+        }
+        
+        /* Sub-headings within info-box (for panchayath info) */
+        .info-box h3 {
+            color: #003a63;
+            font-size: 18px;
+            margin: 18px 0 10px 0;
+            padding-left: 5px;
+            border-left: 4px solid #fde047; /* Yellow accent line */
+        }
 
-  .imd-title h2 {
-    margin: 4px 0;
-    font-size: 20px;
-    color: #ffffff;
-  }
+        .info-box p {
+            color: #333;
+            line-height: 1.6;
+            margin: 8px 0;
+            font-size: 15px;
+        }
 
-  .imd-title h4 {
-    margin: 2px 0;
-    font-size: 14px;
-    color: #d8e8f5;
-  }
-
-  .imd-nav {
-    background: #003a63;
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    padding: 10px 25px;
-  }
-
-  .imd-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 15px;
-  }
-
-  .imd-nav a:hover {
-    text-decoration: underline;
-  }
-
-  /* Information page content box */
-  .info-box {
-    max-width: 900px;
-    background: #fff;
-    padding: 22px;
-    margin: 28px auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  .info-box h2 {
-    color: #004a80;
-    border-bottom: 2px solid #e3effa;
-    padding-bottom: 8px;
-    margin: 0 0 14px;
-    font-size: 20px;
-  }
-
-  .info-box p {
-    color: #333;
-    line-height: 1.6;
-    margin: 8px 0;
-    font-size: 15px;
-  }
-
-  /* Responsive */
-  @media(max-width:600px){
-    .imd-top { padding: 12px; }
-    .imd-nav { padding: 8px 12px; gap: 12px; justify-content: center; }
-    .info-box { padding: 16px; margin: 16px; }
-  }
-</style>
+        /* Custom style for the Notice Card (using Tailwind utility for clarity) */
+        .notice-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 32px;
+        }
+        .notice-card {
+            max-width: 768px; /* max-w-3xl */
+            background-color: white;
+            overflow: hidden;
+            border-top: 8px solid #ef4444; /* border-red-500 */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); /* shadow-lg */
+        }
+        .notice-header {
+            padding: 24px; /* p-6 */
+            background-color: #fef2f2; /* bg-red-50 */
+        }
+        .notice-title {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #b91c1c; /* text-red-700 */
+            display: flex;
+            align-items: center;
+        }
+        .notice-content {
+            padding: 24px; /* p-6 */
+            color: #4b5563; /* text-gray-700 */
+            font-size: 1.125rem; /* text-lg */
+        }
+        .notice-list li {
+            margin-bottom: 8px;
+        }
+        .notice-footer {
+            margin-top: 24px;
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-500 */
+            font-style: italic;
+        }
+        
+        /* Map Centering (Adjusted) */
+        .map-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .map-container h2 {
+            text-align: center;
+            color: #004a80;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
 
 <header class="imd-header">
-  <div class="imd-top">
-    <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
-    <div class="imd-title">
-      <h2>Elamkulam Local Weather Observation &amp; Information Centre</h2>
-      <h4>Information About ELWOIC </h4>
+    <div class="imd-top">
+        <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
+        <div class="imd-title">
+            <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+            <h4>Information About ELWOIC</h4>
+        </div>
+        <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
     </div>
-    <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
-  </div>
 
-  <nav class="imd-nav">
-    <a href="home.html">HOME</a>
-    <a href="Forecast.html">FORECAST</a>
-    <a href="information.html">INFORMATION</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
-  </nav>
+    <nav class="imd-nav">
+        <a href="home.html">HOME</a>
+        <a href="Forecast.html">FORECAST</a>
+        <a href="information.html">INFORMATION</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+    </nav>
 </header>
-<section class="notice-section w-full flex justify-center items-center p-8">
-    <div class="notice-card w-full max-w-3xl bg-black/5 overflow-hidden border-t-8 border-red-500 shadow-lg">
-        
-        <!-- Header/Title -->
-        <div class="p-6 bg-red-50">
-            <h2 class="text-3xl font-bold italic text-red-700 leading-tight flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 fill-current text-red-500" viewBox="0 0 24 24">
+
+<section class="notice-section">
+    <div class="notice-card">
+        <div class="notice-header">
+            <h2 class="notice-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 fill-current text-red-500" viewBox="0 0 24 24" width="32" height="32">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                 </svg>
                 Notice
             </h2>
         </div>
 
-        <!-- Content List -->
-        <div class="p-6 text-gray-700 text-lg">
+        <div class="notice-content">
             <ul class="list-disc pl-5 notice-list font-medium">
                 <li>This website is <strong>not an official government or panchayat-owned entity</strong>.</li>
                 <li>It is a <strong>personal project</strong> created by a student for informational purposes.</li>
@@ -148,333 +163,82 @@
                 </li>
             </ul>
 
-            <p class="mt-6 text-sm text-gray-500 italic">
+            <p class="notice-footer">
                 Please exercise caution and cross-reference data with official sources.
             </p>
         </div>
-        
     </div>
 </section>
-<!-- ===== Information content (same simple style as your Forecast) ===== -->
+
 <div class="info-box">
-  <h2>About ELWOIC</h2>
-<!-- 🌥️ INFORMATION INTRO BOX -->
-<section class="info-intro-box" style="background-image: url('Screenshot 2025-11-16 154855.png');">
-
-  <div class="info-left">
-    <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo">
-  </div>
-
-  <div class="info-right">
-    <h1>ELWOIC</h1>
-    <h2>Elamkulam Weather Station</h2>
-
-    <p><b>Real-Time Weather Monitoring System</b></p>
-    <p>Malappuram District, Kerala, India</p>
-    <p>In coordination with House Public Board Department (HPBD)</p>
-    <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
-
-  </div>
-
-</section>
-<p>ELWOIC (Elamkulam Local Weather Observation & Information Centre) is a student-run community project dedicated to providing near real-time local weather information for Elamkulam, Kerala. </p>
-<section class="info-intro-wrapper">
-    <!-- 1. Include Tailwind for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Setup Inter font and apply responsive sizing */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        .info-intro-wrapper {
-            font-family: 'Inter', sans-serif;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Core Box Styling */
-        .info-intro-box {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 900px;
-            min-height: 400px;
-            background-color: #3f3f46; /* Default gray/blue background */
-            background-size: cover;
-            background-position: center;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Overlay for Readability */
-        .overlay {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
-        }
-
-        /* Left side (Logo container) */
-        .info-left {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .info-left img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Right side (Text content) */
-        .info-right h1 {
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 800; /* font-extrabold */
-            color: #fde047; /* Tailwind yellow-300 for emphasis */
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
-        }
-        .info-right h2 {
-            font-size: 1.5rem; /* text-2xl */
-            font-weight: 600; /* font-semibold */
-            color: #fffff; /* Tailwind gray-200 */
-            margin-bottom: 1rem;
-        }
-        .info-right p {
-            color: #fffff; /* Tailwind gray-300 */
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-        }
-        .info-right strong {
-            color: #fffff; /* Tailwind gray-100 */
-        }
-
-        .info-btn {
-            display: inline-block;
-            margin-top: 1.5rem;
-            padding: 0.75rem 1.5rem;
-            background-color: #3b82f6; /* Tailwind blue-500 */
-            color: white;
-            font-weight: 600;
-            border-radius: 0.75rem;
-            transition: background-color 0.2s, transform 0.1s;
-            text-align: center;
-            width: max-content;
-        }
-        .info-btn:hover {
-            background-color: #2563eb; /* Tailwind blue-600 */
-            transform: translateY(-1px);
-        }
-
-        /* Desktop Layout (above 640px) */
-        @media (min-width: 640px) {
-            .info-intro-box {
-                flex-direction: row;
-                min-height: 300px;
-            }
-            .overlay {
-                flex-direction: row;
-                align-items: flex-start;
-                padding: 2.5rem;
-            }
-            .info-left {
-                flex: 0 0 160px; /* Fixed width for logo area */
-                margin-right: 2.5rem;
-                margin-bottom: 0;
-            }
-            .info-left img {
-                width: 160px;
-                height: 160px;
-            }
-            .info-right {
-                flex-grow: 1;
-                text-align: left;
-            }
-            .info-right h1 {
-                font-size: 3rem; /* text-5xl */
-            }
-        }
-    </style>
-
-    <!-- 🌥️ INFORMATION INTRO BOX -->
-    <div class="info-intro-box" style="background-image: url('background hpbd.png');">
-        <div class="overlay">
-            
-            <div class="info-left">
-                <!-- IMPORTANT: Replace the src with your actual Logo image path/URL -->
-                <img src="HPBD_Logo_Transparent.png" alt="HPBD Logo">
-            </div>
-
-            <div class="info-right">
-                <!-- Based on "House Public Board Department" -->
-                <h1>HPBD</h1>
-                <h2>House Public Board Department</h2>
-
-                <p>A house-owned operating Board established since **2023**.</p>
-                <p>Helps run the house **systematically and without collisions**.</p>
-                <p>Coordinates with ELWOIC for smooth operation (Head Office in the same building).</p>
-                <p><strong>Head Office Coordinates:</strong> 10.8923431009004°N, 76.23438262663473°E</p>
-              
-            </div>
-
-        </div>
-    </div>
-
-</section>
-  
-  <style>
-/* INFO INTRO BOX */
-.info-intro-box {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 40px 30px;
-    display: flex;
-    gap: 40px;
-    border-radius: 14px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    box-shadow: 0 px 1px rgba(0,0,0,0.);
-    backdrop-filter: ;
-}
-
-/* Logo Area */
-.info-left img {
-    width: 260px;
-    max-width: 100%;
-    border-radius: 10px;
-}
-
-/* Text Area */
-.info-right {
-    flex: 1;
-}
-
-.info-right h1 {
-    margin: 0;
-    font-size: 38px;
-    font-weight: 700;
-    color: #002f5e;
-}
-
-.info-right h2 {
-    margin: 5px 0 15px 0;
-    font-size: 26px;
-    color: #003a63;
-}
-
-.info-right p {
-    margin: 8px 0;
-    font-size: 17px;
-    color: ;
-}
-
-/* Button */
-.info-btn {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 18px;
-    background: #004a80;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 15px;
-}
-
-.info-btn:hover {
-    background: #0060a6;
-}
-</style>
-
-
-
-  <h2>Data Sources</h2>
- <section class="partner-source-section">
-
-    <style>
-        /* Re-import the Inter font directly within the style block */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        
-        /* Apply the Inter font globally within this section */
-        .partner-source-section {
-            font-family: 'Inter', sans-serif;
-            padding: 1.5rem 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        /* The rest of your existing CSS styles */
-        #partners-container {
-            width: 100%;
-            max-width: 900px;
-            background: #fff;
-            border-radius: 1rem;
-            padding: 1.25rem;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-        }
-
-        .icon-circle {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
-            margin-bottom: 0.5rem;
-        }
-        .icon-circle:hover { transform: scale(1.05); }
-
-        .access-button {
-            font-size: 0.8rem;
-            padding: 0.6rem 1.1rem;
-            transition: transform 0.15s;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-        }
-        .access-button:hover { transform: translateY(-1px); }
-
-        @media (min-width: 640px) {
-            .icon-circle { width: 65px; height: 65px; }
-            .access-button { font-size: 0.9rem; padding: 0.75rem 1.4rem; }
-        }
-
-        @media (min-width: 1024px) {
-            #partners-container { padding: 3rem; }
-            .icon-circle { width: 70px; height: 70px; }
-        }
-    </style>
+    <h2>About ELWOIC</h2>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <section class="info-intro-box" style="
+        display: flex;
+        gap: 40px;
+        border-radius: 14px;
+        background-image: url('Screenshot 2025-11-16 154855.png'); /* Set your background image here */
+        background-size: cover;
+        background-position: center;
+        padding: 40px 30px;
+        margin: 30px auto;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    ">
+        <div class="info-left">
+            <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo" style="width: 260px; max-width: 100%; border-radius: 10px;">
+        </div>
+        <div class="info-right">
+            <h1>ELWOIC</h1>
+            <h2>Elamkulam Weather Station</h2>
+            <p><b>Real-Time Weather Monitoring System</b></p>
+            <p>Malappuram District, Kerala, India</p>
+            <p>In coordination with House Public Board Department (HPBD)</p>
+            <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
+        </div>
+    </section>
+    
+    <p>ELWOIC (Elamkulam Local Weather Observation & Information Centre) is a student-run community project dedicated to providing near real-time local weather information for Elamkulam, Kerala.</p>
 
-    <div id="partners-container">
+    <h2 style="margin-top: 30px;">House Public Board Department (HPBD)</h2>
+    <section style="
+        display: flex; 
+        gap: 40px; 
+        padding: 20px 0;
+        align-items: center;
+    ">
+        <div style="flex: 0 0 160px; text-align: center;">
+            <img src="HPBD_Logo_Transparent.png" alt="HPBD Logo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fde047; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);">
+        </div>
+        <div>
+            <h1 style="font-size: 24px; color: #004a80; margin-top: 0;">HPBD</h1>
+            <p>A **house-owned operating Board** established since **2023**.</p>
+            <p>Helps run the house **systematically and without collisions**.</p>
+            <p>Coordinates with ELWOIC for smooth operation (Head Office in the same building).</p>
+            <p><strong>Head Office Coordinates:</strong> 10.8923431009004°N, 76.23438262663473°E</p>
+        </div>
+    </section>
+
+
+    <h2 style="margin-top: 30px;">Data Sources</h2>
+    <p>Our data is aggregated from multiple sources (Open-Meteo, Weather widgets, Windy embeds and local sensors when available). This page documents the partners and sources used for forecasts and live snapshots.</p>
+
+    <div id="partners-container" class="mt-8">
         <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 text-center mb-8">
             Official Data Sources & Partners
         </h2>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 mb-8">
-            
             <div class="text-center">
                 <div class="icon-circle mx-auto bg-yellow-500/20">
-                    <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19.5 10c-1.12 0-2.07.72-2.45 1.7L15 13H5c-1.1 0-2 .9-2 2s.9 2 2 2h10l2.05 2.5c.38.98 1.33 1.7 2.45 1.7 1.66 0 3-1.34 3-3 0-1.66-1.34-3-3-3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 4c.69 0 1.37.08 2.03.24L12 8l-2.03-3.76C10.63 4.08 11.31 4 12 4z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19.5 10c-1.12 0-2.07.72-2.45 1.7L15 13H5c-1.1 0-2 .9-2 2s.9 2 2 2h10l2.05 2.5c.38.98 1.33 1.7 2.45 1.7 1.66 0 3-1.34 3-3 0-1.66-1.34-3-3-3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 4c.69 0 1.37.08 2.03.24L12 8l-2.03-3.76C10.63 4.08 11.31 4 12 4z"/></svg>
                 </div>
                 <h3 class="font-semibold text-xs sm:text-sm text-gray-800">OpenWeatherMap</h3>
                 <p class="text-[0.65rem] text-gray-500">Global API and Current Data</p>
             </div>
-
+            
             <div class="text-center">
                 <div class="icon-circle mx-auto bg-green-500/20">
-                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C8.69 2 6 4.69 6 8h1.75c0-1.4 1.15-2.5 2.5-2.5 1.4 0 2.5 1.1 2.5 2.5v.5h1.25c2.4 0 4.2 2 4.2 4.2C18.2 14.7 16.5 16 14 16h-1.25c-.4 0-.75.35-.75.75v3.5c0 .4.35.75.75.75h1.25c3.31 0 6-2.69 6-6s-2.69-6-6-6h-.5c-.3 0-.5-.2-.5-.5V3.75c0-.4-.35-.75-.75-.75z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.69 2 6 4.69 6 8h1.75c0-1.4 1.15-2.5 2.5-2.5 1.4 0 2.5 1.1 2.5 2.5v.5h1.25c2.4 0 4.2 2 4.2 4.2C18.2 14.7 16.5 16 14 16h-1.25c-.4 0-.75.35-.75.75v3.5c0 .4.35.75.75.75h1.25c3.31 0 6-2.69 6-6s-2.69-6-6-6h-.5c-.3 0-.5-.2-.5-.5V3.75c0-.4-.35-.75-.75-.75z"/></svg>
                 </div>
                 <h3 class="font-semibold text-xs sm:text-sm text-gray-800">IMD Kerala</h3>
                 <p class="text-[0.65rem] text-gray-500">Official alerts & state forecasts</p>
@@ -482,9 +246,7 @@
 
             <div class="text-center">
                 <div class="icon-circle mx-auto bg-orange-500/20">
-                    <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12c0 3.83 2.06 7.23 5.18 9.07l.95-1.79C6.03 17.84 4 14.88 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.88-2.03 5.84-4.13 7.28l.95 1.79C19.94 19.23 22 15.83 22 12c0-5.52-4.48-10-10-10zm-1 9V8h2v3h3v2h-3v3h-2v-3H8v-2h3z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 3.83 2.06 7.23 5.18 9.07l.95-1.79C6.03 17.84 4 14.88 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.88-2.03 5.84-4.13 7.28l.95 1.79C19.94 19.23 22 15.83 22 12c0-5.52-4.48-10-10-10zm-1 9V8h2v3h3v2h-3v3h-2v-3H8v-2h3z"/></svg>
                 </div>
                 <h3 class="font-semibold text-xs sm:text-sm text-gray-800">AccuWeather</h3>
                 <p class="text-[0.65rem] text-gray-500">Professional radar & daily reports</p>
@@ -492,9 +254,7 @@
 
             <div class="text-center">
                 <div class="icon-circle mx-auto bg-blue-500/20">
-                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17 10c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2s-.9-2-2-2h-1zm-6-4h2c2.21 0 4 1.79 4 4v3h-4.5l-1.5 2v-2H5c-1.11 0-2-.9-2-2s.89-2 2-2h1c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2s-.9-2-2-2h-1zm-6-4h2c2.21 0 4 1.79 4 4v3h-4.5l-1.5 2v-2H5c-1.11 0-2-.9-2-2s.89-2 2-2h1c1.1 0 2-.9 2-2s-.9-2-2-2z"/></svg>
                 </div>
                 <h3 class="font-semibold text-xs sm:text-sm text-gray-800">Open-Meteo</h3>
                 <p class="text-[0.65rem] text-gray-500">Open-source & hourly models</p>
@@ -502,14 +262,11 @@
 
             <div class="text-center">
                 <div class="icon-circle mx-auto bg-cyan-500/20">
-                    <svg class="w-6 h-6 text-cyan-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M16 10c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2zm-2 5h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2zm2.5-9h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-cyan-600" fill="currentColor" viewBox="0 0 24 24"><path d="M16 10c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2zm-2 5h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2zm2.5-9h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2z"/></svg>
                 </div>
                 <h3 class="font-semibold text-xs sm:text-sm text-gray-800">Windy</h3>
                 <p class="text-[0.65rem] text-gray-500">Rain tracking & air models</p>
             </div>
-
         </div>
 
         <div class="border-t border-gray-200 mb-6"></div>
@@ -522,57 +279,54 @@
             <a href="https://www.windy.com/" target="_blank" class="access-button bg-cyan-500 text-white rounded-full hover:bg-cyan-600">Windy Radar</a>
             <a href="https://www.accuweather.com/" target="_blank" class="access-button bg-orange-500 text-white rounded-full hover:bg-orange-600">AccuWeather</a>
             <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" class="access-button bg-green-500 text-white rounded-full hover:bg-green-600">IMD Kerala</a>
-            </div>
+        </div>
     </div>
-</section>
-  <p>
-    Our data is aggregated from multiple sources (Open-Meteo, Weather widgets, Windy embeds and local sensors when available).
-    This page documents the partners and sources used for forecasts and live snapshots.
-  </p>
 
- <div style="width: fit-content; margin: 0 auto; text-align: center;">
-  <h2>See Where Elamkulam Grama Panchayath Is, On Google Maps 🗺️</h2>
-  
-  <iframe 
-    width="600" 
-    height="450" 
-    style="border:0;" 
-    loading="lazy" 
-    allowfullscreen 
-    referrerpolicy="no-referrer-when-downgrade" 
-    src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d11977.759313958259!2d76.23268761376956!3d10.905231921137903!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDU0JzMzLjYiTiA3NsKwMTMnNDkuOSJF!5e1!3m2!1sen!2sus!4v1763295259156!5m2!1sen!2sus"
-</iframe>
-</div>
-<div>
-   <h2>Information - Elamkulam Panchayath</h2>
-<hr>
 
-<h3>📍 Location & Administration</h3>
-<p>Elamkulam is a village and Gram Panchayat in Perinthalmanna Taluk, Malappuram District, Kerala, with Pincode 679340. It is located 10 km from Perinthalmanna (Sub-district HQ) and 30 km from Malappuram (District HQ), at coordinates 10.908°N, 76.229°E. The village is well-connected to nearby towns via state highways and rural roads, with easy access to markets, schools, and government offices.</p>
+    <div class="map-container">
+        <h2 style="font-size: 20px;">See Where Elamkulam Grama Panchayath Is, On Google Maps 🗺️</h2>
+        
+        <iframe 
+            width="600" 
+            height="450" 
+            style="border:0;" 
+            loading="lazy" 
+            allowfullscreen 
+            referrerpolicy="no-referrer-when-downgrade" 
+            src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d11977.759310781956!2d76.232688!3d10.905232!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDU0JzMzLjYiTiA3NsKwMTMnNDkuOSJF!5e1!3m2!1sen!2sus!4v1763800094782!5m2!1sen!2sus"
+        ></iframe>
+    </div>
+    
+    <h2 style="margin-top: 30px;">Information - Elamkulam Panchayath</h2>
+    <hr>
 
-<hr>
-<h3>📏 Area & Land Use</h3>
-<p>The village covers a total area of 2,134 hectares (21.34 km²), with 2,064.1 ha (96.7%) used for agriculture. Irrigated land accounts for 575.1 ha (27.9%), while non-agricultural uses cover 69.9 ha (3.3%). The region has fertile soil suitable for rice, coconut, spices, and other crops, along with minor water bodies supporting irrigation. Moderate forest cover and green belts contribute to biodiversity and ecological balance.</p>
+    <h3>📍 Location & Administration</h3>
+    <p>Elamkulam is a village and Gram Panchayat in Perinthalmanna Taluk, Malappuram District, Kerala, with Pincode 679340. It is located 10 km from Perinthalmanna (Sub-district HQ) and 30 km from Malappuram (District HQ), at coordinates 10.908°N, 76.229°E. The village is well-connected to nearby towns via state highways and rural roads, with easy access to markets, schools, and government offices.</p>
 
-<hr>
-<h3>🧑‍🤝‍🧑 Demographics (2011 Census)</h3>
-<p>Elamkulam has a total population of approximately 26,456 people living in around 5,330 households. The overall literacy rate is 94.65%, with male literacy at 96% and female literacy at 93.48%. The population density is about 1,240 per km². The village has a balanced gender ratio, a significant youth population, and a predominantly Malayalam-speaking community.</p>
+    <hr>
+    <h3>📏 Area & Land Use</h3>
+    <p>The village covers a total area of 2,134 hectares (21.34 km²), with 2,064.1 ha (96.7%) used for agriculture. Irrigated land accounts for 575.1 ha (27.9%), while non-agricultural uses cover 69.9 ha (3.3%). The region has fertile soil suitable for rice, coconut, spices, and other crops, along with minor water bodies supporting irrigation. Moderate forest cover and green belts contribute to biodiversity and ecological balance.</p>
 
-<hr>
-<h3>🏛️ Governance Structure</h3>
-<p>The Gram Panchayat consists of 16 wards, with an average of 332 households per ward. It is a local self-government institution implementing rural development programs such as sanitation, housing, and water supply. Community-based initiatives, active resident participation, and coordination with district authorities ensure effective administration and democratic representation. E-governance programs enhance transparency and efficiency.</p>
+    <hr>
+    <h3>🧑‍🤝‍🧑 Demographics (2011 Census)</h3>
+    <p>Elamkulam has a total population of approximately 26,456 people living in around 5,330 households. The overall literacy rate is 94.65%, with male literacy at 96% and female literacy at 93.48%. The population density is about 1,240 per km². The village has a balanced gender ratio, a significant youth population, and a predominantly Malayalam-speaking community.</p>
 
-<hr>
-<h3>🌦️ Climate & Geography</h3>
-<p>Elamkulam experiences a tropical monsoon climate, with an annual rainfall of 2,500–3,000 mm and temperatures ranging between 22–35°C. The monsoon season lasts from June to September. Coastal influence moderates temperatures, and high humidity is prevalent year-round. Fertile alluvial and laterite soils support agriculture. The area is surrounded by small hills, agricultural fields, and minor water bodies, with occasional localized flooding during heavy rains.</p>
+    <hr>
+    <h3>🏛️ Governance Structure</h3>
+    <p>The Gram Panchayat consists of 16 wards, with an average of 332 households per ward. It is a local self-government institution implementing rural development programs such as sanitation, housing, and water supply. Community-based initiatives, active resident participation, and coordination with district authorities ensure effective administration and democratic representation. E-governance programs enhance transparency and efficiency.</p>
 
-<hr>
-<h3>💰 Economic Activities</h3>
-<p>Agriculture dominates, using 96.7% of land. Major crops include rice, coconut, and areca nut, along with spices such as pepper and cardamom. Small-scale industries, local trade, and service sector employment also contribute to the economy. Seasonal labor migration supports household income, while community cooperatives aid agriculture and trade. Emerging tourism potential exists due to cultural heritage and natural surroundings.</p>
+    <hr>
+    <h3>🌦️ Climate & Geography</h3>
+    <p>Elamkulam experiences a tropical monsoon climate, with an annual rainfall of 2,500–3,000 mm and temperatures ranging between 22–35°C. The monsoon season lasts from June to September. Coastal influence moderates temperatures, and high humidity is prevalent year-round. Fertile alluvial and laterite soils support agriculture. The area is surrounded by small hills, agricultural fields, and minor water bodies, with occasional localized flooding during heavy rains.</p>
 
-<hr>
-<h3>➕ Additional Information</h3>
-<p>Culturally, Elamkulam preserves rich Malayalam traditions, temple festivals, Onam celebrations, and folk arts like Kathakali and Theyyam. The literacy rate of 94.65% reflects strong educational infrastructure, including primary, secondary, and vocational institutions. Transportation is supported by state roads and bus services, with access to nearby railway stations. Infrastructure improvements include water supply, electricity, communication facilities, and community centers. Healthcare services are provided by primary health centers, private clinics, and regional hospitals. ELWOIC offers crucial weather information for agriculture planning and daily activities, supporting disaster preparedness and early warning systems.</p>
+    <hr>
+    <h3>💰 Economic Activities</h3>
+    <p>Agriculture dominates, using 96.7% of land. Major crops include rice, coconut, and areca nut, along with spices such as pepper and cardamom. Small-scale industries, local trade, and service sector employment also contribute to the economy. Seasonal labor migration supports household income, while community cooperatives aid agriculture and trade. Emerging tourism potential exists due to cultural heritage and natural surroundings.</p>
+
+    <hr>
+    <h3>➕ Additional Information</h3>
+    <p>Culturally, Elamkulam preserves rich Malayalam traditions, temple festivals, Onam celebrations, and folk arts like Kathakali and Theyyam. The literacy rate of 94.65% reflects strong educational infrastructure, including primary, secondary, and vocational institutions. Transportation is supported by state roads and bus services, with access to nearby railway stations. Infrastructure improvements include water supply, electricity, communication facilities, and community centers. Healthcare services are provided by primary health centers, private clinics, and regional hospitals. ELWOIC offers crucial weather information for agriculture planning and daily activities, supporting disaster preparedness and early warning systems.</p>
+
 </div>
 </body>
 </html>
