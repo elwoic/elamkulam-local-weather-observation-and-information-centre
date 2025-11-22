@@ -76,6 +76,7 @@
 
     // Global variables from the environment
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    // Ensure firebaseConfig parses correctly, defaulting to an empty object if the variable is not defined.
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -86,7 +87,6 @@
 
     let db;
     let auth;
-    let isAuthReady = false;
 
     // Helper function to update the status message
     function updateStatus(text, type = 'info') {
@@ -147,53 +147,63 @@
     function subscribeToMessages(userId) {
         // IMPORTANT: Use the private collection path for the current user
         const collectionPath = `artifacts/${appId}/users/${userId}/contact_submissions`;
-        const messagesQuery = query(collection(db, collectionPath));
         
-        updateStatus(`Connected. Listening for submissions for User ID: ${userId.substring(0, 8)}...`, 'info');
+        try {
+            const messagesQuery = query(collection(db, collectionPath));
+            
+            updateStatus(`Connected. Listening for submissions for User ID: ${userId.substring(0, 8)}...`, 'info');
 
-        onSnapshot(messagesQuery, (snapshot) => {
-            const messages = [];
-            snapshot.forEach(doc => {
-                messages.push({ id: doc.id, data: doc.data() });
+            onSnapshot(messagesQuery, (snapshot) => {
+                const messages = [];
+                snapshot.forEach(doc => {
+                    messages.push({ id: doc.id, data: doc.data() });
+                });
+                renderMessages(messages);
+                updateStatus(`Successfully loaded ${messages.length} messages.`, 'success');
+
+            }, (error) => {
+                console.error("Firestore real-time listener error:", error);
+                updateStatus(`Error loading messages: ${error.message}`, 'error');
             });
-            renderMessages(messages);
-            updateStatus(`Successfully loaded ${messages.length} messages.`, 'success');
-
-        }, (error) => {
-            console.error("Firestore real-time listener error:", error);
-            updateStatus(`Error loading messages: ${error.message}`, 'error');
-        });
+        } catch (error) {
+            console.error("Error setting up Firestore listener:", error);
+            updateStatus(`Listener Error: ${error.name || 'Unknown'}. Check console for details.`, 'error');
+        }
     }
 
     // Initialization sequence
     async function setupFirebase() {
         updateStatus("Initializing Firebase...");
         try {
+            // 1. Initialize App
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
 
-            // Authenticate user
+            // 2. Authenticate user
             if (initialAuthToken) {
                 await signInWithCustomToken(auth, initialAuthToken);
             } else {
                 await signInAnonymously(auth);
             }
-            isAuthReady = true;
 
-            const userId = auth.currentUser?.uid || crypto.randomUUID();
-            console.log("Firebase initialized and user authenticated:", userId);
+            const userId = auth.currentUser?.uid || 'anonymous-user';
+            console.log("Firebase initialized and user authenticated. User ID:", userId);
             
+            // 3. Subscribe to data
             subscribeToMessages(userId);
 
         } catch (error) {
-            console.error("Error setting up Firebase:", error);
-            updateStatus(`System Error: Could not initialize services. Check console for details.`, 'error');
+            // Log the detailed error object and update the status with more info
+            console.error("Critical Error setting up Firebase services:", error);
+            const errorMessage = error.message || 'Check console for details.';
+            const errorName = error.name || 'System Error';
+            updateStatus(`Initialization Failed (${errorName}): ${errorMessage}`, 'error');
         }
     }
 
     // Start setup when the page loads
-    document.addEventListener("DOMContentLoaded", setupFirebase);
+    window.onload = setupFirebase;
 </script>
 
 </body>
