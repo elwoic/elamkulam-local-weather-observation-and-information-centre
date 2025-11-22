@@ -76,8 +76,15 @@
 
     // Global variables from the environment
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    // Ensure firebaseConfig parses correctly, defaulting to an empty object if the variable is not defined.
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    // Parse firebaseConfig, ensuring the default is an object
+    const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+    let firebaseConfig;
+    try {
+        firebaseConfig = JSON.parse(firebaseConfigString);
+    } catch (e) {
+        console.error("Failed to parse firebase config string:", e);
+        firebaseConfig = {}; // Default to empty object on parse failure
+    }
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
     // UI elements
@@ -123,8 +130,8 @@
             element.className = 'message-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500';
 
             // Format date nicely
-            const date = new Date(data.submittedAt); // Use 'submittedAt'
-            const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            const submittedDate = data.submittedAt ? new Date(data.submittedAt) : new Date();
+            const formattedDate = submittedDate.toLocaleDateString() + ' ' + submittedDate.toLocaleTimeString();
 
             element.innerHTML = `
                 <div class="flex justify-between items-start mb-3 border-b pb-2">
@@ -167,13 +174,22 @@
             });
         } catch (error) {
             console.error("Error setting up Firestore listener:", error);
-            updateStatus(`Listener Error: ${error.name || 'Unknown'}. Check console for details.`, 'error');
+            updateStatus(`Listener Setup Error: ${error.name || 'Unknown'}. Check console for details.`, 'error');
         }
     }
 
     // Initialization sequence
     async function setupFirebase() {
         updateStatus("Initializing Firebase...");
+        
+        // **CRITICAL CHECK**
+        if (!firebaseConfig || !firebaseConfig.projectId) {
+            const configError = "Firebase configuration is missing 'projectId'. Ensure '__firebase_config' is set correctly by the hosting platform.";
+            console.error(configError, firebaseConfig);
+            updateStatus(`Initialization Failed (Config Error): ${configError}`, 'error');
+            return;
+        }
+
         try {
             // 1. Initialize App
             const app = initializeApp(firebaseConfig);
@@ -198,7 +214,8 @@
             console.error("Critical Error setting up Firebase services:", error);
             const errorMessage = error.message || 'Check console for details.';
             const errorName = error.name || 'System Error';
-            updateStatus(`Initialization Failed (${errorName}): ${errorMessage}`, 'error');
+            // We use error.code if available, otherwise fall back to name/message
+            updateStatus(`Initialization Failed (${error.code || errorName}): ${errorMessage}`, 'error');
         }
     }
 
