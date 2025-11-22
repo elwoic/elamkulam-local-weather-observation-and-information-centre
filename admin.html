@@ -13,6 +13,14 @@
             min-height: 100vh;
         }
         .header-bg-main { background-color: #004a80; }
+        .message-card {
+            /* Custom styling for submission cards */
+            transition: all 0.3s ease;
+        }
+        .message-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+        }
     </style>
     <script>
         tailwind.config = {
@@ -31,7 +39,7 @@
 <header class="header-bg-main text-white p-4 shadow-lg sticky top-0 z-10">
     <div class="container mx-auto">
         <h1 class="text-2xl font-bold">ELWOIC Contact Message Admin View</h1>
-        <p class="text-sm opacity-80">Real-time view of submissions in Firestore</p>
+        <p class="text-sm opacity-80">Real-time view of your private submissions</p>
     </div>
 </header>
 
@@ -53,7 +61,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-2 4v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7" />
         </svg>
         <h3 class="mt-2 text-xl font-medium text-gray-900">No Messages Yet</h3>
-        <p class="mt-1 text-sm text-gray-500">Submissions will appear here in real-time.</p>
+        <p class="mt-1 text-sm text-gray-500">Submissions will appear here in real-time after being sent from the contact page.</p>
     </div>
 
 </main>
@@ -62,7 +70,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, setLogLevel } } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     setLogLevel('Debug');
 
@@ -80,9 +88,10 @@
     let auth;
     let isAuthReady = false;
 
+    // Helper function to update the status message
     function updateStatus(text, type = 'info') {
         statusIndicator.textContent = text;
-        statusIndicator.classList.remove('bg-blue-100', 'text-blue-800', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+        statusIndicator.className = 'mb-6 p-3 rounded-lg text-center font-medium';
         if (type === 'info') {
             statusIndicator.classList.add('bg-blue-100', 'text-blue-800');
         } else if (type === 'success') {
@@ -98,21 +107,23 @@
 
         if (messages.length === 0) {
             emptyState.classList.remove('hidden');
+            messagesContainer.classList.add('hidden');
             return;
         }
 
         emptyState.classList.add('hidden');
+        messagesContainer.classList.remove('hidden');
 
-        // Sort messages by timestamp descending (newest first)
-        messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // Sort messages by 'submittedAt' descending (newest first)
+        messages.sort((a, b) => new Date(b.data.submittedAt) - new Date(a.data.submittedAt));
 
         messages.forEach((doc) => {
             const data = doc.data;
             const element = document.createElement('div');
-            element.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500 transition hover:shadow-2xl';
+            element.className = 'message-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500';
 
             // Format date nicely
-            const date = new Date(data.timestamp);
+            const date = new Date(data.submittedAt); // Use 'submittedAt'
             const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 
             element.innerHTML = `
@@ -124,8 +135,8 @@
                     <p class="text-sm">
                         <span class="font-semibold text-gray-700">From:</span> ${data.name} &lt;<a href="mailto:${data.email}" class="text-blue-500 hover:underline">${data.email}</a>&gt;
                     </p>
-                    <p class="text-xs text-gray-400">User ID: ${data.userId || 'N/A'}</p>
-                    <p class="pt-4 text-gray-800 whitespace-pre-wrap">${data.message}</p>
+                    <p class="text-xs text-gray-400">Submission ID: ${doc.id}</p>
+                    <p class="pt-4 text-gray-800 whitespace-pre-wrap leading-relaxed">${data.message}</p>
                 </div>
             `;
             messagesContainer.appendChild(element);
@@ -133,13 +144,12 @@
     }
 
     // Function to set up the real-time listener
-    function subscribeToMessages() {
-        if (!db || !isAuthReady) return;
-
-        const collectionPath = `artifacts/${appId}/public/data/contact_messages`;
-        const messagesQuery = collection(db, collectionPath);
+    function subscribeToMessages(userId) {
+        // IMPORTANT: Use the private collection path for the current user
+        const collectionPath = `artifacts/${appId}/users/${userId}/contact_submissions`;
+        const messagesQuery = query(collection(db, collectionPath));
         
-        updateStatus(`Listening for messages on: ${collectionPath}`, 'info');
+        updateStatus(`Connected. Listening for submissions for User ID: ${userId.substring(0, 8)}...`, 'info');
 
         onSnapshot(messagesQuery, (snapshot) => {
             const messages = [];
@@ -157,6 +167,7 @@
 
     // Initialization sequence
     async function setupFirebase() {
+        updateStatus("Initializing Firebase...");
         try {
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
@@ -169,13 +180,15 @@
                 await signInAnonymously(auth);
             }
             isAuthReady = true;
-            console.log("Firebase initialized and user authenticated.");
+
+            const userId = auth.currentUser?.uid || crypto.randomUUID();
+            console.log("Firebase initialized and user authenticated:", userId);
             
-            subscribeToMessages();
+            subscribeToMessages(userId);
 
         } catch (error) {
             console.error("Error setting up Firebase:", error);
-            updateStatus(`System Error: Could not initialize services. Details: ${error.message}`, 'error');
+            updateStatus(`System Error: Could not initialize services. Check console for details.`, 'error');
         }
     }
 
