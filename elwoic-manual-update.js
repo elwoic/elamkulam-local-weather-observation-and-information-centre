@@ -11,7 +11,7 @@ const today = new Date();
        matches the configured manual update date
 ================================================== */
 
-const manualDate = new Date("2025-11-20T18:30:00");
+const manualDate = new Date("2026-1-30T24:00:00");
 
 // Write here your manual update text (or leave empty)
 const manualMessage =
@@ -48,7 +48,7 @@ if (today.toDateString() === manualDate.toDateString()) {
     🌤️ PRE-UPDATE SECTION — Visible UNTIL set date
 ================================================== */
 
-const preUpdateEnd = new Date("2025-11-20T23:59:59");
+const preUpdateEnd = new Date("2025-11-23T24:00:00");
 
 // Write here your pre-update text (or leave empty)
 const preUpdateMessage =
