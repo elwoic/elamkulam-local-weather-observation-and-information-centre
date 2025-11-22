@@ -1,252 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELWOIC | Contact Message Admin View</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* General body styling */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f8fb;
-            min-height: 100vh;
-        }
-        .header-bg-main { background-color: #004a80; }
-        .message-card {
-            /* Custom styling for submission cards */
-            transition: all 0.3s ease;
-        }
-        .message-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ELWOIC — Admin Messages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-
-<header class="header-bg-main text-white p-4 shadow-lg sticky top-0 z-10">
-    <div class="container mx-auto">
-        <h1 class="text-2xl font-bold">ELWOIC Contact Message Admin View</h1>
-        <p class="text-sm opacity-80">Real-time view of your private submissions</p>
+<body class="bg-slate-50 min-h-screen font-sans">
+  <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
+    <div class="container mx-auto flex items-center justify-between">
+      <div>
+        <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Messages</h1>
+        <p class="text-xs opacity-80">Realtime message viewer</p>
+      </div>
+      <div class="space-x-2">
+        <button id="exportBtn" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm hidden">Export CSV</button>
+        <span id="countBadge" class="inline-block bg-white text-blue-900 px-3 py-1 rounded hidden"></span>
+      </div>
     </div>
-</header>
+  </header>
 
-<main class="container mx-auto px-4 py-8">
-    
-    <!-- Status Indicator -->
-    <div id="statusIndicator" class="mb-6 p-3 rounded-lg text-center font-medium bg-blue-100 text-blue-800">
-        Initializing...
-    </div>
+  <main class="container mx-auto px-4 py-8">
+    <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Initializing...</div>
 
-    <!-- Messages Container -->
-    <div id="messagesContainer" class="space-y-4">
-        <!-- Messages will be injected here -->
-    </div>
-
-    <!-- Empty State -->
-    <div id="emptyState" class="hidden text-center p-12 bg-white rounded-xl shadow-md border-2 border-dashed border-gray-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-2 4v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7" />
-        </svg>
-        <h3 class="mt-2 text-xl font-medium text-gray-900">No Messages Yet</h3>
-        <p class="mt-1 text-sm text-gray-500">Submissions will appear here in real-time after being sent from the contact page.</p>
+    <div id="controls" class="mb-4 hidden">
+      <input id="filterInput" placeholder="Filter by name/email/subject..." class="p-2 border rounded w-full md:w-1/2" />
     </div>
 
-</main>
+    <div id="messagesList" class="space-y-4">
+      <!-- messages show here -->
+    </div>
 
-<!-- Firebase Initialization and Data Fetching Script -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
+      <p class="text-gray-600">No messages yet.</p>
+    </div>
+  </main>
 
-    setLogLevel('Debug');
+  <footer class="text-center text-sm text-gray-500 py-6">
+    Admin panel — protect this page. For stronger security use Firebase Auth or server-side protection.
+  </footer>
 
-    // Global variables from the Canvas environment
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import {
+      getDatabase, ref, onValue, remove
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-    // --- CRITICAL CHANGE FOR EXTERNAL USE ---
-    // We try to use the environment config first. If it's not defined (which is 
-    // the case when you run it outside the preview), we use a placeholder config
-    // to prevent the initialization error.
-    let firebaseConfig;
-    const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-    
-    if (firebaseConfigString) {
-        try {
-            firebaseConfig = JSON.parse(firebaseConfigString);
-        } catch (e) {
-            console.error("Failed to parse firebase config string:", e);
-            firebaseConfig = null; // Mark as invalid
-        }
+    // --------------------- CONFIG ---------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
+      authDomain: "elwoic.firebaseapp.com",
+      databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "elwoic",
+      storageBucket: "elwoic.firebasestorage.app",
+      messagingSenderId: "597873791800",
+      appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd",
+      measurementId: "G-0KZS7RPGKK"
+    };
+    // ----------------- ADMIN PASS (client-side) -----------------
+    // Change this to your own passphrase. Note: client-side passphrase is not secure.
+    const ADMIN_PASSPHRASE = "elwoic-admin";
+
+    // initialize
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // elements
+    const statusEl = document.getElementById('status');
+    const messagesList = document.getElementById('messagesList');
+    const emptyEl = document.getElementById('empty');
+    const exportBtn = document.getElementById('exportBtn');
+    const countBadge = document.getElementById('countBadge');
+    const controls = document.getElementById('controls');
+    const filterInput = document.getElementById('filterInput');
+
+    // ask for passphrase
+    let allowed = false;
+    try {
+      const entered = prompt("Enter admin passphrase:");
+      if (entered && entered === ADMIN_PASSPHRASE) {
+        allowed = true;
+        controls.classList.remove('hidden');
+      }
+    } catch (e) {}
+
+    if (!allowed) {
+      statusEl.textContent = "Access denied — wrong passphrase. Refresh to try again.";
+      statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
+      // hide body content
+      messagesList.style.display = 'none';
+    } else {
+      startListening();
     }
 
-    if (!firebaseConfig || !firebaseConfig.projectId) {
-        console.warn("Using dummy Firebase config to avoid 'projectId missing' error.");
-        firebaseConfig = {
-            apiKey: "dummy-api-key",
-            authDomain: "dummy-auth-domain",
-            projectId: "dummy-project-id", // Satisfies the critical check
-            storageBucket: "dummy-storage-bucket",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef0123456789abcdef"
-        };
-    }
-    // ------------------------------------------
-
-    // UI elements
-    const statusIndicator = document.getElementById('statusIndicator');
-    const messagesContainer = document.getElementById('messagesContainer');
-    const emptyState = document.getElementById('emptyState');
-
-    let db;
-    let auth;
-
-    // Helper function to update the status message
-    function updateStatus(text, type = 'info') {
-        statusIndicator.textContent = text;
-        statusIndicator.className = 'mb-6 p-3 rounded-lg text-center font-medium';
-        if (type === 'info') {
-            statusIndicator.classList.add('bg-blue-100', 'text-blue-800');
-        } else if (type === 'success') {
-            statusIndicator.classList.add('bg-green-100', 'text-green-800');
-        } else if (type === 'error') {
-            statusIndicator.classList.add('bg-red-100', 'text-red-800');
-        }
+    // helper: set status
+    function setStatus(text, kind = 'info') {
+      statusEl.textContent = text;
+      statusEl.className = "mb-4 p-3 rounded text-sm";
+      if (kind === 'info') statusEl.classList.add('bg-blue-100', 'text-blue-800');
+      if (kind === 'success') statusEl.classList.add('bg-green-100', 'text-green-800');
+      if (kind === 'error') statusEl.classList.add('bg-red-100', 'text-red-800');
     }
 
-    // Function to render the messages
-    function renderMessages(messages) {
-        messagesContainer.innerHTML = ''; // Clear existing messages
+    // store data snapshot for filtering/export
+    let currentData = [];
 
-        if (messages.length === 0) {
-            emptyState.classList.remove('hidden');
-            messagesContainer.classList.add('hidden');
-            return;
+    // start realtime listener
+    function startListening() {
+      setStatus('Connecting to Firebase...');
+
+      const msgsRef = ref(db, 'messages');
+      onValue(msgsRef, (snap) => {
+        const val = snap.val();
+        if (!val) {
+          currentData = [];
+          messagesList.innerHTML = '';
+          emptyEl.classList.remove('hidden');
+          exportBtn.classList.add('hidden');
+          countBadge.classList.add('hidden');
+          setStatus('No messages found.', 'info');
+          return;
         }
 
-        emptyState.classList.add('hidden');
-        messagesContainer.classList.remove('hidden');
+        // convert to array of { key, ...data }
+        currentData = Object.entries(val).map(([key, data]) => ({ key, ...data }));
+        // sort newest first by timestamp
+        currentData.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        // Sort messages by 'submittedAt' descending (newest first)
-        messages.sort((a, b) => new Date(b.data.submittedAt) - new Date(a.data.submittedAt));
+        render(currentData);
+        setStatus(`Loaded ${currentData.length} message(s).`, 'success');
+        exportBtn.classList.remove('hidden');
+        countBadge.classList.remove('hidden');
+        countBadge.textContent = `${currentData.length} messages`;
+      }, (err) => {
+        console.error(err);
+        setStatus('Failed to load messages: ' + (err.message || err), 'error');
+      });
 
-        messages.forEach((doc) => {
-            const data = doc.data;
-            const element = document.createElement('div');
-            element.className = 'message-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500';
+      // filter input
+      filterInput.addEventListener('input', () => {
+        const q = (filterInput.value || '').trim().toLowerCase();
+        if (!q) return render(currentData);
+        const filtered = currentData.filter(item =>
+          (item.name||'').toLowerCase().includes(q) ||
+          (item.email||'').toLowerCase().includes(q) ||
+          (item.subject||'').toLowerCase().includes(q) ||
+          (item.message||'').toLowerCase().includes(q)
+        );
+        render(filtered);
+      });
 
-            // Format date nicely
-            const submittedDate = data.submittedAt ? new Date(data.submittedAt) : new Date();
-            const formattedDate = submittedDate.toLocaleDateString() + ' ' + submittedDate.toLocaleTimeString();
+      // export
+      exportBtn.addEventListener('click', () => {
+        exportCSV(currentData);
+      });
+    }
 
-            element.innerHTML = `
-                <div class="flex justify-between items-start mb-3 border-b pb-2">
-                    <h3 class="text-xl font-bold text-gray-800">${data.subject || 'No Subject'}</h3>
-                    <span class="text-sm text-gray-500">${formattedDate}</span>
-                </div>
-                <div class="space-y-1 text-gray-600">
-                    <p class="text-sm">
-                        <span class="font-semibold text-gray-700">From:</span> ${data.name} &lt;<a href="mailto:${data.email}" class="text-blue-500 hover:underline">${data.email}</a>&gt;
-                    </p>
-                    <p class="text-xs text-gray-400">Submission ID: ${doc.id}</p>
-                    <p class="pt-4 text-gray-800 whitespace-pre-wrap leading-relaxed">${data.message}</p>
-                </div>
-            `;
-            messagesContainer.appendChild(element);
+    // render message cards
+    function render(list) {
+      messagesList.innerHTML = '';
+      if (!list || list.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      list.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-blue-600';
+
+        const date = item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg font-semibold text-slate-800">${escapeHtml(item.subject || 'No subject')}</h3>
+                <span class="text-xs text-slate-500 ml-2">${date}</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-1"><strong>${escapeHtml(item.name || '')}</strong> — <a href="mailto:${escapeHtml(item.email || '')}" class="text-blue-700">${escapeHtml(item.email || '')}</a></p>
+              <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escapeHtml(item.message || '')}</p>
+            </div>
+
+            <div class="flex flex-col items-end gap-2">
+              <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
+            </div>
+          </div>
+        `;
+
+        // attach delete handler
+        const deleteBtn = card.querySelector('.deleteBtn');
+        deleteBtn.addEventListener('click', async () => {
+          const ok = confirm('Delete this message? This cannot be undone.');
+          if (!ok) return;
+          try {
+            await remove(ref(db, `messages/${item.key}`));
+            setStatus('Message deleted.', 'success');
+          } catch (err) {
+            console.error(err);
+            setStatus('Failed to delete message.', 'error');
+          }
         });
+
+        messagesList.appendChild(card);
+      });
     }
 
-    // Function to set up the real-time listener
-    function subscribeToMessages(userId) {
-        // IMPORTANT: Use the private collection path for the current user
-        const collectionPath = `artifacts/${appId}/users/${userId}/contact_submissions`;
-        
-        try {
-            const messagesQuery = query(collection(db, collectionPath));
-            
-            updateStatus(`Connected. Listening for submissions for User ID: ${userId.substring(0, 8)}...`, 'info');
+    // export CSV helper
+    function exportCSV(arr) {
+      if (!arr || arr.length === 0) {
+        alert('No messages to export.');
+        return;
+      }
 
-            onSnapshot(messagesQuery, (snapshot) => {
-                const messages = [];
-                snapshot.forEach(doc => {
-                    messages.push({ id: doc.id, data: doc.data() });
-                });
-                renderMessages(messages);
-                updateStatus(`Successfully loaded ${messages.length} messages.`, 'success');
+      const header = ['key','timestamp','name','email','subject','message'];
+      const rows = arr.map(it => [
+        `"${it.key}"`,
+        `"${it.timestamp || ''}"`,
+        `"${(it.name||'').replace(/"/g,'""')}"`,
+        `"${(it.email||'').replace(/"/g,'""')}"`,
+        `"${(it.subject||'').replace(/"/g,'""')}"`,
+        `"${(it.message||'').replace(/"/g,'""')}"`
+      ].join(','));
 
-            }, (error) => {
-                console.error("Firestore real-time listener error:", error);
-                // Check for permission denied error which indicates Firestore Rules might be too strict or Auth failed silently.
-                const errorMessage = error.code === 'permission-denied' ? 
-                                     'Permission Denied. Check your Firebase Auth and Firestore Security Rules.' : 
-                                     error.message;
-                updateStatus(`Error loading messages: ${errorMessage}`, 'error');
-            });
-        } catch (error) {
-            console.error("Error setting up Firestore listener:", error);
-            updateStatus(`Listener Setup Error: ${error.name || 'Unknown'}. Check console for details.`, 'error');
-        }
+      const csv = [header.join(','), ...rows].join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ts = new Date().toISOString().replace(/[:.]/g,'-');
+      a.download = `elwoic-messages-${ts}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
-    // Initialization sequence
-    async function setupFirebase() {
-        updateStatus("Initializing Firebase...");
-        
-        // **CRITICAL CONFIG CHECK**
-        if (!firebaseConfig || !firebaseConfig.projectId || firebaseConfig.projectId === "dummy-project-id") {
-            const configError = "WARNING: Using dummy config. No live data connection established.";
-            console.warn(configError, firebaseConfig);
-            updateStatus(`Initialization Warning: ${configError}`, 'error');
-            // We stop here if it's the dummy config, as we can't connect anyway.
-            emptyState.classList.remove('hidden');
-            return;
-        }
-
-        try {
-            // 1. Initialize App
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // 2. Authenticate user
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
-
-            const userId = auth.currentUser?.uid || 'anonymous-user';
-            console.log("Firebase initialized and user authenticated. User ID:", userId);
-            
-            // 3. Subscribe to data
-            subscribeToMessages(userId);
-
-        } catch (error) {
-            // Log the detailed error object and update the status with more info
-            console.error("Critical Error setting up Firebase services:", error);
-            const errorMessage = error.message || 'Check console for details.';
-            const errorName = error.name || 'System Error';
-            updateStatus(`Initialization Failed (${error.code || errorName}): ${errorMessage}`, 'error');
-        }
+    // small utility to escape HTML (avoid simple injection in admin view)
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'", '&#039;');
     }
-
-    // Start setup when the page loads
-    window.onload = setupFirebase;
-</script>
-
+  </script>
 </body>
 </html>
