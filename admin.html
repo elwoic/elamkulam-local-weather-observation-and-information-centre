@@ -6,6 +6,16 @@
   <title>ELWOIC — Admin Messages</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<script>
+  // Prompt for admin password
+  const ADMIN_PASSWORD = "04933"; // Your chosen password
+  const entered = prompt("Enter admin password to access the admin portal:");
+  if (entered !== ADMIN_PASSWORD) {
+      alert("Access denied! Incorrect password.");
+      // Redirect back to homepage or hide content
+      window.location.href = "index.html";
+  }
+</script>
 
 <body class="bg-slate-50 min-h-screen font-sans">
 
