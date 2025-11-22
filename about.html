@@ -1,129 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ELWOIC | Information</title>
-
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f4f8fb;
-  }
-
-  /* Same Header Style From Home Page */
-  .imd-header {
-    background: #004a80;
-    color: white;
-  }
-
-  .imd-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-  }
-
-  .imd-logo-left,
-  .imd-logo-right {
-    width: 65px;
-    height: auto;
-    border-radius: 6px;
-    background: transparent;
-  }
-
-  .imd-title {
-    text-align: center;
-    flex: 1;
-    color: white;
-  }
-
-  .imd-title h2 {
-    margin: 4px 0;
-    font-size: 20px;
-    color: #ffffff;
-  }
-
-  .imd-title h4 {
-    margin: 2px 0;
-    font-size: 14px;
-    color: #d8e8f5;
-  }
-
-  .imd-nav {
-    background: #003a63;
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    padding: 10px 25px;
-  }
-
-  .imd-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 15px;
-  }
-
-  .imd-nav a:hover {
-    text-decoration: underline;
-  }
-
-  /* Information page content box */
-  .info-box {
-    max-width: 900px;
-    background: #fff;
-    padding: 22px;
-    margin: 28px auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  .info-box h2 {
-    color: #004a80;
-    border-bottom: 2px solid #e3effa;
-    padding-bottom: 8px;
-    margin: 0 0 14px;
-    font-size: 20px;
-  }
-
-  .info-box p {
-    color: #333;
-    line-height: 1.6;
-    margin: 8px 0;
-    font-size: 15px;
-  }
-
-  /* Responsive */
-  @media(max-width:600px){
-    .imd-top { padding: 12px; }
-    .imd-nav { padding: 8px 12px; gap: 12px; justify-content: center; }
-    .info-box { padding: 16px; margin: 16px; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELWOIC | About</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to match the original blue theme */
+        .header-bg-main { background-color: #004a80; }
+        .nav-bg-dark { background-color: #003a63; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-gray-50 font-inter min-h-screen">
 
-<header class="imd-header">
-  <div class="imd-top">
-    <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
-    <div class="imd-title">
-      <h2>Elamkulam Local Weather Observation &amp; Information Centre</h2>
-      <h4>Community Weather Monitoring Initiative, Elamkulam</h4>
+<header class="header-bg-main text-white shadow-lg">
+    <div class="flex items-center justify-between p-4 md:px-8">
+        <!-- Left Logo Placeholder -->
+        <!-- Note: Use actual paths for your images: ELWOIC.png and Elamkulam Weather Logo Design.1.png -->
+        <img src="https://placehold.co/65x65/004a80/ffffff?text=ELW" alt="ELWOIC Logo Left" class="rounded-lg w-16 h-16 object-cover">
+        
+        <div class="text-center flex-grow mx-4">
+            <h1 class="text-xl sm:text-2xl font-bold mb-1">Elamkulam Local Weather Observation & Information Centre</h1>
+            <h4 class="text-sm sm:text-base font-medium opacity-90">ELWOIC About Us</h4>
+        </div>
+
+        <!-- Right Logo Placeholder -->
+        <img src="https://placehold.co/65x65/004a80/ffffff?text=WIC" alt="ELWOIC Logo Right" class="rounded-lg w-16 h-16 object-cover">
     </div>
-    <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
-  </div>
 
-  <nav class="imd-nav">
-    <a href="index.html">Home</a>
-    <a href="Forecast.html">Forecast</a>
-    <a href="information.html">Information</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
-  </nav>
+    <!-- Navigation Bar -->
+    <nav class="nav-bg-dark flex justify-end gap-6 p-3 md:px-8">
+        <a href="home.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">HOME</a>
+        <a href="Forecast.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">FORECAST</a>
+        <a href="information.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">INFORMATION</a>
+        <a href="about.html" class="text-blue-200 font-semibold underline text-sm md:text-base">ABOUT</a>
+        <a href="#" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">CONTACT</a>
+    </nav>
 </header>
 
+<main class="container mx-auto px-4 py-8">
+    <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl mx-auto">
+        <h2 class="text-3xl font-extrabold text-[#004a80] border-b-4 border-blue-100 pb-3 mb-6">Our Mission and History</h2>
+        
+        <!-- Placeholder Content for About Section -->
+        <section id="mission" class="mb-8">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Who We Are</h3>
+            <p class="text-gray-600 leading-relaxed">
+                The Elamkulam Local Weather Observation & Information Centre (ELWOIC) was established with the core mission of providing hyper-local, accurate, and timely weather data to the residents and businesses of the Elamkulam region. Our dedication is to community safety and preparedness, turning complex meteorological data into understandable, actionable insights.
+            </p>
+        </section>
 
+        <section id="values" class="mb-8">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Our Core Values</h3>
+            <ul class="space-y-3 text-gray-600 list-disc list-inside ml-4">
+                <li><strong>Accuracy:</strong> Utilizing advanced local sensor networks for precise readings.</li>
+                <li><strong>Community:</strong> Serving as a vital resource for disaster readiness and daily planning.</li>
+                <li><strong>Transparency:</strong> Making all observational data easily accessible to the public.</li>
+                <li><strong>Innovation:</strong> Constantly improving our forecasting models and presentation.</li>
+            </ul>
+        </section>
+
+        <section id="team">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Meet the Team</h3>
+            <p class="text-gray-600 leading-relaxed">
+                Our team is comprised of passionate local volunteers, meteorology enthusiasts, and data specialists committed to ensuring the reliability of our services. We believe that informed communities are resilient communities.
+            </p>
+        </section>
+        <!-- End of Placeholder Content -->
+        
+    </div>
+</main>
 
 </body>
 </html>
