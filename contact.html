@@ -184,7 +184,19 @@
         <!-- ACTIVE LINK -->
         <a href="contact.html" class="active-nav text-sm md:text-base">CONTACT</a>
         <!-- NEW: Admin Portal Link to view responses -->
-        <a href="admin.html" class="text-yellow-300 hover:text-yellow-400 transition duration-150 text-sm md:text-base font-bold">ADMIN PORTAL</a>
+        <a href="#" onclick="checkAdminPass()" class="text-yellow-300 hover:text-yellow-400 transition duration-150 text-sm md:text-base font-bold">ADMIN PORTAL</a>
+
+<script>
+  function checkAdminPass() {
+      const password = prompt("Enter admin password:");
+      if (password === "04933") {
+          window.location.href = "admin.html";
+      } else {
+          alert("Incorrect password!");
+      }
+  }
+</script>
+
     </nav>
 </header>
 
