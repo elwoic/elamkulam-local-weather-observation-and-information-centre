@@ -7,92 +7,91 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase Imports -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    //---------------------------- Firebase Config from admin.html ----------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+    // NOTE: Removed Auth/Firestore imports as they are not needed for simple, unauthenticated message pushing to RTDB.
 
-        let db, auth, userId;
-
-        // Function to initialize Firebase and authenticate
-        async function initializeFirebase() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                userId = auth.currentUser?.uid || crypto.randomUUID();
-                console.log("Firebase initialized and user signed in:", userId);
-
-                // Attach submit handler after Firebase is ready
-                const form = document.getElementById('contactForm');
-                if (form) {
-                    form.addEventListener('submit', handleFormSubmission);
-                }
-            } catch (error) {
-                console.error("Firebase initialization or sign-in failed:", error);
-                const messageElement = document.getElementById('submissionMessage');
-                if (messageElement) {
-                     messageElement.textContent = 'Error: Failed to initialize database connection.';
-                }
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
+      authDomain: "elwoic.firebaseapp.com",
+      databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "elwoic",
+      storageBucket: "elwoic.firebasestorage.app",
+      messagingSenderId: "597873791800",
+      appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd",
+      measurementId: "G-0KZS7RPGKK"
+    };
+    
+    let db;
+    
+    // Function to initialize Firebase
+    function initializeFirebase() {
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            
+            console.log("Firebase Realtime Database initialized.");
+            
+            // Attach submit handler after Firebase is ready
+            const form = document.getElementById('contactForm');
+            if (form) {
+                form.addEventListener('submit', handleFormSubmission);
             }
-        }
-        window.onload = initializeFirebase;
-
-
-        // Function to handle the form submission
-        async function handleFormSubmission(event) {
-            event.preventDefault();
-            const form = event.target;
-            const submitButton = form.querySelector('button[type="submit"]');
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
             const messageElement = document.getElementById('submissionMessage');
-            
-            messageElement.textContent = 'Sending message...';
-            submitButton.disabled = true;
-
-            const submission = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value,
-                submittedAt: new Date().toISOString(),
-                // Use the private collection path for the current user's submissions
-                userId: userId 
-            };
-            
-            // Construct the path for the private collection
-            const collectionPath = `artifacts/${appId}/users/${userId}/contact_submissions`;
-
-            try {
-                // Add the document to Firestore
-                await addDoc(collection(db, collectionPath), submission);
-                
-                messageElement.textContent = '✅ Message sent successfully! Thank you for contacting us.';
-                messageElement.classList.remove('text-red-600');
-                messageElement.classList.add('text-green-600');
-                
-                // Clear the form
-                form.reset();
-
-            } catch (error) {
-                console.error("Error writing document to Firestore:", error);
-                messageElement.textContent = '❌ Error submitting message. Please try again.';
-                messageElement.classList.remove('text-green-600');
+            if (messageElement) {
+                messageElement.textContent = '❌ Error: Failed to initialize database connection. Check console for details.';
                 messageElement.classList.add('text-red-600');
-            } finally {
-                submitButton.disabled = false;
             }
         }
-    </script>
+    }
+    window.onload = initializeFirebase;
+
+
+    // Function to handle the form submission
+    async function handleFormSubmission(event) {
+        event.preventDefault();
+        const form = event.target;
+        const submitButton = form.querySelector('button[type="submit"]');
+        const messageElement = document.getElementById('submissionMessage');
+        
+        messageElement.textContent = 'Sending message...';
+        messageElement.classList.remove('text-green-600', 'text-red-600');
+        submitButton.disabled = true;
+
+        const submission = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value,
+            // Use serverTimestamp() for better time tracking in RTDB
+            timestamp: serverTimestamp()
+        };
+        
+        // The path must match what admin.html is listening to: "messages"
+        const messagesRef = ref(db, 'messages');
+
+        try {
+            // Push the document to the Realtime Database
+            await push(messagesRef, submission);
+            
+            messageElement.textContent = '✅ Message sent successfully! Thank you for contacting us.';
+            messageElement.classList.add('text-green-600');
+            
+            // Clear the form
+            form.reset();
+
+        } catch (error) {
+            console.error("Error writing document to Realtime Database:", error);
+            messageElement.textContent = '❌ Error submitting message. Please try again.';
+            messageElement.classList.add('text-red-600');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+</script>
     <!-- End Firebase Imports -->
     <style>
         /* Custom styles for Header and Navigation */
