@@ -74,18 +74,38 @@
 
     setLogLevel('Debug');
 
-    // Global variables from the environment
+    // Global variables from the Canvas environment
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    // Parse firebaseConfig, ensuring the default is an object
-    const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
-    let firebaseConfig;
-    try {
-        firebaseConfig = JSON.parse(firebaseConfigString);
-    } catch (e) {
-        console.error("Failed to parse firebase config string:", e);
-        firebaseConfig = {}; // Default to empty object on parse failure
-    }
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // --- CRITICAL CHANGE FOR EXTERNAL USE ---
+    // We try to use the environment config first. If it's not defined (which is 
+    // the case when you run it outside the preview), we use a placeholder config
+    // to prevent the initialization error.
+    let firebaseConfig;
+    const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+    
+    if (firebaseConfigString) {
+        try {
+            firebaseConfig = JSON.parse(firebaseConfigString);
+        } catch (e) {
+            console.error("Failed to parse firebase config string:", e);
+            firebaseConfig = null; // Mark as invalid
+        }
+    }
+
+    if (!firebaseConfig || !firebaseConfig.projectId) {
+        console.warn("Using dummy Firebase config to avoid 'projectId missing' error.");
+        firebaseConfig = {
+            apiKey: "dummy-api-key",
+            authDomain: "dummy-auth-domain",
+            projectId: "dummy-project-id", // Satisfies the critical check
+            storageBucket: "dummy-storage-bucket",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef0123456789abcdef"
+        };
+    }
+    // ------------------------------------------
 
     // UI elements
     const statusIndicator = document.getElementById('statusIndicator');
@@ -170,7 +190,11 @@
 
             }, (error) => {
                 console.error("Firestore real-time listener error:", error);
-                updateStatus(`Error loading messages: ${error.message}`, 'error');
+                // Check for permission denied error which indicates Firestore Rules might be too strict or Auth failed silently.
+                const errorMessage = error.code === 'permission-denied' ? 
+                                     'Permission Denied. Check your Firebase Auth and Firestore Security Rules.' : 
+                                     error.message;
+                updateStatus(`Error loading messages: ${errorMessage}`, 'error');
             });
         } catch (error) {
             console.error("Error setting up Firestore listener:", error);
@@ -182,11 +206,13 @@
     async function setupFirebase() {
         updateStatus("Initializing Firebase...");
         
-        // **CRITICAL CHECK**
-        if (!firebaseConfig || !firebaseConfig.projectId) {
-            const configError = "Firebase configuration is missing 'projectId'. Ensure '__firebase_config' is set correctly by the hosting platform.";
-            console.error(configError, firebaseConfig);
-            updateStatus(`Initialization Failed (Config Error): ${configError}`, 'error');
+        // **CRITICAL CONFIG CHECK**
+        if (!firebaseConfig || !firebaseConfig.projectId || firebaseConfig.projectId === "dummy-project-id") {
+            const configError = "WARNING: Using dummy config. No live data connection established.";
+            console.warn(configError, firebaseConfig);
+            updateStatus(`Initialization Warning: ${configError}`, 'error');
+            // We stop here if it's the dummy config, as we can't connect anyway.
+            emptyState.classList.remove('hidden');
             return;
         }
 
@@ -214,7 +240,6 @@
             console.error("Critical Error setting up Firebase services:", error);
             const errorMessage = error.message || 'Check console for details.';
             const errorName = error.name || 'System Error';
-            // We use error.code if available, otherwise fall back to name/message
             updateStatus(`Initialization Failed (${error.code || errorName}): ${errorMessage}`, 'error');
         }
     }
