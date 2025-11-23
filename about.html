@@ -4,49 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELWOIC | About</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Theme Colors & Fonts -->
     <style>
-        /* Custom styles to match the original blue theme */
         .header-bg-main { background-color: #004a80; }
         .nav-bg-dark { background-color: #003a63; }
         .font-inter { font-family: 'Inter', sans-serif; }
+
+        /* Footer logo fix */
+        .footer-logo-corner {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            border: 3px solid #b3e5fc;
+            z-index: 10;
+        }
     </style>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    },
+                    }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-50 font-inter min-h-screen">
 
+<body class="bg-gray-50 font-inter min-h-screen flex flex-col">
+
+<!-- HEADER -->
 <header class="header-bg-main text-white shadow-lg">
-    <div class="flex items-center justify-between p-4 md:px-8">
-        <!-- Left Logo Placeholder -->
-        <!-- Note: Use actual paths for your images: ELWOIC.png and Elamkulam Weather Logo Design.1.png -->
-        <img src="ELWOIC.png" alt="ELWOIC Logo Left" class="rounded-lg w-16 h-16 object-cover">
-        
-        <div class="text-center flex-grow mx-4">
-            <h1 class="text-xl sm:text-2xl font-bold mb-1">Elamkulam Local Weather Observation & Information Centre</h1>
-            <h4 class="text-sm sm:text-base font-medium opacity-90">ELWOIC About Us</h4>
+    <div class="flex flex-col sm:flex-row items-center justify-between p-4 md:px-8 gap-3">
+
+        <!-- Left Logo -->
+        <img src="ELWOIC.png"
+             alt="ELWOIC Logo Left"
+             class="rounded-lg w-20 h-20 sm:w-16 sm:h-16 object-cover">
+
+        <!-- Center Title -->
+        <div class="text-center sm:flex-grow mx-4">
+            <h1 class="text-xl sm:text-2xl font-bold leading-tight">
+                Elamkulam Local Weather Observation & Information Centre
+            </h1>
+            <h4 class="text-sm sm:text-base opacity-90">ELWOIC About Us</h4>
         </div>
 
-        <!-- Right Logo Placeholder -->
-        <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo Right" class="rounded-lg w-16 h-16 object-cover">
+        <!-- Right Logo -->
+        <img src="Elamkulam Weather Logo Design.1.png"
+             alt="ELWOIC Logo Right"
+             class="rounded-lg w-20 h-20 sm:w-16 sm:h-16 object-cover">
     </div>
 
-    <!-- Navigation Bar -->
-    <nav class="nav-bg-dark flex justify-end gap-6 p-3 md:px-8">
-        <a href="index.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">HOME</a>
-        <a href="Forecast.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">FORECAST</a>
-        <a href="information.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">INFORMATION</a>
-        <a href="about.html" class="text-blue-200 font-semibold underline text-sm md:text-base">ABOUT</a>
-        <a href="#" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">CONTACT</a>
+    <!-- Navigation -->
+    <nav class="nav-bg-dark flex flex-wrap justify-center sm:justify-end gap-4 p-3 md:px-8">
+        <a href="index.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">HOME</a>
+        <a href="Forecast.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">FORECAST</a>
+        <a href="information.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">INFORMATION</a>
+        <a href="about.html" class="text-blue-200 underline font-semibold text-sm md:text-base">ABOUT</a>
+        <a href="#" class="text-white hover:text-blue-200 transition text-sm md:text-base">CONTACT</a>
     </nav>
 </header>
 
@@ -303,50 +325,36 @@
         
     </div>
 </main>
-<!-- Footer Section -->
+<!-- FOOTER -->
 <footer class="header-bg-main text-white p-6 mt-8 shadow-inner relative">
-    <!-- Custom Style for Header Background Color and Logo Positioning -->
-    <style>
-        /* Matches the Header Background Color: #004a80 */
-        .header-bg-main { background-color: #004a80; } 
-        
-        .footer-logo-corner {
-            /* Position logo relative to the footer element */
-            position: absolute;
-            bottom: 1rem; /* 4 units in Tailwind p/m system */
-            right: 1rem; /* 6 units in Tailwind p/m system */
-            border: 3px solid #b3e5fc; /* light blue border for emphasis */
-            z-index: 10;
-        }
-        
-        /* Removed unnecessary fixed padding from CSS */
-    </style>
 
-    <!-- Added responsive padding (pr-0 for mobile, md:pr-20 for desktop) to create space for the corner logo -->
     <div class="container mx-auto text-center space-y-3 pr-0 md:pr-20">
-        
-        <p class="text-sm md:text-base">
-            © 2025 Elamkulam Local Weather Observation And Information Center. 
-            All rights reserved. This is a student project for educational and 
-            informational purposes.
+
+        <p class="text-sm md:text-base leading-relaxed">
+            © 2025 Elamkulam Local Weather Observation And Information Center.
+            All rights reserved. Student project for educational purposes.
         </p>
-        
-        <!-- Policy Links - Uses text-white and hover:text-blue-200 -->
+
         <p class="text-sm md:text-base">
-            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/privacy-policy/" class="text-white hover:text-blue-200 transition duration-150 underline">Privacy Policy</a>
-            <span class="mx-2 text-gray-400">|</span>
-            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/terms-of-service/" class="text-white hover:text-blue-200 transition duration-150 underline">Terms Of Service</a>
-            <span class="mx-2 text-gray-400">|</span> 
-            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" class="text-white hover:text-blue-200 transition duration-150 underline">Introduction & Disclaimer</a>
+            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/privacy-policy/"
+               class="hover:text-blue-200 underline">Privacy Policy</a>
+            <span class="mx-2 text-gray-300">|</span>
+
+            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/terms-of-service/"
+               class="hover:text-blue-200 underline">Terms Of Service</a>
+            <span class="mx-2 text-gray-300">|</span>
+
+            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/"
+               class="hover:text-blue-200 underline">Introduction & Disclaimer</a>
         </p>
-        
-        <p class="text-sm text-gray-400">Designed and Managed by Aswanthkrishna K</p>
-        
+
+        <p class="text-sm text-blue-100">Designed and Managed by Aswanthkrishna K</p>
     </div>
-    
-    <!-- Logo placed in the bottom right corner (Now visible on all screen sizes) -->
-    <img src="House Public Board Seal of AswanthKK.png" 
+
+    <!-- Corner Logo -->
+    <img src="House Public Board Seal of AswanthKK.png"
          class="footer-logo w-16 h-16 rounded-full footer-logo-corner">
 </footer>
+
 </body>
 </html>
