@@ -177,7 +177,7 @@
     </div>
 
     <!-- Navigation Bar (ID added for JavaScript) -->
-    <nav id="main-nav" class="nav-bg-dark flex flex-wrap justify-end gap-4 p-3 sm:gap-6 md:px-8">
+    <nav id="main-nav" class="nav-bg-dark flex flex-col items-center sm:flex-row sm:justify-end gap-3 p-3 sm:gap-6 md:px-8">
         <a href="index.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">HOME</a>
         <a href="Forecast.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">FORECAST</a>
         <a href="information.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">INFORMATION</a>
@@ -187,9 +187,12 @@
         <!-- NEW: Admin Portal Link to view responses -->
        <!-- Admin Dropdown Toggle -->
 <div class="relative flex-shrink-0">
-    <button id="adminToggle" class="text-white hover:text-blue-200 text-sm md:text-base flex items-center gap-1">
-        <span class="material-icons">expand_more</span>
+    <button id="adminToggle" class="text-white hover:text-blue-200 text-sm md:text-base flex items-center gap-1 py-1 px-2 rounded-md hover:bg-[#002a4b]">
+        ADMIN 
+        <span class="material-icons hidden sm:inline-block">expand_more</span>
     </button>
+
+    </div>
 
     <!-- Dropdown panel -->
     <div id="adminDropdown"
@@ -376,18 +379,17 @@ And Information Center
 <br> Coordinates Of Office: 10.892°N, 76.234°E
  <br>
 Malappuram District, Kerala, India</p>
-                <div class="rounded-lg overflow-hidden h-64 w-full mt-4">
-                    <!-- Google Maps Placeholder for Elamkulam, Kerala -->
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d204.100117419403!2d76.23436835342187!3d10.892339432429203!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!v1763806026692!5m2!1sen!2sin" 
-                        width="100%" 
-                        height="100%" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div>
+               <div class="responsive-map">
+    <iframe
+        width="600"
+        height="450"
+        style="border:0;"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26888.581850394174!2d76.22147311903369!3d10.911621664014177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba7ce5ea6d2ea2d%3A0xf82e5113244a72f!2sElamkulam%2C%20Kerala%20679340!5e1!3m2!1sen!2sin!4v1763912956908!5m2!1sen!2sin"
+    ></iframe>
+</div>
                 <p class="text-sm text-gray-500 mt-2">The weather station covers an area around Elamkulam, Malappuram.</p>
             </div>
         </div>
