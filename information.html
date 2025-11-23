@@ -155,21 +155,26 @@
             color: #6b7280;
             font-style: italic;
         }
+/* Responsive Google Map */
+.responsive-map {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
 
-        /* Map container */
-        .map-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
-        }
+.responsive-map iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
-        .map-container h2 {
-            text-align: center;
-            color: #004a80;
-            margin-bottom: 15px;
-        }
+       
     </style>
 </head>
 
