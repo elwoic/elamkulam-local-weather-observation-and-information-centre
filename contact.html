@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELWOIC | Contact Us</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add this icon library for the ▼ arrow -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Firebase Imports -->
     <script type="module">
     //---------------------------- Firebase Config from admin.html ----------------------------
@@ -183,18 +185,61 @@
         <!-- ACTIVE LINK -->
         <a href="contact.html" class="active-nav text-sm md:text-base">CONTACT</a>
         <!-- NEW: Admin Portal Link to view responses -->
-        <a href="#" onclick="checkAdminPass()" class="text-yellow-300 hover:text-yellow-400 transition duration-150 text-sm md:text-base font-bold">ADMIN PORTAL</a>
+       <!-- Admin Dropdown Toggle -->
+<div class="relative">
+    <button id="adminToggle" class="text-white hover:text-blue-200 text-sm md:text-base flex items-center gap-1">
+        <span class="material-icons">expand_more</span>
+    </button>
+
+    <!-- Dropdown panel -->
+    <div id="adminDropdown"
+         class="hidden absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-300 p-4 transform origin-top transition-all duration-300 scale-y-0 opacity-0">
+
+        <p class="text-sm font-medium mb-2">Admin Portal — Authorized Personnel Only</p>
+
+        <button onclick="checkAdminPass()"
+                class="w-full bg-blue-600 text-white py-1.5 rounded-md text-sm hover:bg-blue-700 transition">
+            Enter Portal
+        </button>
+    </div>
+</div>
 
 <script>
-  function checkAdminPass() {
-      const password = prompt("Enter admin password:");
-      if (password === "04933") {
-          window.location.href = "admin.html";
-      } else {
-          alert("Incorrect password!");
-      }
-  }
+function checkAdminPass() {
+    const password = prompt("Enter admin password:");
+    if (password === "04933") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Incorrect password!");
+    }
+}
+
+// Dropdown toggle logic
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("adminToggle");
+    const dropdown = document.getElementById("adminDropdown");
+
+    let open = false;
+
+    toggle.addEventListener("click", () => {
+        open = !open;
+
+        if (open) {
+            dropdown.classList.remove("hidden");
+            setTimeout(() => {
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
+        } else {
+            dropdown.classList.add("scale-y-0", "opacity-0");
+            dropdown.classList.remove("scale-y-100", "opacity-100");
+
+            setTimeout(() => dropdown.classList.add("hidden"), 300);
+        }
+    });
+});
 </script>
+
 
     </nav>
 </header>
