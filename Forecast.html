@@ -6,65 +6,158 @@
 <title>ELWOIC | Forecast</title>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f4f8fb;
-  }
+ body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f8fb;
+}
 
-  /* Same Header Style From Home Page */
-  .imd-header {
-    background: #004a80;
-    color: white;
-  }
+/* ------------------ HEADER ------------------ */
+.imd-header {
+  background: #004a80;
+  color: white;
+}
+
+/* TOP HEADER (LOGOS + TITLE) */
+.imd-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  gap: 15px;
+}
+
+.imd-title h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.imd-title h4 {
+  margin-top: 5px;
+  font-size: 0.95rem;
+}
+
+/* Make logos shrink on small screens */
+.imd-logo-left,
+.imd-logo-right {
+  width: 65px;
+  height: auto;
+}
+
+
+/* ------------------ NAVIGATION ------------------ */
+.imd-nav {
+  background: #003a63;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px 25px;
+  flex-wrap: wrap;      /* Allows links to wrap (mobile friendly) */
+}
+
+.imd-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.imd-nav a:hover {
+  text-decoration: underline;
+}
+
+
+/* ------------------ FORECAST BOX ------------------ */
+.forecast-box {
+  max-width: 850px;
+  background: #fff;
+  padding: 20px;
+  margin: 25px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.forecast-box h2 {
+  color: #004a80;
+  border-bottom: 2px solid #e3effa;
+  padding-bottom: 6px;
+}
+
+iframe {
+  width: 100%;
+  height: 450px;
+  border: none;
+  border-radius: 10px;
+}
+
+
+
+/* =======================================================
+   RESPONSIVE SECTION
+   These rules fix layout on small screens
+   ======================================================= */
+
+@media (max-width: 768px) {
 
   .imd-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
+    flex-direction: column; /* Stack logo → title → logo */
+    text-align: center;
   }
 
+  .imd-logo-left,
+  .imd-logo-right {
+    width: 50px;  /* Reduce size */
+  }
+
+  .imd-title h2 {
+    font-size: 1.1rem; /* Smaller title */
+  }
+
+  .imd-title h4 {
+    font-size: 0.85rem;
+  }
+
+  /* Nav becomes centred blocks */
   .imd-nav {
-    background: #003a63;
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    padding: 10px 25px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 10px;
   }
 
   .imd-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 15px;
-  }
-
-  .imd-nav a:hover {
-    text-decoration: underline;
-  }
-
-  /* Forecast Box */
-  .forecast-box {
-    max-width: 850px;
-    background: #fff;
-    padding: 20px;
-    margin: 25px auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  .forecast-box h2 {
-    color: #004a80;
-    border-bottom: 2px solid #e3effa;
-    padding-bottom: 6px;
+    font-size: 14px;
   }
 
   iframe {
-    width: 100%;
-    height: 450px;
-    border: none;
-    border-radius: 10px;
+    height: 350px; /* Reduce map height */
   }
+}
+
+
+@media (max-width: 480px) {
+
+  .imd-logo-left,
+  .imd-logo-right {
+    width: 40px;
+  }
+
+  .imd-title h2 {
+    font-size: 1rem;
+  }
+
+  .imd-title h4 {
+    font-size: 0.8rem;
+  }
+
+  .forecast-box {
+    margin: 15px;
+    padding: 15px;
+  }
+
+  iframe {
+    height: 300px;
+  }
+}
+
 </style>
 
 </head>
