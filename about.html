@@ -71,7 +71,6 @@
         <a href="#" class="text-white hover:text-blue-200 transition text-sm md:text-base">CONTACT</a>
     </nav>
 </header>
-
 <section id="disclaimer-information" class="container mx-auto px-4 py-8">
     <!-- Main Card Container: centered and styled -->
     <div class="max-w-4xl mx-auto w-full bg-white rounded-xl overflow-hidden border-t-8 border-red-600 shadow-2xl">
@@ -137,7 +136,7 @@
     </div>
 </section>
 <main class="container mx-auto px-4 py-8">
-    <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl mx-auto">
+    
         <h2 class="text-3xl font-extrabold text-[#004a80] border-b-4 border-blue-100 pb-3 mb-6">Our Mission and History</h2>
         
         <!-- Placeholder Content for About Section -->
@@ -148,7 +147,6 @@
 <br><br>
             <section class="max-w-3xl w-full mx-auto p-4">
     <!-- Centering and Card Styling -->
-    <div class="bg-white/70 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-blue-100">
         <!-- Title -->
         <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 text-center mb-2">
             About Elamkulam Weather Station
@@ -157,8 +155,7 @@
             Your trusted source for accurate local weather information
         </p>
 
-        <!-- Mission Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 md:p-8 border border-gray-100">
+  
             <h3 class="text-2xl font-bold text-gray-800 mb-3 flex items-center">
                 <span class="text-4xl mr-3">🌍</span> Our Mission
             </h3>
@@ -168,14 +165,14 @@
                 to serve the local community with reliable meteorological data that helps in daily planning and safety 
                 decisions through continuous monitoring and analysis.
             </p>
-        </div>
+      
         <h3 class="text-2xl font-semibold text-gray-700 mb-3">2️⃣ Purpose / Value for Users  </h3>
          The goal of this site is to serve the Elamkulam community by delivering timely, accurate, and easy-to-understand weather information. Whether planning daily activities, traveling, or staying safe during sudden weather changes, users can rely on this platform for local forecasts and real-time observations. 
 
         
-    </div>
+  
 </section>
-        </section>
+       
 
         <section id="values" class="mb-8">
             <h3 class="text-2xl font-semibold text-gray-700 mb-3">Our Core Values</h3>
@@ -218,8 +215,7 @@
     <!-- Content starts here -->
     <div class="main-container">
 
-        <!-- 1. What We Provide Card -->
-        <div class="card">
+       
             <h2 class="text-3xl font-extrabold text-gray-800 mb-6 border-b pb-2">
                 What We Provide
             </h2>
@@ -278,7 +274,7 @@
         </div>
 
         <!-- 2. Important Information Card -->
-        <div class="card border-t-4 border-blue-500">
+       
             <h2 class="text-3xl font-extrabold text-gray-800 mb-4">
                 Important Information
             </h2>
@@ -307,11 +303,140 @@
                     </p>
                 </li>
             </ul>
+     
+<section class="px-4 sm:px-8 lg:px-16 py-10 bg-gray-50">
+
+<style>
+    /* Icon circular background */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Access buttons uniform design */
+    .access-button {
+        padding: 8px 18px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: 0.2s ease;
+        display: inline-block;
+    }
+
+    .access-button:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+    <h2 class="text-xl font-semibold mt-6">Data Sources</h2>
+
+    <p class="text-gray-600 mt-2">
+        Our data is aggregated from multiple sources (Open-Meteo, Weather widgets, Windy embeds and local sensors when available). 
+        This page documents the partners and sources used for forecasts and live snapshots.
+    </p>
+
+    <div id="partners-container" class="mt-10">
+
+        <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 text-center mb-10">
+            Official Data Sources & Partners
+        </h2>
+
+        <!-- Partner Icons Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-7 sm:gap-8 mb-10">
+
+            <!-- OpenWeather -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-yellow-500/20">
+                    <svg class="w-7 h-7 text-yellow-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.5 10c-1.12 0-2.07.72-2.45 1.7L15 13H5c-1.1 0-2 .9-2 2s.9 2 2 2h10l2.05 2.5c.38.98 1.33 1.7 2.45 1.7 1.66 0 3-1.34 3-3 0-1.66-1.34-3-3-3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">OpenWeatherMap</h3>
+                <p class="text-[0.65rem] text-gray-500">Global API and Current Data</p>
+            </div>
+
+            <!-- IMD -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-green-500/20">
+                    <svg class="w-7 h-7 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.69 2 6 4.69 6 8h1.75c0-1.4 1.15-2.5 2.5-2.5 1.4 0 2.5 1.1 2.5 2.5v.5h1.25c2.4 0 4.2 2 4.2 4.2C18.2 14.7 16.5 16 14 16h-1.25c-.4 0-.75.35-.75.75v3.5c0 .4.35.75.75.75h1.25c3.31 0 6-2.69 6-6s-2.69-6-6-6h-.5c-.3 0-.5-.2-.5-.5V3.75c0-.4-.35-.75-.75-.75z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">IMD Kerala</h3>
+                <p class="text-[0.65rem] text-gray-500">Official alerts & state forecasts</p>
+            </div>
+
+            <!-- AccuWeather -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-orange-500/20">
+                    <svg class="w-7 h-7 text-orange-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12c0 3.83 2.06 7.23 5.18 9.07l.95-1.79C6.03 17.84 4 14.88 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.88-2.03 5.84-4.13 7.28l.95 1.79C19.94 19.23 22 15.83 22 12c0-5.52-4.48-10-10-10z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">AccuWeather</h3>
+                <p class="text-[0.65rem] text-gray-500">Professional radar & daily reports</p>
+            </div>
+
+            <!-- Open-Meteo -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-blue-500/20">
+                    <svg class="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 10c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2s-.9-2-2-2h-1zm-6-4h2c2.21 0 4 1.79 4 4v3h-4.5l-1.5 2v-2H5c-1.11 0-2-.9-2-2s.89-2 2-2h1c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">Open-Meteo</h3>
+                <p class="text-[0.65rem] text-gray-500">Open-source & hourly models</p>
+            </div>
+
+            <!-- Windy -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-cyan-500/20">
+                    <svg class="w-7 h-7 text-cyan-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 10c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2zm-2 5h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2zm2.5-9h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">Windy</h3>
+                <p class="text-[0.65rem] text-gray-500">Rain tracking & air models</p>
+            </div>
+
         </div>
-        
+
+        <div class="border-t border-gray-300 mb-8"></div>
+
+        <h3 class="text-lg font-semibold text-gray-700 text-center mb-5">
+            Quick Access to Weather Resources
+        </h3>
+
+        <div class="flex justify-center flex-wrap gap-3">
+
+            <a href="https://www.windy.com/" 
+               target="_blank" 
+               class="access-button bg-cyan-500 text-white hover:bg-cyan-600">
+               Windy Radar
+            </a>
+
+            <a href="https://www.accuweather.com/" 
+               target="_blank" 
+               class="access-button bg-orange-500 text-white hover:bg-orange-600">
+               AccuWeather
+            </a>
+
+            <a href="https://mausam.imd.gov.in/thiruvananthapuram/" 
+               target="_blank" 
+               class="access-button bg-green-500 text-white hover:bg-green-600">
+               IMD Kerala
+            </a>
+
+        </div>
+
     </div>
+
 </section>
-        </section>
+
 
         <section id="team">
             <h3 class="text-2xl font-semibold text-gray-700 mb-3">Meet the Team</h3>
@@ -319,12 +444,10 @@
             <p class="text-gray-600 leading-relaxed">
   <h3 class="text-1xl font-semibold text-gray-700 mb-3">Feedback & Contact: </h3>               If you have questions, suggestions, or notice any discrepancies in the weather data, please do not hesitate to contact us. Your feedback helps improve the accuracy and usefulness of this site for the Elamkulam community.
 
-            </p>
+            
         </section>
-        <!-- End of Placeholder Content -->
-        
-    </div>
-</main>
+        <!-- End of Placeholder Content --!>
+
 <!-- FOOTER -->
 <footer class="header-bg-main text-white p-6 mt-8 shadow-inner relative">
 
