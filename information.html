@@ -5,96 +5,184 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ELWOIC | Information</title>
 
+    <!-- IMPORTANT: Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     </style>
 
+    <!-- Custom CSS -->
     <style>
-      /* ---------- RESPONSIVE FIXES FOR INFORMATION PAGE ---------- */
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            background: #f4f8fb;
+        }
 
-/* Tablet and below */
-@media (max-width: 900px) {
-    .imd-top {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
+        /* Header Styles */
+        .imd-header { background: #004a80; color: white; }
 
-    .imd-logo-left,
-    .imd-logo-right {
-        width: 55px;
-    }
+        .imd-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
 
-    .imd-title h2 {
-        font-size: 18px;
-    }
+        .imd-logo-left,
+        .imd-logo-right {
+            width: 65px;
+            height: auto;
+            border-radius: 6px;
+            background: transparent;
+        }
 
-    .imd-title h4 {
-        font-size: 13px;
-    }
+        .imd-title {
+            text-align: center;
+            flex: 1;
+            color: white;
+        }
 
-    .info-box {
-        margin: 16px;
-        padding: 18px;
-    }
-}
+        .imd-title h2 {
+            margin: 4px 0;
+            font-size: 20px;
+            color: #ffffff;
+        }
 
-/* Mobile Navigation Fix: RIGHT side alignment maintained */
-@media (max-width: 720px) {
-    .imd-nav {
-        justify-content: flex-end; /* KEEP NAV ON RIGHT */
-        padding: 10px 15px;
-        gap: 12px;
-        flex-wrap: wrap; /* Allow breaking into two lines if small */
-    }
+        .imd-title h4 {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #d8e8f5;
+        }
 
-    .imd-nav a {
-        font-size: 14px;
-    }
+        /* Navigation */
+        .imd-nav {
+            background: #003a63;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 10px 25px;
+        }
 
-    iframe {
-        height: 320px;
-    }
-}
+        .imd-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+        }
 
-/* Very small phones */
-@media (max-width: 480px) {
-    .imd-nav {
-        justify-content: flex-end; /* STILL right aligned */
-        gap: 10px;
-    }
+        .imd-nav a:hover {
+            text-decoration: underline;
+        }
 
-    .imd-nav a {
-        font-size: 12.5px;
-    }
+        /* General Content Box */
+        .info-box {
+            max-width: 900px;
+            background: #fff;
+            padding: 22px;
+            margin: 28px auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-    .imd-title h2 {
-        font-size: 16px;
-    }
+        .info-box h2 {
+            color: #004a80;
+            border-bottom: 2px solid #e3effa;
+            padding-bottom: 8px;
+            margin: 0 0 14px;
+            font-size: 20px;
+        }
 
-    .imd-title h4 {
-        font-size: 12px;
-    }
+        .info-box h3 {
+            color: #003a63;
+            font-size: 18px;
+            margin: 18px 0 10px 0;
+            padding-left: 5px;
+            border-left: 4px solid #fde047;
+        }
 
-    .info-box {
-        margin: 12px;
-        padding: 15px;
-    }
-}
+        .info-box p {
+            color: #333;
+            line-height: 1.6;
+            margin: 8px 0;
+            font-size: 15px;
+        }
 
+        /* Notice Card */
+        .notice-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 32px;
+        }
+
+        .notice-card {
+            max-width: 768px;
+            background-color: white;
+            overflow: hidden;
+            border-top: 8px solid #ef4444;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1),
+                        0 4px 6px -4px rgba(0,0,0,0.1);
+        }
+
+        .notice-header {
+            padding: 24px;
+            background-color: #fef2f2;
+        }
+
+        .notice-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #b91c1c;
+            display: flex;
+            align-items: center;
+        }
+
+        .notice-content {
+            padding: 24px;
+            color: #4b5563;
+            font-size: 1.125rem;
+        }
+
+        .notice-list li {
+            margin-bottom: 8px;
+        }
+
+        .notice-footer {
+            margin-top: 24px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        /* Map container */
+        .map-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .map-container h2 {
+            text-align: center;
+            color: #004a80;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
+
 <body>
 
 <header class="imd-header">
     <div class="imd-top">
-        <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left" width="65">
+        <img src="ELWOIC.png" alt="Left Logo" class="imd-logo-left">
         <div class="imd-title">
             <h2>Elamkulam Local Weather Observation & Information Centre</h2>
             <h4>Information About ELWOIC</h4>
         </div>
-        <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right" width="65">
+        <img src="Elamkulam Weather Logo Design.1.png" alt="Right Logo" class="imd-logo-right">
     </div>
 
     <nav class="imd-nav">
@@ -102,9 +190,10 @@
         <a href="Forecast.html">FORECAST</a>
         <a href="information.html">INFORMATION</a>
         <a href="about.html">ABOUT US</a>
-        <a href="#">Contact</a>
+        <a href="contact.html">CONTACT</a>
     </nav>
 </header>
+
 
 <section class="notice-section">
     <div class="notice-card">
