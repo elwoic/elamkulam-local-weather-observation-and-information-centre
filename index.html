@@ -1,1355 +1,977 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elamkulam Local Weather Observation And Information Center</title>
-
-<link rel="stylesheet" href="style.css">
-<link rel="icon" type="image/png" href="favicon.png">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elamkulam Local Weather Observation And Information Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   
-<meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
-<meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
-<meta property="og:image" content="https://elwoic.github.io/elamkulam-local-weather-observation-and-information-center/favicon.png">
-<meta property="og:url" content="https://elwoic.github.io/elamkulam-local-weather-observation-and-information-center/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+    <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Center">
+    <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayath, Kerala, India.">
+    <meta property="og:image" content="https://elwoic.github.io/elamkulam-local-weather-observation-and-information-center/favicon.png">
+    <meta property="og:url" content="https://elwoic.github.io/elamkulam-local-weather-observation-and-information-center/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
 
-<style>
+    <style>
 /* ---------------------------------------------------- */
-/* 1. GLOBAL BASE */
+/* 1. GLOBAL BASE - The white-space fix is here */
 /* ---------------------------------------------------- */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f8fb;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    background: #f4f8fb;
+    /* --- COMPULSORY FIX --- */
+    overflow-x: hidden; 
+    /* ---------------------- */
 }
 
 /* ---------------------------------------------------- */
 /* 2. HEADER */
 /* ---------------------------------------------------- */
 .imd-header {
-  background: #004a80;
-  color: white;
-  width: 100%;
+    background: #004a80;
+    color: white;
+    width: 100%;
 }
-
 .imd-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px;
-  flex-wrap: wrap; /* makes responsive */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    flex-wrap: wrap;
 }
-
 .imd-logo {
-  background: white;
-  border-radius: 8px;
-  padding: 4px;
-  width: 55px;
-  height: 55px;
+    background: white;
+    border-radius: 8px;
+    padding: 4px;
+    width: 55px;
+    height: 55px;
 }
-
 /* Title Area */
 .imd-title {
-  flex: 1;
-  text-align: center;
-  min-width: 250px;
+    flex: 1;
+    text-align: center;
+    min-width: 250px;
 }
-
 .imd-title h2 {
-  margin: 0 auto;
-  font-size: 20px;
-  color: white;
-  border-bottom: 1px solid rgba(255,255,255,0.7);
-  width: 80%;
-  padding-bottom: 2px;
-  margin-bottom: 3px;
+    margin: 0 auto;
+    font-size: 20px;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+    width: 80%;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
 }
-
 .imd-title h4 {
-  margin: 0;
-  font-size: 14px;
+    margin: 0;
+    font-size: 14px;
 }
-
 /* Navigation */
 .imd-nav {
-  background: #003a63;
-  display: flex;
-  justify-content: right;
-  gap: 20px;
-  padding: 10px;
-  flex-wrap: wrap;
+    background: #003a63;
+    display: flex;
+    justify-content: right;
+    gap: 20px;
+    padding: 10px;
+    flex-wrap: wrap;
 }
-
 .imd-nav a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 5px 15px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px 15px;
 }
-
 .imd-nav a:hover {
-  border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #fff;
 }
-
 .imd-nav a.active-nav {
-  color: #ffcc00;
-  border-bottom: 2px solid #ffcc00;
+    color: #ffcc00;
+    border-bottom: 2px solid #ffcc00;
 }
 
 /* ---------------------------------------------------- */
-/* 3. BLUE + WHITE ALERT BOX */
+/* 3. MARQUEE SECTIONS & ANIMATIONS (Unified) */
+/* Keyframe names are unique to prevent conflicts */
 /* ---------------------------------------------------- */
-.alert-box {
-  background: #e6f1ff;
-  border-left: 5px solid #004a80;
-  color: #00345c;
-  padding: 15px 20px;
-  margin: 20px auto;
-  max-width: 900px;
-  border-radius: 8px;
-  font-size: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0;
+    box-sizing: border-box;
+    margin: 20px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* 3A. Top Info Marquee */
+.top-info-marquee {
+    background-color: #004080; /* Blue background */
+}
+.top-info-marquee .scroll-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    color: yellow;
+    font-size: 16px;
+    animation: scroll-info 35s linear infinite;
+}
+@keyframes scroll-info {
+    0% { transform: translateX(20%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* 3B. Intro Marquee (Blue Gradient) */
+#intro-marquee .marquee-container {
+    background: linear-gradient(90deg, #0078ff, #00c6ff);
+    color: white;
+}
+#intro-marquee .marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%; /* Restart gap */
+    animation: scroll-intro 30s linear infinite;
+    font-weight: 500;
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
+}
+@keyframes scroll-intro {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* 3C. IMD Marquee (Traffic Light) */
+#imd-marquee-section .marquee-container {
+    background: linear-gradient(90deg, red, yellow, green);
+    color: white;
+    border-radius: 5px;
+}
+#imd-marquee-section .marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scroll-imd 18s linear infinite;
+    font-weight: 600;
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
+}
+@keyframes scroll-imd {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+/* Pause on hover for all marquees */
+.marquee-container:hover .scroll-text, 
+.marquee-container:hover .marquee-text {
+    animation-play-state: paused;
 }
 
 /* ---------------------------------------------------- */
-/* 4. MAIN CONTENT */
+/* 4. MAIN CONTENT & SECTIONS */
 /* ---------------------------------------------------- */
+main, section, aside {
+    padding-left: 20px;
+    padding-right: 20px;
+}
 .forecast-box {
-  max-width: 850px;
-  background: #fff;
-  padding: 20px;
-  margin: 25px auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 850px;
+    background: #fff;
+    padding: 20px;
+    margin: 25px auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
 .forecast-box h2 {
-  color: #004a80;
-  border-bottom: 2px solid #e3effa;
-  padding-bottom: 6px;
+    color: #004a80;
+    border-bottom: 2px solid #e3effa;
+    padding-bottom: 6px;
+}
+iframe {
+    width: 100%;
+    height: 450px;
+    border: none;
+    border-radius: 10px;
 }
 
-iframe {
-  width: 100%;
-  height: 450px;
-  border: none;
-  border-radius: 10px;
+/* Notice Box - ELWOIC Theme */
+.notice-box {
+    max-width: 900px;
+    margin: 20px auto;
+    width: auto;
+    background: #FFFFFF;
+    border-left: 6px solid #ff4e4e;
+    padding: 18px 20px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.notice-box .notice-title, .manual-title, .pre-title, .info-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #004a80;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+.notice-box .notice-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #002b5c;
+    margin:0;
+    border-bottom: none;
+}
+.notice-box ul {
+    padding-left: 20px; 
+    margin:0; 
+    line-height:1.6; 
+    font-size: 1rem; 
+    color: #00315c; 
+    font-weight: 600;
+}
+.notice-box p {
+    font-size: 1rem;
+    color: #333;
+}
+
+
+/* Weather Snapshot */
+.weather-mini-dashboard {
+    max-width: 900px;
+    margin: 5px auto;
+    padding: 10px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-family: 'Poppins', sans-serif;
+}
+.weather-mini-dashboard h2 {
+    text-align: center;
+    color: #004080;
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+.info-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+.info-box {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    text-align: center;
+    padding: 8px 5px;
+    flex: 1 1 90px;
+    min-width: 90px;
+}
+.info-title {
+    font-size: 0.7em;
+    color: #004080;
+    margin-bottom: 2px;
+}
+.info-value {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #333;
+}
+.info-unit {
+    font-size: 0.7em;
+    color: #777;
+}
+.last-update {
+    text-align: center;
+    color: #666;
+    font-size: 0.75em;
+    margin-top: 5px;
+}
+
+/* Kerala Weather Widgets Section */
+.weather-widgets-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.widget-box {
+    background: #fff;
+    border-radius: 0px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+.widget-box h2 {
+    color: #0277BD;
+    margin-bottom: 25px;
+}
+.kerala-today-header {
+    color: #0277BD;
+    margin-top: 40px;
+    margin-bottom: 25px;
+}
+
+/* OpenWeather Dashboard */
+.weather-dashboard-section {
+    font-family: 'Roboto', sans-serif;
+    padding: 40px 20px;
+    color: #333;
+    text-align: center;
+}
+.weather-dashboard-section h1 {
+    color: #1f3a93;
+    margin-bottom: 35px;
+    font-size: 32px;
+    font-weight: 500;
+}
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    text-align: left;
+}
+th, td {
+    padding: 16px 20px;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+th {
+    background-color: #e6eef7;
+    color: #1f3a93;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.data-label {
+    font-weight: 500;
+    color: #444;
+    background-color: #f7f9fb;
+}
+td {
+    font-size: 15px;
+    color: #555;
+}
+tr:hover {
+    background-color: #fcfdff;
+}
+.source-info-row td {
+    font-weight: 400;
+    font-size: 13px;
+    background-color: #007bff1a;
+    color: #1f3a93;
+}
+.rain-status {
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+.rain-status.yes {
+    background: #d9edf7;
+    color: #31708f;
+    border: 1px solid #bce8f1;
+}
+.rain-status.no {
+    background: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+.error-status {
+    color: #a94442;
+    font-weight: 700;
+}
+tfoot td {
+    padding: 15px;
+    font-size: 12px;
+    color: #888;
+    background-color: #f0f4f8;
+    border-top: 1px solid #eef1f5;
+    text-align: center;
+}
+
+/* Radar Window Section */
+.radar-window-section {
+    font-family: 'Roboto', sans-serif;
+    margin: 40px auto;
+    padding: 0 20px 20px;
+    color: #333;
+    max-width: 1000px;
+}
+.radar-window-section .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+.radar-window-section .header {
+    background-color: #1f3a93;
+    color: #fff;
+    padding: 18px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+}
+.radar-window-section .tabs {
+    display: flex;
+    gap: 10px;
+    background: #e6eef7;
+    padding: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.radar-window-section .tab {
+    padding: 10px 16px;
+    background: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+.radar-window-section .tab.active {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+}
+.radar-window-section .view {
+    display: none;
+    height: 60vh;
+}
+.radar-window-section .view iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0 0 12px 12px;
+}
+.radar-window-section .panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    padding: 16px;
+    text-align: center;
+}
+.radar-window-section .btn {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    transition: 0.2s;
+    margin: 4px;
+}
+.radar-window-section .btn:hover {
+    background: #1d4ed8;
+}
+
+/* AQI Dashboard Section */
+.aqi-dashboard-section {
+    font-family: 'Poppins', sans-serif;
+    max-width: 950px;
+    margin: 15px auto;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.aqi-dashboard-section h2 {
+    color: #004080;
+    margin-bottom: 12px;
+    font-size: 1.3em;
+}
+.aqi-status-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.aqi-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: grey;
+    transition: background-color 0.3s ease;
+}
+.aqi-text {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+/* AQI Colors */
+.aqi-good { background-color: #4caf50; }
+.aqi-fair { background-color: #8bc34a; }
+.aqi-moderate { background-color: #ffc107; }
+.aqi-poor { background-color: #ff9800; }
+.aqi-very-poor { background-color: #f44336; }
+
+/* Legend Styling */
+.aqi-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+.legend-item {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+.legend-item span {
+    margin-left: 5px;
+}
+/* Health Advice */
+.aqi-health-advice {
+    margin-top: 10px;
+    font-size: 0.95em;
+    color: #333;
+    text-align: center;
 }
 
 /* ---------------------------------------------------- */
-/* 5. FOOTER */
+/* 5. FOOTER & ASIDE */
 /* ---------------------------------------------------- */
 footer {
-  background: #004a80;
-  color: #FFFFF;
-  padding: 20px 10px;
-  text-align: center;
-  font-size: 13px;
-  position: relative;
+    background: #004a80;
+    color: #FFFFF;
+    padding: 20px 10px;
+    text-align: center;
+    font-size: 13px;
+    position: relative;
+    /* Ensure footer stretches full width */
+    width: 100%; 
 }
-
 footer p {
-  margin: 5px 0;
+    margin: 5px 0;
 }
-
 .footer-logo {
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
-  width: 25px;
-  height: 25px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 25px;
+    height: 25px;
+}
+.quick-links {
+    max-width: 900px;
+    margin: 30px auto 20px;
+    padding: 20px;
+    background: #f7f9fb;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    text-align: center;
+}
+.quick-links h3 {
+    color: #004a80; 
+    border-bottom: 2px solid #e3effa; 
+    padding-bottom: 8px; 
+    margin-bottom: 15px;
 }
 
 /* ---------------------------------------------------- */
 /* 6. RESPONSIVE FIXES */
 /* ---------------------------------------------------- */
 @media (max-width: 600px) {
-  .imd-title h2 {
-    font-size: 16px;
-    width: 90%;
-  }
-  .imd-title h4 {
-    font-size: 12px;
-  }
-  .imd-logo {
-    width: 45px;
-    height: 45px;
-  }
+    .imd-title h2 {
+        font-size: 16px;
+        width: 90%;
+    }
+    .imd-title h4 {
+        font-size: 12px;
+    }
+    .imd-logo {
+        width: 45px;
+        height: 45px;
+    }
+    .info-box { 
+        flex: 1 1 80px; 
+        min-width: 80px; 
+    }
+    .info-value { 
+        font-size: 1.1em; 
+    }
 }
-</style>
-
+@media (max-width: 768px) {
+    .weather-dashboard-section h1 {
+        font-size: 24px;
+    }
+    th, td {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    .data-label {
+        font-size: 14px;
+    }
+    .rain-status {
+        font-size: 12px;
+    }
+    .radar-window-section .view {
+        height: 50vh;
+    }
+    .radar-window-section .tab {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+@media (max-width: 500px) {
+    .data-label {
+        font-size: 12px;
+    }
+}
+    </style>
 </head>
 <body>
+    <header class="imd-header">
+        <div class="imd-top">
+            <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
+            <div class="imd-title">
+                <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+                <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+            </div>
+            <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo">
+        </div>
+        <nav class="imd-nav" id="main-nav">
+            <a href="index.html" class="active-nav">HOME</a>
+            <a href="Forecast.html">FORECAST</a>
+            <a href="information.html">INFORMATION</a>
+            <a href="about.html">ABOUT US</a>
+            <a href="contact.html">CONTACT</a>
+        </nav>
+    </header>
 
-<header class="imd-header">
-  <div class="imd-top">
-    <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
-
-    <div class="imd-title">
-      <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-      <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+    <div class="marquee-container top-info-marquee">
+        <div class="scroll-text" id="info-marquee">
+            ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span>
+            In coordination with <span class="highlight">House Public Board Department (HPBD)</span> |
+            <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources |
+            Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details.
+            The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
+        </div>
     </div>
 
-    <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo">
-  </div>
+    <main>
+        <div class="notice-box">
+            <div style="display:flex; align-items:center; margin-bottom:12px;">
+                <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:10px;">
+                    <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
+                </svg>
+                <h2 class="notice-title">Important Notice</h2>
+            </div>
+            <ul style="padding-left: 20px; margin:0; line-height:1.6; font-size: 1rem; color: #00315c; font-weight: 600;">
+                <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
+                <li>This is a <b>persoanal project created by a student</b>for informational purposes.</li>
+                <li>
+                    For official weather alerts and warnings, please visit
+                    <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" style="color:#0056ff; text-decoration:underline;">
+                        IMD Kerala (Thiruvananthapuram)
+                    </a>.
+                </li>
+            </ul>
+            <p style="margin-top: 12px; color: #555; font-size: 0.9rem; font-style: italic;">
+                Cross-check severe weather alerts with official IMD sources.
+            </p>
+        </div>
 
-  <nav class="imd-nav" id="main-nav">
-    <a href="index.html" class="active-nav">HOME</a>
-    <a href="Forecast.html">FORECAST</a>
-    <a href="information.html">INFORMATION</a>
-    <a href="about.html">ABOUT US</a>
-    <a href="contact.html">CONTACT</a>
-  </nav>
-</header>
-<style>
-.marquee-container {
-  width: 100%;
-  overflow: hidden;
-  background-color: #004080; /* Blue background */
-  padding: 10px 0;
-  box-sizing: border-box;
-}
+        <section id="manual-update" class="notice-box">
+            <h2 class="notice-title" style="border-bottom: 2px solid #e3effa; padding-bottom: 6px;">ELWOIC Manual Update</h2>
+            <h3 class="manual-title">Current Update Section</h3>
+            <p id="weather-message"></p>
+            <h3 class="pre-title">Pre-Update Section</h3>
+            <p id="preupdate-message"></p>
+            <h3 class="info-title">Information Section</h3>
+            <p id="info-message"></p>
+        </section>
+    </main>
 
-.scroll-text {
-  display: inline-block;
-  white-space: nowrap;
-  font-weight: bold;
-  color: yellow; /* Default text color */
-  animation: scroll 35s linear infinite; /* Adjust duration for smooth scroll */
-  font-size: 16px;
-}
-
-.highlight {
-  color: #00ffff; /* Highlighted keywords */
-}
-
-/* Scroll animation */
-@keyframes scroll {
-  0% { transform: translateX(20%); }
-  100% { transform: translateX(-100%); }
-}
-</style>
-</head>
-<body>
-
-<div class="marquee-container">
-  <div class="scroll-text" id="info-marquee">
-    ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span> 
-    In coordination with <span class="highlight">House Public Board Department (HPBD)</span> | 
-    <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources | 
-    Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
-  </div>
-</div>
-   <!-- ===== MAIN CONTENT ===== -->
-  <main>
-    <section>
-      <!-- NOTICE BOX - ELWOIC THEME -->
-<div class="notice-box" style="
-    width: 100%;
-    background:#FFFFFF ;
-    border-left: 6px solid #ff4e4e;
-    padding: 18px 20px;
-    margin: 20px 0;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-">
-
-    <div style="display:flex; align-items:center; margin-bottom:12px;">
-        <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:10px;">
-            <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
-        </svg>
-        <h2 style="font-size: 1.6rem; font-weight: 700; color: #002b5c; margin:0;">Important Notice</h2>
-    </div>
-
-    <ul style="padding-left: 20px; margin:0; line-height:1.6; font-size: 1rem; color: #00315c; font-weight: 600;">
-        <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
-        <li>This is a <b>persoanal project created by a student</b>for informational purposes.</li>
-        <li>
-            For official weather alerts and warnings, please visit 
-            <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" style="color:#0056ff; text-decoration:underline;">
-                IMD Kerala (Thiruvananthapuram)
-            </a>.
-        </li>
-    </ul>
-
-    <p style="margin-top: 12px; color: #555; font-size: 0.9rem; font-style: italic;">
-        Cross-check severe weather alerts with official IMD sources.
-    </p>
-
-</div>
-
-   <section id="manual-update" class="notice-box">
-
-    <h2 class="notice-title">ELWOIC Manual Update</h2>
-
-    <!-- MANUAL UPDATE -->
-    <h3 class="manual-title">Current Update Section</h3>
-    <p id="weather-message"></p>
-
-    <!-- PRE-UPDATE -->
-    <h3 class="pre-title">Pre-Update Section</h3>
-    <p id="preupdate-message"></p>
-
-    <!-- INFORMATION -->
-    <h3 class="info-title">Information Section</h3>
-    <p id="info-message"></p>
-
-</section>
-<script src="elwoic-manual-update.js"></script>
+    <section id="intro-marquee">
+        <div class="marquee-container">
+            <div class="marquee-text">
+                🌤️ Elamkulam Local Weather Observation And Information Center — Gives you weather info of Elamkulam.
+            </div>
+        </div>
     </section>
-  </main>
-<section id="intro-marquee">
-  <div class="marquee-container">
-    <div class="marquee-text">
-      🌤️ Elamkulam Local Weather Observation And Information Center — Gives you weather info of Elamkulam.
-    </div>
-  </div>
 
-  <style>
-    #intro-marquee {
-      width: 100%;
-      margin: 20px 0;
-    }
-
-    #intro-marquee .marquee-container {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(90deg, #0078ff, #00c6ff);
-      color: white;
-      padding: 10px 0;
-      border-radius: 0;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-
-    #intro-marquee .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll 30s linear infinite;
-      font-weight: 500;
-      font-size: 1.1em;
-      letter-spacing: 0.5px;
-    }
-
-    @keyframes scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-100%); }
-    }
-
-    /* Optional: pause on hover */
-    #intro-marquee .marquee-container:hover .marquee-text {
-      animation-play-state: paused;
-    }
-  </style>
-</section>
-  <section id="imd-marquee-section">
-  <div class="marquee-container" id="marqueeContainer">
-    <div class="marquee-text" id="marqueeText">Loading alert data...</div>
-  </div>
-
-  <style>
-   #imd-marquee-section .marquee-container {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(90deg, red, yellow, green);
-  color: white;
-  padding: 10px 0;
-  border-radius: 5px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-#imd-marquee-section .marquee-text {
-  display: inline-block;
-  white-space: nowrap;
-  /* remove pad-left delay */
-  padding-left: 0;
-
-  /* NEW continuous marquee */
-  animation: scroll 18s linear infinite;
-  font-weight: 600;
-  font-size: 1.1em;
-  letter-spacing: 0.5px;
-}
-
-/* Continuous scroll (no long restart gap) */
-@keyframes scroll {
-  from { transform: translateX(100%); }
-  to { transform: translateX(-100%); }
-}
-
-#imd-marquee-section .marquee-container:hover .marquee-text {
-  animation-play-state: paused;
-}
-  </style>
-
-  <script src="imd-marquee.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const marqueeTextEl = document.getElementById("marqueeText");
-      const marqueeContainerEl = document.getElementById("marqueeContainer");
-      if (typeof updateMarquee === "function") {
-        updateMarquee(marqueeTextEl, marqueeContainerEl);
-      }
-    });
-  </script>
-  </section>
-<section id="weather-snapshot-section">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-    .weather-mini-dashboard {
-      max-width: 900px;
-      margin: 5px auto;
-      padding: 10px;
-      background: rgba(255,255,255,0.9); /* slightly transparent light background */
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .weather-mini-dashboard h2 {
-      text-align: center;
-      color: #004080;
-      font-weight: 600;
-      font-size: 1.1em;
-      margin-bottom: 8px;
-    }
-
-    .info-boxes {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .info-box {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-      text-align: center;
-      padding: 8px 5px;
-      flex: 1 1 90px;
-      min-width: 90px;
-    }
-
-    .info-title {
-      font-size: 0.7em;
-      color: #004080;
-      margin-bottom: 2px;
-    }
-
-    .info-value {
-      font-size: 1.2em;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .info-unit {
-      font-size: 0.7em;
-      color: #777;
-    }
-
-    .last-update {
-      text-align: center;
-      color: #666;
-      font-size: 0.75em;
-      margin-top: 5px;
-    }
-
-    @media (max-width: 480px) {
-      .info-box { flex: 1 1 80px; min-width: 80px; }
-      .info-value { font-size: 1.1em; }
-    }
-  </style>
-
-  <div class="weather-mini-dashboard">
-    <h2>🌦 Elamkulam Weather Snapshot</h2>
-
-    <div class="info-boxes">
-      <div class="info-box">
-        <div class="info-title">Temperature</div>
-        <div class="info-value" id="temp">--</div>
-        <div class="info-unit">°C</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">Feels Like</div>
-        <div class="info-value" id="feels">--</div>
-        <div class="info-unit">°C</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">Humidity</div>
-        <div class="info-value" id="humidity">--</div>
-        <div class="info-unit">%</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">Wind Speed</div>
-        <div class="info-value" id="wind">--</div>
-        <div class="info-unit">km/h</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">Visibility</div>
-        <div class="info-value" id="visibility">--</div>
-        <div class="info-unit">km</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">Condition</div>
-        <div class="info-value" id="condition">--</div>
-        <div class="info-unit">☁</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">OM Temp</div>
-        <div class="info-value" id="om-temp">--</div>
-        <div class="info-unit">°C</div>
-      </div>
-      <div class="info-box">
-        <div class="info-title">OM Wind</div>
-        <div class="info-value" id="om-wind">--</div>
-        <div class="info-unit">km/h</div>
-      </div>
-    </div>
-
-    <p class="last-update">Last updated: <span id="updated">--</span></p>
-  </div>
-
-  <!-- JS to load weather -->
-  <script src="snapshot.js"></script>
-   <div id="windy-iframe-section" style="width:100%; max-width:1200px; margin: 20px auto;">
-  <div style="position: relative; padding-bottom: 56.25%; height:10%; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-    <iframe
-      src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=9&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true"
-      frameborder="0"
-      allowfullscreen
-      style="position:absolute; top:0; left:0; width:100%; height:100%;">
-    </iframe>
-  </div>
-</div>
-</section>
-  <h3>Average KERALA</h3>
-<section class="kerala average">
-    <title>Kerala Weather Widgets Section</title>
-    <style>
-        /* CSS is placed directly inside the <head> */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #f4f8fb;
-        }
-
-        /* Style for the main container wrapping both widgets */
-        .weather-widgets-section {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        
-        /* Style for the 7-day ticker widget box */
-        .widget-box {
-            background: #fff;
-            border-radius: 0px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        .widget-box h2 {
-            color: #0277BD;
-            margin-bottom: 25px;
-        }
-        
-        /* Style for the Today's weather header */
-        .kerala-today-header {
-            color: #0277BD;
-            margin-top: 40px;
-            margin-bottom: 25px;
-        }
-    </style>
-    <div class="widget-box">
-        <h2>Expected In KERALA For Next 7 days</h2>
-        <div id="ww_7d443210e054f" v='1.3' loc='id' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Free weather widget for website</a></div><script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
-    </div>
-
-    <h2 class="kerala-today-header">KERALA Today</h2>
-    <div id="ww_306f1b351ac5d" v='1.3' loc='id' a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_306f1b351ac5d_u" target="_blank">Free weather widget for website</a></div><script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
-
-</section>
-<section class="weather-dashboard-section">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-
-        /* --- General Styling --- */
-        .weather-dashboard-section {
-            font-family: 'Roboto', sans-serif;
-            background-color: transparent;
-            margin: 0;
-            padding: 40px 20px;
-            color: #333;
-            text-align: center;
-        }
-
-        .weather-dashboard-section h1 {
-            color: #1f3a93;
-            margin-bottom: 35px;
-            font-size: 32px;
-            font-weight: 500;
-        }
-
-        /* --- Dashboard Container & Table --- */
-        .dashboard-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        /* --- Table Styling --- */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            min-width: 700px;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 16px 20px;
-            border: 1px solid #e0e0e0; /* visible borders */
-            transition: background-color 0.3s ease;
-        }
-
-        th {
-            background-color: #e6eef7;
-            color: #1f3a93;
-            font-weight: 700;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .data-label {
-            font-weight: 500;
-            color: #444;
-            background-color: #f7f9fb;
-        }
-
-        td {
-            font-size: 15px;
-            color: #555;
-        }
-
-        tr:hover {
-            background-color: #fcfdff;
-        }
-
-        .source-info-row td {
-            font-weight: 400;
-            font-size: 13px;
-            background-color: #007bff1a;
-            color: #1f3a93;
-        }
-
-        .rain-status {
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .rain-status.yes { 
-            background: #d9edf7; 
-            color: #31708f; 
-            border: 1px solid #bce8f1;
-        }
-
-        .rain-status.no { 
-            background: #dff0d8; 
-            color: #3c763d; 
-            border: 1px solid #d6e9c6;
-        }
-
-        .error-status { 
-            color: #a94442; 
-            font-weight: 700;
-        }
-
-        tfoot td {
-            padding: 15px;
-            font-size: 12px;
-            color: #888;
-            background-color: #f0f4f8;
-            border-top: 1px solid #eef1f5;
-            text-align: center;
-        }
-
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 768px) {
-            .weather-dashboard-section h1 { font-size: 24px; }
-            th, td { padding: 12px 15px; font-size: 14px; }
-            .data-label { font-size: 14px; }
-            .rain-status { font-size: 12px; }
-        }
-
-        @media (max-width: 500px) {
-            .data-label { font-size: 12px; }
-        }
-    </style>
-
-    <h1>☁️ Elamkulam OpenWeather Forecast Dashboard</h1>
-
-    <div class="dashboard-container">
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Current Conditions</th>
-                        <th>Next 3 Hours</th>
-                        <th>Next 6 Hours</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="source-info-row">
-                        <td class="data-label">Data Scope</td>
-                        <td>Live Data</td>
-                        <td>Forecast Point 1</td>
-                        <td>Forecast Point 2</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">🌡️ Temperature</td>
-                        <td id="owTemp0">--°C</td>
-                        <td id="owTemp1">--°C</td>
-                        <td id="owTemp2">--°C</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">Feels Like</td>
-                        <td id="owFeels0">--°C</td>
-                        <td id="owFeels1">--°C</td>
-                        <td id="owFeels2">--°C</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">Condition</td>
-                        <td id="owCond0">Loading...</td>
-                        <td id="owCond1">Loading...</td>
-                        <td id="owCond2">Loading...</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">💧 Humidity</td>
-                        <td id="owHum0">--%</td>
-                        <td id="owHum1">--%</td>
-                        <td id="owHum2">--%</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">⏲️ Pressure</td>
-                        <td id="owPress0">-- hPa</td>
-                        <td id="owPress1">-- hPa</td>
-                        <td id="owPress2">-- hPa</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">💨 Wind Speed</td>
-                        <td id="owWind0">-- km/h</td>
-                        <td id="owWind1">-- km/h</td>
-                        <td id="owWind2">-- km/h</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">👁️ Visibility</td>
-                        <td id="owVis0">-- km</td>
-                        <td id="owVis1">-- km</td>
-                        <td id="owVis2">-- km</td>
-                    </tr>
-                    <tr>
-                        <td class="data-label">🌧️ Rain/PCPN</td>
-                        <td id="owRainBox0">Checking...</td>
-                        <td id="owRainBox1">Checking...</td>
-                        <td id="owRainBox2">Checking...</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4">Data powered by OpenWeatherMap API.</td>
-                    </tr>
-                </tfoot>
-            </table>
+    <section id="imd-marquee-section">
+        <div class="marquee-container" id="marqueeContainer">
+            <div class="marquee-text" id="marqueeText">Loading alert data...</div>
         </div>
-    </div>
-</section>
+    </section>
 
-<script src="table.js"></script>
-    <section class="radar-window-section">
-    <style>
-        .radar-window-section {
-            font-family: 'Roboto', sans-serif; /* Using Roboto to match your main site */
-            margin: 40px auto;
-            padding: 0 20px 20px;
-            color: #333;
-            max-width: 1000px;
-            max-height:700px;/* Matching the max-width of your weather table container */
-        }
-        
-        .radar-window-section .container {
-            max-width: 960px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-        }
-
-        .radar-window-section .header {
-            /* Using the deep blue from your weather table header for consistency */
-            background-color: #1f3a93; 
-            color: #fff;
-            padding: 18px 20px;
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .radar-window-section .tabs {
-            display: flex;
-            gap: 10px;
-            background: #e6eef7; /* Using a light blue/gray that matches your table header background */
-            padding: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .radar-window-section .tab {
-            padding: 10px 16px;
-            background: #fff;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            font-size: 14px;
-        }
-
-        .radar-window-section .tab.active {
-            background: #2563eb; /* Active button blue */
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.25);
-        }
-
-        .radar-window-section .view {
-            display: none;
-            height: 60vh;
-        }
-
-        .radar-window-section .view iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .radar-window-section .panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 60vh;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .radar-window-section .btn {
-            display: inline-block;
-            padding: 10px 16px;
-            background: #2563eb;
-            color: #fff;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-            transition: 0.2s;
-            margin: 4px;
-        }
-
-        .radar-window-section .btn:hover {
-            background: #1d4ed8;
-        }
-
-        @media(max-width:768px) {
-            .radar-window-section .view {
-                height: 50vh;
-            }
-            .radar-window-section .tab {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
-
-        <div class="tabs">
-            <div class="tab active" data-i="0">Windy Forecast</div>
-            <div class="tab" data-i="1">Windy Radar</div>
-            <div class="tab" data-i="2">AccuWeather Links</div>
-            <div class="tab" data-i="3">IMD Radar Links</div>
+    <section id="weather-snapshot-section">
+        <div class="weather-mini-dashboard">
+            <h2>🌦 Elamkulam Weather Snapshot</h2>
+            <div class="info-boxes">
+                <div class="info-box"><div class="info-title">Temperature</div><div class="info-value" id="temp">--</div><div class="info-unit">°C</div></div>
+                <div class="info-box"><div class="info-title">Feels Like</div><div class="info-value" id="feels">--</div><div class="info-unit">°C</div></div>
+                <div class="info-box"><div class="info-title">Humidity</div><div class="info-value" id="humidity">--</div><div class="info-unit">%</div></div>
+                <div class="info-box"><div class="info-title">Wind Speed</div><div class="info-value" id="wind">--</div><div class="info-unit">km/h</div></div>
+                <div class="info-box"><div class="info-title">Visibility</div><div class="info-value" id="visibility">--</div><div class="info-unit">km</div></div>
+                <div class="info-box"><div class="info-title">Condition</div><div class="info-value" id="condition">--</div><div class="info-unit"> ☁ </div></div>
+                <div class="info-box"><div class="info-title">OM Temp</div><div class="info-value" id="om-temp">--</div><div class="info-unit">°C</div></div>
+                <div class="info-box"><div class="info-title">OM Wind</div><div class="info-value" id="om-wind">--</div><div class="info-unit">km/h</div></div>
+            </div>
+            <p class="last-update">Last updated: <span id="updated">--</span></p>
         </div>
 
-        <div class="view" data-view-id="0" style="display:block;">
-            <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-        <div class="view" data-view-id="1">
-            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-        <div class="view" data-view-id="2">
-            <div class="panel">
-                <div>
-                    <p style="margin-bottom:12px;"> Click below to open the official pages of Accuweather:</p>
-                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
-                    <p style="margin-bottom:12px;">See what the air quality of Elamkulam is now:</p>
-                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
-                </div>
+        <div id="windy-iframe-section" style="width:100%; max-width:1200px; margin: 20px auto;">
+            <div style="position: relative; padding-bottom: 56.25%; height:10%; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                <iframe
+                    src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=9&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true"
+                    frameborder="0"
+                    allowfullscreen
+                    style="position:absolute; top:0; left:0; width:100%; height:100%;">
+                </iframe>
             </div>
         </div>
-        
-        <div class="view" data-view-id="3">
-            <div class="panel">
-                <div>
-                    <p style="margin-bottom:12px;"> To see IMD animated weather radar Koich Click below:</p>
-                    <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
-                </div>
-            </div>
+    </section>
+
+    <h3 style="max-width: 1200px; margin: 25px auto 10px; color: #333;">Average KERALA</h3>
+    <section class="kerala average">
+        <title>Kerala Weather Widgets Section</title>
+        <div class="widget-box">
+            <h2>Expected In KERALA For Next 7 days</h2>
+            <div id="ww_7d443210e054f" v='1.3' loc='id' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Free weather widget for website</a></div>
         </div>
+        <h2 class="kerala-today-header">KERALA Today</h2>
+        <div id="ww_306f1b351ac5d" v='1.3' loc='id' a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_306f1b351ac5d_u" target="_blank">Free weather widget for website</a></div>
+    </section>
 
-    </div>
-
-    <script>
-        // Tab switching logic for the radar section
-        document.addEventListener('DOMContentLoaded', () => {
-            // Scope selectors to the containing section for safety
-            const container = document.querySelector('.radar-window-section');
-            if (!container) return; // Exit if the section wasn't found
-
-            const tabs = Array.from(container.querySelectorAll('.tab'));
-            const views = Array.from(container.querySelectorAll('.view'));
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const i = Number(tab.getAttribute('data-i'));
-
-                    // Deactivate all tabs and hide all views
-                    tabs.forEach(t => t.classList.remove('active'));
-                    views.forEach(v => v.style.display = 'none');
-
-                    // Activate the clicked tab and show the corresponding view
-                    tab.classList.add('active');
-                    views[i].style.display = 'block';
-
-                    // Optional: Scroll to the top of the container
-                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                });
-            });
-        });
-    </script>
-</section>
- <section class="aqi-dashboard-section">
-    <h2>🌫️ Air Quality Index (AQI)</h2>
-
-    <!-- AQI Circle + Value -->
-    <div class="aqi-status-container">
-        <div class="aqi-circle" id="aqiCircle"></div>
-        <div class="aqi-text" id="aqiValue">Loading AQI...</div>
-    </div>
-
-    <!-- AQI Legend -->
-    <div class="aqi-legend">
-        <div class="legend-item aqi-good"><span>1 — Excellent</span></div>
-        <div class="legend-item aqi-fair"><span>2 — Fair</span></div>
-        <div class="legend-item aqi-moderate"><span>3 — Moderate</span></div>
-        <div class="legend-item aqi-poor"><span>4 — Poor</span></div>
-        <div class="legend-item aqi-very-poor"><span>5 — Very Poor</span></div>
-    </div>
-
-    <!-- Health Advice -->
-    <div class="aqi-health-advice" id="aqiAdvice">
-        Loading health advice...
-    </div>
-
-    <style>
-        .aqi-dashboard-section {
-            font-family: 'Poppins', sans-serif;
-            max-width: 950px;
-            margin: 15px auto;
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-
-        .aqi-dashboard-section h2 {
-            color: #004080;
-            margin-bottom: 12px;
-            font-size: 1.3em;
-        }
-
-        .aqi-status-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .aqi-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: grey;
-            transition: background-color 0.3s ease;
-        }
-
-        .aqi-text {
-            font-size: 1.2em;
-            font-weight: 600;
-        }
-
-        /* AQI Colors */
-        .aqi-good { background-color: #4caf50; }        /* Green */
-        .aqi-fair { background-color: #8bc34a; }        /* Light Green */
-        .aqi-moderate { background-color: #ffc107; }    /* Yellow */
-        .aqi-poor { background-color: #ff9800; }        /* Orange */
-        .aqi-very-poor { background-color: #f44336; }   /* Red */
-
-        /* Legend Styling */
-        .aqi-legend {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .legend-item {
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-
-        .legend-item span {
-            margin-left: 5px;
-        }
-
-        /* Health Advice */
-        .aqi-health-advice {
-            margin-top: 10px;
-            font-size: 0.95em;
-            color: #333;
-            text-align: center;
-        }
-    </style>
-</section>
-<script src="aqi.js"></script>
-
-  <section class="unified-header-section">
-
-    <!-- ===== HEADING: BLUE GRADIENT ONLY HERE ===== -->
-    <div class="header-bar">
-        <h1>
-            <span class="weather-icon">☁️</span>Unified Weather Dashboard
-        </h1>
-    </div>
-
-    <!-- ===== MARQUEES ===== -->
-    <div class="marquee-container">
-        <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
-    </div>
-    <div class="marquee-container">
-        <div class="scroll-text" id="weather-marquee-2">Loading forecast...</div>
-    </div>
-
-    <!-- ===== DASHBOARD CONTENT ===== -->
-    <div class="dashboard-container">
-
-        <!-- CURRENT WEATHER TABLE -->
-        <div class="dashboard-section">
-            <h2>Current Weather Data (OpenWeather)</h2>
+    <section class="weather-dashboard-section">
+        <h1> ☁ ️ Elamkulam OpenWeather Forecast Dashboard</h1>
+        <div class="dashboard-container">
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Source</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
-                            <th>Wind Speed</th>
-                            <th>Condition(inaccurate)</th>
+                            <th>Parameter</th>
+                            <th>Current Conditions</th>
+                            <th>Next 3 Hours</th>
+                            <th>Next 6 Hours</th>
                         </tr>
                     </thead>
-                    <tbody id="weather-table-body">
-                        <tr><td colspan="5">Loading data...</td></tr>
+                    <tbody>
+                        <tr class="source-info-row">
+                            <td class="data-label">Data Scope</td>
+                            <td>Live Data</td>
+                            <td>Forecast Point 1</td>
+                            <td>Forecast Point 2</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">🌡️ Temperature</td>
+                            <td id="owTemp0">--°C</td>
+                            <td id="owTemp1">--°C</td>
+                            <td id="owTemp2">--°C</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">Feels Like</td>
+                            <td id="owFeels0">--°C</td>
+                            <td id="owFeels1">--°C</td>
+                            <td id="owFeels2">--°C</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">Condition</td>
+                            <td id="owCond0">Loading...</td>
+                            <td id="owCond1">Loading...</td>
+                            <td id="owCond2">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">💧 Humidity</td>
+                            <td id="owHum0">--%</td>
+                            <td id="owHum1">--%</td>
+                            <td id="owHum2">--%</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">⏲️ Pressure</td>
+                            <td id="owPress0">-- hPa</td>
+                            <td id="owPress1">-- hPa</td>
+                            <td id="owPress2">-- hPa</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">💨 Wind Speed</td>
+                            <td id="owWind0">-- km/h</td>
+                            <td id="owWind1">-- km/h</td>
+                            <td id="owWind2">-- km/h</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">👁️ Visibility</td>
+                            <td id="owVis0">-- km</td>
+                            <td id="owVis1">-- km</td>
+                            <td id="owVis2">-- km</td>
+                        </tr>
+                        <tr>
+                            <td class="data-label">🌧️ Rain/PCPN</td>
+                            <td id="owRainBox0">Checking...</td>
+                            <td id="owRainBox1">Checking...</td>
+                            <td id="owRainBox2">Checking...</td>
+                        </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">Data powered by OpenWeatherMap API.</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
+        </div>
+    </section>
 
-            <h2 style="margin-top:15px;">24-Hour Temperature Trend</h2>
-            <div id="chart-container">
-                <canvas id="trendChart"></canvas>
+    <section class="radar-window-section">
+        <div class="container">
+            <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
+            <div class="tabs">
+                <div class="tab active" data-i="0">Windy Forecast</div>
+                <div class="tab" data-i="1">Windy Radar</div>
+                <div class="tab" data-i="2">AccuWeather Links</div>
+                <div class="tab" data-i="3">IMD Radar Links</div>
+            </div>
+            <div class="view" data-view-id="0" style="display:block;">
+                <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div class="view" data-view-id="1">
+                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div class="view" data-view-id="2">
+                <div class="panel">
+                    <div>
+                        <p style="margin-bottom:12px;"> Click below to open the official pages of Accuweather:</p>
+                        <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
+                        <p style="margin-bottom:12px;">See what the air quality of Elamkulam is now:</p>
+                        <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
+                    </div>
+                </div>
+            </div>
+            <div class="view" data-view-id="3">
+                <div class="panel">
+                    <div>
+                        <p style="margin-bottom:12px;"> To see IMD animated weather radar Koich Click below:</p>
+                        <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- ===== BOTTOM SECTIONS ===== -->
-        <div class="bottom-sections">
-
-            <!-- WEATHER WIDGET -->
-            <div class="weather-widget-box dashboard-section">
-                <h2>Elamkulam Weather Forecast (Widget)</h2>
-                <div class="weather-widget">
-                    <a class="weatherwidget-io"
-                        href="https://forecast7.com/en/10d9176d23/elamkulam/"
-                        data-label_1="ELAMKULAM"
-                        data-label_2="FORECAST"
-                        data-icons="Climacons Animated"
-                        data-theme="pure">ELAMKULAM WEATHER</a>
-                </div>
-
-                <h2 style="margin-top: 15px;">Additional Details (OpenWeather)</h2>
-                <div class="extra-details" id="extraWeather">
-                    Loading extra details...
-                </div>
-            </div>
-
-            <!-- WINDY MAP -->
-            <div class="windy-box dashboard-section">
-                <h2>🌬️ Windy Forecast </h2>
-                <iframe src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=10.9077&detailLon=76.2315&metricTemp=%C2%B0C&metricRain=mm&metricWind=km/h&width=100%"></iframe>
-            </div>
-
+    <section class="aqi-dashboard-section">
+        <h2>🌫️ Air Quality Index (AQI)</h2>
+        <div class="aqi-status-container">
+            <div class="aqi-circle" id="aqiCircle"></div>
+            <div class="aqi-text" id="aqiValue">Loading AQI...</div>
         </div>
-    </div>
+        <div class="aqi-legend">
+            <div class="legend-item aqi-good"><span>1 — Excellent</span></div>
+            <div class="legend-item aqi-fair"><span>2 — Fair</span></div>
+            <div class="legend-item aqi-moderate"><span>3 — Moderate</span></div>
+            <div class="legend-item aqi-poor"><span>4 — Poor</span></div>
+            <div class="legend-item aqi-very-poor"><span>5 — Very Poor</span></div>
+        </div>
+        <div class="aqi-health-advice" id="aqiAdvice">
+            Loading health advice...
+        </div>
+    </section>
+
+    <aside class="quick-links">
+        <h3 style="color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 8px; margin-bottom: 15px;">Quick Links & Information</h3>
+        <p style="color: #555; font-size: 14px; line-height: 1.6;">
+            For official weather alerts, please visit the IMD Kerala website. This is a community project focusing on local weather observation and awareness.
+        </p>
+    </aside>
 
     <footer>
-        Powered by OpenWeather, WeatherWidget.io, and Windy • Updated in real-time for Elamkulam
+        <p>© 2025 Elamkulam Local Weather Observation And Information Center. 
+        All rights reserved. This is a student project for educational and 
+        informational purposes.</p>
+        <p>
+            <a href="#"><u>Privacy Policy</u></a>
+            |
+            <a href="#"><u>Terms Of Service</u></a>
+            |  
+            <a href="#"><u>Introduction & Disclaimer</u></a>
+        </p>
+        <p>Designed and Managed by Aswanthkrishna K</p>
+        <img src="House Public Board Seal of AswanthKK.png" alt="HPBD Logo" class="footer-logo">
     </footer>
 
-    <!-- ===== STYLES ===== -->
-    <style>
+    <script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
+    <script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
+    <script src="elwoic-manual-update.js"></script>
+    <script src="imd-marquee.js"></script>
+    <script src="snapshot.js"></script>
+    <script src="table.js"></script>
+    <script src="aqi.js"></script>
 
-        /* ===== HEADER FIX (BLUE ONLY FOR HEADING) ===== */
-        .header-bar {
-            background: linear-gradient(90deg, #1d4ed8, #0a3d91);
-            padding: 20px 10px;
-            text-align: center;
-            border-radius: 0;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-        }
-
-        .header-bar h1 {
-            color: #ffffff;
-            font-family: 'Roboto', sans-serif;
-            font-size: 32px;
-            font-weight: 500;
-            margin: 0;
-        }
-
-        .weather-icon { margin-right: 15px; }
-
-        /* MARQUEES */
-        .marquee-container {
-            width: 95%;
-            max-width: 950px;
-            margin: 8px auto;
-            overflow: hidden;
-            background-color: #004080;
-            padding: 8px 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .scroll-text {
-            display: inline-block;
-            white-space: nowrap;
-            animation: scroll 25s linear infinite;
-            font-weight: 500;
-            color: #ecf0f1;
-            font-size: 14px;
-        }
-
-        @keyframes scroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* MAIN DASHBOARD */
-        .dashboard-container {
-            max-width: 950px;
-            margin: 10px auto;
-            padding: 0 10px;
-        }
-
-        .dashboard-section {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-        }
-
-        h2 {
-            color: #004080;
-            border-bottom: 2px solid #f0f5ff;
-            padding-bottom: 5px;
-        }
-
-        /* TABLE */
-        .table-wrapper { overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            min-width: 600px;
-            font-size: 0.9em;
-        }
-
-        th, td {
-            padding: 8px 6px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background: #004080;
-            color: #fff;
-        }
-
-        /* EXTRA DETAILS */
-        .extra-details {
-            width: 100%;
-            font-size: 14px;
-            background-color: #f7f9fc;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
-        }
-
-        /* WINDY MAP */
-        .windy-box iframe {
-            width: 100%;
-            height: 300px;
-            border: none;
-            border-radius: 8px;
-        }
-
-        .bottom-sections {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        @media(min-width:768px){
-            .bottom-sections { flex-direction: row; }
-            .weather-widget-box, .windy-box { flex: 1; }
-        }
-
-        /* CHART */
-        #chart-container { width: 100%; height: 250px; margin-top: 15px; }
-        canvas { width: 100% !important; height: 100% !important; }
-
-    </style>
-
-</section>
-<script src="weather-dashboard.js"></script>
-<aside style="max-width: 600px; margin: 15px auto; padding: 12px 15px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); font-family: 'Segoe UI', Tahoma, sans-serif; color: #333; line-height: 1.5; background: #fff;">
-
-  <h2 style="text-align: center; color: #0056b3; margin: 0 0 6px;">
-    <a href="#" style="text-decoration: none; color: #0056b3;">ELWOIC - Elamkulam Local Weather Observation And Information Centre</a>
-  </h2>
-
-  <p style="text-align: center; font-size: 14px; margin: 3px 0;">
-    In coordination with <strong>House Public Board Department (HPBD)</strong> | Real-Time Weather Monitoring
-  </p>
-
-  <p style="text-align: center; font-size: 13px; color: #444; margin: 3px 0;">
-    Data refreshes every 30 minutes from multiple trusted sources  
-    | Location: <strong>10.908°N, 76.229°E</strong>
-  </p>
-
-  <p style="text-align: center; font-size: 13px; color: #c0392b; font-weight: bold; margin: 8px 0;">
-    (This is a student project, not an official government website)
-  </p>
-
-  <p style="text-align: center; font-size: 13px; color: #333; margin: 6px 0;">
-    The information shown may vary. For clarifications, please feel free to contact us.
-  </p>
-
-  <p style="text-align: center; font-size: 13px; color: #e67e22; font-weight: bold; margin: 10px 0;">
-    “If you experience any inconvenience, we sincerely apologize.  
-    This is a student-created website, not a professional production.”
-  </p>
-
-  <p style="text-align: center; font-size: 12px; color: #666; margin-top: 10px;">
-    ⚡ Our aim: to encourage community-based weather observation and awareness.
-  </p>
-
-</aside>
-
-<footer>
-  <p>© 2025 Elamkulam Local Weather Observation And Information Center. 
-  All rights reserved. This is a student project for educational and 
-  informational purposes.</p>
-  
-  <p>
-    <a href="#"><u>Privacy Policy</u></a>
-    |
-    <a href="#"><u>Terms Of Service</u></a>
-    |  
-    <a href="#"><u>Introduction & Disclaimer</u></a>
-  </p>
-  
-  <p>Designed and Managed by Aswanthkrishna K</p>
-  
-  <img src="House Public Board Seal of AswanthKK.png" alt="HPBD Logo" class="footer-logo">
-</footer>
-
-<script>
-// --- MARQUEE REFRESH TIME SCRIPT ---
-const refreshTime = 30; // change if needed
-document.getElementById("refresh-time").textContent = refreshTime;
-
-// --- ACTIVE NAVIGATION SCRIPT ---
-document.addEventListener("DOMContentLoaded", function() {
-    // Get the last part of the URL (e.g., "Forecast.html")
-    const currentPath = window.location.pathname.split('/').pop();
-    const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
+    <script>
+    // --- INLINE JAVASCRIPT ---
     
-    for (let i = 0; i < navLinks.length; i++) {
-        const linkHref = navLinks[i].getAttribute('href');
-        const linkPath = linkHref ? linkHref.split('/').pop() : '';
+    // 1. MARQUEE REFRESH TIME SCRIPT
+    const refreshTime = 30; // change if needed
+    document.getElementById("refresh-time").textContent = refreshTime;
 
-        // Check if the link's href matches the current file or if it's the index page
-        if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
-            navLinks[i].classList.add('active-nav');
-            break;
+    // 2. ACTIVE NAVIGATION SCRIPT
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname.split('/').pop();
+        const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
+        
+        for (let i = 0; i < navLinks.length; i++) {
+            const linkHref = navLinks[i].getAttribute('href');
+            const linkPath = linkHref ? linkHref.split('/').pop() : '';
+            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
+                navLinks[i].classList.add('active-nav');
+            } else {
+                navLinks[i].classList.remove('active-nav');
+            }
         }
-    }
-});
-</script>
+    });
 
+    // 3. Tab switching logic for the radar section
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.querySelector('.radar-window-section');
+        if (!container) return; 
+        const tabs = Array.from(container.querySelectorAll('.tab'));
+        const views = Array.from(container.querySelectorAll('.view'));
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const i = Number(tab.getAttribute('data-i'));
+                tabs.forEach(t => t.classList.remove('active'));
+                views.forEach(v => v.style.display = 'none');
+                tab.classList.add('active');
+                views[i].style.display = 'block';
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    });
+    </script>
 </body>
 </html>
