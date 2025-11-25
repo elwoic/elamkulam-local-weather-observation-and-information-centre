@@ -311,17 +311,22 @@ iframe {
 /* --- NEW: Blinking Animation for Current Update Section --- */
 /* ---------------------------------------------------- */
 
-/* The @keyframes rule can be placed globally */
+/* BLINK ANIMATION */
 @keyframes blink {
-    0%, 100% { opacity: 1; } /* Fully visible */
-    50% { opacity: 0.2; } /* Less visible (blinking effect) */
+    50% { opacity: 0; }
 }
 
-/* The class definition MUST be scoped */
-.weather-dashboard-scope .blink-alert {
-    /* 1s duration, instant steps, infinite loop */
-    animation: blink 1s step-end infinite; 
+.blink-alert {
+    animation: blink 1s step-end infinite;
 }
+
+/* FIX FOR FIREFOX (reduced motion conflict) */
+@media (prefers-reduced-motion: reduce) {
+    .blink-alert {
+        animation: blink 1s step-end infinite !important;
+    }
+}
+
 
 /* Weather Snapshot */
 .weather-mini-dashboard {
