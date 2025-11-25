@@ -257,22 +257,44 @@ iframe {
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
+/* --- Default styles for general titles (fallback) --- */
 .notice-box .notice-title, .manual-title, .pre-title, .info-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #004a80;
     margin-top: 15px;
     margin-bottom: 5px;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
+    /* Removed redundant/conflicting color lines here */
 }
+
+/* --- Specific Styles for the Main Title --- */
 .notice-box .notice-title {
     font-size: 1.6rem;
     font-weight: 700;
-    color: #002b5c;
+    color: #002b5c; /* Blue color for the main 'ELWOIC Manual Update' title */
     margin:0;
     border-bottom: none;
 }
+
+/* --- Heading Color Fixes --- */
+
+/* Current Update in RED */
+.manual-title {
+    color: red;
+}
+
+/* Pre-Update in YELLOW (using a dark yellow for visibility) */
+.pre-title {
+    color: #f1c40f; /* Darker yellow for better contrast */
+}
+
+/* Information Section in BLUE */
+.info-title {
+    color: #0073e6; /* Using a common blue from your site's theme */
+}
+
+/* --- List and Paragraph styles (unchanged) --- */
 .notice-box ul {
     padding-left: 20px; 
     margin:0; 
@@ -285,7 +307,21 @@ iframe {
     font-size: 1rem;
     color: #333;
 }
+/* ---------------------------------------------------- */
+/* --- NEW: Blinking Animation for Current Update Section --- */
+/* ---------------------------------------------------- */
 
+/* The @keyframes rule can be placed globally */
+@keyframes blink {
+    0%, 100% { opacity: 1; } /* Fully visible */
+    50% { opacity: 0.2; } /* Less visible (blinking effect) */
+}
+
+/* The class definition MUST be scoped */
+.weather-dashboard-scope .blink-alert {
+    /* 1s duration, instant steps, infinite loop */
+    animation: blink 1s step-end infinite; 
+}
 
 /* Weather Snapshot */
 .weather-mini-dashboard {
