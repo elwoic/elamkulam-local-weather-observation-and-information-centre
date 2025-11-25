@@ -67,3 +67,20 @@ function updateMarquee(marqueeTextEl, marqueeContainerEl) {
   marqueeTextEl.textContent = displayText;
   marqueeContainerEl.style.background = bgColor;
 }
+// ... (existing updateMarquee function code above)
+
+// --- Add this block at the end of imd-marquee.js ---
+// Wait for the DOM to be fully loaded before trying to access the elements
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Get the elements by their IDs
+    const marqueeTextEl = document.getElementById("marqueeText");
+    const marqueeContainerEl = document.getElementById("marqueeContainer");
+
+    // Check if the elements exist before calling the function
+    if (marqueeTextEl && marqueeContainerEl) {
+        // Call the function to update the marquee
+        updateMarquee(marqueeTextEl, marqueeContainerEl);
+    } else {
+        console.error("Marquee elements not found in the DOM.");
+    }
+});
