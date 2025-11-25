@@ -285,6 +285,23 @@
             line-height: 1.4;
 
         }
+.responsive-map {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px; /* optional curved corners */
+}
+
+.responsive-map iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
 
     </style>
 
@@ -719,27 +736,15 @@ And Information Center
 
 Malappuram District, Kerala, India</p>
 
-               <div class="responsive-map">
-
+              <div class="responsive-map">
     <iframe
-
-        width="600"
-
-        height="450"
-
-        style="border:0;"
-
-        loading="lazy"
-
-        allowfullscreen
-
-        referrerpolicy="no-referrer-when-downgrade"
-
         src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d187.16061595591714!2d76.23434501109243!3d10.892311019497589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!4v1763914229085!5m2!1sen!2sin"
-
+        loading="lazy"
+        allowfullscreen=""
+        referrerpolicy="no-referrer-when-downgrade"
     ></iframe>
-
 </div>
+
 
                 <p class="text-sm text-gray-500 mt-2">The weather station covers an area around Elamkulam, Malappuram.</p>
 
