@@ -155,6 +155,37 @@
             color: #6b7280;
             font-style: italic;
         }
+/* ------- RESPONSIVE NAVIGATION (NO HAMBURGER) ------- */
+.imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;       /* ⭐ makes items go to next line */
+    gap: 16px;
+    padding: 12px 15px;
+}
+
+.imd-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 5px 8px;
+    white-space: nowrap;   /* keeps each item in one block */
+}
+
+/* Smaller screens: reduce spacing & font */
+@media (max-width: 480px) {
+    .imd-nav {
+        gap: 10px;
+        padding: 10px 5px;
+    }
+    .imd-nav a {
+        font-size: 14px;
+        padding: 4px 6px;
+    }
+}
+
+        
 /* Responsive Google Map */
 .responsive-map {
     position: relative;
@@ -233,51 +264,94 @@
 <div class="info-box">
     <h2>About ELWOIC</h2>
     
-    <section class="info-intro-box" style="
+    <section class="info-intro-box"
+    style="
         display: flex;
+        align-items: center;
         gap: 40px;
         border-radius: 14px;
-        background-image: url('Screenshot 2025-11-16 154855.png'); /* Set your background image here */
+        background-image: url('Screenshot 2025-11-16 154855.png');
         background-size: cover;
         background-position: center;
         padding: 40px 30px;
         margin: 30px auto;
+        max-width: 1000px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    ">
-        <div class="info-left">
-            <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo" style="width: 260px; max-width: 100%; border-radius: 10px;">
-        </div>
-        <div class="info-right">
-            <h1>ELWOIC</h1>
-            <h2>Elamkulam Weather Station</h2>
-            <p><b>Real-Time Weather Monitoring System</b></p>
-            <p>Malappuram District, Kerala, India</p>
-            <p>In coordination with House Public Board Department (HPBD)</p>
-            <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
-        </div>
-    </section>
+        flex-wrap: wrap; /* ⭐ Allows mobile wrapping */
+    "
+>
+    <div class="info-left" style="flex: 0 0 auto;">
+        <img src="Elamkulam Weather Logo Design.1.png"
+            alt="ELWOIC Logo"
+            style="
+                width: 250px;
+                max-width: 100%;
+                border-radius: 12px;
+            ">
+    </div>
+
+    <div class="info-right"
+        style="
+            flex: 1;
+            min-width: 250px;
+            text-align: center;  /* ⭐ Perfect centering */
+            color: #ffffff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        "
+    >
+        <h1 style="font-size: 32px; margin: 0;">ELWOIC</h1>
+        <h2 style="font-size: 20px; margin: 8px 0;">Elamkulam Weather Station</h2>
+
+        <p><b>Real-Time Weather Monitoring System</b></p>
+        <p>Malappuram District, Kerala, India</p>
+        <p>In coordination with House Public Board Department (HPBD)</p>
+        <p><strong>Coordinates:</strong> 10.908°N, 76.229°E</p>
+    </div>
+</section>
+
     
     <p>ELWOIC (Elamkulam Local Weather Observation & Information Centre) is a student-run community project dedicated to providing near real-time local weather information for Elamkulam, Kerala.</p>
 
     <h2 style="margin-top: 30px;">House Public Board Department (HPBD)</h2>
-    <section style="
-        display: flex; 
-        gap: 40px; 
-        padding: 20px 0;
-        align-items: center;
-    ">
-        <div style="flex: 0 0 160px; text-align: center;">
-            <img src="HPBD_Logo_Transparent.png" alt="HPBD Logo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fde047; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);">
-        </div>
-        <div>
-            <h1 style="font-size: 24px; color: #004a80; margin-top: 0;">HPBD</h1>
-            <p>A **house-owned operating Board** established since **2023**.</p>
-            <p>Helps run the house **systematically and without collisions**.</p>
-            <p>Coordinates with ELWOIC for smooth operation (Head Office in the same building).</p>
-            <p><strong>Head Office Coordinates:</strong> 10.8923431009004°N, 76.23438262663473°E</p>
-        </div>
-    </section>
+    
+<section style="
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    padding: 25px 10px;
+    flex-wrap: wrap;           /* ⭐ Makes it responsive */
+    max-width: 900px;
+    margin: 0 auto;
+">
+    <div style="flex: 0 0 160px; text-align: center;">
+        <img src="HPBD_Logo_Transparent.png" alt="HPBD Logo" 
+            style="
+                width: 130px;
+                height: 130px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 4px solid #fde047;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            ">
+    </div>
 
+    <div style="
+        flex: 1;
+        min-width: 260px;
+        line-height: 1.6;
+    ">
+        <h1 style="
+            font-size: 26px;
+            color: #004a80;
+            margin: 0 0 8px 0;
+        ">HPBD</h1>
+
+        <p><strong>A house-owned operating board</strong> established in <strong>2023</strong>.</p>
+        <p>Helps run the house <strong>systematically</strong> and <strong>without collisions</strong>.</p>
+        <p>Coordinates with ELWOIC for smooth operation<br>(Head Office located in the same building).</p>
+        <p><strong>Head Office Coordinates:</strong> 10.8923431009004°N, 76.23438262663473°E</p>
+    </div>
+</section>
 
     
 
