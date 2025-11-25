@@ -609,7 +609,167 @@ tfoot td {
     color: #333;
     text-align: center;
 }
+/* --- Imports & Global Reset --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Apply Poppins and scope CSS variables only to elements within the dashboard scope */
+.weather-dashboard-scope {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    /* Define CSS Variables within the scope for safety */
+    --primary-blue: #004080;
+    --secondary-blue: #0073e6;
+    --background-color: #f7f9fc;
+    --card-background: #ffffff;
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-subtle: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Main Dashboard Container --- */
+.weather-dashboard-scope .unified-container {
+    max-width: 950px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.weather-dashboard-scope .dashboard-section {
+    background: var(--card-background);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+    margin-bottom: 25px;
+    transition: transform 0.3s ease;
+}
+
+.weather-dashboard-scope .dashboard-section:hover {
+    transform: translateY(-2px);
+}
+
+.weather-dashboard-scope h2 {
+    text-align: center;
+    font-size: 1.5em;
+    color: var(--primary-blue);
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 3px solid var(--secondary-blue);
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+/* --- Marquee Styles (For the running text) --- */
+.weather-dashboard-scope .marquee-wrapper {
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.weather-dashboard-scope .marquee-container {
+    max-width: 950px;
+    margin: 8px auto;
+    overflow: hidden;
+    background-color: var(--primary-blue);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+}
+
+.weather-dashboard-scope .marquee-container:nth-of-type(2) {
+    background-color: var(--secondary-blue);
+}
+
+.weather-dashboard-scope .scroll-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scroll 30s linear infinite;
+    font-weight: 500;
+    color: #ecf0f1;
+    font-size: 15px;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* --- Table Styles --- */
+.weather-dashboard-scope .table-wrapper {
+    overflow-x: auto;
+}
+
+.weather-dashboard-scope table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 650px;
+    text-align: center;
+    font-size: 0.95em;
+}
+
+.weather-dashboard-scope th, 
+.weather-dashboard-scope td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #eef1f6;
+}
+
+.weather-dashboard-scope th {
+    background: var(--primary-blue);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* --- Chart Styles --- */
+.weather-dashboard-scope #chart-container {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* --- Extra Details Widget --- */
+.weather-dashboard-scope .extra-details {
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: inset var(--shadow-subtle);
+    margin-top: 15px;
+}
+
+.weather-dashboard-scope .details-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 15px;
+}
+
+.weather-dashboard-scope .details-item span:first-child {
+    font-weight: 500;
+    color: var(--primary-blue);
+}
+
+.weather-dashboard-scope .details-item span:last-child {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.weather-dashboard-scope .details-item:not(:last-child) {
+    border-bottom: 1px dashed #cfd8dc;
+}
+
+/* --- Responsive Layout (Windy Map and Details side-by-side) --- */
+@media (min-width: 768px) {
+    .weather-dashboard-scope .bottom-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .weather-dashboard-scope .dashboard-section {
+        margin-bottom: 0;
+    }
+}
+        
 /* ---------------------------------------------------- */
 /* 5. FOOTER & ASIDE */
 /* ---------------------------------------------------- */
@@ -956,7 +1116,84 @@ footer p {
             Loading health advice...
         </div>
     </section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+<div class="weather-dashboard-scope">
+
+    <div class="marquee-wrapper">
+        <div class="marquee-container">
+            <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
+        </div>
+        <div class="marquee-container">
+            <div class="scroll-text" id="weather-marquee-2">Loading forecast...</div>
+        </div>
+    </div>
+
+    <div class="unified-container">
+        
+        <div class="dashboard-section">
+            <h2>📊 Current Conditions & Forecast Trend</h2>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                            <th>Wind Speed (m/s)</th>
+                            <th>Condition</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weather-table-body">
+                        <tr><td colspan="5">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 style="margin-top:25px;">📉 24-Hour Temperature Trend</h2>
+            <div id="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bottom-sections">
+
+            <div class="weather-widget-box dashboard-section">
+                <h2>☁️ Elamkulam Weather Forecast</h2>
+                <div class="weather-widget">
+                    <a class="weatherwidget-io"
+                        href="https://forecast7.com/en/10d9176d23/elamkulam/"
+                        data-label_1="ELAMKULAM"
+                        data-label_2="FORECAST"
+                        data-icons="Climacons Animated"
+                        data-theme="pure">ELAMKULAM WEATHER</a>
+                </div>
+                
+                <h2 style="margin-top: 25px;">Additional Details (Current)</h2>
+                <div class="extra-details" id="extraWeather">
+                    Loading extra details...
+                </div>
+            </div>
+
+            <div class="windy-box dashboard-section">
+                <h2>🌬️ Live Wind, Radar & Pressure Map</h2>
+                <iframe src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=10.9077&detailLon=76.2315&metricTemp=%C2%B0C&metricRain=mm&metricWind=km/h&width=100%"></iframe>
+            </div>
+
+        </div>
+    </div> 
+
+</div> <script>
+    !function(d,s,id){
+        var js,fjs=d.getElementsByTagName(s)[0];
+        if(!d.getElementById(id)){
+            js=d.createElement(s);js.id=id;
+            js.src='https://weatherwidget.io/js/widget.min.js';
+            fjs.parentNode.insertBefore(js,fjs);
+        }
+    }(document,'script','weatherwidget-io-js');
+</script>
     <aside class="quick-links">
         <h3 style="color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 8px; margin-bottom: 15px;">Quick Links & Information</h3>
         <p style="color: #555; font-size: 14px; line-height: 1.6;">
@@ -982,10 +1219,10 @@ footer p {
     <script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
     <script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
     <script src="elwoic-manual-update.js"></script>
-<script src="snapshot.js"></script>
+    <script src="snapshot.js"></script>
     <script src="table.js"></script>
     <script src="aqi.js"></script>
-
+    <script src="weather-dashboard.js"></script>
     <script>
     // --- INLINE JAVASCRIPT ---
     
