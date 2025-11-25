@@ -926,6 +926,20 @@ footer p {
     width: 25px;
     height: 25px;
 }
+        /* Fix for unreadable links in the dark footer */
+footer a {
+    color: #FFFFFF !important; /* Forces link text to be white */
+    text-decoration: none; /* Optional: Remove the underline for a cleaner look */
+    font-weight: 500; /* Optional: Make the text slightly bolder for emphasis */
+    margin: 0 5px; /* Adds a little horizontal space around the links */
+    display: inline-block;
+}
+
+/* Optional: Add a hover effect for usability */
+footer a:hover {
+    text-decoration: underline;
+    color: #87CEEB !important; /* Change color on hover (using the yellow from your theme) */
+}
 .quick-links {
     max-width: 900px;
     margin: 30px auto 20px;
@@ -934,6 +948,7 @@ footer p {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     text-align: center;
+    text-color: white;
 }
 .quick-links h3 {
     color: #FFFFFF; /* RECOMMENDED CHANGE: Changed TO #FFFFFF  for visibility */
