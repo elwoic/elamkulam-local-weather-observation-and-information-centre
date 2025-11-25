@@ -149,7 +149,11 @@ body {
     background: linear-gradient(90deg, red, yellow, green);
     color: white;
     border-radius: 5px;
+    height: 30px; /* Recommended: Set a fixed height */
+    overflow: hidden; /* 💥 CRITICAL FIX: Hides the overflow */
+    position: relative; /* Recommended: For absolute positioning of text */
 }
+
 #imd-marquee-section .marquee-text {
     display: inline-block;
     white-space: nowrap;
@@ -157,10 +161,24 @@ body {
     font-weight: 600;
     font-size: 1.1em;
     letter-spacing: 0.5px;
+    
+    /* Recommended: Ensure the text sits correctly in the container */
+    position: absolute; 
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Center vertically */
 }
+
+/* NOTE: You will likely need to adjust the animation transform 
+   to ONLY use the animation's transform, so the initial setting
+   of transform: translateY(-50%) should be merged into the keyframes. 
+   
+   A simpler approach might be to use Flexbox on the container instead 
+   of absolute positioning for vertical centering.
+*/
+
 @keyframes scroll-imd {
-    from { transform: translateX(100%); }
-    to { transform: translateX(-100%); }
+    from { transform: translate(100%, -50%); } /* Merged with vertical centering */
+    to { transform: translate(-100%, -50%); } /* Merged with vertical centering */
 }
 
 /* Pause on hover for all marquees */
