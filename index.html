@@ -186,7 +186,38 @@ body {
 .marquee-container:hover .marquee-text {
     animation-play-state: paused;
 }
+/* 3D. White Box Container for Alert */
+#imd-alert-wrapper {
+    /* Styles for the white box */
+    background-color: white;
+    padding: 1px; /* Space inside the box */
+    border-radius: 8px; /* Slightly rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 800px; /* Adjust this to fit your layout */
+    margin: 20px auto; /* Centers the box on the page */
+}
 
+/* 3E. Small Note Below the Marquee */
+.alert-update-note {
+    text-align: center; /* Align the note to the right */
+    margin-top: 5px; /* Small space above the note */
+    font-size: 0.85em; /* Make the text small */
+    color: #666; /* Gray text color */
+}
+
+.alert-update-note a {
+    color: #007bff; /* Standard link color */
+    text-decoration: none; /* Remove underline */
+}
+
+.alert-update-note a:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Optional: Ensure the marquee section itself doesn't have extra padding/margin */
+#imd-marquee-section {
+    margin-bottom: 5px; /* A little space between marquee and the note */
+}
 /* ---------------------------------------------------- */
 /* 4. MAIN CONTENT & SECTIONS */
 /* ---------------------------------------------------- */
@@ -739,14 +770,21 @@ footer p {
             </div>
         </div>
     </section>
-
-    <section id="imd-marquee-section">
+<div id="imd-alert-wrapper"> <section id="imd-marquee-section">
         <div class="marquee-container" id="marqueeContainer">
             <div class="marquee-text" id="marqueeText">Loading alert data...</div>
         </div>
-         <script src="imd-marquee.js"></script>
+        <script src="imd-marquee.js"></script> 
     </section>
 
+    <p class="alert-update-note">
+        <a href="URL_TO_YOUR_UPDATE_PAGE" target="_blank">
+            Click here to see how IMD alert updates
+        </a>
+    </p>
+    
+</div>
+    
     <section id="weather-snapshot-section">
         <div class="weather-mini-dashboard">
             <h2>🌦 Elamkulam Weather Snapshot</h2>
