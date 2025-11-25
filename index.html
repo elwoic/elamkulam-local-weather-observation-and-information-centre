@@ -246,6 +246,7 @@ iframe {
 }
 
 /* Notice Box - ELWOIC Theme */
+/* Notice Box - ELWOIC Theme */
 .notice-box {
     max-width: 900px;
     margin: 20px auto;
@@ -257,6 +258,7 @@ iframe {
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
+
 /* --- Default styles for general titles (fallback) --- */
 .notice-box .notice-title, .manual-title, .pre-title, .info-title {
     font-size: 1.2rem;
@@ -265,7 +267,6 @@ iframe {
     margin-bottom: 5px;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
-    /* Removed redundant/conflicting color lines here */
 }
 
 /* --- Specific Styles for the Main Title --- */
@@ -294,6 +295,12 @@ iframe {
     color: #0073e6; /* Using a common blue from your site's theme */
 }
 
+/* --- NEW RULE: Make the Current Update message red too --- */
+#weather-message {
+    color: red;
+    font-weight: 600; /* Added bolding to make the alert stand out */
+}
+
 /* --- List and Paragraph styles (unchanged) --- */
 .notice-box ul {
     padding-left: 20px; 
@@ -313,20 +320,14 @@ iframe {
 
 /* BLINK ANIMATION */
 @keyframes blink {
-    50% { opacity: 0; }
+    0%, 100% { opacity: 1; } 
+    50% { opacity: 0.2; } /* Changed from 0 to 0.2 for a better "flash" effect */
 }
 
-.blink-alert {
+/* Apply the blinking animation to the message content */
+#weather-message.blink-alert {
     animation: blink 1s step-end infinite;
 }
-
-/* FIX FOR FIREFOX (reduced motion conflict) */
-@media (prefers-reduced-motion: reduce) {
-    .blink-alert {
-        animation: blink 1s step-end infinite !important;
-    }
-}
-
 
 /* Weather Snapshot */
 .weather-mini-dashboard {
