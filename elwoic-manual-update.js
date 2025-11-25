@@ -68,6 +68,8 @@ if (manualDiv) {
        -------------------------- */
     if (today.getTime() === manualDay.getTime()) {
         manualDiv.innerHTML = manualText;
+       manualDiv.classList.add("blink-alert");
+
     }
 
     /* --------------------------
