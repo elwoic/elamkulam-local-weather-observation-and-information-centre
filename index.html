@@ -1012,12 +1012,13 @@ footer a:hover {
     <header class="imd-header">
         <div class="imd-top">
             <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
-            <div class="imd-title">
+                 <div class="imd-title">
                 <h2>Elamkulam Local Weather Observation & Information Centre</h2>
                 <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
             </div>
             <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo">
         </div>
+        <div id="dateTime" class="text-white text-sm font-semibold"></div>
         <nav class="imd-nav" id="main-nav">
             <a href="index.html" class="active-nav">HOME</a>
             <a href="Forecast.html">FORECAST</a>
@@ -1419,5 +1420,22 @@ footer a:hover {
         });
     });
     </script>
+    <script>
+function updateDateTime() {
+    const now = new Date();
+    const options = { 
+        timeZone: "Asia/Kolkata",
+        weekday: "short", year: "numeric", month: "short", day: "numeric"
+    };
+    const date = now.toLocaleDateString("en-GB", options);
+    const time = now.toLocaleTimeString("en-GB", { 
+        timeZone: "Asia/Kolkata",
+        hour12: false 
+    });
+    document.getElementById("dateTime").innerHTML = date + " | " + time + " IST";
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
 </body>
 </html>
