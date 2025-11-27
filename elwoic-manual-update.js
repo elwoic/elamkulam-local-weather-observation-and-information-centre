@@ -54,39 +54,30 @@ const preDiv = document.getElementById("preupdate-message");
 const infoDiv = document.getElementById("info-message");
 
 
-
 /* ============================================================
-   5. MAIN LOGIC   
-   - If TODAY == manualDate → show manual message  
-   - If TODAY == preDate → move pre-update to manual  
-   - Otherwise → defaults  
-   ============================================================ */
+   5. MAIN LOGIC
+============================================================ */
 if (manualDiv) {
 
-    /* --------------------------
-       Case A: TODAY = manual day
-       -------------------------- */
+    // Case A — TODAY = manual day
     if (today.getTime() === manualDay.getTime()) {
         manualDiv.innerHTML = manualText;
-       manualDiv.classList.add("blink-alert");
-
+        manualDiv.classList.add("blink-alert"); // blinking OK
     }
 
-    /* --------------------------
-       Case B: TODAY = pre-update day
-       → Pre message becomes manual
-       -------------------------- */
+    // Case B — TODAY = pre-update day → pre becomes manual
     else if (today.getTime() === preDay.getTime()) {
-        manualDiv.innerHTML = preText;   // Promote pre → manual
+        manualDiv.innerHTML = preText;
+        manualDiv.classList.add("blink-alert"); // blinking FIXED
     }
 
-    /* --------------------------
-       Case C: Any other day
-       -------------------------- */
+    // Case C — Default day
     else {
         manualDiv.innerHTML = defaultManual;
+        manualDiv.classList.remove("blink-alert"); // prevent red/blink FIXED
     }
 }
+
 
 
 
