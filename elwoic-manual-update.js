@@ -99,11 +99,6 @@ if (preDiv) {
     }
 }
 
-// Remove blink class when today is after the pre-day
-if (today.getTime() > preDay.getTime()) {
-    manualDiv.classList.remove("blink-alert");
-}
-
 
 /* ============================================================
    7. INFORMATION SECTION (Static)
