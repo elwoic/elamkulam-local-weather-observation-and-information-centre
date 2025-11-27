@@ -409,16 +409,23 @@ iframe {
 /* --- NEW: Blinking Animation for Current Update Section --- */
 /* ---------------------------------------------------- */
 
-/* BLINK ANIMATION */
+/* blinking animation */
 @keyframes blink {
-    0%, 100% { opacity: 1; } 
-    50% { opacity: 0.2; } /* Changed from 0 to 0.2 for a better "flash" effect */
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
 }
 
-/* Apply the blinking animation to the message content */
-#weather-message.blink-alert {
-    animation: blink 1s step-end infinite;
+/* Blinking class ONLY for non-default messages */
+.blink-alert {
+  animation: blink 1.2s infinite;
+  color: red !important;  /* blinking messages must be red */
 }
+
+/* Default (non-blinking) message color */
+#weather-message {
+  color: #333; /* gray normal text */
+}
+
 
 /* Weather Snapshot */
 .weather-mini-dashboard {
