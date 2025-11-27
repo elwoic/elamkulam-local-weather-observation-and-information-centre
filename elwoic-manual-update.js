@@ -19,11 +19,11 @@ function parseDate(ddmmyyyy) {
 ---------------------------- */
 
 // Message for a specific day
-const manualDate = "25/11/2025";       // Manual update day
+const manualDate = "27/11/2025";       // Manual update day
 const manualText = "No manual updates. Site under developement.";
 
 // Pre-update: message for the tomorrow
-const preDate = "26/11/2025";          // Tomorrow's date
+const preDate = "28/11/2025";          // Tomorrow's date
 const preText = "No manual updates. Site under valuation";
 
 
