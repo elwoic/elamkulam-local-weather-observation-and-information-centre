@@ -59,22 +59,22 @@ const infoDiv = document.getElementById("info-message");
 ============================================================ */
 if (manualDiv) {
 
-    // Case A — TODAY = manual day
+    // Case A — TODAY = manual update day
     if (today.getTime() === manualDay.getTime()) {
         manualDiv.innerHTML = manualText;
-        manualDiv.classList.add("blink-alert"); // blinking OK
+        manualDiv.classList.add("blink-alert");
     }
 
-    // Case B — TODAY = pre-update day → pre becomes manual
+    // Case B — TODAY = pre-update day (pre becomes manual)
     else if (today.getTime() === preDay.getTime()) {
         manualDiv.innerHTML = preText;
-        manualDiv.classList.add("blink-alert"); // blinking FIXED
+        manualDiv.classList.add("blink-alert");
     }
 
-    // Case C — Default day
+    // Case C — default day
     else {
         manualDiv.innerHTML = defaultManual;
-        manualDiv.classList.remove("blink-alert"); // prevent red/blink FIXED
+        manualDiv.classList.remove("blink-alert"); // remove blinking when showing default
     }
 }
 
