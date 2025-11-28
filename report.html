@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Report | ELWOIC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-blue-900 text-white py-4 text-center shadow">
+        <h1 class="text-xl font-semibold">Submit Weather / Alert Report</h1>
+    </header>
+
+    <div class="max-w-lg mx-auto bg-white shadow p-6 mt-6 rounded">
+        <p class="text-gray-700 mb-4">
+            Help the community by reporting rainfall, floods, wind, road blocks, lightning, alerts, or other weather-related information.
+            Reports are first verified by admin before being displayed on the website.
+        </p>
+
+        <form action="mailto:aswanthkrishnak822@gmail.com" method="post" enctype="text/plain" class="space-y-4">
+            
+            <div>
+                <label class="block font-medium">Your Name (optional)</label>
+                <input type="text" name="Name" class="w-full border rounded p-2" placeholder="Name not required">
+            </div>
+
+            <div>
+                <label class="block font-medium">Location</label>
+                <input type="text" name="Location" class="w-full border rounded p-2" required placeholder="Eg: Elamkulam, Peringottukurissi, etc.">
+            </div>
+
+            <div>
+                <label class="block font-medium">Report Type</label>
+                <select name="Report Type" class="w-full border rounded p-2" required>
+                    <option>Rainfall</option>
+                    <option>Flood / Water Level</option>
+                    <option>Storm / Wind</option>
+                    <option>Lightning</option>
+                    <option>Road Block / Tree Fall</option>
+                    <option>General Information</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-medium">Message / Report Details</label>
+                <textarea name="Report Message" class="w-full border rounded p-2" rows="4" required placeholder="Describe what is happening..."></textarea>
+            </div>
+
+            <div>
+                <label class="block font-medium">Time of the Event</label>
+                <input type="text" name="Time" class="w-full border rounded p-2" required placeholder="Eg: 7:45 PM, 2 hours ago, etc.">
+            </div>
+
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded font-semibold w-full">
+                Submit Report
+            </button>
+        </form>
+
+        <p class="text-xs text-gray-500 mt-3">
+            ⚠ Reports will appear on the website only after verification to prevent misinformation.
+        </p>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="index.html" class="text-blue-700 underline font-medium">⬅ Back to Home</a>
+    </div>
+
+</body>
+</html>
