@@ -251,6 +251,81 @@ iframe {
             .info-box { flex: 1 1 80px; min-width: 80px; }
             .info-value { font-size: 1.1em; }
         }
+    :root{
+  --primary:#003a63;
+  --good:#e6ffef;
+  --good-border:#08a045;
+  --moderate:#fff9e6;
+  --moderate-border:#ffb020;
+  --avoid:#fff2f2;
+  --avoid-border:#ff4d4f;
+  --muted:#566271;
+  --text:#072036;
+  --card-radius:12px;
+}
+
+/* main layout */
+body{
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  background: linear-gradient(180deg,#f6fbff,#f3f9ff);
+  margin:0; padding:22px; color:var(--text);
+}
+.container{ max-width:1100px; margin:0 auto; }
+
+header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+header h1{ font-size:20px; margin:0; color:var(--primary); }
+.subtitle{ font-size:13px; color:var(--muted); }
+
+/* grid */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap:14px;
+}
+@media(max-width:1000px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
+
+/* card */
+.card{
+  display:flex; gap:12px; align-items:flex-start;
+  padding:12px; border-radius:var(--card-radius);
+  background:white; border:1px solid rgba(2,6,23,0.04);
+  min-height:86px;
+  box-shadow:0 6px 18px rgba(2,6,23,0.04);
+  transition:.18s;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 10px 28px rgba(2,6,23,0.06);
+}
+
+/* icon */
+.icon{
+  width:56px; height:56px; flex:0 0 56px;
+  border-radius:10px;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,0.9);
+}
+.icon svg{ width:36px; height:36px; display:block; }
+
+/* text */
+.body{ flex:1; }
+.title{ font-weight:700; color:var(--primary); margin-bottom:6px; font-size:15px; }
+.advice{ font-size:13px; color:var(--muted); line-height:1.35; }
+
+/* severity colors */
+.s-good{ background:var(--good); border-left:6px solid var(--good-border); }
+.s-moderate{ background:var(--moderate); border-left:6px solid var(--moderate-border); }
+.s-avoid{ background:var(--avoid); border-left:6px solid var(--avoid-border); }
+
+/* timestamp */
+.updated{
+  margin-top:16px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:right;
+}
+
     </style>
 
     <div class="weather-mini-dashboard">
@@ -883,87 +958,19 @@ iframe {
     
  <section id="health-activity-section">
 
-  <style>
-    /* -----------------------------------
-       HEALTH & ACTIVITY ADVICE SECTION
-       ----------------------------------- */
-    #health-activity-section {
-      margin: 40px auto;
-      padding: 20px;
-      background: linear-gradient(135deg, #e3f3ff, #ffffff);
-      border-radius: 14px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-      max-width: 1400px;
-      font-family: "Poppins", sans-serif;
-    }
+ <div class="container">
+    <header>
+      <h1>Activity Recommendations</h1>
+      <div class="subtitle">Auto-updated based on current weather</div>
+    </header>
 
-    #health-activity-section h2 {
-      text-align: center;
-      color: #004d99;
-      font-size: 28px;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
+    <div class="grid" id="activityGrid"></div>
 
-    .ha-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .ha-box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-    }
-
-    .ha-box h3 {
-      margin-bottom: 10px;
-      color: #0066cc;
-      font-size: 20px;
-    }
-
-    .ha-box p {
-      font-size: 15px;
-      color: #222;
-      line-height: 1.6;
-    }
-
-    .updated {
-      margin-top: 10px;
-      color: #555;
-      font-size: 13px;
-    }
-  </style>
-
-  <h2>Health & Activity Advisory</h2>
-
-  <div class="ha-container">
-
-    <div class="ha-box">
-      <h3>Current Weather</h3>
-      <p><strong>Temperature:</strong> <span id="ha-temp">--</span>°C</p>
-      <p><strong>Humidity:</strong> <span id="ha-humidity">--</span>%</p>
-      <p><strong>Wind:</strong> <span id="ha-wind">--</span> km/h</p>
-      <p><strong>Condition:</strong> <span id="ha-condition">--</span></p>
-      <p class="updated">Updated at: <span id="ha-updated">--</span></p>
-    </div>
-
-    <div class="ha-box">
-      <h3>Health Advice</h3>
-      <p id="health-advice">Loading...</p>
-    </div>
-
-    <div class="ha-box">
-      <h3>Activity Advice</h3>
-      <p id="activity-advice">Loading...</p>
-    </div>
-
+    <div class="updated" id="lastUpdated">Last updated: --</div>
   </div>
 
-  <!-- JS file you created -->
-  <script src="advice.js"></script>
+<script src="activity.js"></script>
+ 
 
 </section>
 <div style="text-align: center; margin-top: 14px;">
