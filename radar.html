@@ -1,1 +1,314 @@
+<!-- Rain radar map (Leaflet + RainViewer) -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rain Radar — ELWOIC</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-sA+4x5fZg2kF2KZb+8G3kqRk6GkQZq7t0pM6b2Z0k6M=" crossorigin=""/>
+
+<style>
+  /* Container sizing */
+  #radarWrap { max-width:1100px; margin:18px auto; font-family: Inter, system-ui, Arial, sans-serif; }
+  .card {
+    background: linear-gradient(180deg,#ffffff,#f7fbff);
+    border-radius:10px;
+    box-shadow: 0 8px 26px rgba(3,18,40,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(0,74,128,0.06);
+  }
+
+  /* header */
+  .radar-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px; gap:12px;
+    background: linear-gradient(90deg,#f3f8ff,#ffffff);
+    border-bottom:1px solid rgba(0,74,128,0.04);
+  }
+  .radar-title { color:#004a80; font-weight:700; font-size:17px; }
+  .radar-sub { color:#556675; font-size:13px; }
+
+  /* map area */
+  #radarMap { height:540px; width:100%; display:block; }
+
+  /* controls */
+  .radar-controls {
+    display:flex; gap:12px; align-items:center; padding:10px 14px; flex-wrap:wrap;
+  }
+  .control-group { display:flex; align-items:center; gap:8px; font-size:13px; color:#083a60; }
+  .btn {
+    background:#004a80; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; border:none; font-weight:600;
+    box-shadow: 0 4px 10px rgba(0,74,128,0.12);
+  }
+  .btn.secondary { background:transparent; color:#004a80; border:1px solid rgba(0,74,128,0.12); box-shadow:none; }
+  input[type="range"] { accent-color:#004a80; }
+
+  /* small UI */
+  .small { font-size:12px; color:#556675; }
+  .right { margin-left:auto; display:flex; gap:10px; align-items:center; }
+
+  /* legend */
+  .legend {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgba(255,255,255,0.95);
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid rgba(0,0,0,0.06);
+    font-size:12px;
+    color:#123;
+    box-shadow: 0 6px 18px rgba(2,10,28,0.06);
+  }
+  .legend .row { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+  .swatch { width:18px; height:10px; border-radius:3px; }
+
+  /* loader */
+  .loader { font-size:13px; color:#556675; }
+
+  /* responsive */
+  @media (max-width:720px){
+    .radar-controls { padding:10px; gap:8px; }
+    #radarMap { height:420px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="radarWrap" class="card">
+  <div class="radar-header">
+    <div>
+      <div class="radar-title">Rain Radar — ELWOIC</div>
+      <div class="radar-sub">Animated precipitation overlay (data via RainViewer)</div>
+    </div>
+
+    <div class="right">
+      <div class="small loader" id="rvStatus">Loading frames…</div>
+      <button class="btn" id="btnCenter">Center Kerala</button>
+    </div>
+  </div>
+
+  <div id="radarMap"></div>
+
+  <div class="radar-controls">
+    <div class="control-group">
+      <button id="btnPlay" class="btn">Play</button>
+      <button id="btnPause" class="btn secondary">Pause</button>
+    </div>
+
+    <div class="control-group">
+      <label class="small">Frame</label>
+      <input id="frameSlider" type="range" min="0" max="0" step="1" value="0" style="width:260px">
+    </div>
+
+    <div class="control-group">
+      <label class="small">Opacity</label>
+      <input id="opacitySlider" type="range" min="0" max="100" step="5" value="70">
+    </div>
+
+    <div class="control-group right" style="margin-left:auto;">
+      <label class="small">Layer</label>
+      <select id="colorScheme" class="small">
+        <option value="0">Standard</option>
+        <option value="1">Blue</option>
+        <option value="2">Purple</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="legend" id="legend">
+    <div class="row"><div class="swatch" style="background:#2fb400"></div><div>Light rain</div></div>
+    <div class="row"><div class="swatch" style="background:#ffd200"></div><div>Moderate</div></div>
+    <div class="row"><div class="swatch" style="background:#ff6b00"></div><div>Heavy</div></div>
+    <div class="row"><div class="swatch" style="background:#c80000"></div><div>Very Heavy</div></div>
+  </div>
+</div>
+
+<!-- Leaflet + RainViewer: JS libraries -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-o9N1jM5k2G6Q2g7JgkQ6zWQv5v0c8y2gqXG6bZVx0U8=" crossorigin=""></script>
+
+<script>
+/* =========== RainViewer + Leaflet radar overlay ============
+
+ - Uses RainViewer public API (no API key)
+ - Centers map to Kerala (approx lat/lon)
+ - Adds animated radar tile layer frames from RainViewer
+ - Controls: play/pause, frame slider, opacity, color scheme
+
+=========================================================== */
+
+(async function(){
+  // config (center Kerala)
+  const center = [10.9081, 76.2296];
+  const zoomDefault = 8;
+
+  // DOM
+  const mapEl = document.getElementById('radarMap');
+  const btnPlay = document.getElementById('btnPlay');
+  const btnPause = document.getElementById('btnPause');
+  const frameSlider = document.getElementById('frameSlider');
+  const opacitySlider = document.getElementById('opacitySlider');
+  const rvStatus = document.getElementById('rvStatus');
+  const btnCenter = document.getElementById('btnCenter');
+  const colorSchemeSelect = document.getElementById('colorScheme');
+
+  // create map
+  const map = L.map(mapEl, { zoomControl:true }).setView(center, zoomDefault);
+
+  // base tile (OSM)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // RainViewer JSON metadata
+  // (https://api.rainviewer.com/public/weather-maps.json)
+  rvStatus.textContent = 'Loading radar frames…';
+
+  let meta;
+  try {
+    const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+    meta = await res.json();
+  } catch (e) {
+    rvStatus.textContent = 'Could not load radar frames.';
+    console.error('RainViewer meta load error', e);
+    return;
+  }
+
+  // choose radarFrames (list of timestamps)
+  // meta.radar is an array: { radar: { past: [timestamps], nowcast: [...] } }
+  const frames = (meta.radar && meta.radar.past) ? meta.radar.past.slice() : [];
+  if (!frames.length) {
+    rvStatus.textContent = 'No radar frames available';
+  }
+
+  // create tile layers for each frame (tile URL template provided by RainViewer)
+  // Template: https://tilecache.rainviewer.com/v2/radar/{timestamp}/256/{z}/{x}/{y}.png
+  const tileLayers = frames.map(ts => {
+    const url = `https://tilecache.rainviewer.com/v2/radar/${ts}/256/{z}/{x}/{y}.png`;
+    return L.tileLayer(url, { opacity: 0.0, zIndex: 1000, attribution: '' });
+  });
+
+  // add current overlay (index 0 will be shown by slider)
+  let currentIndex = tileLayers.length - 1; // show latest by default
+  if (tileLayers[currentIndex]) {
+    tileLayers[currentIndex].addTo(map);
+    tileLayers[currentIndex].setOpacity(opacitySlider.value / 100);
+  }
+
+  // update slider
+  frameSlider.max = Math.max(0, tileLayers.length - 1);
+  frameSlider.value = currentIndex;
+
+  rvStatus.textContent = `Frames: ${tileLayers.length} • Showing latest`;
+
+  // animation
+  let playing = false;
+  let playInterval = null;
+  const play = (fps=6) => {
+    if (playing) return;
+    playing = true;
+    playInterval = setInterval(() => {
+      showFrame((currentIndex + 1) % tileLayers.length);
+    }, 1000 / fps);
+  };
+  const pause = () => {
+    playing = false;
+    if (playInterval) { clearInterval(playInterval); playInterval = null; }
+  };
+
+  // show one frame by index
+  function showFrame(index) {
+    if (!tileLayers[index]) return;
+    // remove current if exists
+    if (tileLayers[currentIndex]) {
+      try { map.removeLayer(tileLayers[currentIndex]); } catch(e){ }
+    }
+    currentIndex = index;
+    tileLayers[currentIndex].addTo(map);
+    tileLayers[currentIndex].setOpacity(opacitySlider.value / 100);
+    frameSlider.value = currentIndex;
+    rvStatus.textContent = `Frame ${currentIndex+1}/${tileLayers.length}`;
+  }
+
+  // UI events
+  btnPlay.addEventListener('click', () => play(6));   // play at 6 fps
+  btnPause.addEventListener('click', () => pause());
+  frameSlider.addEventListener('input', (e) => {
+    pause();
+    showFrame(parseInt(e.target.value,10));
+  });
+  opacitySlider.addEventListener('input', (e) => {
+    const op = e.target.value / 100;
+    if (tileLayers[currentIndex]) tileLayers[currentIndex].setOpacity(op);
+  });
+
+  btnCenter.addEventListener('click', () => {
+    map.setView(center, zoomDefault);
+  });
+
+  // color scheme switch (RainViewer supports color schemes by using /{color}/ in URL for some endpoints,
+  // but tilecache endpoint used here has default colors. For simplicity, we'll change the legend colors only.)
+  colorSchemeSelect.addEventListener('change', () => {
+    const v = colorSchemeSelect.value;
+    const legend = document.getElementById('legend');
+    if (v === '0') {
+      legend.innerHTML = `<div class="row"><div class="swatch" style="background:#2fb400"></div><div>Light rain</div></div>
+                          <div class="row"><div class="swatch" style="background:#ffd200"></div><div>Moderate</div></div>
+                          <div class="row"><div class="swatch" style="background:#ff6b00"></div><div>Heavy</div></div>
+                          <div class="row"><div class="swatch" style="background:#c80000"></div><div>Very Heavy</div></div>`;
+    } else if (v === '1') {
+      legend.innerHTML = `<div class="row"><div class="swatch" style="background:#cfeeff"></div><div>Light</div></div>
+                          <div class="row"><div class="swatch" style="background:#8fd7ff"></div><div>Moderate</div></div>
+                          <div class="row"><div class="swatch" style="background:#2faaff"></div><div>Heavy</div></div>`;
+    } else {
+      legend.innerHTML = `<div class="row"><div class="swatch" style="background:#f4e0ff"></div><div>Light</div></div>
+                          <div class="row"><div class="swatch" style="background:#d3b0ff"></div><div>Moderate</div></div>
+                          <div class="row"><div class="swatch" style="background:#8a3dff"></div><div>Heavy</div></div>`;
+    }
+  });
+
+  // autoplay newest frames for a short while
+  play();
+
+  // refresh frames periodically (RainViewer updates frequently)
+  setInterval(async () => {
+    try {
+      const r = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+      const meta2 = await r.json();
+      const newFrames = (meta2.radar && meta2.radar.past) ? meta2.radar.past.slice() : [];
+      // if length changed -> rebuild tileLayers (simple approach)
+      if (newFrames.length && newFrames.length !== frames.length) {
+        // remove existing
+        tileLayers.forEach(t => { try{ map.removeLayer(t); }catch(e){} });
+        // clear arrays and rebuild
+        frames.length = 0; frames.push(...newFrames);
+        // rebuild layers
+        while(tileLayers.length) tileLayers.pop();
+        for (let ts of frames) {
+          const url = `https://tilecache.rainviewer.com/v2/radar/${ts}/256/{z}/{x}/{y}.png`;
+          tileLayers.push(L.tileLayer(url, { opacity: 0.0, zIndex: 1000 }));
+        }
+        // show latest
+        currentIndex = tileLayers.length - 1;
+        if (tileLayers[currentIndex]) {
+          tileLayers[currentIndex].addTo(map);
+          tileLayers[currentIndex].setOpacity(opacitySlider.value / 100);
+        }
+        frameSlider.max = Math.max(0, tileLayers.length - 1);
+        frameSlider.value = currentIndex;
+        rvStatus.textContent = `Frames refreshed: ${tileLayers.length}`;
+      }
+    } catch (err) {
+      console.warn('rainviewer refresh failed', err);
+    }
+  }, 60 * 1000); // refresh every 1 minute
+
+})();
+</script>
+</body>
+</html>
 
