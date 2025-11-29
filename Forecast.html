@@ -771,60 +771,161 @@ iframe {
   loadHistory(7); // Load 7-day data by default
 </script>
 
- <!-- Activity Advisory Section -->
-<section class="advisory-section">
-  <h2 class="advisory-title">Outdoor Activity Advisory</h2>
-  <div class="activity-grid">
+ <section id="activity-recommendations-section">
+    <style>
+        :root {
+            --primary: #003a63; /* your dark blue */
+            --light-blue: #87CEEB; /* optional accent */
+            --good: #e6ffef;
+            --good-border: #08a045;
+            --moderate: #fff9e6;
+            --moderate-border: #ffb020;
+            --avoid: #fff2f2;
+            --avoid-border: #ff4d4f;
+            --card-radius: 12px;
+            --muted: #566271;
+            --text: #072036;
+        }
 
-    <div class="activity-box gradient-blue">
-      <span class="icon">🏊</span>
-      <span class="text">Swimming</span>
+        /* Note: body styles were removed here to prevent overriding your main page's body styles. */
+        /* If you need the background/font styles for this section, you'll need to apply them to a container div */
+        .activity-container {
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            /* Applying the original body background/padding to a container div */
+            background: linear-gradient(180deg, #f6fbff, #f3f9ff);
+            padding: 22px; 
+            color: var(--text);
+        }
+
+        .activity-container .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .activity-container header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .activity-container header h1 {
+            font-size: 20px;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .activity-container .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        /* responsive to 2 columns on small screens and 1 column on very small */
+        @media (max-width: 1000px) {
+            .activity-container .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 520px) {
+            .activity-container .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .activity-container .card {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px;
+            border-radius: var(--card-radius);
+            background: white;
+            border: 1px solid rgba(2, 6, 23, 0.04);
+            min-height: 86px;
+            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
+        }
+
+        .activity-container .card .icon {
+            width: 56px;
+            height: 56px;
+            flex: 0 0 56px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .activity-container .card .body {
+            flex: 1;
+        }
+
+        .activity-container .card .title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .activity-container .card .advice {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.3;
+        }
+
+        /* severity accents */
+        .activity-container .s-good {
+            background: var(--good);
+            border-left: 6px solid var(--good-border);
+        }
+
+        .activity-container .s-moderate {
+            background: var(--moderate);
+            border-left: 6px solid var(--moderate-border);
+        }
+
+        .activity-container .s-avoid {
+            background: var(--avoid);
+            border-left: 6px solid var(--avoid-border);
+        }
+
+        /* small timestamp */
+        .activity-container .updated {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: right;
+        }
+
+        /* subtle hover */
+        .activity-container .card:hover {
+            transform: translateY(-4px);
+            transition: transform .18s ease;
+            box-shadow: 0 10px 28px rgba(2, 6, 23, 0.06);
+        }
+
+        /* icon SVG sizing inside .icon */
+        .activity-container .icon svg {
+            width: 36px;
+            height: 36px;
+            display: block;
+        }
+    </style>
+    
+    <div class="activity-container">
+        <div class="container">
+            <header>
+                <h1>Activity Recommendations</h1>
+                <div style="font-size:13px;color:var(--muted)">Auto-updated based on current weather</div>
+            </header>
+            <div class="grid" id="activityGrid">
+                </div>
+            <div class="updated" id="lastUpdated">Last updated: --</div>
+        </div>
     </div>
-
-    <div class="activity-box gradient-green">
-      <span class="icon">🚶</span>
-      <span class="text">Walking</span>
-    </div>
-
-    <div class="activity-box gradient-orange">
-      <span class="icon">🏃</span>
-      <span class="text">Running</span>
-    </div>
-
-    <div class="activity-box gradient-cyan">
-      <span class="icon">🚴</span>
-      <span class="text">Cycling</span>
-    </div>
-
-    <div class="activity-box gradient-purple">
-      <span class="icon">🏍️</span>
-      <span class="text">Biking</span>
-    </div>
-
-    <div class="activity-box gradient-red">
-      <span class="icon">🧗</span>
-      <span class="text">Climbing</span>
-    </div>
-
-    <div class="activity-box gradient-yellow">
-      <span class="icon">🎣</span>
-      <span class="text">Fishing</span>
-    </div>
-
-    <div class="activity-box gradient-sky">
-      <span class="icon">🌤️</span>
-      <span class="text">Outdoor Going</span>
-    </div>
-
-    <div class="activity-box gradient-sun">
-      <span class="icon">🧺</span>
-      <span class="text">Drying Clothes Outside</span>
-    </div>
-
-  </div>
 </section>
-
-
+<script src="activity.js"></script>
  
 <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
