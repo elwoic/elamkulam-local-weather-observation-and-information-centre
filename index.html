@@ -165,10 +165,18 @@ body {
 .imd-nav {
     background: #003a63;
     display: flex;
-    justify-content: right;
+    justify-content: center; /* center looks better than right on mobile */
     gap: 20px;
     padding: 10px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* prevent new rows */
+    overflow-x: auto;  /* allow horizontal scroll if too many buttons */
+    white-space: nowrap;
+    scrollbar-width: none; /* hide scrollbar in Firefox */
+}
+
+/* Hide scrollbar in Chrome/Edge/Safari */
+.imd-nav::-webkit-scrollbar {
+    display: none;
 }
 .imd-nav a {
     color: #fff;
