@@ -1,57 +1,63 @@
-<style>
-/* ----------- CSS ----------- */
-.imd-header { background: #004a80; color: white; }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* ----------- CSS ----------- */
+        .imd-header { background: #004a80; color: white; }
 
-.imd-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-}
+        .imd-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
 
-.imd-logo {
-    width: 65px;
-    height: auto;
-    border-radius: 6px;
-}
+        .imd-logo {
+            width: 65px;
+            height: auto;
+            border-radius: 6px;
+        }
 
-.imd-title {
-    text-align: center;
-    flex: 1;
-}
-.imd-title h2 { margin: 4px 0; font-size: 20px; }
-.imd-title h4 { margin: 2px 0; font-size: 14px; color: #d8e8f5; }
+        .imd-title {
+            text-align: center;
+            flex: 1;
+        }
+        .imd-title h2 { margin: 4px 0; font-size: 20px; }
+        .imd-title h4 { margin: 2px 0; font-size: 14px; color: #d8e8f5; }
 
-/* NAVIGATION */
-.imd-nav {
-    background: #003a63;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 12px 15px;
-    font-weight: 500;
-}
-.imd-nav a {
-    color: white;
-    text-decoration: none;
-    font-size: 15px;
-    padding: 6px 8px;
-}
-.imd-nav a.active-link {
-    color: #c7e0ff;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-}
+        /* NAVIGATION */
+        .imd-nav {
+            background: #003a63;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 12px 15px;
+            font-weight: 500;
+        }
+        .imd-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            padding: 6px 8px;
+        }
+        .imd-nav a.active-link {
+            color: #c7e0ff;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
 
-@media (max-width: 480px) {
-    .imd-title h2 { font-size: 17px; }
-    .imd-title h4 { font-size: 13px; }
-    .imd-nav a { font-size: 14px; }
-}
-</style>
+        @media (max-width: 480px) {
+            .imd-title h2 { font-size: 17px; }
+            .imd-title h4 { font-size: 13px; }
+            .imd-nav a { font-size: 14px; }
+        }
+    </style>
+</head>
 
+<body>
 <div id="imd-header-box"></div>
 
 <script>
@@ -98,4 +104,5 @@ function renderHeader(config) {
     });
 }
 </script>
-
+</body>
+</html>
