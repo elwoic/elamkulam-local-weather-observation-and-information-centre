@@ -1227,40 +1227,57 @@ footer a:hover {
     </section>
 
     <section class="radar-window-section">
-        <div class="container">
-            <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
-            <div class="tabs">
-                <div class="tab active" data-i="0">Windy Forecast</div>
-                <div class="tab" data-i="1">Windy Radar</div>
-                <div class="tab" data-i="2">AccuWeather Links</div>
-                <div class="tab" data-i="3">IMD Radar Links</div>
-            </div>
-            <div class="view" data-view-id="0" style="display:block;">
-                <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
-            </div>
-            <div class="view" data-view-id="1">
-                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
-            </div>
-            <div class="view" data-view-id="2">
-                <div class="panel">
-                    <div>
-                        <p style="margin-bottom:12px;"> Click below to open the official pages of Accuweather:</p>
-                        <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
-                        <p style="margin-bottom:12px;">See what the air quality of Elamkulam is now:</p>
-                        <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
-                    </div>
-                </div>
-            </div>
-            <div class="view" data-view-id="3">
-                <div class="panel">
-                    <div>
-                        <p style="margin-bottom:12px;"> To see IMD animated weather radar Koich Click below:</p>
-                        <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
-                    </div>
+    <div class="container">
+        <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
+
+        <div class="tabs">
+            <div class="tab active" data-i="0">ELWOIC Radar</div>
+            <div class="tab" data-i="1">Windy Forecast</div>
+            <div class="tab" data-i="2">Windy Radar</div>
+            <div class="tab" data-i="3">AccuWeather Links</div>
+            <div class="tab" data-i="4">IMD Radar Links</div>
+        </div>
+
+        <!-- ELWOIC Radar view -->
+        <div class="view" data-view-id="0" style="display:block;">
+            <iframe src="radar.html" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <!-- Windy Forecast -->
+        <div class="view" data-view-id="1">
+            <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <!-- Windy Radar -->
+        <div class="view" data-view-id="2">
+            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <!-- AccuWeather -->
+        <div class="view" data-view-id="3">
+            <div class="panel">
+                <div>
+                    <p style="margin-bottom:12px;">Click below to open the official pages of AccuWeather:</p>
+                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
+                    <p style="margin-bottom:12px;">See air quality of Elamkulam:</p>
+                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
                 </div>
             </div>
         </div>
-    </section>
+
+        <!-- IMD -->
+        <div class="view" data-view-id="4">
+            <div class="panel">
+                <div>
+                    <p style="margin-bottom:12px;">To see IMD animated weather radar Kochi click below:</p>
+                    <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
 
     <section class="aqi-dashboard-section">
         <h2>🌫️ Air Quality Index (AQI)</h2>
@@ -1447,5 +1464,22 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 </script>
+    <script>
+document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        const i = tab.getAttribute("data-i");
+
+        document.querySelectorAll(".radar-window-section .tab")
+            .forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        document.querySelectorAll(".radar-window-section .view")
+            .forEach(v => v.style.display = "none");
+        document.querySelector(`.radar-window-section .view[data-view-id="${i}"]`)
+            .style.display = "block";
+    });
+});
+</script>
+
 </body>
 </html>
