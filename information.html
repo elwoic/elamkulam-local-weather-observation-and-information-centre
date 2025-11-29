@@ -128,9 +128,20 @@
 </head>
 
 <body>
-<div id="header-container"></div>
+<body>
+<div id="header"></div>
+
 <script>
-    loadHeader("INFORMATION");
+fetch("header.html")
+.then(r => r.text())
+.then(data => {
+    document.getElementById("header").innerHTML = data;
+    renderHeader({
+        page: "information",
+        heading1: "Elamkulam Local Weather Observation & Information Centre",
+        heading2: "Information About ELWOIC"
+    });
+});
 </script>
 
 <section class="notice-section">
