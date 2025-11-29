@@ -21,7 +21,66 @@
             background: #f4f8fb;
         }
 
-      
+        /* Header Styles */
+        .imd-header { background: #004a80; color: white; }
+
+        .imd-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
+
+        .imd-logo-left,
+        .imd-logo-right {
+            width: 65px;
+            height: auto;
+            border-radius: 6px;
+            background: transparent;
+        }
+
+        .imd-title {
+            text-align: center;
+            flex: 1;
+            color: white;
+        }
+
+        .imd-title h2 {
+            margin: 4px 0;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        .imd-title h4 {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #d8e8f5;
+        }
+
+        /* Navigation */
+.imd-nav {
+    background: #003a63;
+    /* ... other styles ... */
+}
+
+.imd-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.imd-nav a:hover {
+    text-decoration: underline;
+}
+
+/* ⭐ NEW CSS FOR ACTIVE LINK */
+.imd-nav a.active-link {
+    /* Color shown in your ABOUT image is a light blue/white. */
+    color: #c7e0ff; /* Light color for emphasis */
+    text-decoration: underline; /* Add the underline */
+    text-decoration-thickness: 2px; /* Make the underline stand out */
+    text-underline-offset: 4px; /* Space the underline from the text */
+}
 
         /* General Content Box */
         .info-box {
@@ -102,6 +161,35 @@
             color: #6b7280;
             font-style: italic;
         }
+/* ------- RESPONSIVE NAVIGATION (NO HAMBURGER) ------- */
+.imd-nav {
+    background: #003a63;
+    display: flex;
+    justify-content: right;
+    flex-wrap: wrap;       /* ⭐ makes items go to next line */
+    gap: 16px;
+    padding: 12px 15px;
+}
+
+.imd-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 5px 8px;
+    white-space: nowrap;   /* keeps each item in one block */
+}
+
+/* Smaller screens: reduce spacing & font */
+@media (max-width: 480px) {
+    .imd-nav {
+        gap: 10px;
+        padding: 10px 5px;
+    }
+    .imd-nav a {
+        font-size: 14px;
+        padding: 4px 6px;
+    }
+}
 
         
 /* Responsive Google Map */
@@ -128,19 +216,26 @@
 </head>
 
 <body>
-<div id="header"></div>
-<script>
-fetch("header.html")
-.then(r => r.text())
-.then(data => {
-    document.getElementById("header").innerHTML = data;
-    renderHeader({
-        page: "information",
-        heading1: "Elamkulam Local Weather Observation & Information Centre",
-        heading2: "Information About ELWOIC"
-    });
-});
-</script>
+
+<header class="imd-header">
+    <div class="imd-top">
+        <img src="firstlwoic.png" alt="Left Logo" class="imd-logo-left">
+        <div class="imd-title">
+            <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+            <h4>Information About ELWOIC</h4>
+        </div>
+        <img src="secondlwoic.png" alt="Right Logo" class="imd-logo-right">
+    </div>
+<nav class="imd-nav">
+    <a href="index.html">HOME</a>
+    <a href="Forecast.html">FORECAST</a>
+    <a href="information.html" class="active-link">INFORMATION</a> 
+    <a href="about.html">ABOUT US</a>
+    <a href="contact.html">CONTACT</a>
+</nav>
+    
+</header>
+
 
 <section class="notice-section">
     <div class="notice-card">
