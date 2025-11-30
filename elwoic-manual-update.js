@@ -19,8 +19,8 @@ function parseDate(ddmmyyyy) {
 ---------------------------- */
 
 // Message for a specific day
-const manualDate = "27/11/2025";       // Manual update day
-const manualText = "No manual updates. Site under developement.";
+const manualDate = "30/11/2025";       // Manual update day
+const manualText = "Rain expected at 5:00 Pm";
 
 // Pre-update: message for the tomorrow
 const preDate = "28/11/2025";          // Tomorrow's date
@@ -39,7 +39,7 @@ const defaultInfo = "No additional information.";
    3. Convert dates
 ---------------------------- */
 const today = new Date();
-today.setHours(0,0,0,0);  // remove time part
+today.setHours(18,30,0,0);  // remove time part
 
 const manualDay = parseDate(manualDate);
 const preDay = parseDate(preDate);
