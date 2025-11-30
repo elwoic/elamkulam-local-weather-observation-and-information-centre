@@ -161,17 +161,19 @@ body {
     margin: 0;
     font-size: 14px;
 }
-/* Navigation */
+/* Navigation */    
 .imd-nav {
     background: #003a63;
     display: flex;
-    justify-content: right; /* center looks better than right on mobile */
+    flex-wrap: wrap;        /* allows 2 rows */
+    justify-content: flex-end; /* align to the right */
     gap: 3px;
     padding: 5px;
-    flex-wrap: nowrap; /* prevent new rows */
-    overflow-x: auto;  /* allow horizontal scroll if too many buttons */
-    white-space: nowrap;
-    scrollbar-width: none; /* hide scrollbar in Firefox */
+}
+
+/* limit to maximum 2 rows */
+.imd-nav > * {
+    flex: 0 0 auto;
 }
 
 /* Hide scrollbar in Chrome/Edge/Safari */
@@ -183,7 +185,7 @@ body {
     text-decoration: none;
     font-size: 10px;
     font-weight: 500;
-    padding: 5px 15px;
+    padding: 5px 5px;
 }
 .imd-nav a:hover {
     border-bottom: 2px solid #fff;
@@ -1041,9 +1043,7 @@ footer a:hover {
             <a href="about.html">ABOUT US</a>
             <a href="contact.html">CONTACT</a>
         </nav>
-    </header>
-
-    <div class="marquee-container top-info-marquee">
+        <div class="marquee-container top-info-marquee">
         <div class="scroll-text" id="info-marquee">
             ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span>
             In coordination with <span class="highlight">House Public Board Department (HPBD)</span> |
@@ -1052,6 +1052,8 @@ footer a:hover {
             The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
         </div>
     </div>
+    </header>
+
 
     <main>
         <div class="notice-box">
