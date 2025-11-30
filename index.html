@@ -957,6 +957,7 @@ footer a:hover {
     text-decoration: underline;
     color: #87CEEB !important; /* Change color on hover (using the yellow from your theme) */
 }
+/* Quick-links section */
 .quick-links {
     max-width: 900px;
     margin: 30px auto 20px;
@@ -965,13 +966,34 @@ footer a:hover {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     text-align: center;
-    text-color: white;
+    font-family: 'Noto Sans Malayalam', sans-serif;
 }
+
 .quick-links h3 {
-    color: #FFFFFF; /* RECOMMENDED CHANGE: Changed TO #FFFFFF  for visibility */
-    border-bottom: 2px solid white; 
+    color: #004a80; /* Heading color */
+    border-bottom: 2px solid #e3effa; 
     padding-bottom: 8px; 
     margin-bottom: 15px;
+}
+
+.quick-links p {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Symbol icons under the sentence */
+.symbol-icons {
+    display: flex;
+    justify-content: center; /* Center the icons */
+    gap: 10px;
+    flex-wrap: wrap; /* Wrap on small screens */
+}
+
+.symbol-icons img {
+    width: 24px;
+    height: 24px;
 }
 /* ---------------------------------------------------- */
 /* 6. RESPONSIVE FIXES */
@@ -1384,13 +1406,22 @@ footer a:hover {
         }
     }(document,'script','weatherwidget-io-js');
 </script>
-    <aside class="quick-links">
-        <h3 style="color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 8px; margin-bottom: 15px;">Quick Links & Information</h3>
-        <p style="color: #555; font-size: 14px; line-height: 1.6;">
-            For official weather alerts, please visit the IMD Kerala website. This is a community project focusing on local weather observation and awareness.
-        </p>
-    </aside>
+   <aside class="quick-links" style="font-family: 'Noto Sans Malayalam', sans-serif;">
+    <h3>
+        <!-- Optional heading -->
+    </h3>
+    <p>
+        ഏലംകുളം സമൂഹത്തിന് — ഒരു വിദ്യാർത്ഥിയുടെ സമർപ്പണം.
+    </p>
 
+    <!-- Symbol Images -->
+    <div class="symbol-icons">
+        <img src="symbol1.png" alt="Symbol 1">
+        <img src="symbol2.png" alt="Symbol 2">
+        <img src="symbol3.png" alt="Symbol 3">
+        <img src="symbol4.png" alt="Symbol 4">
+    </div>
+</aside>
     <footer>
         <p>© 2025 Elamkulam Local Weather Observation And Information Center. 
         All rights reserved. This is a student project for educational and 
