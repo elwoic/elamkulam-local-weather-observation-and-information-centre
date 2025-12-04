@@ -24,7 +24,7 @@ const manualText = "Cloudy night, And Full Moon";
 
 // Pre-update: message for the tomorrow
 const preDate = "05/12/2025";          // Tomorrow's date
-const preText = "05/12/2025 green alert for Malappuram district. But Elamkulam might experience rain";
+const preText = "05/12/2025 green alert for Malappuram district. But Elamkulam might experience rain After Noon";
 
 
 /* ---------------------------
@@ -39,7 +39,7 @@ const defaultInfo = "No additional information.";
    3. Convert dates
 ---------------------------- */
 const today = new Date();
-today.setHours(18,30,0,0);  // remove time part
+today.setHours(0,0,0,0);  // remove time part
 
 const manualDay = parseDate(manualDate);
 const preDay = parseDate(preDate);
