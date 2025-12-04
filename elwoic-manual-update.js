@@ -1,108 +1,113 @@
 /* ============================================================
-   ELWOIC — SMART AUTO UPDATE SYSTEM
-   Manual = today's message only
-   Pre-update = tomorrow's message (moves to manual after midnight)
+   ELWOIC — SMART AUTO UPDATE SYSTEM (fixed & more robust)
+   - Normalizes dates to date-only (no time part / timezone safe)
+   - Clear rules:
+       1) If today === manualDate -> show manualText (blink)
+       2) Else if today === preDate    -> show preText in manual slot (blink)
+       3) Else                        -> show default manual text (no blink)
+   - Pre-update area shows preText while today < preDate, otherwise defaultPre
    ============================================================ */
 
-
 /* ---------------------------
-   0. Helper: Convert DD/MM/YYYY
+   Helper: create date-only timestamp (local)
+   Returns a number (ms since epoch) for YYYY-MM-DD at local midnight
 ---------------------------- */
-function parseDate(ddmmyyyy) {
-    const [d, m, y] = ddmmyyyy.split("/").map(Number);
-    return new Date(y, m - 1, d);  // midnight of that day
+function dateOnlyTimestampFromDMY(ddmmyyyy) {
+  const parts = ddmmyyyy.split("/");
+  if (parts.length !== 3) return NaN;
+  const d = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const y = parseInt(parts[2], 10);
+  // Use local midnight to avoid timezone offsets
+  return new Date(y, m, d).setHours(0, 0, 0, 0);
 }
 
-
 /* ---------------------------
-   1. User writes messages HERE
+   Config: User messages (edit these)
 ---------------------------- */
-
-// Message for a specific day
-const manualDate = "04/12/2025";       // Manual update day
+// Manual (message shown on the manual day)
+const manualDate = "04/12/2025";
 const manualText = "Cloudy night, And Full Moon";
 
-// Pre-update: message for the tomorrow
-const preDate = "05/12/2025";          // Tomorrow's date
+// Pre-update (message for the next day)
+const preDate = "05/12/2025";
 const preText = "05/12/2025 green alert for Malappuram district. But Elamkulam might experience rain After Noon";
 
-
 /* ---------------------------
-   2. Default messages
+   Defaults
 ---------------------------- */
 const defaultManual = "No manual updates available.";
 const defaultPre = "No new pre-updates.";
 const defaultInfo = "No additional information.";
 
+/* ---------------------------
+   Normalize today's date-only timestamp
+---------------------------- */
+const now = new Date();
+const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
 /* ---------------------------
-   3. Convert dates
+   Convert configured dates to timestamps
 ---------------------------- */
-const today = new Date();
-today.setHours(0,0,0,0);  // remove time part
-
-const manualDay = parseDate(manualDate);
-const preDay = parseDate(preDate);
-
-
+const manualTs = dateOnlyTimestampFromDMY(manualDate);
+const preTs = dateOnlyTimestampFromDMY(preDate);
 
 /* ---------------------------
-   4. Select HTML IDs
+   Select HTML elements (IDs must exist)
 ---------------------------- */
-const manualDiv = document.getElementById("weather-message");
-const preDiv = document.getElementById("preupdate-message");
-const infoDiv = document.getElementById("info-message");
-
+const manualDiv = document.getElementById("weather-message");   // manual area
+const preDiv = document.getElementById("preupdate-message");    // pre-update area
+const infoDiv = document.getElementById("info-message");        // static info area
 
 /* ============================================================
-   5. MAIN LOGIC
+   Main logic
 ============================================================ */
+
+// Safety: if parse failed, set defaults and log error
+if (Number.isNaN(manualTs)) {
+  console.error("Invalid manualDate format. Expected DD/MM/YYYY:", manualDate);
+}
+if (Number.isNaN(preTs)) {
+  console.error("Invalid preDate format. Expected DD/MM/YYYY:", preDate);
+}
+
+/* 1) MANUAL area behavior:
+   - If today === manualDate -> show manualText (blink)
+   - Else if today === preDate -> show preText (blink)  // pre moves to manual once pre day arrives
+   - Else -> show defaultManual (no blink)
+*/
 if (manualDiv) {
-
-    // Case A — TODAY = manual update day
-    if (today.getTime() === manualDay.getTime()) {
-        manualDiv.innerHTML = manualText;
-        manualDiv.classList.add("blink-alert");
-    }
-
-    // Case B — TODAY = pre-update day (pre becomes manual)
-    else if (today.getTime() === preDay.getTime()) {
-        manualDiv.innerHTML = preText;
-        manualDiv.classList.add("blink-alert");
-    }
-
-    // Case C — default day
-    else {
-        manualDiv.innerHTML = defaultManual;
-        manualDiv.classList.remove("blink-alert"); // remove blinking when showing default
-    }
+  if (!Number.isNaN(manualTs) && todayTs === manualTs) {
+    manualDiv.innerHTML = manualText;
+    manualDiv.classList.add("blink-alert");
+  } else if (!Number.isNaN(preTs) && todayTs === preTs) {
+    // On the pre day, promote the preText into the manual slot (as you wanted)
+    manualDiv.innerHTML = preText;
+    manualDiv.classList.add("blink-alert");
+  } else {
+    manualDiv.innerHTML = defaultManual;
+    manualDiv.classList.remove("blink-alert");
+  }
 }
 
-
-
-
-/* ============================================================
-   6. PRE-UPDATE DISPLAY
-   - Show pre only BEFORE its day starts
-   - Hide pre once that day arrives
-   ============================================================ */
-
+/* 2) PRE-UPDATE area behavior:
+   - Show preText while TODAY < preDate (i.e., BEFORE the pre-day starts)
+   - Once today >= preDate, hide/reset pre area
+*/
 if (preDiv) {
-
-    // Before the pre-update day → show tomorrow's info
-    if (today.getTime() < preDay.getTime()) {
-        preDiv.innerHTML = preText;
-
-    // On or after pre-update day → reset
-    } else {
-        preDiv.innerHTML = defaultPre;
-    }
+  if (!Number.isNaN(preTs) && todayTs < preTs) {
+    preDiv.innerHTML = preText;
+  } else {
+    preDiv.innerHTML = defaultPre;
+  }
 }
 
-
-/* ============================================================
-   7. INFORMATION SECTION (Static)
- ============================================================ */
+/* 3) Static info area */
 if (infoDiv) {
-    infoDiv.innerHTML = defaultInfo;
+  infoDiv.innerHTML = defaultInfo;
 }
+
+/* Optional debug output in console for testing */
+console.debug("today:", new Date(todayTs).toDateString(),
+              "manual:", manualDate, new Date(manualTs).toDateString(),
+              "pre:", preDate, new Date(preTs).toDateString());
