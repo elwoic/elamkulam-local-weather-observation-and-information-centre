@@ -19,12 +19,12 @@ function parseDate(ddmmyyyy) {
 ---------------------------- */
 
 // Message for a specific day
-const manualDate = "30/11/2025";       // Manual update day
-const manualText = "Rain expected at 5:00 Pm";
+const manualDate = "04/12/2025";       // Manual update day
+const manualText = "Cloudy night, And Full Moon";
 
 // Pre-update: message for the tomorrow
-const preDate = "28/11/2025";          // Tomorrow's date
-const preText = "No manual updates. Site under valuation";
+const preDate = "05/12/2025";          // Tomorrow's date
+const preText = "05/12/2025 green alert for Malappuram district. But Elamkulam might experience rain";
 
 
 /* ---------------------------
