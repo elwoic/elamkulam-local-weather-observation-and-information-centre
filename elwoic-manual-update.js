@@ -27,11 +27,11 @@ function dateOnlyTimestampFromDMY(ddmmyyyy) {
 ---------------------------- */
 // Manual (message shown on the manual day)
 const manualDate = "04/12/2025";
-const manualText = "Cloudy night, And Full Moon";
+const manualText = " Light Cloudy night, And Full Moon";
 
 // Pre-update (message for the next day)
 const preDate = "05/12/2025";
-const preText = "05/12/2025 green alert for Malappuram district. But Elamkulam might experience rain After Noon";
+const preText = "05/12/2025 Green alert for Malappuram district. But Elamkulam might experience rain After Noon.";
 
 /* ---------------------------
    Defaults
