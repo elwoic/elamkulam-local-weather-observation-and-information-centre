@@ -1,4 +1,4 @@
-const windyApiKey = "Vqseak1sF55bkEbBOYLshOZpJpkmZX52";
+const windyApiKey = "xYiE7xLI3n0JpxRb4n4EK2jfNHGQL8BO";
 const latitude = 10.9081;
 const longitude = 76.2296;
 
