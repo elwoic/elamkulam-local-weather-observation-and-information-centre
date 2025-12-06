@@ -200,15 +200,17 @@ function render(list) {
                 const timeVal = document.getElementById(`time-${item.key}`).value.trim();
                 const typeVal = document.getElementById(`type-${item.key}`).value;
 
-                await push(ref(db, USER_REPORTS_PATH), {
-                    name: nm,
-                    location: item.location,
-                    report_type: typeVal,
-                    observation: obs,
-                    time: timeVal,
-                    photo_url: item.photo_url || "N/A",
-                    timestamp: Date.now()
-                });
+              await push(ref(db, USER_REPORTS_PATH), {
+    name: nm,
+    location: item.location,
+    report_type: typeVal,
+    observation: obs,
+    time: timeVal,
+    photo_url: item.photo_url || "N/A",
+    timestamp: Date.now(),
+    show_on_site: showOnSite, // <-- add this
+    show_name: showName       // <-- add this
+});
 
                 setStatus("Report granted to site.", "success");
             };
