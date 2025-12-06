@@ -185,67 +185,69 @@ function render(list) {
         `;
 
         messagesList.appendChild(card);
-
         // DELETE
         document.getElementById(`del-${item.key}`).onclick = async () => {
-            if(confirm("Permanently delete this report?")) {
+            if (confirm("Permanently delete this report?")) {
                 await remove(ref(db, DB_PATH + "/" + item.key));
                 setStatus("Report deleted.", "success");
             }
         };
-// GRANT
-if (showOnSite === "yes") {
-    document.getElementById(`grant-${item.key}`).onclick = async () => {
-        const obs = document.getElementById(`obs-${item.key}`).value.trim();
-        const nm = showName === "yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
-        const timeVal = document.getElementById(`time-${item.key}`).value.trim();
-        const typeVal = document.getElementById(`type-${item.key}`).value;
 
-        const newGrant = await push(ref(db, USER_REPORTS_PATH), {
-            name: nm,
-            location: item.location,
-            report_type: typeVal,
-            observation: obs,
-            time: timeVal,
-            photo_url: item.photo_url || "N/A",
-            timestamp: item.timestamp,          // << match with report
-            expiresAt: Date.now() + (24 * 60 * 60 * 1000)
-        });
+        // GRANT
+        if (showOnSite === "yes") {
+            document.getElementById(`grant-${item.key}`).onclick = async () => {
+                const obs = document.getElementById(`obs-${item.key}`).value.trim();
+                const nm = showName === "yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
+                const timeVal = document.getElementById(`time-${item.key}`).value.trim();
+                const typeVal = document.getElementById(`type-${item.key}`).value;
 
-        setStatus("Report granted to site ✔", "success");
+                await push(ref(db, USER_REPORTS_PATH), {
+                    name: nm,
+                    location: item.location,
+                    report_type: typeVal,
+                    observation: obs,
+                    time: timeVal,
+                    photo_url: item.photo_url || "N/A",
+                    timestamp: item.timestamp,
+                    expiresAt: Date.now() + (24 * 60 * 60 * 1000)
+                });
 
-        document.getElementById(`grant-${item.key}`).innerText = "Granted ✓";
-        document.getElementById(`grant-${item.key}`).disabled = true;
-        document.getElementById(`grant-${item.key}`).style.opacity = "0.6";
-    };
+                setStatus("Report granted to site ✔", "success");
+                const btn = document.getElementById(`grant-${item.key}`);
+                btn.innerText = "Granted ✓";
+                btn.disabled = true;
+                btn.style.opacity = "0.6";
+            };
+        }
+
+        // REVOKE
+        document.getElementById(`revoke-${item.key}`).onclick = async () => {
+            const grantedRef = ref(db, USER_REPORTS_PATH);
+            onValue(grantedRef, async (snap) => {
+                const granted = snap.val();
+                if (!granted) return;
+
+                for (const [k, v] of Object.entries(granted)) {
+                    if (v.timestamp === item.timestamp) {
+                        await remove(ref(db, USER_REPORTS_PATH + "/" + k));
+                        setStatus("Grant revoked ❌", "error");
+                        break;
+                    }
+                }
+            }, { onlyOnce: true });
+        };
+    });
 }
 
-// REVOKE
-document.getElementById(`revoke-${item.key}`).onclick = async () => {
-    const grantedRef = ref(db, USER_REPORTS_PATH);
-    onValue(grantedRef, async (snap) => {
-        const granted = snap.val();
-        if (!granted) return;
-
-        for (const [k, v] of Object.entries(granted)) {
-            if (v.timestamp === item.timestamp) {
-                await remove(ref(db, USER_REPORTS_PATH + "/" + k));
-                setStatus("Grant revoked ❌", "error");
-                break;
-            }
-        }
-    }, { onlyOnce: true });
-};
-
-     
 function escape(s) {
-    if(!s) return "";
+    if (!s) return "";
     return String(s)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;");
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 </script>
 
+       
 </body>
 </html>
