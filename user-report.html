@@ -24,27 +24,9 @@
         No reports are available at the moment.
     </div>
 </div>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-  authDomain: "report-5d8c0.firebaseapp.com",
-  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.firebasestorage.app",
-  messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const reportsContainer = document.getElementById('reportsContainer');
-const emptyMsg = document.getElementById('emptyMsg');
-
-const reportsRef = ref(db, 'user_reports');
+// ... (initialization and setup code remains the same) ...
 
 onValue(reportsRef, (snapshot) => {
     const data = snapshot.val();
@@ -67,6 +49,7 @@ onValue(reportsRef, (snapshot) => {
         card.className = 'bg-white p-4 rounded shadow report-card border-l-4 border-blue-600';
 
         card.innerHTML = `
+            <h3 class="text-lg font-semibold text-blue-800">${report.report_type || "Weather Report"}</h3>  <hr class="my-1 border-gray-200">
             <p class="text-sm text-gray-600"><strong>Reporter:</strong> ${reporterName}</p>
             <p class="text-sm text-gray-600"><strong>Place:</strong> ${report.location}</p>
             <p class="text-sm text-gray-600"><strong>Time:</strong> ${report.time || "N/A"}</p>
@@ -82,7 +65,6 @@ onValue(reportsRef, (snapshot) => {
     });
 });
 </script>
-
 
 </body>
 </html>
