@@ -1,260 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>ELWOIC — Weather Report Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Small style addition to improve image display */
-        .report-photo-thumb {
-            max-height: 120px;
-            width: auto;
-            border-radius: 4px;
-            margin-top: 8px;
-            object-fit: cover;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ELWOIC — Weather Report Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .report-photo-thumb {
+        max-height: 120px;
+        width: auto;
+        border-radius: 4px;
+        margin-top: 8px;
+        object-fit: cover;
+    }
+    .input-edit {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 4px 6px;
+        font-size: 0.95rem;
+        width: 100%;
+        margin-top: 3px;
+    }
+    .grant-btn {
+        background-color: #16a34a;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        margin-top: 6px;
+        cursor: pointer;
+    }
+    .grant-btn:hover { background-color: #15803d; }
+</style>
 </head>
 
 <body class="bg-slate-50 min-h-screen font-sans">
 
-    <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
-        <div class="container mx-auto flex items-center justify-between">
-            <div>
-                <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Weather Reports</h1>
-                <p class="text-xs opacity-80">Realtime community weather observation viewer</p>
-            </div>
-
-            <div class="space-x-2">
-                <a href="report.html" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm hover:bg-slate-200">
-                    ← Back to Submission
-                </a>
-                <button id="exportBtn" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm hidden text-sm">
-                    Export CSV
-                </button>
-                <span id="countBadge" class="inline-block bg-white text-blue-900 px-3 py-1 rounded hidden text-sm"></span>
-            </div>
+<header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
+    <div class="container mx-auto flex items-center justify-between">
+        <div>
+            <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Weather Reports</h1>
+            <p class="text-xs opacity-80">Realtime community weather observation viewer</p>
         </div>
-    </header>
-
-    <main class="container mx-auto px-4 py-8">
-
-        <div id="status"
-            class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">
-            Initializing...
+        <div class="space-x-2">
+            <a href="report.html" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm hover:bg-slate-200">
+                ← Back to Submission
+            </a>
         </div>
+    </div>
+</header>
 
-        <div id="controls" class="mb-4 hidden">
-            <input id="filterInput" placeholder="Filter by location, type, or observation..."
-                class="p-2 border rounded w-full md:w-1/2" />
-        </div>
+<main class="container mx-auto px-4 py-8">
+    <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Initializing...</div>
+    <div id="messagesList" class="space-y-4"></div>
+    <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
+        <p class="text-gray-600">No weather reports found in the database.</p>
+    </div>
+</main>
 
-        <div id="messagesList" class="space-y-4"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        <div id="empty"
-            class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
-            <p class="text-gray-600">No weather reports found in the database.</p>
-        </div>
+const firebaseConfig = {
+    apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+    authDomain: "report-5d8c0.firebaseapp.com",
+    databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-5d8c0",
+    storageBucket: "report-5d8c0.firebasestorage.app",
+    messagingSenderId: "831456060916",
+    appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+};
 
-    </main>
+const VALID_PASSPHRASES = ["04933", "elwoic811", "elwoic822"];
+const DB_PATH = "weather_reports"; 
+const USER_REPORTS_PATH = "user_reports";
 
-    <script type="module">
-        // --- 1. FIREBASE IMPORTS ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import {
-            getDatabase, ref, onValue, remove
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        // --- 2. CONFIG & PASSWORDS ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-            authDomain: "report-5d8c0.firebaseapp.com",
-            databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "report-5d8c0",
-            storageBucket: "report-5d8c0.firebasestorage.app",
-            messagingSenderId: "831456060916",
-            appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
-            measurementId: "G-5MGMM1DYDM"
-        };
-        
-        const VALID_PASSPHRASES = ["04933", "elwoic811", "elwoic822"];
-        const DB_PATH = "weather_reports"; // CRITICAL: Must match the submission page
+const statusEl = document.getElementById('status');
+const messagesList = document.getElementById('messagesList');
+const emptyEl = document.getElementById('empty');
 
-        // --- 3. DOM ELEMENTS & INITIALIZATION ---
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+let currentData = [];
 
-        const statusEl = document.getElementById('status');
-        const messagesList = document.getElementById('messagesList');
-        const emptyEl = document.getElementById('empty');
-        const exportBtn = document.getElementById('exportBtn');
-        const countBadge = document.getElementById('countBadge');
-        const controls = document.getElementById('controls');
-        const filterInput = document.getElementById('filterInput');
+// Admin Password
+let allowed = false;
+const entered = prompt("Enter admin password to view reports:"); 
+if (VALID_PASSPHRASES.includes(entered)) allowed = true;
 
-        // Security Check: Ask admin pass
-        let allowed = false;
-        const entered = prompt("Enter admin password to view reports:"); 
+if (!allowed) {
+    statusEl.textContent = "Access denied — incorrect password.";
+    statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
+    messagesList.style.display = "none";
+    setTimeout(() => { window.location.href = "report.html"; }, 3000); 
+} else {
+    startListening();
+}
 
-        if (VALID_PASSPHRASES.includes(entered)) {
-            allowed = true;
-            controls.classList.remove("hidden");
-        }
+// --- FUNCTIONS ---
+function setStatus(text, type="info") {
+    statusEl.textContent = text;
+    statusEl.className = "mb-4 p-3 rounded text-sm";
+    if(type==="info") statusEl.classList.add("bg-blue-100","text-blue-800");
+    if(type==="success") statusEl.classList.add("bg-green-100","text-green-800");
+    if(type==="error") statusEl.classList.add("bg-red-100","text-red-800");
+}
 
-        if (!allowed) {
-            statusEl.textContent = "Access denied — incorrect password.";
-            statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
-            messagesList.style.display = "none";
-            // Optional: Redirect back if access is denied
-            setTimeout(() => { window.location.href = "report.html"; }, 3000); 
-        } else {
-            startListening();
-        }
+function startListening() {
+    setStatus("Connecting to Firebase...");
+    const reportsRef = ref(db, DB_PATH);
 
-        // --- 4. CORE FUNCTIONS ---
-
-        function setStatus(text, type = "info") {
-            statusEl.textContent = text;
-            statusEl.className = "mb-4 p-3 rounded text-sm";
-            if (type === "info") statusEl.classList.add("bg-blue-100", "text-blue-800");
-            if (type === "success") statusEl.classList.add("bg-green-100", "text-green-800");
-            if (type === "error") statusEl.classList.add("bg-red-100", "text-red-800");
-        }
-
-        let currentData = [];
-
-        function startListening() {
-            setStatus("Connecting to Firebase...");
-
-            // Reading from the correct path: 'weather_reports'
-            const reportsRef = ref(db, DB_PATH);
-
-            onValue(reportsRef, (snapshot) => {
-                const data = snapshot.val();
-
-                if (!data) {
-                    currentData = [];
-                    messagesList.innerHTML = "";
-                    emptyEl.classList.remove("hidden");
-                    exportBtn.classList.add("hidden");
-                    countBadge.classList.add("hidden");
-                    setStatus("No reports found.", "info");
-                    return;
-                }
-
-                currentData = Object.entries(data).map(([key, v]) => ({ key, ...v }));
-                currentData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                render(currentData);
-
-                setStatus(`Loaded ${currentData.length} report(s).`, "success");
-                exportBtn.classList.remove("hidden");
-                countBadge.classList.remove("hidden");
-                countBadge.textContent = `${currentData.length} reports`;
-            });
-        }
-
-        function render(list) {
+    onValue(reportsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            currentData = [];
             messagesList.innerHTML = "";
-            if (list.length === 0) {
-                emptyEl.classList.remove("hidden");
-                return;
-            }
-
-            emptyEl.classList.add("hidden");
-
-            list.forEach(item => {
-                const d = item.timestamp ? new Date(item.timestamp).toLocaleString() : "N/A";
-
-                const card = document.createElement("div");
-                card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-red-600";
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start gap-4">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-red-700">${escape(item.report_type)} Report</h3>
-                            <span class="text-xs text-slate-500">
-                                Submitted: ${d} | Event Time: ${escape(item.time)}
-                            </span>
-                            
-                            <p class="text-sm text-slate-600 mt-2">
-                                <strong>Location:</strong> ${escape(item.location)}
-                            </p>
-                            <p class="text-sm text-slate-600">
-                                <strong>Reporter:</strong> ${escape(item.name)}
-                                ${item.email && `— <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>`}
-                            </p>
-                            
-                            <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium">${escape(item.observation)}</p>
-
-                            ${item.photo_url && item.photo_url !== 'N/A' ? `
-                                <div class="mt-4 border border-gray-200 rounded p-2 inline-flex flex-col items-start">
-                                    <p class="text-xs text-gray-500 mb-1">Attached Photo:</p>
-                                    <a href="${escape(item.photo_url)}" target="_blank">
-                                        <img src="${escape(item.photo_url)}" alt="Attached Weather Photo" class="report-photo-thumb">
-                                    </a>
-                                </div>
-                            ` : ''}
-
-                        </div>
-
-                        <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700">Delete</button>
-                    </div>
-                `;
-
-                card.querySelector(".deleteBtn").onclick = async () => {
-                    if (confirm(`Permanently delete the ${item.report_type} report from ${item.location}?`)) {
-                        await remove(ref(db, DB_PATH + "/" + item.key));
-                        setStatus("Report deleted.", "success");
-                    }
-                };
-
-                messagesList.appendChild(card);
-            });
+            emptyEl.classList.remove("hidden");
+            setStatus("No reports found.", "info");
+            return;
         }
 
-        // --- 5. UTILITIES ---
+        currentData = Object.entries(data).map(([key, v]) => ({ key, ...v }));
+        currentData.sort((a,b)=> (b.timestamp || 0) - (a.timestamp || 0));
+        render(currentData);
+        setStatus(`Loaded ${currentData.length} report(s).`, "success");
+    });
+}
 
-        filterInput.addEventListener("input", () => {
-            const q = filterInput.value.toLowerCase();
-            const filtered = currentData.filter(m =>
-                (m.name || "").toLowerCase().includes(q) ||
-                (m.location || "").toLowerCase().includes(q) ||
-                (m.report_type || "").toLowerCase().includes(q) ||
-                (m.observation || "").toLowerCase().includes(q)
-            );
-            render(filtered);
-            countBadge.textContent = `${filtered.length} filtered`;
-        });
+function render(list) {
+    messagesList.innerHTML = "";
+    if(list.length===0) { emptyEl.classList.remove("hidden"); return; }
+    emptyEl.classList.add("hidden");
 
-        exportBtn.onclick = () => {
-            if (currentData.length === 0) {
-                alert("No reports to export.");
-                return;
+    list.forEach(item => {
+        const d = item.timestamp ? new Date(item.timestamp).toLocaleString() : "N/A";
+        const showOnSite = item.show_on_site || "no";
+        const showName = item.show_name || "no";
+
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-red-600";
+
+        card.innerHTML = `
+            <div class="flex flex-col gap-2">
+                <h3 class="text-lg font-semibold text-red-700">${escape(item.report_type)} Report</h3>
+                <span class="text-xs text-slate-500">Submitted: ${d} | Event Time: <input class="input-edit" value="${escape(item.time)}" id="time-${item.key}"></span>
+                
+                <p class="text-sm text-slate-600 mt-2">
+                    <strong>Location:</strong> ${escape(item.location)}
+                </p>
+                <p class="text-sm text-slate-600">
+                    <strong>Reporter:</strong> <input class="input-edit" value="${escape(item.name)}" id="name-${item.key}">
+                    ${item.email ? `— <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>` : ''}
+                </p>
+
+                <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium">
+                    <textarea class="input-edit" id="obs-${item.key}" rows="3">${escape(item.observation)}</textarea>
+                </p>
+
+                <p><strong>Report Type:</strong>
+                    <select class="input-edit" id="type-${item.key}">
+                        <option ${item.report_type==="Rainfall"?"selected":""}>Rainfall</option>
+                        <option ${item.report_type==="Flood / Water Level"?"selected":""}>Flood / Water Level</option>
+                        <option ${item.report_type==="Storm / Wind"?"selected":""}>Storm / Wind</option>
+                        <option ${item.report_type==="Lightning"?"selected":""}>Lightning</option>
+                        <option ${item.report_type==="Road Block / Tree Fall"?"selected":""}>Road Block / Tree Fall</option>
+                        <option ${item.report_type==="General Information"?"selected":""}>General Information</option>
+                        <option ${item.report_type==="Other"?"selected":""}>Other</option>
+                    </select>
+                </p>
+
+                <p><strong>Show on site:</strong> ${showOnSite} | <strong>Show Name:</strong> ${showName}</p>
+                
+                ${item.photo_url && item.photo_url!=="N/A" ? `<a href="${escape(item.photo_url)}" target="_blank"><img src="${escape(item.photo_url)}" class="report-photo-thumb"></a>` : ''}
+
+                <div class="flex gap-2 mt-2">
+                    ${showOnSite==="yes" ? `<button class="grant-btn" id="grant-${item.key}">Grant</button>` : `<span class="text-red-600 font-semibold">Not allowed to show</span>`}
+                    <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700" id="del-${item.key}">Delete</button>
+                </div>
+            </div>
+        `;
+
+        messagesList.appendChild(card);
+
+        // DELETE
+        document.getElementById(`del-${item.key}`).onclick = async () => {
+            if(confirm("Permanently delete this report?")) {
+                await remove(ref(db, DB_PATH + "/" + item.key));
+                setStatus("Report deleted.", "success");
             }
-
-            const header = "key,timestamp,name,email,location,report_type,observation,time,photo_url\n";
-            const rows = currentData.map(x =>
-                `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.location}","${x.report_type}","${x.observation.replace(/"/g, '""')}","${x.time}","${x.photo_url}"`
-            ).join("\n");
-
-            const blob = new Blob([header + rows], { type: "text/csv" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "elwoic_weather_reports.csv";
-            a.click();
-            URL.revokeObjectURL(url);
         };
 
-        function escape(s) {
-            if (!s) return "";
-            return String(s)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+        // GRANT
+        if(showOnSite==="yes") {
+            document.getElementById(`grant-${item.key}`).onclick = async () => {
+                const obs = document.getElementById(`obs-${item.key}`).value.trim();
+                const nm = showName==="yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
+                const timeVal = document.getElementById(`time-${item.key}`).value.trim();
+                const typeVal = document.getElementById(`type-${item.key}`).value;
+
+                await push(ref(db, USER_REPORTS_PATH), {
+                    name: nm,
+                    location: item.location,
+                    report_type: typeVal,
+                    observation: obs,
+                    time: timeVal,
+                    photo_url: item.photo_url || "N/A",
+                    timestamp: Date.now()
+                });
+
+                setStatus("Report granted to site.", "success");
+            };
         }
-    </script>
+    });
+}
+
+function escape(s) {
+    if(!s) return "";
+    return String(s)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+}
+</script>
+
 </body>
 </html>
