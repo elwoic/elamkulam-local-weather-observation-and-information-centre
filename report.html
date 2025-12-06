@@ -41,12 +41,12 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
 
 <section class="report-box">
   <h2 class="report-title">Share Your Weather Observation</h2>
-
+<p>Shere what you see with us. it will be shown in our sites home page. if you give permission we will show your report with your name.</p>
   <form id="weather-report-form">
-    <label>Your Name (optional)</label>
-    <input type="text" name="name">
+    <label>Your Name </label>
+    <input type="text" name="name" required>
 
-    <label>Location / Place *</label>
+    <label>Location/Ward No:/Place *</label>
     <input type="text" name="location" required>
 
     <label>Report Type *</label>
@@ -64,15 +64,25 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
     <label>Weather Observation *</label>
     <textarea name="observation" required></textarea>
 
-    <label>Time of Event (optional)</label>
+    <label>Time of Event </label>
     <input type="text" name="time">
 
     <label>Attach Weather Photo (optional)</label>
     <input type="file" id="photo-file" accept="image/*">
 
-    <label>Your Email (optional)</label>
-    <input type="email" name="email">
+    <label>Your Email </label>
+    <input type="email" name="email" required>
+<label>Do you want to show your report on our site? *</label>
+<div style="margin-top:6px; font-size:0.97rem;">
+  <label><input type="radio" name="show_on_site" value="yes" required> Yes</label><br>
+  <label><input type="radio" name="show_on_site" value="no" required> No</label>
+</div>
 
+<label>Do you want to show your report with your name? *</label>
+<div style="margin-top:6px; font-size:0.97rem;">
+  <label><input type="radio" name="show_name" value="yes" required> Yes</label><br>
+  <label><input type="radio" name="show_name" value="no" required> No</label>
+</div>
     <button type="submit">Submit Weather Report</button>
   </form>
 
