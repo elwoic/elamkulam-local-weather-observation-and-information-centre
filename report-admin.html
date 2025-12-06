@@ -200,17 +200,18 @@ function render(list) {
                 const nm = showName === "yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
                 const timeVal = document.getElementById(`time-${item.key}`).value.trim();
                 const typeVal = document.getElementById(`type-${item.key}`).value;
+await push(ref(db, USER_REPORTS_PATH), {
+    name: nm,
+    location: item.location,
+    report_type: typeVal,
+    observation: obs,
+    time: timeVal,
+    photo_url: item.photo_url || "N/A",
+    timestamp: item.timestamp,
+    expiresAt: Date.now() + (24 * 60 * 60 * 1000),
+    status: "granted"
+});
 
-                await push(ref(db, USER_REPORTS_PATH), {
-                    name: nm,
-                    location: item.location,
-                    report_type: typeVal,
-                    observation: obs,
-                    time: timeVal,
-                    photo_url: item.photo_url || "N/A",
-                    timestamp: item.timestamp,
-                    expiresAt: Date.now() + (24 * 60 * 60 * 1000)
-                });
 
                 setStatus("Report granted to site ✔", "success");
                 const btn = document.getElementById(`grant-${item.key}`);
