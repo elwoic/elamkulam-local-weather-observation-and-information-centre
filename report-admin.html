@@ -174,11 +174,13 @@ function render(list) {
                 <p><strong>Show on site:</strong> ${showOnSite} | <strong>Show Name:</strong> ${showName}</p>
                 
                 ${item.photo_url && item.photo_url!=="N/A" ? `<a href="${escape(item.photo_url)}" target="_blank"><img src="${escape(item.photo_url)}" class="report-photo-thumb"></a>` : ''}
+<div class="flex gap-2 mt-2">
+    ${showOnSite==="yes" ? `<button class="grant-btn" id="grant-${item.key}">Grant</button>` : `<span class="text-red-600 font-semibold">Not allowed to show</span>`}
+    <button class="revokeBtn px-3 py-2 bg-gray-700 text-white rounded text-sm hover:bg-gray-800" id="revoke-${item.key}">Revoke</button>
+    <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700" id="del-${item.key}">Delete</button>
+</div>
 
-                <div class="flex gap-2 mt-2">
-                    ${showOnSite==="yes" ? `<button class="grant-btn" id="grant-${item.key}">Grant</button>` : `<span class="text-red-600 font-semibold">Not allowed to show</span>`}
-                    <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700" id="del-${item.key}">Delete</button>
-                </div>
+              
             </div>
         `;
 
@@ -217,6 +219,22 @@ function render(list) {
         }
     });
 }
+// REVOKE
+document.getElementById(`revoke-${item.key}`).onclick = async () => {
+    const grantedRef = ref(db, USER_REPORTS_PATH);
+    onValue(grantedRef, async (snap) => {
+        const granted = snap.val();
+        if (!granted) return;
+
+        for (const [k, v] of Object.entries(granted)) {
+            if (v.timestamp === item.timestamp) {
+                await remove(ref(db, USER_REPORTS_PATH + "/" + k));
+                setStatus("Grant revoked.", "error");
+                break;
+            }
+        }
+    }, { onlyOnce: true });
+};
 
 function escape(s) {
     if(!s) return "";
