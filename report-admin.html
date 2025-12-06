@@ -193,32 +193,33 @@ function render(list) {
                 setStatus("Report deleted.", "success");
             }
         };
+// GRANT
+if (showOnSite === "yes") {
+    document.getElementById(`grant-${item.key}`).onclick = async () => {
+        const obs = document.getElementById(`obs-${item.key}`).value.trim();
+        const nm = showName === "yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
+        const timeVal = document.getElementById(`time-${item.key}`).value.trim();
+        const typeVal = document.getElementById(`type-${item.key}`).value;
 
-        // GRANT
-        if(showOnSite==="yes") {
-            document.getElementById(`grant-${item.key}`).onclick = async () => {
-                const obs = document.getElementById(`obs-${item.key}`).value.trim();
-                const nm = showName==="yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
-                const timeVal = document.getElementById(`time-${item.key}`).value.trim();
-                const typeVal = document.getElementById(`type-${item.key}`).value;
+        const newGrant = await push(ref(db, USER_REPORTS_PATH), {
+            name: nm,
+            location: item.location,
+            report_type: typeVal,
+            observation: obs,
+            time: timeVal,
+            photo_url: item.photo_url || "N/A",
+            timestamp: item.timestamp,          // << match with report
+            expiresAt: Date.now() + (24 * 60 * 60 * 1000)
+        });
 
-             await push(ref(db, USER_REPORTS_PATH), {
-    name: nm,
-    location: item.location,
-    report_type: typeVal,
-    observation: obs,
-    time: timeVal,
-    photo_url: item.photo_url || "N/A",
-    timestamp: Date.now(),
-    expiresAt: Date.now() + (24 * 60 * 60 * 1000) // <-- expire in 1 day
-});
+        setStatus("Report granted to site ✔", "success");
 
-
-                setStatus("Report granted to site.", "success");
-            };
-        }
-    });
+        document.getElementById(`grant-${item.key}`).innerText = "Granted ✓";
+        document.getElementById(`grant-${item.key}`).disabled = true;
+        document.getElementById(`grant-${item.key}`).style.opacity = "0.6";
+    };
 }
+
 // REVOKE
 document.getElementById(`revoke-${item.key}`).onclick = async () => {
     const grantedRef = ref(db, USER_REPORTS_PATH);
@@ -229,13 +230,14 @@ document.getElementById(`revoke-${item.key}`).onclick = async () => {
         for (const [k, v] of Object.entries(granted)) {
             if (v.timestamp === item.timestamp) {
                 await remove(ref(db, USER_REPORTS_PATH + "/" + k));
-                setStatus("Grant revoked.", "error");
+                setStatus("Grant revoked ❌", "error");
                 break;
             }
         }
     }, { onlyOnce: true });
 };
 
+     
 function escape(s) {
     if(!s) return "";
     return String(s)
