@@ -925,7 +925,189 @@ iframe {
         </div>
     </div>
 </section>
-<script></script>
+<script>
+const openWeatherApiKey = "ca13a2cbdc07e7613b6af82cff262295";
+const latitude = 10.9081;
+const longitude = 76.2296;
+const weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherApiKey}&units=metric`;
+
+/* ---------------- Seasons & Time of Day ---------------- */
+function getKeralaSeason(month){
+  if(month >= 2 && month <= 4) return "summer";       // Mar–May
+  if(month >= 5 && month <= 10) return "monsoon";     // Jun–Nov
+  return "winter";                                   // Dec–Feb
+}
+function getPartOfDay(hour){
+  if(hour >= 5 && hour < 11) return "morning";
+  if(hour >= 11 && hour < 16) return "afternoon";
+  if(hour >= 16 && hour < 19) return "evening";
+  return "night";
+}
+
+/* ---------------- Activities ---------------- */
+const activities = [
+  { key:"swimming", label:" നീന്തൽ" },
+  { key:"walking", label:" നടക്കൽ" },
+  { key:"running", label:" ഓട്ടം" },
+  { key:"cycling", label:" സൈക്കിൾ യാത്ര" },
+  { key:"biking", label:" ബൈക്ക് യാത്ര" },
+  { key:"climbing", label:" കയറുക / ട്രക്കിംഗ്" },
+  { key:"fishing", label:" മീൻപിടിത്തം" },
+  { key:"drying", label:" വസ്ത്രം വെയിലത്ത് ഉണക്കൽ" }
+];
+
+/* ---------------- Severity Helpers ---------------- */
+function severityClass(s){
+  if(s==="good") return "s-good";
+  if(s==="moderate") return "s-moderate";
+  return "s-avoid";
+}
+function severityText(s){
+  if(s==="good") return "✔️ നല്ലത്";
+  if(s==="moderate") return "⚠️ ചെയ്യാം";
+  return "❌ നിരോധനം";
+}
+
+/* ---------------- Malayalam Advice ---------------- */
+const adviceML = {
+  swimming: {
+    good: "കാലാവസ്ഥ അനുകൂലമാണ്.",
+    moderate: "ചെയ്യാം — പക്ഷേ ശ്രദ്ധ വേണം.",
+    avoid: "ഒഴിവാക്കുക — സുരക്ഷിതമല്ല."
+  },
+  walking: {
+    good: "നടക്കാൻ നല്ല കാലാവസ്ഥ.",
+    moderate: "നടക്കാം — പക്ഷേ ചൂട് / മഴ അസ്വസ്ഥത സൃഷ്ടിക്കും.",
+    avoid: "ഒഴിവാക്കുക — കാലാവസ്ഥ സുരക്ഷിതമല്ല."
+  },
+  running: {
+    good: "ഓട്ടത്തിനുള്ള നല്ല കാലാവസ്ഥ.",
+    moderate: "ഓടാം — പക്ഷേ ശരീര ജലക്ഷയം / മഴ ശ്രദ്ധിക്കുക.",
+    avoid: "ഒഴിവാക്കുക — അപകടസാധ്യത."
+  },
+  cycling: {
+    good: "സൈക്കിൾ യാത്രയ്ക്ക് അനുയോജ്യം.",
+    moderate: "പോകാം — പക്ഷേ കാറ്റ്/മഴ ശ്രദ്ധിക്കുക.",
+    avoid: "ഒഴിവാക്കുക — റോഡ് സുരക്ഷിതമല്ല."
+  },
+  biking: {
+    good: "ബൈക്ക് യാത്രക്ക് സുരക്ഷിതം.",
+    moderate: "ശ്രദ്ധയോടെ യാത്ര ചെയ്യാം — മഴ/കാറ്റ് വാഹനം നിയന്ത്രണത്തെ ബാധിക്കും.",
+    avoid: "ഒഴിവാക്കുക — അപകടസാധ്യത ഉയർന്നിരിക്കുന്നു."
+  },
+  climbing: {
+    good: "ട്രക്കിംഗിന് നല്ല കാലാവസ്ഥ.",
+    moderate: "ചെയ്യാം — പക്ഷേ ഭൂപ്രദേശം നനഞ്ഞിരിക്കാൻ സാധ്യത.",
+    avoid: "ഒഴിവാക്കുക — കാറ്റ്/മഴ കാരണം അപകടം."
+  },
+  fishing: {
+    good: "മീൻപിടുത്തത്തിന് നല്ല സമയം.",
+    moderate: "പിടിക്കാം — പക്ഷേ കാറ്റ്/മഴ ശ്രദ്ധിക്കുക.",
+    avoid: "ഒഴിവാക്കുക — മിന്നൽ/കൊടുങ്കാറ്റ് അപകടകരം."
+  },
+  drying: {
+    good: "വസ്ത്രം ഉണക്കാൻ യോജിച്ചത്.",
+    moderate: "ഉണങ്ങും — പക്ഷേ സമയം കൂടുതലെടുക്കും.",
+    avoid: "ഉണക്കാൻ പറ്റില്ല — മഴ അല്ലെങ്കിൽ വളരെ ഉയർന്ന ഈർപ്പം."
+  }
+};
+
+/* ---------------- Decision Engine (MOST IMPORTANT) ---------------- */
+function recommend(activity, temp, humidity, wind, condition){
+  const now = new Date();
+  const season = getKeralaSeason(now.getMonth());
+  const time = getPartOfDay(now.getHours());
+  const c = condition.toLowerCase();
+  const isRain = /rain|drizzle|storm|thunder/i.test(c);
+  const isThunder = /thunder|storm/i.test(c);
+  const isHot = temp >= 34;
+  const isCold = temp <= 20;
+  const strongWind = wind >= 28; // km/h
+
+  /* --- SWIMMING special Kerala rule --- */
+  if(activity === "swimming"){
+    if(season === "monsoon") return "avoid";          // always avoid monsoon
+    if(isThunder || strongWind || isCold) return "avoid";
+    if(isRain) return "moderate";
+    return "good";
+  }
+
+  /* --- WALKING & RUNNING --- */
+  if(activity === "running" || activity === "walking"){
+    if(isThunder) return "avoid";
+    if(isRain && strongWind) return "avoid";
+    if(season === "summer" && time === "afternoon") return "moderate";
+    if(isRain) return "moderate";
+    return "good";
+  }
+
+  /* --- CYCLING & BIKING --- */
+  if(activity === "cycling" || activity === "biking"){
+    if(isThunder || strongWind) return "avoid";
+    if(isRain) return "moderate";
+    return "good";
+  }
+
+  /* --- CLIMBING --- */
+  if(activity === "climbing"){
+    if(isRain || isThunder || strongWind) return "avoid";
+    if(humidity >= 80) return "moderate";
+    return "good";
+  }
+
+  /* --- FISHING --- */
+  if(activity === "fishing"){
+    if(isThunder || strongWind) return "avoid";
+    if(isRain) return "moderate";
+    return "good";
+  }
+
+  /* --- DRYING CLOTHES --- */
+  if(activity === "drying"){
+    if(isRain || humidity >= 85) return "avoid";
+    if(humidity >= 65) return "moderate";
+    return "good";
+  }
+
+  return "moderate";
+}
+
+/* ---------------- Render UI ---------------- */
+async function updateActivityRecommendations(){
+  const grid = document.getElementById("activityGrid");
+  const lastUpdated = document.getElementById("lastUpdated");
+  grid.innerHTML = "<div style='padding:12px'>ലോഡുചെയ്യുന്നു...</div>";
+
+  try {
+    const resp = await fetch(weatherURL);
+    const data = await resp.json();
+    const temp = data.main.temp;
+    const humidity = data.main.humidity;
+    const wind = data.wind.speed * 3.6; // m/s → km/h
+    const condition = data.weather[0].main;
+
+    grid.innerHTML = "";
+    activities.forEach(a => {
+      const severity = recommend(a.key, temp, humidity, wind, condition);
+      const card = document.createElement("div");
+      card.className = `card ${severityClass(severity)}`;
+      card.innerHTML = `
+        <div class="title">${a.label}</div>
+        <div class="advice">${severityText(severity)} — ${adviceML[a.key][severity]}</div>
+      `;
+      grid.appendChild(card);
+    });
+    lastUpdated.textContent = "അവസാനം പുതുക്കിയത്: " + new Date().toLocaleString("ml-IN");
+
+  } catch(e){
+    grid.innerHTML = `<div class="card s-avoid">കാലാവസ്ഥ വിവരങ്ങൾ ലോഡ് ചെയ്യാനായില്ല (${e.message})</div>`;
+  }
+}
+
+updateActivityRecommendations();
+setInterval(updateActivityRecommendations, 10 * 60 * 1000);
+</script>
+
  
 <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
