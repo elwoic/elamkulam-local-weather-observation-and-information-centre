@@ -1117,11 +1117,11 @@ footer a:hover {
     </p>
     
 </div>
-    <!-- Home Page Section -->
+  <!-- Home Page Section -->
 <section id="userReportsWidget" class="container mx-auto px-4 py-6">
   <h2 class="text-2xl font-bold text-blue-900 mb-4">Community Weather Reports</h2>
-  <div id="reportsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-  <div id="emptyMsg" class="hidden text-center text-gray-600 mt-8">
+  <div id="homeReportsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="homeEmptyMsg" class="hidden text-center text-gray-600 mt-8">
     No reports are available at the moment.
   </div>
 </section>
@@ -1130,6 +1130,7 @@ footer a:hover {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
   authDomain: "report-5d8c0.firebaseapp.com",
@@ -1143,52 +1144,60 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const reportsContainer = document.getElementById('reportsContainer');
-const emptyMsg = document.getElementById('emptyMsg');
+// --- DOM Elements ---
+const container = document.getElementById('homeReportsContainer');
+const emptyMsg = document.getElementById('homeEmptyMsg');
+const section = document.getElementById('userReportsWidget');
 
+// --- Fetch User Reports ---
 const reportsRef = ref(db, 'user_reports');
 
 onValue(reportsRef, (snapshot) => {
-    const data = snapshot.val();
-    reportsContainer.innerHTML = '';
+  const data = snapshot.val();
+  container.innerHTML = ''; // Clear previous content
 
-    if (!data) {
-        emptyMsg.classList.remove('hidden');
-        return;
-    }
+  if (!data) {
+    emptyMsg.classList.remove('hidden');
+    section.style.display = 'none';
+    return;
+  }
 
-    let anyVisible = false;
+  let anyVisible = false;
 
-    Object.values(data).forEach(report => {
-        if (report.show_on_site !== "yes") return;
+  Object.values(data).forEach(report => {
+    // Only show granted reports
+    if (report.show_on_site !== "yes") return;
 
-        anyVisible = true;
-        const reporterName = (report.show_name === "yes") ? report.name : "Anonymous";
+    anyVisible = true;
 
-        const card = document.createElement('div');
-        card.className = 'bg-white p-4 rounded shadow report-card border-l-4 border-blue-600';
-        card.innerHTML = `
-            <p class="text-sm text-gray-600"><strong>Reporter:</strong> ${reporterName}</p>
-            <p class="text-sm text-gray-600"><strong>Place:</strong> ${report.location}</p>
-            <p class="text-sm text-gray-600"><strong>Time:</strong> ${report.time || "N/A"}</p>
-            <p class="mt-2 text-gray-700 whitespace-pre-wrap"><strong>The reporter says:</strong><br>${report.observation}</p>
-            ${report.photo_url && report.photo_url !== 'N/A' ? `
-                <div class="mt-2">
-                    <strong>Photos:</strong><br>
-                    <img src="${report.photo_url}" alt="Weather Photo" class="mt-1 report-card-img">
-                </div>
-            ` : ''}
-        `;
-        reportsContainer.appendChild(card);
-    });
+    const reporterName = (report.show_name === "yes") ? report.name : "Anonymous";
 
-    // Hide entire section if no report is visible
-    if (!anyVisible) {
-        document.getElementById('userReportsWidget').style.display = 'none';
-    } else {
-        emptyMsg.classList.toggle('hidden', anyVisible);
-        document.getElementById('userReportsWidget').style.display = 'block';
-    }
+    const card = document.createElement('div');
+    card.className = 'bg-white p-4 rounded shadow report-card border-l-4 border-blue-600';
+
+    card.innerHTML = `
+      <p class="text-sm text-gray-600"><strong>Reporter:</strong> ${reporterName}</p>
+      <p class="text-sm text-gray-600"><strong>Place:</strong> ${report.location}</p>
+      <p class="text-sm text-gray-600"><strong>Time:</strong> ${report.time || "N/A"}</p>
+      <p class="mt-2 text-gray-700 whitespace-pre-wrap"><strong>The reporter says:</strong><br>${report.observation}</p>
+      ${report.photo_url && report.photo_url !== 'N/A' ? `
+        <div class="mt-2">
+          <strong>Photos:</strong><br>
+          <img src="${report.photo_url}" alt="Weather Photo" class="mt-1 report-card-img" style="max-height:120px; width:auto; border-radius:6px; object-fit:cover;">
+        </div>
+      ` : ''}
+    `;
+
+    container.appendChild(card);
+  });
+
+  // Hide entire section if no visible reports
+  if (!anyVisible) {
+    section.style.display = 'none';
+  } else {
+    emptyMsg.classList.toggle('hidden', anyVisible);
+    section.style.display = 'block';
+  }
 });
 </script>
 
