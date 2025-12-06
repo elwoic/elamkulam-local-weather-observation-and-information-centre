@@ -5,120 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Submit Weather Report | ELWOIC</title>
 
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+    authDomain: "report-5d8c0.firebaseapp.com",
+    databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-5d8c0",
+    storageBucket: "report-5d8c0.firebasestorage.app",
+    messagingSenderId: "831456060916",
+    appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
+    measurementId: "G-5MGMM1DYDM"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  window.firebaseApp = { db, storage }; // expose globally for other scripts
+</script>
+
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4faff;
-  margin: 0;
-  padding: 0;
-}
-
-/* Header */
-.topbar {
-  background: #00457C;
-  padding: 15px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.topbar h1 {
-  font-size: 1.5rem;
-  margin: 0;
-}
-.topbar a {
-  background: white;
-  color: #00457C;
-  padding: 8px 14px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.2s;
-}
-.topbar a:hover {
-  background: #cfe6ff;
-}
-
-/* Report Form Section */
-.report-box {
-  margin: 25px auto;
-  padding: 25px;
-  max-width: 720px;
-  background: #eaf5ff;
-  border-radius: 10px;
-  border-left: 6px solid #0073e6;
-  box-shadow: 0 0 6px rgba(0,0,0,0.18);
-}
-
-.report-title {
-  font-size: 1.6rem;
-  margin-bottom: 12px;
-  color: #00315c;
-  border-bottom: 3px solid #0073e6;
-  display: inline-block;
-  padding-bottom: 4px;
-}
-
-.report-box label {
-  display: block;
-  margin-top: 13px;
-  font-weight: 600;
-  color: #00315c;
-}
-
-.report-box input,
-.report-box textarea,
-.report-box select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #80b6db;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.report-box textarea {
-  height: 130px;
-  resize: vertical;
-}
-
-.report-box button {
-  margin-top: 20px;
-  width: 100%;
-  background: #0073e6;
-  color: white;
-  border: none;
-  padding: 13px;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.25s;
-}
-.report-box button:hover {
-  background: #005bb7;
-}
-
-/* Success Message */
-#form-success {
-  display: none;
-  color: green;
-  font-weight: bold;
-  margin-top: 15px;
-  text-align: center;
-  font-size: 1.1rem;
-}
-
-/* Responsive tweaks */
-@media(max-width: 480px) {
-  .topbar {
-    flex-direction: column;
-    text-align: center;
-  }
-  .topbar a {
-    margin-top: 10px;
-  }
-}
+body { font-family: Arial, sans-serif; background: #f4faff; margin: 0; padding: 0; }
+.topbar { background: #00457C; padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.topbar h1 { font-size: 1.5rem; margin: 0; }
+.topbar a { background: white; color: #00457C; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: 0.2s; }
+.topbar a:hover { background: #cfe6ff; }
+.report-box { margin: 25px auto; padding: 25px; max-width: 720px; background: #eaf5ff; border-radius: 10px; border-left: 6px solid #0073e6; box-shadow: 0 0 6px rgba(0,0,0,0.18); }
+.report-title { font-size: 1.6rem; margin-bottom: 12px; color: #00315c; border-bottom: 3px solid #0073e6; display: inline-block; padding-bottom: 4px; }
+.report-box label { display: block; margin-top: 13px; font-weight: 600; color: #00315c; }
+.report-box input, .report-box textarea, .report-box select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #80b6db; border-radius: 6px; font-size: 1rem; }
+.report-box textarea { height: 130px; resize: vertical; }
+.report-box button { margin-top: 20px; width: 100%; background: #0073e6; color: white; border: none; padding: 13px; font-size: 1rem; border-radius: 6px; cursor: pointer; transition: 0.25s; }
+.report-box button:hover { background: #005bb7; }
+#form-success { display: none; color: green; font-weight: bold; margin-top: 15px; text-align: center; font-size: 1.1rem; }
+/* Hidden Admin Panel Arrow */
+#admin-arrow { position: fixed; bottom: 15px; right: 15px; font-size: 2rem; cursor: pointer; z-index: 1000; }
+#admin-box { position: fixed; bottom: 50px; right: 15px; background: #00457C; color: white; padding: 15px; border-radius: 10px; display: none; width: 200px; text-align: center; }
+#admin-box button { margin-top: 10px; background: white; color: #00457C; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+@media(max-width:480px){ .topbar { flex-direction: column; text-align: center; } .topbar a { margin-top: 10px; } }
 </style>
 </head>
 
@@ -133,19 +62,13 @@ body {
 <!-- Main Form -->
 <section class="report-box">
   <h2 class="report-title">Share Your Weather Observation</h2>
-  <p style="margin-bottom:15px; color:#00315c;">
-    Help ELWOIC improve community weather awareness by reporting what you observe outside.
-  </p>
+  <p style="margin-bottom:15px; color:#00315c;">Help ELWOIC improve community weather awareness by reporting what you observe outside.</p>
 
-  <!-- Formspree form -->
-  <form action="https://formspree.io/f/mldyoply" method="POST" enctype="multipart/form-data">
-
+  <form id="weather-form">
     <label>Your Name (optional)</label>
     <input type="text" name="name" placeholder="Enter your name (optional)">
-
     <label>Location / Place *</label>
     <input type="text" name="location" placeholder="Example: Elamkulam North, Valuthur, etc." required>
-
     <label>Report Type *</label>
     <select name="report_type" required>
       <option value="">--Select Type--</option>
@@ -157,34 +80,77 @@ body {
       <option>General Information</option>
       <option>Other</option>
     </select>
-
     <label>Weather Observation *</label>
     <textarea name="observation" placeholder="Describe the weather activity you observed" required></textarea>
-
     <label>Time of Event (optional)</label>
     <input type="text" name="time" placeholder="Eg: 7:45 PM, 2 hours ago, etc.">
-
     <label>Attach Weather Photo (optional)</label>
     <input type="file" name="photo" accept="image/*">
-
     <label>Your Email (optional)</label>
     <input type="email" name="email" placeholder="If you want a response">
-
     <button type="submit">Submit Weather Report</button>
   </form>
-
   <p id="form-success">✔ Thank you! Your report has been submitted successfully.</p>
 </section>
 
-<!-- JS for success message -->
-<script>
-const form = document.querySelector("form");
-form.addEventListener("submit", function() {
-  // Show success message after submission
-  document.getElementById("form-success").style.display = "block";
+<!-- Admin arrow -->
+<div id="admin-arrow">⬆️</div>
+<div id="admin-box">
+  <p>Admins only</p>
+  <button id="admin-btn">Enter Admin Portal</button>
+</div>
+
+<script type="module">
+const db = window.firebaseApp.db;
+const storage = window.firebaseApp.storage;
+
+const form = document.getElementById("weather-form");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = {
+    name: form.name.value,
+    location: form.location.value,
+    report_type: form.report_type.value,
+    observation: form.observation.value,
+    time: form.time.value,
+    email: form.email.value,
+    photoURL: "",
+    timestamp: Date.now()
+  };
+  const file = form.photo.files[0];
+  try {
+    if(file){
+      const storageRef = sRef(storage, `reports/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      data.photoURL = await getDownloadURL(storageRef);
+    }
+    await push(ref(db, "messages"), data);
+    document.getElementById("form-success").style.display = "block";
+    form.reset();
+  } catch(err){
+    alert("Failed to submit report.");
+    console.error(err);
+  }
+});
+
+// Admin arrow toggle
+const arrow = document.getElementById("admin-arrow");
+const box = document.getElementById("admin-box");
+arrow.addEventListener("click", ()=>{ box.style.display = box.style.display==="none"?"block":"none"; });
+
+// Admin button password
+document.getElementById("admin-btn").addEventListener("click", ()=>{
+  const pw = prompt("Enter admin password:");
+  const passwords = ["04933","elwoic811","elwoic822"];
+  if(passwords.includes(pw)){
+    window.location.href="admin.html";
+  }else{
+    alert("Wrong password!");
+  }
 });
 </script>
 
 </body>
 </html>
+
 
