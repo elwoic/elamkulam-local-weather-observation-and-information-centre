@@ -1509,7 +1509,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-   // your firebase config
+    // your firebase config
 };
 
 const app = initializeApp(firebaseConfig);
@@ -1521,16 +1521,28 @@ const reportsContainer = document.getElementById("reportsContainer");
 onValue(ref(db, "user_reports"), (snapshot) => {
     const data = snapshot.val();
     reportsContainer.innerHTML = "";
+    let hasItems = false;
 
     if (!data) {
         section.classList.add("hidden");
         return;
     }
 
-    let hasItems = false;
+    // Convert to array and filter for granted reports only
+    const granted = Object.entries(data)
+        .filter(([key, v]) => v.status === "granted");
 
-    Object.entries(data).forEach(([key, v]) => {
-        // ignore expired records but DO NOT auto delete until page loads at least once
+    // If none are granted
+    if (granted.length === 0) {
+        section.classList.add("hidden");
+        return;
+    }
+
+    // Sort latest first (by timestamp)
+    granted.sort((a, b) => b[1].createdAt - a[1].createdAt);
+
+    granted.forEach(([key, v]) => {
+        // Auto delete expired granted reports
         if (v.expiresAt && Date.now() > v.expiresAt) {
             remove(ref(db, "user_reports/" + key));
             return;
@@ -1538,29 +1550,41 @@ onValue(ref(db, "user_reports"), (snapshot) => {
 
         hasItems = true;
 
-        const t = v.time || "Time not specified";
-        const r = v.name || "Anonymous";
-
+        // Build card
         const div = document.createElement("div");
-        div.className = "p-4 rounded-lg shadow bg-white border border-slate-200";
+        div.className = "report-card";
 
         div.innerHTML = `
-            <p class="text-sm text-slate-700"><strong>${v.report_type}</strong> — ${t}</p>
-            <p class="text-slate-800 mt-2 whitespace-pre-wrap">${v.observation}</p>
+            <div class="report-header">
+                <h3 class="report-title">${v.report_type}</h3>
+                <span class="report-date">${v.time || ""}</span>
+            </div>
+
+            <div class="report-meta">
+                <span>📍 ${v.location || "Elamkulam"}</span>
+                <span>👤 ${v.name}</span>
+            </div>
+
+            <div class="report-details">
+                ${v.observation.replace(/\n/g, "<br>")}
+            </div>
+
             ${v.photo_url && v.photo_url !== "N/A"
-                ? `<img src="${v.photo_url}" class="mt-3 rounded max-h-48 shadow-sm border">`
-                : ""
-            }
-            <p class="text-xs mt-3 text-slate-500 italic">Reported by: ${r}</p>
+                ? `<img src="${v.photo_url}" class="report-photo">`
+                : ""}
+
+            <a class="report-btn" href="report-view.html?id=${key}">
+                View Full Report
+            </a>
         `;
 
         reportsContainer.appendChild(div);
     });
 
-    section.classList.toggle("hidden", !hasItems);
+    if (!hasItems) section.classList.add("hidden");
+    else section.classList.remove("hidden");
 });
 </script>
-
 
 </body>
 </html>
