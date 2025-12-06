@@ -1530,37 +1530,37 @@ onValue(ref(db, "user_reports"), (snapshot) => {
     let hasItems = false;
 
     Object.entries(data).forEach(([key, v]) => {
-        // auto delete expired
-        if (Date.now() > v.expiresAt) {
+        // ignore expired records but DO NOT auto delete until page loads at least once
+        if (v.expiresAt && Date.now() > v.expiresAt) {
             remove(ref(db, "user_reports/" + key));
             return;
         }
 
         hasItems = true;
 
+        const t = v.time || "Time not specified";
+        const r = v.name || "Anonymous";
+
         const div = document.createElement("div");
         div.className = "p-4 rounded-lg shadow bg-white border border-slate-200";
 
         div.innerHTML = `
-            <p class="text-sm text-slate-700"><strong>${v.report_type}</strong> — ${v.time}</p>
+            <p class="text-sm text-slate-700"><strong>${v.report_type}</strong> — ${t}</p>
             <p class="text-slate-800 mt-2 whitespace-pre-wrap">${v.observation}</p>
-            ${v.photo_url && v.photo_url !== "N/A" ?
-                `<img src="${v.photo_url}" class="mt-3 rounded max-h-48 shadow-sm border">`
-            : ""}
-            <p class="text-xs mt-3 text-slate-500 italic">Reported by: ${v.name}</p>
+            ${v.photo_url && v.photo_url !== "N/A"
+                ? `<img src="${v.photo_url}" class="mt-3 rounded max-h-48 shadow-sm border">`
+                : ""
+            }
+            <p class="text-xs mt-3 text-slate-500 italic">Reported by: ${r}</p>
         `;
 
         reportsContainer.appendChild(div);
     });
 
-    // hide section when no active reports exist
-    if (!hasItems) {
-        section.classList.add("hidden");
-    } else {
-        section.classList.remove("hidden");
-    }
+    section.classList.toggle("hidden", !hasItems);
 });
 </script>
+
 
 </body>
 </html>
