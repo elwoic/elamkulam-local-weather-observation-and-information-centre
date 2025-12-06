@@ -1117,7 +1117,11 @@ footer a:hover {
     </p>
     
 </div>
- 
+ <section id="communityReportsSection" class="hidden mt-6">
+    <h2 class="text-xl font-bold mb-3 text-blue-900">Community Weather Updates</h2>
+    <div id="reportsContainer" class="space-y-4"></div>
+</section>
+
  <section id="weather-snapshot-section">
      <div class="weather-mini-dashboard">
          <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം </h2>
@@ -1498,6 +1502,63 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
         document.querySelector(`.radar-window-section .view[data-view-id="${i}"]`)
             .style.display = "block";
     });
+});
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+   // your firebase config
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const section = document.getElementById("communityReportsSection");
+const reportsContainer = document.getElementById("reportsContainer");
+
+onValue(ref(db, "user_reports"), (snapshot) => {
+    const data = snapshot.val();
+    reportsContainer.innerHTML = "";
+
+    if (!data) {
+        section.classList.add("hidden");
+        return;
+    }
+
+    let hasItems = false;
+
+    Object.entries(data).forEach(([key, v]) => {
+        // auto delete expired
+        if (Date.now() > v.expiresAt) {
+            remove(ref(db, "user_reports/" + key));
+            return;
+        }
+
+        hasItems = true;
+
+        const div = document.createElement("div");
+        div.className = "p-4 rounded-lg shadow bg-white border border-slate-200";
+
+        div.innerHTML = `
+            <p class="text-sm text-slate-700"><strong>${v.report_type}</strong> — ${v.time}</p>
+            <p class="text-slate-800 mt-2 whitespace-pre-wrap">${v.observation}</p>
+            ${v.photo_url && v.photo_url !== "N/A" ?
+                `<img src="${v.photo_url}" class="mt-3 rounded max-h-48 shadow-sm border">`
+            : ""}
+            <p class="text-xs mt-3 text-slate-500 italic">Reported by: ${v.name}</p>
+        `;
+
+        reportsContainer.appendChild(div);
+    });
+
+    // hide section when no active reports exist
+    if (!hasItems) {
+        section.classList.add("hidden");
+    } else {
+        section.classList.remove("hidden");
+    }
 });
 </script>
 
