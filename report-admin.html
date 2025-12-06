@@ -202,7 +202,7 @@ function render(list) {
                 const timeVal = document.getElementById(`time-${item.key}`).value.trim();
                 const typeVal = document.getElementById(`type-${item.key}`).value;
 
-              await push(ref(db, USER_REPORTS_PATH), {
+             await push(ref(db, USER_REPORTS_PATH), {
     name: nm,
     location: item.location,
     report_type: typeVal,
@@ -210,9 +210,9 @@ function render(list) {
     time: timeVal,
     photo_url: item.photo_url || "N/A",
     timestamp: Date.now(),
-    show_on_site: showOnSite, // <-- add this
-    show_name: showName       // <-- add this
+    expiresAt: Date.now() + (24 * 60 * 60 * 1000) // <-- expire in 1 day
 });
+
 
                 setStatus("Report granted to site.", "success");
             };
