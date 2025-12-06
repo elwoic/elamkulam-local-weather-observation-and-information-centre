@@ -1117,6 +1117,81 @@ footer a:hover {
     </p>
     
 </div>
+    <!-- Home Page Section -->
+<section id="userReportsWidget" class="container mx-auto px-4 py-6">
+  <h2 class="text-2xl font-bold text-blue-900 mb-4">Community Weather Reports</h2>
+  <div id="reportsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="emptyMsg" class="hidden text-center text-gray-600 mt-8">
+    No reports are available at the moment.
+  </div>
+</section>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  authDomain: "report-5d8c0.firebaseapp.com",
+  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "report-5d8c0",
+  storageBucket: "report-5d8c0.firebasestorage.app",
+  messagingSenderId: "831456060916",
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const reportsContainer = document.getElementById('reportsContainer');
+const emptyMsg = document.getElementById('emptyMsg');
+
+const reportsRef = ref(db, 'user_reports');
+
+onValue(reportsRef, (snapshot) => {
+    const data = snapshot.val();
+    reportsContainer.innerHTML = '';
+
+    if (!data) {
+        emptyMsg.classList.remove('hidden');
+        return;
+    }
+
+    let anyVisible = false;
+
+    Object.values(data).forEach(report => {
+        if (report.show_on_site !== "yes") return;
+
+        anyVisible = true;
+        const reporterName = (report.show_name === "yes") ? report.name : "Anonymous";
+
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 rounded shadow report-card border-l-4 border-blue-600';
+        card.innerHTML = `
+            <p class="text-sm text-gray-600"><strong>Reporter:</strong> ${reporterName}</p>
+            <p class="text-sm text-gray-600"><strong>Place:</strong> ${report.location}</p>
+            <p class="text-sm text-gray-600"><strong>Time:</strong> ${report.time || "N/A"}</p>
+            <p class="mt-2 text-gray-700 whitespace-pre-wrap"><strong>The reporter says:</strong><br>${report.observation}</p>
+            ${report.photo_url && report.photo_url !== 'N/A' ? `
+                <div class="mt-2">
+                    <strong>Photos:</strong><br>
+                    <img src="${report.photo_url}" alt="Weather Photo" class="mt-1 report-card-img">
+                </div>
+            ` : ''}
+        `;
+        reportsContainer.appendChild(card);
+    });
+
+    // Hide entire section if no report is visible
+    if (!anyVisible) {
+        document.getElementById('userReportsWidget').style.display = 'none';
+    } else {
+        emptyMsg.classList.toggle('hidden', anyVisible);
+        document.getElementById('userReportsWidget').style.display = 'block';
+    }
+});
+</script>
+
  <section id="weather-snapshot-section">
      <div class="weather-mini-dashboard">
          <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം </h2>
