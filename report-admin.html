@@ -198,21 +198,38 @@ function render(list) {
          .value.trim(); const nm = showName === "yes" ?
         document.getElementById(name-${item.key}).value.trim() : "Anonymous";
     const timeVal = document.getElementById(time-${item.key}).value.trim(); const typeVal = document.getElementById(type-${item.key}).value; await push(ref(db, USER_REPORTS_PATH), { name: nm, location: item.location, report_type: typeVal, observation: obs, time: timeVal, photo_url: item.photo_url || "N/A", timestamp: item.timestamp, expiresAt: Date.now() + (24 * 60 * 60 * 1000), status: "granted" }); setStatus("Report granted to site ✔", "success"); const btn = document.getElementById(grant-${item.key}); btn.innerText = "Granted ✓"; btn.disabled = true; btn.style.opacity = "0.6"; }; }
-// REVOKE
+// REVOKE (Improved — timestamp OR originalKey match)
 document.getElementById(`revoke-${item.key}`).onclick = async () => {
-    const grantedRef = ref(db, USER_REPORTS_PATH);
-    onValue(grantedRef, async (snap) => {
-        const granted = snap.val();
-        if (!granted) return;
+    if (!confirm("Revoke grant for this report?")) return;
 
-        for (const [k, v] of Object.entries(granted)) {
-            if (v.timestamp === item.timestamp) {
-                await remove(ref(db, USER_REPORTS_PATH + "/" + k));
-                setStatus("Grant revoked ❌", "error");
-                break;
-            }
+    try {
+        const snapshot = await get(ref(db, USER_REPORTS_PATH));
+        if (!snapshot.exists()) {
+            setStatus("No granted reports found.", "info");
+            return;
         }
-    }, { onlyOnce: true });
+
+        let removed = false;
+        snapshot.forEach(child => {
+            const v = child.val();
+            if (v.originalKey === item.key || v.timestamp === item.timestamp) {
+                remove(ref(db, USER_REPORTS_PATH + "/" + child.key));
+                removed = true;
+            }
+        });
+
+        if (removed) {
+            setStatus("Grant revoked ❌", "success");
+            // Mark original report as hidden again
+            await update(ref(db, DB_PATH + "/" + item.key), { show_on_site: "no" });
+        } else {
+            setStatus("No matching granted record found.", "info");
+        }
+
+    } catch (err) {
+        console.error(err);
+        setStatus("Error while revoking.", "error");
+    }
 };
 
         
