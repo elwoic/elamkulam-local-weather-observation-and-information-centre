@@ -139,10 +139,25 @@ function render(list) {
 
     // GRANT
     if (!showOnSite) {
-      document.getElementById(`grant-${item.key}`).onclick = async () => {
-        await update(ref(db, DB_PATH + "/" + item.key), { granted: "yes" });
-        setStatus("Report granted ✔", "success");
-      };
+        // Helper function to get current edited values from the card's inputs
+        const getEditedValues = (key) => ({
+            time: document.getElementById(`time-${key}`).value,
+            name: document.getElementById(`name-${key}`).value,
+            observation: document.getElementById(`obs-${key}`).value,
+        });
+
+        document.getElementById(`grant-${item.key}`).onclick = async () => {
+            // 1. Get the current edited values from the input fields
+            const updatedData = getEditedValues(item.key);
+
+            // 2. Add the 'granted: "yes"' status
+            updatedData.granted = "yes";
+            
+            // 3. Perform a single update to save all edits AND grant status
+            await update(ref(db, DB_PATH + "/" + item.key), updatedData);
+            
+            setStatus("Report granted and edits saved ✔", "success");
+        };
     }
 
     // REVOKE
