@@ -1156,13 +1156,16 @@ setInterval(updateActivityRecommendations, 10 * 60 * 1000);
   });
 
   // Fetch report last update time
-  onValue(ref(db, "today_report/updated_time"), (snapshot) => {
-      if (snapshot.exists()) {
-        updatedTimeLabel.textContent = "🕒 അവസാനമായി അപ്ഡേറ്റ് ചെയ്തത്: " + snapshot.val();
-      } else {
-        updatedTimeLabel.textContent = "";
-      }
-  });
+  onValue(ref(db, "today_report/timestamp"), (snapshot) => {
+      if (snapshot.exists()) {
+        // Format the timestamp (a number) into a human-readable string
+        const timestampMs = snapshot.val();
+        const formattedTime = new Date(timestampMs).toLocaleString();
+        updatedTimeLabel.textContent = "🕒 അവസാനമായി അപ്ഡേറ്റ് ചെയ്തത്: " + formattedTime;
+      } else {
+        updatedTimeLabel.textContent = "";
+      }
+  });
 </script>
 
  
