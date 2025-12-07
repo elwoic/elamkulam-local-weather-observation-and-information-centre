@@ -1140,7 +1140,7 @@ footer a:hover {
                  <div class="info-unit">%</div></div> <div class="info-box">
                      <div class="info-title">കാറ്റിന്റെ വേഗത</div>
                      <div class="info-value" id="wind">--</div><div class="info-unit">km/h</div>
-                 </div> <div class="info-box"><div class="info-title">ദൃശ്യപരതി</div>
+                 </div> <div class="info-box"><div class="info-title">ദൃശ്യപരിതി</div>
                      <div class="info-value" id="visibility">--</div><div class="info-unit">km</div>
                  </div> <div class="info-box"><div class="info-title">നിലവിലെ സ്ഥിതി</div>
                      <div class="info-value" id="condition">--</div><div class="info-unit"> ☁ </div>
@@ -1540,8 +1540,6 @@ onValue(ref(db, DB_PATH), (snapshot) => {
 const reports = Object.values(data)
         .filter(r => r.granted === "yes") // <--- This line filters the reports
         .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // <--- This line sorts them
-    const reports = Object.values(data)
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     if (reports.length === 0) {
         sec.classList.add("hidden");
