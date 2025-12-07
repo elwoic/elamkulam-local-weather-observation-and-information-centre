@@ -73,7 +73,7 @@ const firebaseConfig = {
 };
 
 const VALID_PASSPHRASES = ["04933", "elwoic811", "elwoic822"];
-const DB_PATH = "weather_reports"; 
+const DB_PATH = "reports"; 
 const USER_REPORTS_PATH = "user_reports";
 
 const app = initializeApp(firebaseConfig);
@@ -233,38 +233,21 @@ if (showOnSite === "yes") {
     };
 }
 
-// REVOKE (Improved)
+// REVOKE
 document.getElementById(`revoke-${item.key}`).onclick = async () => {
-    if (!confirm("Revoke grant for this report?")) return;
-    
-    try {
-        const snapshot = await get(ref(db, USER_REPORTS_PATH));
-        if (!snapshot.exists()) {
-            setStatus("No granted reports found.", "info");
-            return;
-        }
+    const grantedRef = ref(db, USER_REPORTS_PATH);
+    onValue(grantedRef, async (snap) => {
+        const granted = snap.val();
+        if (!granted) return;
 
-        let removed = false;
-        snapshot.forEach(child => {
-            const v = child.val();
-            // match either timestamp OR original key
-            if (v.originalKey === item.key || v.timestamp === item.timestamp) {
-                remove(ref(db, USER_REPORTS_PATH + "/" + child.key));
-                removed = true;
+        for (const [k, v] of Object.entries(granted)) {
+            if (v.timestamp === item.timestamp) {
+                await remove(ref(db, USER_REPORTS_PATH + "/" + k));
+                setStatus("Grant revoked ❌", "error");
+                break;
             }
-        });
-
-        if (removed) {
-            setStatus("Grant revoked ❌", "success");
-            await update(ref(db, DB_PATH + "/" + item.key), { show_on_site: "no" });
-        } else {
-            setStatus("No matching granted report found.", "info");
         }
-
-    } catch (err) {
-        console.error("Revoke failed:", err);
-        setStatus("Error revoking grant.", "error");
-    }
+    }, { onlyOnce: true });
 };
 
         
