@@ -80,9 +80,17 @@ async function fetchWeatherData() {
 // Fetch User Reports from Firebase
 // -----------------------
 async function fetchUserReports() {
-    const reportsRef = ref(db, "report-5d8c0-default-rtdb"); // adjust path if needed
+    // ✅ Assume user reports are under the "weather_reports" node
+    const reportsRef = ref(db, "weather_reports"); 
     const snapshot = await get(reportsRef);
-    return snapshot.exists() ? snapshot.val() : [];
+
+    // Filter only granted reports for the essay, as reports older than 24h are fine here
+    const allReports = snapshot.exists() ? snapshot.val() : {};
+
+    // Filter only reports that are granted: "yes"
+    const grantedReports = Object.values(allReports).filter(r => r.granted === "yes");
+
+    return grantedReports;
 }
 
 // -----------------------
