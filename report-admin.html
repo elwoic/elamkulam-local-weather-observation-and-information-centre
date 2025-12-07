@@ -192,47 +192,12 @@ function render(list) {
                 setStatus("Report deleted.", "success");
             }
         };
-
-       // GRANT (revised)
-if (showOnSite === "yes") {
-    document.getElementById(`grant-${item.key}`).onclick = async () => {
-        try {
-            const obs = document.getElementById(`obs-${item.key}`).value.trim();
-            const nm = showName === "yes" ? document.getElementById(`name-${item.key}`).value.trim() : "Anonymous";
-            const timeVal = document.getElementById(`time-${item.key}`).value.trim();
-            const typeVal = document.getElementById(`type-${item.key}`).value;
-
-            // create a new child with a generated key, and write full record including originalKey
-            const newRef = push(ref(db, USER_REPORTS_PATH));
-            await set(newRef, {
-                name: nm,
-                location: item.location,
-                report_type: typeVal,
-                observation: obs,
-                time: timeVal,
-                photo_url: item.photo_url || "N/A",
-                timestamp: item.timestamp,
-                expiresAt: Date.now() + (24 * 60 * 60 * 1000),
-                status: "granted",
-                originalKey: item.key   // <-- important link back to the original report
-            });
-
-            setStatus("Report granted to site ✔", "success");
-            const btn = document.getElementById(`grant-${item.key}`);
-            btn.innerText = "Granted ✓";
-            btn.disabled = true;
-            btn.style.opacity = "0.6";
-
-            // Optionally mark the original report as granted (helps admin UI)
-            await update(ref(db, DB_PATH + "/" + item.key), { show_on_site: "yes", granted_at: Date.now() });
-
-        } catch (err) {
-            console.error("Grant failed:", err);
-            setStatus("Failed to grant report — try again.", "error");
-        }
-    };
-}
-
+// GRANT if (showOnSite === "yes")
+        { document.getElementById(grant-${item.key}).onclick = async () => 
+        { const obs = document.getElementById(obs-${item.key})
+         .value.trim(); const nm = showName === "yes" ?
+        document.getElementById(name-${item.key}).value.trim() : "Anonymous";
+    const timeVal = document.getElementById(time-${item.key}).value.trim(); const typeVal = document.getElementById(type-${item.key}).value; await push(ref(db, USER_REPORTS_PATH), { name: nm, location: item.location, report_type: typeVal, observation: obs, time: timeVal, photo_url: item.photo_url || "N/A", timestamp: item.timestamp, expiresAt: Date.now() + (24 * 60 * 60 * 1000), status: "granted" }); setStatus("Report granted to site ✔", "success"); const btn = document.getElementById(grant-${item.key}); btn.innerText = "Granted ✓"; btn.disabled = true; btn.style.opacity = "0.6"; }; }
 // REVOKE
 document.getElementById(`revoke-${item.key}`).onclick = async () => {
     const grantedRef = ref(db, USER_REPORTS_PATH);
