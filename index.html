@@ -1538,15 +1538,23 @@ const list = document.getElementById("grantedReports");
         sec.classList.add("hidden");
         return;
     }
+
+// Calculate the current time once, in milliseconds
+const currentTime = Date.now(); 
+
 const reports = Object.values(data)
-        .filter(r => r.granted === "yes") // <--- This line filters the reports
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // <--- This line sorts them
+    .filter(r => 
+        r.granted === "yes" && // 1. Must be explicitly granted
+        (r.expirationTimestamp || Infinity) > currentTime // 2. Must not be expired
+    ) 
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // Sort by submission time
 
-    if (reports.length === 0) {
-        sec.classList.add("hidden");
-        return;
-    }
+if (reports.length === 0) {
+    sec.classList.add("hidden");
+    return;
+}
 
+// ... (Continue with sec.classList.remove("hidden");)
     sec.classList.remove("hidden");
 
    reports.forEach(r => {
