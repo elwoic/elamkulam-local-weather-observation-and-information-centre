@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 // ✅ Import IMD alert data from the external file
-import { imdAlertData } from "./imd-alert-data.js"; 
+import { imdAlertData } from "./imd-marquee.js"; 
 
 // -----------------------
 // Firebase Config
