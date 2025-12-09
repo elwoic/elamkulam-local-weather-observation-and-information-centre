@@ -159,8 +159,9 @@ function computeFromMeteo(m){
 }
 
 // ---------------- essay generator (very long news style) ----------------
-// ---------------- essay generator (professional style, no user names) ----------------
-function generateProfessionalMalayalam({ computed, imdAlert, airQuality }){
+function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
+  // We'll build many sentences across several paragraphs to reach 20-30 sentences.
+  // Use professional neutral news phrasing, no advice.
   const s = [];
   const now = new Date();
   const dateLine = `${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`;
@@ -169,71 +170,42 @@ function generateProfessionalMalayalam({ computed, imdAlert, airQuality }){
   s.push(dateLine);
   s.push(""); // blank
 
-  // 1. Overview
-  s.push("എലങ്കുളം പ്രദേശത്തിന്റെ നിലവിലെ അന്തരീക്ഷ സാഹചര്യങ്ങളെക്കുറിച്ചുള്ള പ്രൊഫഷണൽ റിപ്പോർട്ട് താഴെ ചേർക്കുന്നു.");
+  // Paragraph 1: overall situation (3-4 sentences)
+  s.push("പ്രദേശീയ അന്തരീക്ഷ സാഹചര്യത്തിന്റെ ആധുനിക നിരീക്ഷണങ്ങളെ അടിസ്ഥാനമാക്കി എലങ്കുളം പ്രദേശത്ത് നിന്നുള്ള ഉപയോഗപ്രദമായ വ്യക്തമായ അവലോകനം താഴെ കൊടുക്കുന്നു.");
   if (computed.tempNow != null) {
-    s.push(`ഇപ്പോഴുള്ള താപനില ${toFixedSafe(computed.tempNow,1)}°C ആണ്. കഴിഞ്ഞ മണിക്കൂറുകളിലെ നിരീക്ഷണങ്ങളുമായി താരതമ്യം ചെയ്യുമ്പോൾ താപനില ${computed.tempTrend>0.15 ? 'മിതമായ വർദ്ധനവുള്ള' : (computed.tempTrend < -0.15 ? 'ലഘുവായ കുറവ്' : 'സ്ഥിരമായ')} നിലയിലാണെന്ന് കാണുന്നു.`);
+    s.push(`ഇപ്പോൾ രേഖപ്പെടുത്തപ്പെട്ട താപനില ${toFixedSafe(computed.tempNow,1)}°C ആണ്; ഇത് കഴിഞ്ഞ കുറച്ചുമണിക്കൂറുകളിലെ ശരാശരിയുടെ അടിസ്ഥാനത്തിൽ വിലയിരുത്തുമ്പോൾ സമാന നിരപ്പിലോ അല്പം ${computed.tempTrend>0.15 ? 'ഉയർത്തലുള്ള' : (computed.tempTrend < -0.15 ? 'താഴ്ന്ന' : 'സ്ഥിരമായ')} നിലപാടിലാണ് കാണപ്പെടുന്നത്.`);
   } else {
-    s.push("താപനില സംബന്ധിച്ച നിലവിലെ ഡാറ്റ ലഭ്യമല്ല.");
+    s.push("താപനിലയുടെ ഇപ്പോഴത്തെ ആധിക്യമായ മാനം ലഭ്യമല്ല; ഇതു സംബന്ധിച്ച നിലവിലുള്ള രേഖകൾ ഇല്ലാതായപ്പോൾ മറ്റ് ഉപയോഗപ്രദമായ പരാമർശങ്ങൾ താഴെ കൊടുക്കുന്നു.");
   }
+  s.push("ഇന്ന് പ്രദേശത്ത് ആകെ മേഘാവാര്ത്ത്പ്രവൃത്തി നിലനിൽക്കുന്നുവെന്ന് നിരീക്ഷണങ്ങൾ സൂചിപ്പിക്കുന്നു; മേഘാതൈയ്യത്വം പല ഭാഗങ്ങളിലും പരിമിതമായി കാണപ്പെടുന്നു.");
 
-  // 2. Humidity
+  // Paragraph 2: humidity and feel (2-3 sentences)
   if (computed.humidity != null) {
-    s.push(`പ്രാദേശിക വാതാവരണത്തിലെ സാന്ദ്രത (ഹ്യൂമിഡിറ്റി) ${Math.round(computed.humidity)}% ആയി രേഖപ്പെടുത്തപ്പെട്ടിട്ടുണ്ട്.`);
+    s.push(`വാതാവരണത്തിലെ ശുദ്ധി നിർണ്ണായകമായ ഘടകമായ ഹൈമിഡിറ്റി നിലവിലേക്ക് ശ്രദ്ധിച്ചാൽ, നിലവിൽ ഹ്യൂമിഡിറ്റി ${Math.round(computed.humidity)}% ആണ്; ഇൗ നില പ്രവണതയിൽ വരുന്ന ചെറിയ വ്യതിയാനങ്ങളോടെ പ്രാദേശികമായി വായു തണുത്തതോ ചൂടെങ്കിലും അനുഭവപ്പെടാം.`);
   } else {
-    s.push("ഹ്യൂമിഡിറ്റി സംബന്ധിച്ച വിശ്വസ്ത ഡാറ്റ ലഭ്യമല്ല.");
+    s.push("ഹ്യൂമിഡിറ്റിയ്ക്ക 관한 വിശകലനത്തിന് നിലവിലെ വിശ്വസ്തമായ ഡാറ്റ ലഭ്യമല്ല.");
   }
+  s.push("മൊത്തത്തിൽ, അന്തരീക്ഷത്തിലെ ഈർപ്പംമാറ്റങ്ങൾ അന്തരീക്ഷ ദ്രവ സംയോജനത്തെ ബാധിച്ചേക്കാവുന്നവയാണ്.");
 
-  // 3. Wind
+  // Paragraph 3: wind detail (3 sentences)
   if (computed.windSpeedMs != null) {
     const kmh = msToKmh(computed.windSpeedMs);
-    s.push(`കാറ്റിന്റെ വേഗം ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആണ്; ദിശ ${windDirMalayalam(computed.windDir)} (${computed.windDir != null ? Math.round(computed.windDir)+"°" : 'ലഭ്യമല്ല'}).`);
+    s.push(`കാറ്റിന്റെ ഇപ്പോഴത്തെ രേഖപ്പെടുത്തിയ വേഗം ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആയി അളക്കപ്പെടുന്നു; ദിശ ${windDirMalayalam(computed.windDir)} (${computed.windDir != null ? Math.round(computed.windDir) + "°" : 'ലഭ്യമല്ല'}) ആണ്.`);
+    s.push("ഈ വേഗത പ്രദേശീയ നിലവാരത്തിൽ ഒട്ടുവീഴ്ചവെള്ളമായ ഒത്തുചേരലുകളിലോ കടലിന്റെ നിലയിലുള്ള വലിയ മാറ്റങ്ങളിലോ കാരണമാകില്ലാത്തതാണെന്നതല്ലാതെയാണ് രേഖപ്പെടുത്തപ്പെടുന്നത്.");
+    s.push("കാറ്റിന്റെ ദിശയും വേഗവും അടുത്ത മണിക്കൂറുകളിൽ ചെറിയ മാറ്റങ്ങൾ കാണിച്ചേക്കാം; അതേസമയം വലിയ രീതിയില്‍ ദിശമാറ്റം പ്രതീക്ഷിക്കപ്പെടുന്നില്ലെന്നതാണ് ഇപ്പോഴത്തെ നിരീക്ഷണത്തിന്റെ സംഹിത.");
   } else {
-    s.push("കാറ്റ് സംബന്ധിച്ച സമഗ്ര വിവരങ്ങൾ ലഭ്യമല്ല.");
+    s.push("കാറ്റ് സംബന്ധിയായ സമഗ്രവും വിശ്വസ്തവുമായ നിലവറിവുകൾ ലഭ്യമല്ല.");
   }
 
-  // 4. Rain & Clouds
+  // Paragraph 4: rain & cloud (3-5 sentences)
   if (computed.precipNow != null && computed.precipNow > 0.1) {
-    s.push("പ്രദേശത്ത് നിലവിൽ ചെറിയ മഴ തുടരുകയാണ്.");
+    s.push(`പ്രദേശത്ത് നിലവിൽ അളവിൽ പെയ്യുന്ന മഴയാണ് രേഖപ്പെടുത്തിയിരിക്കുന്നത്; കഴിഞ്ഞ മണിക്കൂറിനിടയിൽ പുറത്തുവന്ന രേഖകൾ പ്രകാരം ഈ മഴ ലഘുവായി തുടരുന്നതിനുള്ള സാധ്യത കാണപ്പെടുന്നു.`);
   } else if (computed.precipProb != null) {
-    s.push(`അടുത്ത മണിക്കൂറുകളിലെ മഴ സാധ്യത ${Math.round(computed.precipProb)}% ആണ്.`);
+    s.push(`അടുത്ത മണിക്കൂറുകളില്‍ മോഡൽ അടിസ്ഥാനത്തിലുള്ള ശരാശരി മഴസാദ്ധ്യത ${Math.round(computed.precipProb)}% വരെയാണ് കണക്കായിരിക്കുന്നത്; ഇത് ലഘു മുതൽ ഇടയ്ക്കിടെ കടുകുള്ള മഴ വരുത്താവുന്ന തോതിലാണ്.`);
   } else {
-    s.push("മഴ സംബന്ധിച്ച റിപ്പോർട്ടുകൾ ലഭ്യമല്ല.");
+    s.push("പ്രദേശത്ത് നിലവിൽ ശക്തമായ മഴ എന്ന തരത്തിലുള്ള റിപ്പോർട്ടുകൾ ലഭ്യമല്ല; മേഘാവര്ത്ത്പ്രവൃത്തി ചില ഭാഗങ്ങളിൽ തുടരാനിടയുണ്ട്.");
   }
-
-  // 5. Trend
-  if (computed.tempPrevHour != null && computed.tempNow != null) {
-    const diff = (computed.tempNow - computed.tempPrevHour);
-    const word = diff > 0 ? "വരുത്തിയ വർദ്ധനവ്" : (diff < 0 ? "കുറഞ്ഞു" : "മാറ്റമില്ല");
-    s.push(`കഴിഞ്ഞ മണിക്കൂറിൽ താപനില ${Math.abs(diff).toFixed(1)}°C ${word}.`);
-  }
-  if (computed.tempTrend != null) {
-    const trendVal = computed.tempTrend;
-    const trendWord = trendVal > 0.15 ? "ഉയരുന്ന പ്രവണത" : (trendVal < -0.15 ? "താഴ്ന്നുവരുന്ന പ്രവണത" : "സ്ഥിരം പ്രവണത");
-    s.push(`കഴിഞ്ഞ ${computed.trendHours || 12} മണിക്കൂറുകളിലെ ശരാശരി മാറ്റത്തിന്റെ അടിസ്ഥാനത്തിൽ താപനില ${trendWord} ആണ്.`);
-  }
-
-  // 6. Seasonal Context
-  const month = new Date().getMonth() + 1;
-  if ([6,7,8,9].includes(month)) {
-    s.push("മൂസൂൺ കാലഘട്ടത്തിലാണ്; ശക്തമായ മഴയ്ക്കും വെയിൽക്കുള്ള സാധ്യതകൾ ശ്രദ്ധയിൽ വയ്ക്കേണ്ടതാണ്.");
-  } else if ([10,11,12,1].includes(month)) {
-    s.push("ശൈതകാല കാലഘട്ടത്തിൽ തണുപ്പ് അനുഭവപ്പെടുന്നു, രാത്രികൾ കൂടുതലായും ശീതപ്രവർത്തനം കാണിക്കുന്നു.");
-  } else {
-    s.push("വേനൽ കാലാവസ്ഥയിൽ ഇടയ്ക്ക് മഴയും മേഘാവർദ്ധനവുമാണ് സാധാരണ.");
-  }
-
-  // 7. Alerts
-  if (imdAlert && imdAlert.text) {
-    s.push(`IMD (മലപ്പുറം) ഔദ്യോഗിക അറിയിപ്പ്: ${imdAlert.text} (${imdAlert.lastUpdated || 'ലഭ്യമല്ല'}).`);
-  }
-
-  // 8. Local Reports (only description + location)
-  s.push("പ്രാദേശിക നിരീക്ഷണങ്ങൾ (Granted) താഴെ ചേർത്തിരിക്കുന്നു:");
-  
-  return s.join("\n\n");
-}
-
+  s.push("മേഘാവകാശത്തിന്റെ മാറ്റങ്ങൾ ദേശിയ മോണിറ്ററിംഗ് ഡാറ്റാ ഫ്ലോകളിൽനിന്നും സാധാരണ രീതിയിൽ രേഖപ്പെടുകയാണ്.");
 
   // Paragraph 5: past hour comparison and trend (3-4 sentences)
   if (computed.tempPrevHour != null && computed.tempNow != null) {
