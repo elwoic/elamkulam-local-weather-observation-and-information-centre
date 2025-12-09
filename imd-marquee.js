@@ -2,11 +2,11 @@
 
 // Preset alert data
 const alerts = {
-  "2025-12-04": { text: "IMD Alert For Malappuram District: y" },
-  "2025-12-05": { text: "IMD Alert For Malappuram District: g" },
-  "2025-12-06": { text: "IMD Alert For Malappuram District: g" },
-  "2025-12-07": { text: "IMD Alert For Malappuram District: g" },
-  "2025-12-08": { text: "IMD Alert For Malappuram District: g" }
+  "2025-12-09": { text: "IMD Alert For Malappuram District: g" },
+  "2025-12-10": { text: "IMD Alert For Malappuram District: g" },
+  "2025-12-11": { text: "IMD Alert For Malappuram District: g" },
+  "2025-12-12": { text: "IMD Alert For Malappuram District: g" },
+  "2025-12-13": { text: "IMD Alert For Malappuram District: g" }
 };
 
 // Last updated time (manual)
