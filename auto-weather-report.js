@@ -59,11 +59,14 @@ async function fetchWeatherData() {
     const owResp = await fetch(owUrl);
     const owData = await owResp.json();
 
-    // OpenMeteo - hourly wind, pressure
-    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=wind_speed_10m,wind_direction_10m,pressure_msl&timezone=Asia/Kolkata`;
-    const omResp = await fetch(owUrl); // NOTE: Changed to owUrl here as omUrl was causing issues
-    const omData = await omResp.json();
+    // OpenWeatherMap fetch
+    const owResp = await fetch(owUrl);
+    const owData = await owResp.json();
 
+    // OpenMeteo - hourly wind, pressure (Use omUrl for OpenMeteo data)
+    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=wind_speed_10m,wind_direction_10m,pressure_msl&timezone=Asia/Kolkata`;
+    const omResp = await fetch(omUrl); // <-- **FIXED: Use omUrl here**
+    const omData = await omResp.json();
     // Windy API - alerts (placeholder)
     const windyData = { alerts: [] }; 
 
