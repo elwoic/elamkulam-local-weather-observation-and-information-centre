@@ -1108,70 +1108,8 @@ updateActivityRecommendations();
 setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
  
-<!-- Section to show granted reports -->
-<section id="grantedReportsSection" class="p-4 rounded-lg bg-white shadow-md mt-6">
-  <h2 class="text-xl font-semibold mb-4 text-[#003a63]">പൊതുജന നിരീക്ഷണ റിപ്പോർട്ടുകൾ</h2>
-  <div id="grantedReportsList" class="space-y-4">
-    <p>Loading reports...</p>
-  </div>
-</section>
+<div id="elamkulam-forecast-report"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-  authDomain: "report-5d8c0.firebaseapp.com",
-  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.appspot.com",
-  messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const reportsList = document.getElementById("grantedReportsList");
-
-const reportsRef = ref(db, "weather_reports");
-
-onValue(reportsRef, (snapshot) => {
-  const data = snapshot.val();
-  reportsList.innerHTML = "";
-
-  if (!data) {
-    reportsList.innerHTML = "<p>പൊതുജന നിരീക്ഷണ റിപ്പോർട്ടുകൾ നിലവിൽ ലഭ്യമല്ല.</p>";
-    return;
-  }
-
-  const reports = Object.values(data)
-    .filter(r => r.granted === "yes") // only granted reports
-    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // newest first
-
-  if (reports.length === 0) {
-    reportsList.innerHTML = "<p>പൊതുജന നിരീക്ഷണ റിപ്പോർട്ടുകൾ നിലവിൽ ലഭ്യമല്ല.</p>";
-    return;
-  }
-
-  reports.forEach(r => {
-    const card = document.createElement("div");
-    card.className = "p-4 bg-gray-50 rounded shadow";
-
-    card.innerHTML = `
-      <p class="text-sm text-gray-600 mb-1"><strong>സ്ഥലം:</strong> ${r.location || "N/A"}</p>
-      <p class="text-gray-800">${r.observation || "വിവരം ലഭ്യമല്ല."}</p>
-    `;
-
-    reportsList.appendChild(card);
-  });
-});
-</script>
-<script type="module" src="./auto-weather-report.js"></script>
-
-<!-- Granted reports script -->
-<script type="module" src="./granted-reports.js"></script>
  
 <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
@@ -1180,5 +1118,6 @@ onValue(reportsRef, (snapshot) => {
        📤 Submit Weather Report
     </a>
 </div>
+ <script type="module" src="elamkulam-forecast.js"></script>
 </body>
 </html>
