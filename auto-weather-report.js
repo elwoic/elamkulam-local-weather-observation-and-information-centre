@@ -2,8 +2,11 @@
    Elamkulam Auto Weather Report
    Updates every 1 hour
 ------------------------------ */
-
-import { imdAlerts, imdLastUpdated } from "./imd-marquee.js";
+/ 🛑 REMOVED: import { imdAlerts, imdLastUpdated } from "./imd-marquee.js";
+// ✅ FIXED: Access the variables from the global scope (window/globalThis)
+// The HTML loading order ensures these are defined by the time this script runs.
+const imdAlerts = globalThis.imdAlerts || {};
+const imdLastUpdated = globalThis.imdLastUpdated || "Unknown";
 
 /* OpenWeather API Details */
 const openWeatherApiKey = "ca13a2cbdc07e7613b6af82cff262295";
