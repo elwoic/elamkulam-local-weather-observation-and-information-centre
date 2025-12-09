@@ -1,8 +1,12 @@
 // auto-weather-report.js
+
+// IMPORTANT NOTE: This file assumes two things:
+// 1. It is running in an environment (like Node.js or a Cloud Function) that stays active.
+// 2. The file 'imd-marquee.js' exists in the same directory and correctly exports imdAlertData.
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-// ✅ Import IMD alert data from the external file
-import { imdAlertData } from "./imd-marquee.js"; 
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { imdAlertData } from "./imd-marquee.js"; // Assume this file exists and works
 
 // -----------------------
 // Firebase Config
@@ -23,6 +27,8 @@ const db = getDatabase(app);
 // -----------------------
 // API Keys
 // -----------------------
+// WARNING: Storing API keys directly in client-side code (which this looks like) is unsafe.
+// Use a secure backend environment (like Cloud Functions or Node.js server) for this.
 const openWeatherApiKey = "ca13a2cbdc07e7613b6af82cff262295";
 const windyKey = "SBA9nIS9VtzpbIUnhpfEY7arpWfu3xN3";
 
@@ -36,39 +42,43 @@ function formatDate(date = new Date()) {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-// Generate variation in phrasing
 function randomPhrase(phrases) {
     return phrases[Math.floor(Math.random() * phrases.length)];
 }
 
-// Escape HTML (optional)
-function escapeHTML(str) {
-    if (!str) return "";
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
 // -----------------------
-// Fetch Weather Data (Elamkulam)
+// Fetch Weather Data (Elamkulam) - NOW WITH ERROR HANDLING
 // -----------------------
 async function fetchWeatherData() {
     const lat = 10.9081; // Elamkulam latitude
     const lon = 76.2296; // Elamkulam longitude
+    let owData = {};
+    let omData = {};
+    const windyData = { alerts: [] }; // Placeholder for Windy API
 
-    // OpenWeatherMap
-    const owUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
-    const owResp = await fetch(owUrl);
-    const owData = await owResp.json();
+    // 1. Fetch OpenWeatherMap Data
+    try {
+        const owUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
+        const owResp = await fetch(owUrl);
+        if (!owResp.ok) throw new Error(`OpenWeatherMap HTTP error! status: ${owResp.status}`);
+        owData = await owResp.json();
+    } catch (error) {
+        console.error("Error fetching OpenWeatherMap data:", error);
+        // owData remains {} so the essay generator uses 'N/A'
+    }
 
-    // OpenWeatherMap fetch
-    const owResp = await fetch(owUrl);
-    const owData = await owResp.json();
+    // 2. Fetch OpenMeteo Data
+    try {
+        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=wind_speed_10m,wind_direction_10m,pressure_msl&timezone=Asia/Kolkata`;
+        const omResp = await fetch(omUrl); // Using the correct omUrl
+        if (!omResp.ok) throw new Error(`OpenMeteo HTTP error! status: ${omResp.status}`);
+        omData = await omResp.json();
+    } catch (error) {
+        console.error("Error fetching OpenMeteo data:", error);
+        // omData remains {}
+    }
 
-    // OpenMeteo - hourly wind, pressure (Use omUrl for OpenMeteo data)
-    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=wind_speed_10m,wind_direction_10m,pressure_msl&timezone=Asia/Kolkata`;
-    const omResp = await fetch(omUrl); // <-- **FIXED: Use omUrl here**
-    const omData = await omResp.json();
-    // Windy API - alerts (placeholder)
-    const windyData = { alerts: [] }; 
+    // 3. Windy API (currently a placeholder)
 
     return { owData, omData, windyData };
 }
@@ -77,20 +87,26 @@ async function fetchWeatherData() {
 // Fetch User Reports from Firebase
 // -----------------------
 async function fetchUserReports() {
-    const reportsRef = ref(db, "weather_reports"); 
-    const snapshot = await get(reportsRef);
-
-    const allReports = snapshot.exists() ? snapshot.val() : {};
-    const grantedReports = Object.values(allReports).filter(r => r.granted === "yes");
-
-    return grantedReports;
+    // Basic error handling for Firebase fetch
+    try {
+        const reportsRef = ref(db, "weather_reports");
+        const snapshot = await get(reportsRef);
+        const allReports = snapshot.exists() ? snapshot.val() : {};
+        // Note: Filtering by 'granted === "yes"' here might miss reports saved as daily archives
+        // if your report submission system is different. Assuming this logic is correct for now.
+        const grantedReports = Object.values(allReports).filter(r => r.granted === "yes");
+        return grantedReports;
+    } catch (error) {
+        console.error("Error fetching user reports from Firebase:", error);
+        return []; // Return empty array on error
+    }
 }
 
 // -----------------------
 // Generate Malayalam Essay (with History and IMD Alert)
 // -----------------------
 function generateEssay(data) {
-    const { owData, omData, userReports, oldReportText } = data; // Added oldReportText for history
+    const { owData, omData, userReports, oldReportText } = data;
 
     const phrasesMorning = [
         "രാവിലെ കാലാവസ്ഥ ഇപ്രകാരം ആയിരുന്നു",
@@ -104,6 +120,7 @@ function generateEssay(data) {
     ];
 
     // --- Weather Data ---
+    // Safely access properties; defaults to 'N/A' if API data failed to load
     const temp = owData.main?.temp ?? "N/A";
     const humidity = owData.main?.humidity ?? "N/A";
     const weatherDesc = owData.weather?.[0]?.description ?? "N/A";
@@ -114,7 +131,6 @@ function generateEssay(data) {
     // --- Hourly History (Past Condition Consideration) ---
     let pastObservation = "";
     if (oldReportText) {
-        // Extract the weather description from the previous report
         const match = oldReportText.match(/വിശദീകരണം: (.*?)\./s);
         if (match) {
             pastObservation = `കഴിഞ്ഞ റിപ്പോർട്ടിൽ ${match[1].trim()} രേഖപ്പെടുത്തിയിരുന്നു.\n\n`;
@@ -123,8 +139,8 @@ function generateEssay(data) {
 
     // --- IMD Alert Logic (using imdAlertData) ---
     const todayKey = formatDate();
-    const alerts = imdAlertData.alerts;
-    const lastUpdated = imdAlertData.lastUpdated;
+    const alerts = imdAlertData.alerts || {}; // Default to empty object if imdAlertData is missing
+    const lastUpdated = imdAlertData.lastUpdated || "N/A";
 
     const levelMap = {
         g: { full: "Green" },
@@ -141,7 +157,7 @@ function generateEssay(data) {
         const mapping = levelMap[shortCode] || { full: "Unknown" };
         
         // Convert 'g', 'y', etc. to 'Green', 'Yellow', etc.
-        imdAlertText = alertText.replace(/([oyrg])$/i, mapping.full); 
+        imdAlertText = alertText.replace(/([oyrg])$/i, mapping.full);
     } else {
         imdAlertText = "IMD മുന്നറിയിപ്പ് ലഭ്യമല്ല";
     }
@@ -166,59 +182,69 @@ ${reportsText}
 // Update Today Report (Hourly, fetches old report for continuity)
 // -----------------------
 async function updateTodayReport() {
-    // 1. Fetch current/old report from Firebase
-    const oldReportSnapshot = await get(ref(db, "today_report"));
-    const oldReport = oldReportSnapshot.exists() ? oldReportSnapshot.val() : null;
+    console.log(`--- Running update at ${new Date().toISOString()} ---`);
+    try {
+        // 1. Fetch current/old report from Firebase
+        const oldReportSnapshot = await get(ref(db, "today_report"));
+        const oldReport = oldReportSnapshot.exists() ? oldReportSnapshot.val() : null;
 
-    // 2. Fetch new data
-    const weatherData = await fetchWeatherData();
-    const userReports = await fetchUserReports();
+        // 2. Fetch new data (handles its own errors)
+        const weatherData = await fetchWeatherData();
+        const userReports = await fetchUserReports();
 
-    // 3. Generate essay, passing the old report text
-    const essay = generateEssay({ 
-        owData: weatherData.owData, 
-        omData: weatherData.omData, 
-        userReports,
-        oldReportText: oldReport ? oldReport.text : null // Pass past report for continuity
-    });
+        // 3. Generate essay
+        const essay = generateEssay({
+            owData: weatherData.owData,
+            omData: weatherData.omData,
+            userReports,
+            oldReportText: oldReport ? oldReport.text : null
+        });
 
-    // 4. Update in Firebase today_report node
-    await set(ref(db, "today_report"), {
-        text: essay,
-        timestamp: Date.now()
-    });
+        // 4. Update in Firebase today_report node
+        await set(ref(db, "today_report"), {
+            text: essay,
+            timestamp: Date.now()
+        });
 
-    console.log("Today report updated.");
+        console.log("✅ Today report updated successfully.");
+    } catch (error) {
+        console.error("FATAL ERROR in updateTodayReport:", error);
+    }
 }
 
 // -----------------------
-// End-of-Day Storage (Stores the final, accumulated report)
+// End-of-Day Storage
 // -----------------------
 async function storeEndOfDay() {
-    const snapshot = await get(ref(db, "today_report"));
-    if (!snapshot.exists()) return;
+    try {
+        const snapshot = await get(ref(db, "today_report"));
+        if (!snapshot.exists()) return;
 
-    const todayKey = formatDate();
-    await set(ref(db, `weather_reports/${todayKey}`), snapshot.val());
-    console.log("End-of-day report stored in weather_reports.");
+        const todayKey = formatDate();
+        await set(ref(db, `weather_reports_daily_archive/${todayKey}`), snapshot.val()); // Using a unique archive name
+        console.log("Archive: End-of-day report stored.");
+    } catch (error) {
+        console.error("Error in storeEndOfDay:", error);
+    }
 }
 
 // -----------------------
 // Scheduler
 // -----------------------
 function startScheduler() {
+    console.log("Automation scheduler started.");
     // Update hourly
     updateTodayReport(); // immediate run
-    setInterval(updateTodayReport, 60 * 60 * 1000);
+    setInterval(updateTodayReport, 60 * 60 * 1000); // Every 60 minutes
 
     // Check every minute for midnight (23:59)
     setInterval(async () => {
         const now = new Date();
-        // Check if it's 23:59 IST (or close to midnight for end-of-day storage)
+        // Check if it's 23:59 (for end-of-day storage)
         if (now.getHours() === 23 && now.getMinutes() === 59) {
             await storeEndOfDay();
         }
-    }, 60 * 1000);
+    }, 60 * 1000); // Every 1 minute
 }
 
 // -----------------------
