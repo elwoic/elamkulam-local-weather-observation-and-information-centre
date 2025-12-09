@@ -4,6 +4,7 @@
 ------------------------------ */
 
 // 🚨 WORKAROUND: Accessing global variables (assumes imd-marquee.js is loaded first in HTML)
+// Use the exact variable names that would be set by the external script.
 const imdAlerts = globalThis.alerts || {}; 
 const imdLastUpdated = globalThis.lastUpdated || "വിവരം ലഭ്യമല്ല"; 
 
@@ -31,6 +32,15 @@ const db = getDatabase(app);
 
 /* DOM target */
 const output = document.getElementById("elamkulamForecastText");
+
+// 🆕 NEW UTILITY FUNCTION: Cleans up strings and numbers by removing extra quotes
+function cleanValue(value) {
+    if (typeof value === 'string') {
+        // Strip leading/trailing double quotes
+        return value.replace(/^"|"$/g, '');
+    }
+    return value;
+}
 
 /* ⏳ Convert IMD alert code to Malayalam message  */
 function interpretIMD(code) {
@@ -74,14 +84,14 @@ async function generateReport() {
     /* Firebase reports */
     let communityText = await fetchCommunityReports();
 
-    /* Weather values */
-    let temp = openw?.main?.temp;
-    let feels = openw?.main?.feels_like;
-    let humidity = openw?.main?.humidity;
-    let wind = openw?.wind?.speed;
-    let rain = openw?.weather?.[0]?.description;
-    let rainProb = openm?.hourly?.precipitation_probability?.[0] || 0; 
-    let uv = openm?.hourly?.uv_index?.[0] || 0;
+    /* Weather values - APPLYING cleanValue() */
+    let temp = cleanValue(openw?.main?.temp);
+    let feels = cleanValue(openw?.main?.feels_like);
+    let humidity = cleanValue(openw?.main?.humidity);
+    let wind = cleanValue(openw?.wind?.speed);
+    let rain = cleanValue(openw?.weather?.[0]?.description);
+    let rainProb = cleanValue(openm?.hourly?.precipitation_probability?.[0] || 0); 
+    let uv = cleanValue(openm?.hourly?.uv_index?.[0] || 0);
 
     /* 📝 REVISED FORMAL MALAYALAM FORECAST ESSAY */
     const now = new Date();
@@ -89,7 +99,6 @@ async function generateReport() {
       day: "numeric", month: "long", year: "numeric"
     });
     
-    // Determine the current time period for the opening statement
     const hour = now.getHours();
     let timePeriod;
     if (hour >= 5 && hour < 12) {
@@ -104,20 +113,20 @@ async function generateReport() {
 ## 🔸 എളംകുളം കാലാവസ്ഥാ റിപ്പോർട്ട്: ${formattedDate}
 
 **${timePeriod} രേഖപ്പെടുത്തിയ പ്രധാന വിവരങ്ങൾ:**
-* **താപനില:** ${temp}°C ആണ് രേഖപ്പെടുത്തിയിരിക്കുന്നത്. (ശരീരത്തിൽ അനുഭവപ്പെടുന്നത്: ${feels}°C)
-* **ആർദ്രത (Humidity):** ${humidity}%
-* **കാറ്റ് (Wind Speed):** ${wind} മീറ്റർ/സെക്കൻഡ്.
+* **താപനില:** **${temp}°C** ആണ് രേഖപ്പെടുത്തിയിരിക്കുന്നത്. (ശരീരത്തിൽ അനുഭവപ്പെടുന്നത്: ${feels}°C)
+* **ആർദ്രത (Humidity):** **${humidity}%**
+* **കാറ്റ് (Wind Speed):** **${wind} മീറ്റർ/സെക്കൻഡ്.**
 * **അന്തരീക്ഷ സ്ഥിതി:** നിലവിൽ "${rain}" തരത്തിലുള്ള അന്തരീക്ഷമാണ് ഇവിടെ പ്രവചിക്കപ്പെടുന്നത്.
 
 **🔸 മഴ സാധ്യതയും UV സൂചികയും**
-* **മഴയ്ക്കുള്ള സാധ്യത:** ${rainProb}% ആണ്.
-* **UV വികിരണ സൂചിക:** ${uv}
+* **മഴയ്ക്കുള്ള സാധ്യത:** **${rainProb}%** ആണ്.
+* **UV വികിരണ സൂചിക:** **${uv}**
 
 ---
 
 ## 🟡 IMD മുന്നറിയിപ്പും ജാഗ്രതയും
 ${imdMalayalam}
-അവസാനമായി പുതുക്കിയത്: ${imdLastUpdated}
+അവസാനമായി **പുതുക്കിയത്:** ${imdLastUpdated}
 
 ---
 
@@ -135,6 +144,7 @@ ${
 അടുത്ത മണിക്കൂറുകളിൽ കാലാവസ്ഥയിൽ മാറ്റം വരാൻ സാധ്യതയുണ്ട്. എല്ലാ പൗരന്മാരും ഔദ്യോഗിക മുന്നറിയിപ്പുകൾക്കായി ശ്രദ്ധിക്കുകയും, ആവശ്യമായ മുൻകരുതലുകൾ സ്വീകരിക്കുകയും **ജാഗ്രത പാലിക്കുകയും** ചെയ്യണമെന്ന് അറിയിക്കുന്നു.
     `.trim();
 
+    // The output is now formatted using Markdown headings (##) for structure
     output.innerHTML = essay.replace(/\n\n+/g, "<br><br>");
 
   } catch (err) {
