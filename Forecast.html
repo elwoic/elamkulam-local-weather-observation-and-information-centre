@@ -1108,16 +1108,11 @@ updateActivityRecommendations();
 setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
  
-<section id="elamkulam-forecast-section" class="p-4 rounded-lg bg-white shadow-md">
-  <h2 class="text-xl font-semibold mb-2 text-[#003a63]">ഇലങ്കുളം കാലാവസ്ഥ റിപ്പോർട്ട്</h2>
-  <p id="elamkulamForecastText" class="text-[17px] leading-[29px] text-gray-700">
-    കാലാവസ്ഥ റിപ്പോർട്ട് ലോഡുചെയ്യുന്നു...
-  </p>
-</section>
+<section id="automatic-weather-report" class="bg-white p-4 rounded-xl shadow"></section>
 
 <script src="./imd-marquee.js"></script>
+<script src="./auto-weather-report.js"></script>
 
-<script type="module" src="./auto-weather-report.js"></script>
  
 <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
