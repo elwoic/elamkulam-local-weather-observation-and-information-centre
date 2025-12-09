@@ -84,3 +84,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.error("Marquee elements not found in the DOM.");
     }
 });
+export { imdAlerts, imdLastUpdated };
