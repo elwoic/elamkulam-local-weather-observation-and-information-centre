@@ -5,8 +5,8 @@
 
 // 🚨 WORKAROUND: Accessing global variables (assumes imd-marquee.js is loaded first in HTML)
 // Use the exact variable names that would be set by the external script.
-const imdAlerts = globalThis.alerts || {}; 
-const imdLastUpdated = globalThis.lastUpdated || "വിവരം ലഭ്യമല്ല"; 
+const imdAlerts = globalThis.imdAlerts || {};
+const imdLastUpdated = globalThis.imdLastUpdated || "വിവരം ലഭ്യമല്ല";
 
 
 /* OpenWeather API Details */
