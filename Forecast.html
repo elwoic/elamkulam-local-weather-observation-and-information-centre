@@ -1108,22 +1108,24 @@ updateActivityRecommendations();
 setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
  
+
 <section id="forecastSection" style="max-width: 900px; margin: auto; padding: 20px; font-family: 'Noto Sans Malayalam', sans-serif; line-height: 1.8;">
-  <h2 style="text-align: center; font-size: 26px; font-weight: bold; color: #004a80; margin-bottom: 15px;">
-    🔵 ഇന്നത്തെ കാലാവസ്ഥാ റിപ്പോര്‍ട്ട് — എലംകുളം
-  </h2>
+    <h2 style="text-align: center; font-size: 26px; font-weight: bold; color: #004a80; margin-bottom: 15px;">
+        🔵 ഇന്നത്തെ കാലാവസ്ഥാ റിപ്പോര്‍ട്ട് — എലംകുളം
+    </h2>
 
-  <div id="forecastReport"
-       style="background: #ffffff; border: 2px solid #004a80; border-radius: 10px; padding: 20px; min-height: 280px; font-size: 19px; color: #222;">
-    ⏳ ലോഡിങ്... ദയവായി കാത്തിരിക്കുക...
-  </div>
+    <div id="forecastReport"
+        style="background: #ffffff; border: 2px solid #004a80; border-radius: 10px; padding: 20px; min-height: 280px; font-size: 19px; color: #222; white-space: pre-wrap;">
+        ⏳ ലോഡിങ്... ദയവായി കാത്തിരിക്കുക...
+    </div>
 
-  <p id="forecastUpdatedTime"
-     style="text-align: center; margin-top: 15px; font-size: 14px; color: #777;">
-  </p>
+    <p id="forecastUpdatedTime"
+        style="text-align: center; margin-top: 15px; font-size: 14px; color: #777;">
+    </p>
 </section>
 
- <script type="module">
+<script type="module">
+// This script is correct and handles reading the 'today_report' node.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
@@ -1146,6 +1148,7 @@ const updatedTimeLabel = document.getElementById("forecastUpdatedTime");
 // Fetch report text
 onValue(ref(db, "today_report/text"), (snapshot) => {
     if(snapshot.exists()){
+        // Use <br> for newlines from the stored text
         reportContainer.innerHTML = snapshot.val().replace(/\n/g, "<br>");
     } else {
         reportContainer.innerHTML = "⚠ ഇന്നത്തെ കാലാവസ്ഥാ റിപ്പോർട്ട് ഇതുവരെ പ്രസിദ്ധീകരിച്ചിട്ടില്ല.";
@@ -1165,7 +1168,6 @@ onValue(ref(db, "today_report/timestamp"), (snapshot) => {
     }
 });
 </script>
-
 
  
 <div style="text-align: center; margin-top: 14px;">
