@@ -1108,66 +1108,16 @@ updateActivityRecommendations();
 setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
  
-
-<section id="forecastSection" style="max-width: 900px; margin: auto; padding: 20px; font-family: 'Noto Sans Malayalam', sans-serif; line-height: 1.8;">
-    <h2 style="text-align: center; font-size: 26px; font-weight: bold; color: #004a80; margin-bottom: 15px;">
-        🔵 ഇന്നത്തെ കാലാവസ്ഥാ റിപ്പോര്‍ട്ട് — എലംകുളം
-    </h2>
-
-    <div id="forecastReport"
-        style="background: #ffffff; border: 2px solid #004a80; border-radius: 10px; padding: 20px; min-height: 280px; font-size: 19px; color: #222; white-space: pre-wrap;">
-        ⏳ ലോഡിങ്... ദയവായി കാത്തിരിക്കുക...
-    </div>
-
-    <p id="forecastUpdatedTime"
-        style="text-align: center; margin-top: 15px; font-size: 14px; color: #777;">
-    </p>
+<section id="elamkulam-forecast-section" class="p-4 rounded-lg bg-white shadow-md">
+  <h2 class="text-xl font-semibold mb-2 text-[#003a63]">ഇലങ്കുളം കാലാവസ്ഥ റിപ്പോർട്ട്</h2>
+  <p id="elamkulamForecastText" class="text-[17px] leading-[29px] text-gray-700">
+    കാലാവസ്ഥ റിപ്പോർട്ട് ലോഡുചെയ്യുന്നു...
+  </p>
 </section>
 
-<script type="module">
-// This script is correct and handles reading the 'today_report' node.
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+<!-- Auto Weather Report Script -->
+<script type="module" src="./auto-weather-report.js"></script>
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
-    authDomain: "weather-report-66bdf.firebaseapp.com",
-    databaseURL: "https://weather-report-66bdf-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "weather-report-66bdf",
-    storageBucket: "weather-report-66bdf.firebasestorage.app",
-    messagingSenderId: "599939260562",
-    appId: "1:599939260562:web:a0fbf532279a191559864b"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const reportContainer = document.getElementById("forecastReport");
-const updatedTimeLabel = document.getElementById("forecastUpdatedTime");
-
-// Fetch report text
-onValue(ref(db, "today_report/text"), (snapshot) => {
-    if(snapshot.exists()){
-        // Use <br> for newlines from the stored text
-        reportContainer.innerHTML = snapshot.val().replace(/\n/g, "<br>");
-    } else {
-        reportContainer.innerHTML = "⚠ ഇന്നത്തെ കാലാവസ്ഥാ റിപ്പോർട്ട് ഇതുവരെ പ്രസിദ്ധീകരിച്ചിട്ടില്ല.";
-    }
-});
-
-// Fetch report last update time
-onValue(ref(db, "today_report/timestamp"), (snapshot) => {
-    if(snapshot.exists()){
-        const formattedTime = new Date(snapshot.val()).toLocaleString("ml-IN", {
-            hour: "2-digit", minute: "2-digit", year: "numeric",
-            month: "2-digit", day: "2-digit"
-        });
-        updatedTimeLabel.textContent = "🕒 അവസാനമായി പുതുക്കിയത്: " + formattedTime;
-    } else {
-        updatedTimeLabel.textContent = "";
-    }
-});
-</script>
 
  
 <div style="text-align: center; margin-top: 14px;">
