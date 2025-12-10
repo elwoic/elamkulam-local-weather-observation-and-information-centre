@@ -1109,7 +1109,12 @@ setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
  
 <div id="elamkulam-forecast-report"></div>
-
+<div class="weather-reports-container">
+    <section id="grantedSection" class="container mx-auto px-4 py-8">
+        <h2 class="text-xl font-bold text-blue-800 mb-4">
+            🌦 Community Weather Reports
+        </h2>
+        <div id="grantedReports" class="space-y-4"></div>
  
 <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
@@ -1119,5 +1124,105 @@ setInterval(updateActivityRecommendations, 10 * 60 * 1000);
     </a>
 </div>
 <script type="module" src="elamkulam-forecast.js"></script>
+     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // WARNING: Replace with your actual Firebase configuration in a real application, 
+        // and handle API keys securely.
+        const firebaseConfig = {
+            apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+            authDomain: "report-5d8c0.firebaseapp.com",
+            databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "report-5d8c0",
+            storageBucket: "report-5d8c0.firebasestorage.app",
+            messagingSenderId: "831456060916",
+            appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+        };
+
+        const DB_PATH = "weather_reports";
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const sec = document.getElementById("grantedSection");
+        const list = document.getElementById("grantedReports");
+
+        onValue(ref(db, DB_PATH), (snapshot) => {
+            const data = snapshot.val();
+            list.innerHTML = "";
+
+            if (!data) {
+                sec.classList.add("hidden");
+                return;
+            }
+
+            // Calculate the current time once, in milliseconds
+            const currentTime = Date.now(); 
+
+            const reports = Object.values(data)
+                .filter(r => 
+                    r.granted === "yes" && // 1. Must be explicitly granted
+                    (r.expirationTimestamp || Infinity) > currentTime // 2. Must not be expired
+                ) 
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // Sort by submission time
+
+            if (reports.length === 0) {
+                sec.classList.add("hidden");
+                return;
+            }
+
+            sec.classList.remove("hidden");
+
+            reports.forEach(r => {
+                const d = r.timestamp ? new Date(r.timestamp).toLocaleString() : "N/A";
+                const card = document.createElement("div");
+
+                // Card Styling: Clean white box with a distinct shadow and rounded corners
+                card.className = "bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-xl"; 
+
+                // Determine the name to display based on user permission
+                const reporterName = r.show_name === "yes" ? r.name : "Anonymous";
+                
+                // Determine the type icon (using simple block characters for compatibility)
+                const typeIcon = (r.report_type || '').includes('Rain') ? '🌧' : 
+                                (r.report_type || '').includes('Storm') ? '🌪' : 
+                                (r.report_type || '').includes('Flood') ? '🌊' : 
+                                '📌'; // Default icon
+
+                card.innerHTML = `
+                    
+                        <h3 class="text-lg font-bold">${typeIcon} ${r.report_type}</h3>
+                        <span class="text-sm opacity-80">സമയം  ${r.time}</span>
+                  
+                    
+                    
+                        
+                        <div class="grid grid-cols-2 gap-y-2 mb-4 text-sm border-b pb-4 border-gray-100">
+                            
+                                
+                                <span class="font-medium text-gray-700">${r.location}</span>എന്ന സ്ഥലത്ത്  നിന്നും 
+                            
+                          
+                                <strong class="text-blue-700"></strong> 
+                                <span class="font-medium text-gray-700">${d.split(',')[0]}</span>എന്ന  ദിവസം സബ്മിറ്റ് ചെയ്ത റിപ്പോർട് 
+                        <h4 class="text-md font-semibold text-gray-800 mb-2">സൂചിപ്പിക്കുന്നു:</h4>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 mb-4">
+                            <p class="text-gray-700 whitespace-pre-wrap">${r.observation}</p>
+                      
+                        
+                        ${r.photo_url && r.photo_url !== "N/A" 
+                            ? `<div class="mb-4">
+                                    <img src="${r.photo_url}" class="rounded-lg w-full max-h-72 object-cover shadow-inner">
+                               </div>`
+                            : ""
+                        }
+
+                        
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        });
+    </script>
 </body>
 </html>
