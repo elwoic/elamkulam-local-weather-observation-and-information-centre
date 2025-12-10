@@ -1598,6 +1598,26 @@ closeBtn.addEventListener("click", () => {
     panel.classList.add("translate-x-full");
     panel.classList.remove("translate-x-0");
 });
+// ---------- ADD SWIPE DETECTION HERE ----------
+let touchStartX = 0;
+let touchEndX = 0;
+
+panel.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+panel.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX;
+    if (swipeDistance > 50) { // left → right swipe
+        panel.classList.add("translate-x-full");
+        panel.classList.remove("translate-x-0");
+    }
+}
 
 </script>
 
