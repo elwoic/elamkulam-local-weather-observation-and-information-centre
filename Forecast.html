@@ -1156,9 +1156,9 @@ onValue(ref(db, DB_PATH), (snapshot) => {
     }
 
     const currentTime = Date.now(); 
-    const reports = Object.values(data)
-        .filter(r => r.granted === "yes" && (r.expirationTimestamp || Infinity) > currentTime) 
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  const reports = Object.values(data)
+    .filter(r => r.granted_site2 === "yes" && (r.expirationTimestamp || Infinity) > currentTime)
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     if (reports.length === 0) {
         sec.classList.add("hidden");
