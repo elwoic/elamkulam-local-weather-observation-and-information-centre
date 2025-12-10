@@ -102,78 +102,154 @@ function startListening() {
   });
 }
 
+// ... (Firebase imports and config remain the same) ...
+
+// ... (setStatus, startListening functions remain the same) ...
+
 function render(list) {
-  messagesList.innerHTML = "";
-  list.forEach(item => {
-    const d = item.timestamp ? new Date(item.timestamp).toLocaleString() : "N/A";
-    const showOnSite = item.granted === "yes" ? true : false;
+    messagesList.innerHTML = "";
+    list.forEach(item => {
+        const d = item.timestamp ? new Date(item.timestamp).toLocaleString() : "N/A";
+        
+        // Use new fields for status checks
+        const granted1 = item.granted_site1 === "yes";
+        const granted2 = item.granted_site2 === "yes";
+        
+        // Check user's permission to display the report on the site
+        const userAllowsReportDisplay = item.show_on_site === "yes";
 
-    const card = document.createElement("div");
-    card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-red-600";
-    card.innerHTML = `
-      <div class="flex flex-col gap-2">
-        <h3 class="text-lg font-semibold text-red-700">${escape(item.report_type)} Report</h3>
-        <span class="text-xs text-slate-500">Submitted: ${d} | Event Time: <input class="input-edit" value="${escape(item.time)}" id="time-${item.key}"></span>
-        <p class="text-sm text-slate-600 mt-2"><strong>Location:</strong> ${escape(item.location)}</p>
-        <p class="text-sm text-slate-600"><strong>Reporter:</strong> <input class="input-edit" value="${escape(item.name)}" id="name-${item.key}"></p>
-        <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium"><textarea class="input-edit" id="obs-${item.key}" rows="3">${escape(item.observation)}</textarea></p>
-        <p class="text-sm mt-2">
-    <strong>User Permission:</strong> 
-    <span class="font-semibold ${item.show_on_site === 'yes' ? 'text-green-600' : 'text-red-600'}">
-        Show Report: ${item.show_on_site === 'yes' ? '✅ Yes' : '❌ No'}
-    </span>
-    <span class="ml-4 font-semibold ${item.show_name === 'yes' ? 'text-green-600' : 'text-red-600'}">
-        Show Name: ${item.show_name === 'yes' ? '✅ Yes' : '❌ No'}
-    </span>
-</p>
-        ${item.photo_url && item.photo_url!=="N/A" ? `<a href="${escape(item.photo_url)}" target="_blank"><img src="${escape(item.photo_url)}" class="report-photo-thumb"></a>` : ''}
-        <div class="flex gap-2 mt-2">
-          ${!showOnSite ? `<button class="grant-btn" id="grant-${item.key}">Grant</button>` : `<span class="text-green-600 font-semibold">Granted</span>`}
-          <button class="revoke-btn" id="revoke-${item.key}">Revoke</button>
-          <button class="delete-btn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700" id="del-${item.key}">Delete</button>
-        </div>
-      </div>
-    `;
+        // Calculate the current expiration status for display
+        const expirationTime = item.expirationTimestamp ? new Date(item.expirationTimestamp).toLocaleString() : 'Never Set';
+        const isExpired = item.expirationTimestamp && item.expirationTimestamp < Date.now();
+        const expirationText = isExpired ? 
+            `<span class="text-red-600 font-semibold">Expired: ${expirationTime}</span>` : 
+            `Expires: ${expirationTime}`;
 
-    messagesList.appendChild(card);
+        const card = document.createElement("div");
+        card.className = `bg-white p-4 md:p-6 rounded-lg shadow border-l-4 ${userAllowsReportDisplay ? 'border-blue-600' : 'border-red-600'}`;
 
-    // GRANT
-    if (!showOnSite) {
-        // Helper function to get current edited values from the card's inputs
+        card.innerHTML = `
+          <div class="flex flex-col gap-2">
+            <h3 class="text-lg font-semibold text-red-700">${escape(item.report_type)} Report</h3>
+            <span class="text-xs text-slate-500">Submitted: ${d} | Event Time: <input class="input-edit" value="${escape(item.time)}" id="time-${item.key}"></span>
+            <p class="text-sm text-slate-600 mt-2"><strong>Location:</strong> ${escape(item.location)}</p>
+            <p class="text-sm text-slate-600"><strong>Reporter:</strong> <input class="input-edit" value="${escape(item.name)}" id="name-${item.key}"></p>
+            <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium"><textarea class="input-edit" id="obs-${item.key}" rows="3">${escape(item.observation)}</textarea></p>
+            
+            <div class="text-sm mt-2 flex justify-between items-center flex-wrap">
+                <div>
+                    <strong>User Permission:</strong> 
+                    <span class="font-semibold ${userAllowsReportDisplay ? 'text-green-600' : 'text-red-600'}">
+                        Show Report: ${userAllowsReportDisplay ? '✅ Yes' : '❌ No'}
+                    </span>
+                    <span class="ml-4 font-semibold ${item.show_name === 'yes' ? 'text-green-600' : 'text-red-600'}">
+                        Show Name: ${item.show_name === 'yes' ? '✅ Yes' : '❌ No'}
+                    </span>
+                </div>
+                
+                <div class="mt-2 md:mt-0">
+                    <strong class="mr-2">Duration (Hours):</strong> 
+                    <input type="number" min="1" value="24" class="input-edit w-20 inline-block p-1" id="duration-${item.key}">
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-500">${expirationText}</p>
+
+            ${item.photo_url && item.photo_url!=="N/A" ? `<a href="${escape(item.photo_url)}" target="_blank"><img src="${escape(item.photo_url)}" class="report-photo-thumb"></a>` : ''}
+            
+            <div class="flex flex-wrap gap-3 mt-2 items-center">
+                <span class="text-xs font-semibold p-1 rounded ${granted1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+                    Site 1: ${granted1 ? '✅ Granted' : '❌ Not Granted'}
+                </span>
+                <span class="text-xs font-semibold p-1 rounded ${granted2 ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}">
+                    Site 2: ${granted2 ? '✅ Granted' : '❌ Not Granted'}
+                </span>
+            </div>
+
+            <div id="btn-container-${item.key}" class="flex gap-2 mt-3 flex-wrap">
+                </div>
+          </div>
+        `;
+
+        messagesList.appendChild(card);
+
+        // Helper function remains the same
         const getEditedValues = (key) => ({
             time: document.getElementById(`time-${key}`).value,
             name: document.getElementById(`name-${key}`).value,
             observation: document.getElementById(`obs-${key}`).value,
         });
-
-        document.getElementById(`grant-${item.key}`).onclick = async () => {
-            // 1. Get the current edited values from the input fields
-            const updatedData = getEditedValues(item.key);
-
-            // 2. Add the 'granted: "yes"' status
-            updatedData.granted = "yes";
+        
+        // --- UPDATED: Toggle Button Creator Function ---
+        const createGrantRevokeButton = (siteNum, isGranted, key, color) => {
+            const btn = document.createElement('button');
+            const grantField = `granted_site${siteNum}`;
             
-            // 3. Perform a single update to save all edits AND grant status
-            await update(ref(db, DB_PATH + "/" + item.key), updatedData);
-            
-            setStatus("Report granted and edits saved ✔", "success");
+            if (isGranted) {
+                // If granted, show Revoke button
+                btn.textContent = `Revoke Site ${siteNum}`;
+                btn.className = 'revoke-btn'; // Uses default revoke color
+                btn.onclick = async () => {
+                    // When revoking, remove the specific grant field but leave expiration
+                    await update(ref(db, DB_PATH + "/" + key), { [grantField]: "no" });
+                    setStatus(`Report revoked from Site ${siteNum} ❌`, "info");
+                };
+            } else {
+                // If not granted, show Grant button
+                btn.textContent = `Grant Site ${siteNum}`;
+                btn.className = `grant-btn ${color}`; 
+                btn.onclick = async () => {
+                    const updatedData = getEditedValues(key);
+                    const durationInput = document.getElementById(`duration-${key}`).value;
+                    const durationMs = parseInt(durationInput) * 60 * 60 * 1000; // Convert hours to milliseconds
+                    
+                    updatedData[grantField] = "yes"; 
+                    updatedData.expirationTimestamp = Date.now() + durationMs; // Calculate expiration
+                    
+                    // Enforce Anonymous if user requested 'Show Name: No'
+                    if (item.show_name !== 'yes') {
+                         updatedData.name = "Anonymous";
+                    }
+                    
+                    await update(ref(db, DB_PATH + "/" + key), updatedData);
+                    setStatus(`Report granted to Site ${siteNum} (Expires in ${durationInput}h) and edits saved ✔`, "success");
+                };
+            }
+            return btn;
         };
-    }
+        
+        // --- DELETE HANDLER (Moved into a reusable function) ---
+        const createDeleteButton = (key) => {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = "delete-btn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700";
+            deleteBtn.textContent = "Delete";
+            deleteBtn.onclick = async () => {
+                if (confirm("Permanently delete this report?")) {
+                  await remove(ref(db, DB_PATH + "/" + key));
+                  setStatus("Report deleted.", "success");
+                }
+            };
+            return deleteBtn;
+        };
 
-    // REVOKE
-    document.getElementById(`revoke-${item.key}`).onclick = async () => {
-      await update(ref(db, DB_PATH + "/" + item.key), { granted: "no" });
-      setStatus("Report revoked ❌", "info");
-    };
 
-    // DELETE
-    document.getElementById(`del-${item.key}`).onclick = async () => {
-      if (confirm("Permanently delete this report?")) {
-        await remove(ref(db, DB_PATH + "/" + item.key));
-        setStatus("Report deleted.", "success");
-      }
-    };
-  });
+        const btnContainer = document.getElementById(`btn-container-${item.key}`);
+        
+      if (!userAllowsReportDisplay) {
+    btnContainer.innerHTML = `
+        <div class="p-3 bg-red-50 text-red-700 rounded-md font-medium text-sm w-full">
+            ❌ User denied permission. This report cannot be displayed on the website.
+        </div>
+    `;
+    btnContainer.appendChild(createDeleteButton(item.key));
+    return; // STOP — do not show any grant buttons
+}
+
+btnContainer.appendChild(createGrantRevokeButton(1, granted1, item.key, ''));
+btnContainer.appendChild(createGrantRevokeButton(2, granted2, item.key, '!bg-indigo-600 hover:!bg-indigo-700'));
+btnContainer.appendChild(createDeleteButton(item.key));
+
+    });
 }
 
 function escape(s) {
