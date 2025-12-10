@@ -1107,7 +1107,7 @@ async function updateActivityRecommendations(){
 updateActivityRecommendations();
 setInterval(updateActivityRecommendations, 10 * 60 * 1000);
 </script>
- 
+ <section>
 <div id="elamkulam-forecast-report"></div>
 
 <div id="grantedSection" class="container mx-auto px-4 py-8">
@@ -1116,6 +1116,7 @@ setInterval(updateActivityRecommendations, 10 * 60 * 1000);
     </h2>
     <div id="grantedReports" class="space-y-4"></div>
 </div>
+ </section>
  <div style="text-align: center; margin-top: 14px;">
     <a href="report.html" 
        style="background-color: #0077ff; color: white; padding: 8px 16px; border-radius: 6px; 
@@ -1168,7 +1169,7 @@ onValue(ref(db, DB_PATH), (snapshot) => {
 
     reports.forEach(r => {
         const line = document.createElement("div");
-        line.className = "p-4 bg-white border-l-4 border-blue-500 shadow-sm rounded-md mb-2 text-gray-800 leading-relaxed";
+        line.className = "p-4 bg-white border-l-4 border--500 shadow-sm -md mb-2 text-gray-800 leading-relaxed";
 
         // Constructing the Malayalam sentence template
         line.innerHTML = `
