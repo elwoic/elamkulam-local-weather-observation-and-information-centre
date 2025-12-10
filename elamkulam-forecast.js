@@ -220,7 +220,7 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
     const trendWord = trendVal > 0.15 ? "ഉയരുന്ന പ്രവണത" : (trendVal < -0.15 ? "താഴ്ന്നുവരുന്ന പ്രവണത" : "സ്ഥിരം പ്രവണത");
     s.push(`കഴിഞ്ഞ ${computed.trendHours || 12} മണിക്കൂറുകളിൽ ശരാശരി മാറ്റത്തിന്റെ കണക്കനുസരിച്ച് താപനില ${trendWord} ആയി കാണപ്പെടുന്നു (ശരാശരി  ${toFixedSafe(trendVal,2)}°C/മണിക്കൂർ).`);
   } else {
-    s.push("നിലവിൽ താപനിലയുടെ സമഗ്ര പ്രവണത കണക്കാക്കാനുള്ള സാഹചര്യം ലഭ്യമല്ലെന്ന് കാണിക്കുന്നു.");
+    s.push("നിലവിൽ താപനിലയുടെ സമഗ്ര വിവരണം തയ്യാറാക്കാനുള്ള സാഹചര്യം ലഭ്യമല്ലെന്ന് കാണിക്കുന്നു.");
   }
 
   // Paragraph 6: seasonal context (2-3 sentences)
