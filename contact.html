@@ -385,6 +385,10 @@
         <span class="material-icons">expand_more</span>
 
     </button>
+<button onclick="checkContactAdminPass()"
+        class="w-full bg-green-600 text-white py-1.5 rounded-md text-sm hover:bg-green-700 transition mt-2">
+    Contact Messages
+</button>
 
 
     <!-- Dropdown panel -->
@@ -425,7 +429,15 @@ function checkAdminPass() {
         alert("Incorrect password!");
 
     }
+}
+function checkContactAdminPass() {
+    const password = prompt("Enter admin password:");
 
+    if (password === "04933") {
+        window.location.href = "contact-admin.html";  // <--- Change this to your admin page
+    } else {
+        alert("Incorrect password!");
+    }
 }
 
 
