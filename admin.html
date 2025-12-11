@@ -6,36 +6,6 @@
   <title>ELWOIC — Admin Messages</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } 
-    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
-    authDomain: "elwoic.firebaseapp.com",
-    databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "elwoic",
-    storageBucket: "elwoic.firebasestorage.app",
-    messagingSenderId: "597873791800",
-    appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd",
-    measurementId: "G-0KZS7RPGKK"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  onAuthStateChanged(auth, (user) => {
-    if (!user) location.href = "login.html";
-  });
-
-  window.logout = () => {
-    signOut(auth).then(() => location.href = "login.html");
-  }
-</script>
-
-
 <body class="bg-slate-50 min-h-screen font-sans">
 
   <!-- HEADER -->
@@ -45,45 +15,41 @@
         <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Messages</h1>
         <p class="text-xs opacity-80">Realtime message viewer</p>
       </div>
-
       <div class="space-x-2">
         <button id="exportBtn" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm hidden">
           Export CSV
         </button>
         <span id="countBadge" class="inline-block bg-white text-blue-900 px-3 py-1 rounded hidden"></span>
+        <button onclick="logout()" class="px-3 py-2 bg-red-600 text-white rounded shadow-sm">Logout</button>
       </div>
     </div>
   </header>
 
   <!-- MAIN -->
   <main class="container mx-auto px-4 py-8">
-
-    <div id="status"
-      class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">
+    <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">
       Initializing...
     </div>
 
     <div id="controls" class="mb-4 hidden">
-      <input id="filterInput" placeholder="Filter by name/email/subject..."
-        class="p-2 border rounded w-full md:w-1/2" />
+      <input id="filterInput" placeholder="Filter by name/email/subject..." class="p-2 border rounded w-full md:w-1/2" />
     </div>
 
     <div id="messagesList" class="space-y-4"></div>
 
-    <div id="empty"
-      class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
+    <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
       <p class="text-gray-600">No messages yet.</p>
     </div>
-
   </main>
 
   <!-- FOOTER -->
   <footer class="text-center text-sm text-gray-500 py-6">
-    Admin panel — protect this page. Use Firebase Auth for stronger security.
+    Admin panel — protected by Firebase Auth.
   </footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
 //---------------------------- Firebase Config ----------------------------
@@ -100,9 +66,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 
-//---------------------------- Select Elements ----------------------------
+// DOM elements
 const statusEl = document.getElementById('status');
 const messagesList = document.getElementById('messagesList');
 const emptyEl = document.getElementById('empty');
@@ -111,22 +78,22 @@ const countBadge = document.getElementById('countBadge');
 const controls = document.getElementById('controls');
 const filterInput = document.getElementById('filterInput');
 
-//---------------------------- Admin Passphrase ----------------------------
-const ADMIN_PASSPHRASE = "elwoic811"; 
-let allowed = false;
-const entered = prompt("Enter admin passphrase:");
-if (entered === ADMIN_PASSPHRASE) {
-  allowed = true;
-  controls.classList.remove("hidden");
-}
+let currentData = [];
 
-if (!allowed) {
-  statusEl.textContent = "Access denied — wrong passphrase. Refresh to try again.";
-  statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
-  messagesList.style.display = "none";
-} else {
-  startListening();  // Only start after passphrase is correct
-}
+//---------------------------- Auth Check ----------------------------
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    location.href = "login.html"; // redirect if not logged in
+  } else {
+    controls.classList.remove("hidden");
+    startListening();
+  }
+});
+
+//---------------------------- Logout ----------------------------
+window.logout = () => {
+  signOut(auth).then(() => location.href="login.html");
+};
 
 //---------------------------- Status Helper ----------------------------
 function setStatus(text, type = "info") {
@@ -137,9 +104,7 @@ function setStatus(text, type = "info") {
   if (type === "error") statusEl.classList.add("bg-red-100", "text-red-800");
 }
 
-let currentData = [];
-
-//---------------------------- Start Listener ----------------------------
+//---------------------------- Firebase Listener ----------------------------
 function startListening() {
   setStatus("Connecting to Firebase...");
   const msgsRef = ref(db, "messages");
@@ -157,9 +122,8 @@ function startListening() {
     }
 
     currentData = Object.entries(data).map(([key, v]) => ({ key, ...v }));
-    currentData.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    currentData.sort((a,b) => (b.timestamp||0)-(a.timestamp||0));
     render(currentData);
-
     setStatus(`Loaded ${currentData.length} message(s).`, "success");
     exportBtn.classList.remove("hidden");
     countBadge.classList.remove("hidden");
@@ -211,10 +175,10 @@ function render(list) {
 filterInput.addEventListener("input", () => {
   const q = filterInput.value.toLowerCase();
   const filtered = currentData.filter(m =>
-    (m.name || "").toLowerCase().includes(q) ||
-    (m.email || "").toLowerCase().includes(q) ||
-    (m.subject || "").toLowerCase().includes(q) ||
-    (m.message || "").toLowerCase().includes(q)
+    (m.name||"").toLowerCase().includes(q) ||
+    (m.email||"").toLowerCase().includes(q) ||
+    (m.subject||"").toLowerCase().includes(q) ||
+    (m.message||"").toLowerCase().includes(q)
   );
   render(filtered);
 });
@@ -225,12 +189,10 @@ exportBtn.onclick = () => {
     alert("No messages to export.");
     return;
   }
-
   const header = "key,timestamp,name,email,subject,message\n";
-  const rows = currentData.map(x =>
-    `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.subject}","${x.message.replace(/"/g, '""')}"`
+  const rows = currentData.map(x => 
+    `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.subject}","${x.message.replace(/"/g,'""')}"`
   ).join("\n");
-
   const blob = new Blob([header + rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -238,15 +200,14 @@ exportBtn.onclick = () => {
   a.download = "elwoic_messages.csv";
   a.click();
   URL.revokeObjectURL(url);
-};
+}
 
 //---------------------------- Escape HTML ----------------------------
 function escape(s) {
   if (!s) return "";
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 </script>
 
- 
 </body>
 </html>
