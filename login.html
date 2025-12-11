@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
+      authDomain: "elwoic.firebaseapp.com",
+      databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "elwoic",
+      storageBucket: "elwoic.firebasestorage.app",
+      messagingSenderId: "597873791800",
+      appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd",
+      measurementId: "G-0KZS7RPGKK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.login = function() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => location.href = "admin.html")
+        .catch(err => alert("Login failed: " + err.message));
+    };
+  </script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="p-8 bg-white shadow-xl rounded-xl w-80">
+    <h2 class="text-xl font-bold mb-4 text-center">Admin Login</h2>
+
+    <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3">
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
+
+    <button onclick="login()" 
+      class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-800">
+      Login
+    </button>
+  </div>
+</body>
+</html>
