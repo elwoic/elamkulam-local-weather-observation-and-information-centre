@@ -28,7 +28,17 @@
   </div>
 </header>
 
-<main class="container mx-auto px-4 py-8">
+<div id="loginContainer" class="min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
+    <h2 class="text-xl font-bold mb-4">Admin Login</h2>
+    <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-3">
+    <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-4">
+    <button id="loginBtn" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Login</button>
+    <p id="loginMessage" class="text-red-600 mt-2 hidden"></p>
+  </div>
+</div>
+
+<main id="reportContainer" class="hidden">
   <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Initializing...</div>
   <div id="messagesList" class="space-y-4"></div>
   <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
@@ -37,6 +47,7 @@
 </main>
 
 <script type="module">
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -45,33 +56,60 @@ const firebaseConfig = {
   authDomain: "report-5d8c0.firebaseapp.com",
   databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.appspot.com",
+  storageBucket: "report-5d8c0.firebasestorage.app",
   messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
+  measurementId: "G-5MGMM1DYDM"
 };
-
-const VALID_PASSPHRASES = ["04933", "elwoic811", "elwoic822"];
-const DB_PATH = "weather_reports";
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
-const statusEl = document.getElementById('status');
-const messagesList = document.getElementById('messagesList');
-const emptyEl = document.getElementById('empty');
+// 2️⃣ **Add these lines here**
+const loginContainer = document.getElementById("loginContainer");
+const reportContainer = document.getElementById("reportContainer");
+const loginBtn = document.getElementById("loginBtn");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginMessage = document.getElementById("loginMessage");
 
-let allowed = false;
-const entered = prompt("Enter admin password to view reports:");
-if (VALID_PASSPHRASES.includes(entered)) allowed = true;
+const statusEl = document.getElementById("status");
+const messagesList = document.getElementById("messagesList");
+const emptyEl = document.getElementById("empty");
 
-if (!allowed) {
-  statusEl.textContent = "Access denied — incorrect password.";
-  statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
-  messagesList.style.display = "none";
-  setTimeout(() => { window.location.href = "report.html"; }, 3000);
-} else {
-  startListening();
-}
+
+loginBtn.addEventListener("click", () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      loginContainer.style.display = "none";
+      reportContainer.classList.remove("hidden");
+      startListening(); // Call your Firebase DB listener after login
+    })
+    .catch((error) => {
+      loginMessage.textContent = error.message;
+      loginMessage.classList.remove("hidden");
+    });
+});
+
+
+// Optional: auto-logout after closing session or refresh
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginContainer.style.display = "none";
+    reportContainer.classList.remove("hidden");
+    startListening(); // Load reports
+  } else {
+    loginContainer.style.display = "flex";
+    reportContainer.classList.add("hidden");
+  }
+});
+const DB_PATH = "weather_reports"; // replace with the actual path in your Firebase DB
+
+
 
 function setStatus(text, type="info") {
   statusEl.textContent = text;
