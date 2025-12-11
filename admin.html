@@ -104,35 +104,7 @@
       measurementId: "G-0KZS7RPGKK"
     };
 
-    //---------------------------- Admin Passphrase ----------------------------
-    const ADMIN_PASSPHRASE = "elwoic811"; // change this
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const statusEl = document.getElementById('status');
-    const messagesList = document.getElementById('messagesList');
-    const emptyEl = document.getElementById('empty');
-    const exportBtn = document.getElementById('exportBtn');
-    const countBadge = document.getElementById('countBadge');
-    const controls = document.getElementById('controls');
-    const filterInput = document.getElementById('filterInput');
-
-    // Ask admin pass
-    let allowed = false;
-    const entered = prompt("Enter admin passphrase:");
-    if (entered === ADMIN_PASSPHRASE) {
-      allowed = true;
-      controls.classList.remove("hidden");
-    }
-
-    if (!allowed) {
-      statusEl.textContent = "Access denied — wrong passphrase. Refresh to try again.";
-      statusEl.className = "mb-4 p-3 rounded text-sm bg-red-100 text-red-800";
-      messagesList.style.display = "none";
-    } else {
-      startListening();
-    }
+    startListening();
 
     //---------------------------- Status Helper ----------------------------
     function setStatus(text, type = "info") {
