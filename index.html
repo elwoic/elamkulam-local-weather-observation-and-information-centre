@@ -1707,21 +1707,18 @@ function handleSwipe() {
 }
 
 </script>
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const openBtn = document.getElementById("openPoster");
-  const modal = document.getElementById("posterModal");
-  const closeBtn = document.getElementById("closePoster");
+const openBtn = document.getElementById("openPoster");
+const modal = document.getElementById("posterModal");
+const closeBtn = document.getElementById("closePoster");
 
-  openBtn.onclick = () => modal.style.display = "flex";
-  closeBtn.onclick = () => modal.style.display = "none";
+openBtn.onclick = () => modal.style.display = "flex";
+closeBtn.onclick = () => modal.style.display = "none";
 
-  modal.onclick = (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  };
-});
+modal.onclick = (e) => {
+  if (e.target === modal) modal.style.display = "none";
+};
 </script>
 
-</body>
+
 </html>
