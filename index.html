@@ -898,7 +898,26 @@ tfoot td {
         margin-bottom: 0;
     }
 }
-        
+        .poster-float {
+  position: fixed;
+  top: 10px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.poster-float:hover {
+  background: transparent;
+}
+
 /* ---------------------------------------------------- */
 /* 5. FOOTER & ASIDE */
 /* ---------------------------------------------------- */
@@ -1419,6 +1438,30 @@ footer a:hover {
         <img src="signature.png" alt="Symbol 4">
     </div>
 </aside>
+    <!-- Floating Poster Button -->
+<button id="openPoster" class="poster-float" title="View Project Poster">
+  📄
+</button>
+<div id="posterModal" class="poster-modal">
+  <div class="poster-content">
+    <button class="close-btn" id="closePoster">✖</button>
+
+    <img
+      src="ELWOIC Poster.png"
+      alt="ELWOIC Project Poster"
+      class="poster-image"
+    />
+
+    <a href="ELWOIC Poster.png" download class="download-btn">
+      ⬇️ Download Poster
+    </a>
+
+    <p class="poster-note">
+      This poster is for informational and educational purposes only.
+    </p>
+  </div>
+</div>
+
     <footer>
         <p>© 2025 Elamkulam Local Weather Observation And Information Center. 
         All rights reserved. This is a student project for educational and 
@@ -1626,6 +1669,18 @@ function handleSwipe() {
 
 </script>
 
+<script>
+const openBtn = document.getElementById("openPoster");
+const modal = document.getElementById("posterModal");
+const closeBtn = document.getElementById("closePoster");
+
+openBtn.onclick = () => modal.style.display = "flex";
+closeBtn.onclick = () => modal.style.display = "none";
+
+modal.onclick = (e) => {
+  if (e.target === modal) modal.style.display = "none";
+};
+</script>
 
 
 </body>
