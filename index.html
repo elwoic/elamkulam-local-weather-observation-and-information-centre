@@ -898,33 +898,39 @@ tfoot td {
         margin-bottom: 0;
     }
 }
-  .poster-float {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 44px;
-  height: 44px;
-  background: transparent;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 10000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+ .poster-content {
+  background: #fff;
+  padding: 12px;
+  width: 95%;
+  max-width: 700px;        /* desktop limit */
+  max-height: 90vh;       /* IMPORTANT */
+  overflow-y: auto;       /* scroll if needed */
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
-.poster-float:hover {
-  background: transparent;
+.poster-image {
+  width: 100%;
+  height: auto;
+  max-height: 65vh;       /* IMPORTANT */
+  object-fit: contain;
+  border: 1px solid #ddd;
 }
-.poster-modal {
-  display: none;              /* IMPORTANT */
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
+.close-btn {
+  position: sticky;
+  top: 0;
+  float: right;
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.poster-float {
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
 }
 
 
