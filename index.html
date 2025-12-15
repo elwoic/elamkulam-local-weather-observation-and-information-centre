@@ -900,7 +900,7 @@ tfoot td {
 }
 .poster-float {
   position: fixed;
-  top: 12px;
+  bottom: 12px;
   right: 12px;
   width: 40px;
   height: 40px;
@@ -940,8 +940,15 @@ tfoot td {
   width: 100%;
   max-height: 65vh;
   object-fit: contain;
-  border: 1px solid #ddd;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
 }
+
+.poster-image.zoomed {
+  transform: scale(2);   /* 🔍 zoom level */
+  cursor: zoom-out;
+}
+
 
 .close-btn {
   position: sticky;
@@ -1714,10 +1721,15 @@ function handleSwipe() {
 const openBtn = document.getElementById("openPoster");
 const modal = document.getElementById("posterModal");
 const closeBtn = document.getElementById("closePoster");
+const posterImg = document.querySelector(".poster-image");
+
 
 openBtn.onclick = () => modal.style.display = "flex";
 closeBtn.onclick = () => modal.style.display = "none";
-
+    
+posterImg.onclick = () => {
+  posterImg.classList.toggle("zoomed");
+};
 modal.onclick = (e) => {
   if (e.target === modal) modal.style.display = "none";
 };
