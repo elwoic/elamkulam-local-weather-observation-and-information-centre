@@ -914,9 +914,17 @@ tfoot td {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.poster-float:hover {
-  background: transparent;
+/* MODAL BACKDROP */
+.poster-modal {
+  display: none; /* IMPORTANT */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
+
 .poster-content {
   background: #fff;
   padding: 12px;
@@ -930,7 +938,6 @@ tfoot td {
 
 .poster-image {
   width: 100%;
-  height: auto;
   max-height: 65vh;
   object-fit: contain;
   border: 1px solid #ddd;
@@ -945,16 +952,12 @@ tfoot td {
   border: none;
   cursor: pointer;
 }
-@media (max-width: 480px) {
-  .poster-content {
-    max-height: 95vh;
-  }
 
+@media (max-width: 480px) {
   .poster-image {
     max-height: 60vh;
   }
 }
-
 
 /* ---------------------------------------------------- */
 /* 5. FOOTER & ASIDE */
@@ -1477,10 +1480,10 @@ footer a:hover {
     </div>
 </aside>
     <!-- Floating Poster Button -->
-    <!-- Floating Poster Button -->
-<button id="openPoster" class="poster-float" title="View Project Poster">
+ <button id="openPoster" class="poster-float" title="View Project Poster">
   📄
 </button>
+
 <div id="posterModal" class="poster-modal">
   <div class="poster-content">
     <button class="close-btn" id="closePoster">✖</button>
@@ -1491,11 +1494,11 @@ footer a:hover {
       class="poster-image"
     />
 
-    <a href="ELWOIC Poster.png" download class="download-btn">
+    <a href="ELWOIC Poster.png" download>
       ⬇️ Download Poster
     </a>
 
-    <p class="poster-note">
+    <p>
       This poster is for informational and educational purposes only.
     </p>
   </div>
@@ -1719,6 +1722,7 @@ modal.onclick = (e) => {
   if (e.target === modal) modal.style.display = "none";
 };
 </script>
+
 
 
 </html>
