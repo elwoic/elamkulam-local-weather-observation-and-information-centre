@@ -4,11 +4,11 @@ const OPENWEATHER_API_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
 // OpenWeatherMap AQI mapping
 const statusMap = {
-    1: { text: "Excellent", class: "aqi-good", range: "0–50" },
-    2: { text: "Fair", class: "aqi-fair", range: "51–100" },
-    3: { text: "Moderate", class: "aqi-moderate", range: "101–150" },
-    4: { text: "Poor", class: "aqi-poor", range: "151–200" },
-    5: { text: "Very Poor", class: "aqi-very-poor", range: "201+" }
+    1: { text: "Excellent", class: "aqi-good", range: "😀" },
+    2: { text: "Fair", class: "aqi-fair", range: "😅" },
+    3: { text: "Moderate", class: "aqi-moderate", range: "😐" },
+    4: { text: "Poor", class: "aqi-poor", range: "😥" },
+    5: { text: "Very Poor", class: "aqi-very-poor", range: "☹️" }
 };
 
 // Health advice mapping
