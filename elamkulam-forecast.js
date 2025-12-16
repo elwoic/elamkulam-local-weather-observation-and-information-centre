@@ -30,7 +30,17 @@ function windDirMalayalam(deg){
   return dirs[Math.round(deg/45) % 8];
 }
 
-// ---------- ADD THIS FUNCTION RIGHT HERE ----------
+// ---------- ADD THIS FUNCTION RIGHT HERE ---------
+function imdAlertMalayalamMeaning(code) {
+  const map = {
+    g: "Green (No warning) സുരക്ഷിതമായ അന്തരീക്ഷം (Safe)",
+    y: "Yellow (Watch) മിതമായ ജാഗ്രത (Moderate Alert)",
+    o: "Orange (Alert) മോശം, ജാഗ്രത ആവശ്യമുണ്ട് (Severe Alert)",
+    r: "Red (Warning) അതി മോശം, കരുതലോടെ പ്രവർത്തിക്കുക (Very Severe Alert)"
+  };
+  return map[code.toLowerCase()] || "ലഭ്യമല്ല";
+}
+
 function aqiMalayalamMeaning(aqi) {
   const map = {
     1: "നല്ലത് (Good) — 0–50",
@@ -274,10 +284,14 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
 
   // Paragraph 7: alerts & AQI
   if (imdAlert && imdAlert.text) {
-    s.push(`IMD (മലപ്പുറം) പുറത്തിറക്കിയ ഔദ്യോഗിക അറിയിപ്പ്: ${imdAlert.text}. (അവസാന അപ്ഡേറ്റ്: ${imdAlert.lastUpdated || 'ലഭ്യമല്ല'})`);
-  } else {
-    s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.");
-  }
+  const codeMatch = imdAlert.text.match(/[oyrg]$/i); // get last letter
+  const code = codeMatch ? codeMatch[0] : null;
+  const meaning = code ? imdAlertMalayalamMeaning(code) : "ലഭ്യമല്ല";
+
+  s.push(`IMD (മലപ്പുറം) ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning}. (അവസാന അപ്ഡേറ്റ്: ${imdAlert.lastUpdated || 'ലഭ്യമല്ല'})`);
+} else {
+  s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.");
+}
 
  if (airQuality && airQuality.aqi != null) {
    s.push(
@@ -357,7 +371,7 @@ try {
   let userHtml = "";
   if (granted.length) {
     const items = granted.map(r => {
-      const loc = r.location || r.place || "എലമ്കുളം";
+      const loc = r.location || r.place || "ഏലംകുളം";
       const desc = (r.observation || r.description || r.obs || r.note || "").trim();
       const time = r.time || (r.timestamp ? new Date(Number(r.timestamp)).toLocaleString() : "");
       if (!desc) return null;
