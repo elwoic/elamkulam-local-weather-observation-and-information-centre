@@ -953,6 +953,12 @@ tfoot td {
   transition: transform 0.2s ease;
   cursor: zoom-in;
 }
+        
+.poster-image {
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
 
 .close-btn {
   position: sticky;
@@ -1730,58 +1736,51 @@ function handleSwipe() {
 
 </script>
 <script>
-const openBtn = document.getElementById("openPoster");
-const modal = document.getElementById("posterModal");
-const closeBtn = document.getElementById("closePoster");
-const posterImg = document.querySelector(".poster-image");
+let isDragging = false;
+let startX = 0, startY = 0;
+let translateX = 0, translateY = 0;
 
-let scale = 1;
-const MIN_SCALE = 1;
-const MAX_SCALE = 4;
+// Mouse down → start dragging
+posterImg.addEventListener("mousedown", (e) => {
+  if (scale <= 1) return; // drag only if zoomed
+  isDragging = true;
+  startX = e.clientX - translateX;
+  startY = e.clientY - translateY;
+  posterImg.style.cursor = "grabbing";
+});
 
-// Open / Close
-openBtn.onclick = () => modal.style.display = "flex";
-closeBtn.onclick = () => {
-  modal.style.display = "none";
-  resetZoom();
-};
+// Mouse move → drag
+window.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  translateX = e.clientX - startX;
+  translateY = e.clientY - startY;
+  applyTransform();
+});
 
-modal.onclick = (e) => {
-  if (e.target === modal) {
-    modal.style.display = "none";
-    resetZoom();
-  }
-};
+// Mouse up → stop dragging
+window.addEventListener("mouseup", () => {
+  isDragging = false;
+  posterImg.style.cursor = "grab";
+});
 
-// Click zoom toggle
-posterImg.onclick = () => {
-  scale = scale === 1 ? 2 : 1;
-  applyZoom();
-};
-
-// Mouse wheel zoom
-posterImg.addEventListener("wheel", (e) => {
-  e.preventDefault();
-
-  if (e.deltaY < 0) {
-    scale += 0.2; // zoom in
-  } else {
-    scale -= 0.2; // zoom out
-  }
-
-  scale = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
-  applyZoom();
-}, { passive: false });
-
-// Apply transform
-function applyZoom() {
-  posterImg.style.transform = `scale(${scale})`;
+// Apply zoom + drag together
+function applyTransform() {
+  posterImg.style.transform =
+    `translate(${translateX}px, ${translateY}px) scale(${scale})`;
 }
 
-// Reset zoom
+// Update your existing applyZoom()
+function applyZoom() {
+  posterImg.style.transform =
+    `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+// Reset zoom + drag
 function resetZoom() {
   scale = 1;
-  applyZoom();
+  translateX = 0;
+  translateY = 0;
+  applyTransform();
 }
 </script>
 
