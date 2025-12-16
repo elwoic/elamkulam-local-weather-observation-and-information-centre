@@ -114,6 +114,29 @@ async function fetchGrantedReports(){
     return [];
   }
 }
+async function fetchOpenWeatherAQI(lat = LAT, lon = LON) {
+  if (!OPENWEATHER_API_KEY) return null;
+
+  const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) {
+      console.warn("AQI fetch failed:", r.status);
+      return null;
+    }
+    const data = await r.json();
+    if (!data.list || !data.list.length) return null;
+
+    const item = data.list[0];
+    return {
+      aqi: item.main.aqi,          // 1–5
+      components: item.components // pm2_5, pm10, etc
+    };
+  } catch (e) {
+    console.warn("AQI error:", e);
+    return null;
+  }
+}
 
 // ---------------- compute metrics ----------------
 function computeFromMeteo(m){
@@ -244,7 +267,11 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
   }
 
   if (airQuality && (airQuality.aqi != null || airQuality.main != null)) {
-    s.push(`വായുനില സൂചിക (AQI): ${airQuality.aqi ?? 'ലഭ്യമല്ല'}; പ്രധാന ഘടകം: ${airQuality.main ?? 'ലഭ്യമല്ല'}.`);
+    s.push(
+  `വായുനില സൂചിക (AQI): ${airQuality.aqi} — ${aqiMalayalamMeaning(airQuality.aqi)}. ` +
+  `ഈ സൂചിക 1 മുതൽ 5 വരെ ആയതിനാൽ, ഉയർന്ന മൂല്യങ്ങൾ ആരോഗ്യത്തിന് കൂടുതൽ അപകടസാധ്യത സൂചിപ്പിക്കുന്നു.`
+);
+
   } else {
     s.push("പ്രാദേശിക വായുനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.");
   }
@@ -297,7 +324,23 @@ async function runOnceAndRender(){
     if (computed.tempNow == null && owm.main && owm.main.temp != null) computed.tempNow = owm.main.temp;
   }
 
-  const airQuality = null;
+  let airQuality = null;
+try {
+  airQuality = await fetchOpenWeatherAQI();
+} catch (e) {
+  airQuality = null;
+}
+function aqiMalayalamMeaning(aqi) {
+  const map = {
+    1: "നല്ലത് (Good)",
+    2: "മിതമായത് (Fair)",
+    3: "മധ്യമം (Moderate)",
+    4: "മോശം (Poor)",
+    5: "അതിമോശം (Very Poor)"
+  };
+  return map[aqi] || "ലഭ്യമല്ല";
+}
+
   const imdAlert = getImdAlertForToday();
 
   const essay = generateLongNewsMalayalam({ computed, imdAlert, airQuality });
