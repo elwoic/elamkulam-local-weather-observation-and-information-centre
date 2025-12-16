@@ -948,7 +948,11 @@ tfoot td {
   transform: scale(2);   /* 🔍 zoom level */
   cursor: zoom-out;
 }
-
+        
+.poster-image {
+  transition: transform 0.2s ease;
+  cursor: zoom-in;
+}
 
 .close-btn {
   position: sticky;
@@ -1731,16 +1735,55 @@ const modal = document.getElementById("posterModal");
 const closeBtn = document.getElementById("closePoster");
 const posterImg = document.querySelector(".poster-image");
 
+let scale = 1;
+const MIN_SCALE = 1;
+const MAX_SCALE = 4;
 
+// Open / Close
 openBtn.onclick = () => modal.style.display = "flex";
-closeBtn.onclick = () => modal.style.display = "none";
-    
-posterImg.onclick = () => {
-  posterImg.classList.toggle("zoomed");
+closeBtn.onclick = () => {
+  modal.style.display = "none";
+  resetZoom();
 };
+
 modal.onclick = (e) => {
-  if (e.target === modal) modal.style.display = "none";
+  if (e.target === modal) {
+    modal.style.display = "none";
+    resetZoom();
+  }
 };
+
+// Click zoom toggle
+posterImg.onclick = () => {
+  scale = scale === 1 ? 2 : 1;
+  applyZoom();
+};
+
+// Mouse wheel zoom
+posterImg.addEventListener("wheel", (e) => {
+  e.preventDefault();
+
+  if (e.deltaY < 0) {
+    scale += 0.2; // zoom in
+  } else {
+    scale -= 0.2; // zoom out
+  }
+
+  scale = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
+  applyZoom();
+}, { passive: false });
+
+// Apply transform
+function applyZoom() {
+  posterImg.style.transform = `scale(${scale})`;
+}
+
+// Reset zoom
+function resetZoom() {
+  scale = 1;
+  applyZoom();
+}
 </script>
+
 </body>
 </html>
