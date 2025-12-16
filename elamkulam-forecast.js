@@ -30,6 +30,19 @@ function windDirMalayalam(deg){
   return dirs[Math.round(deg/45) % 8];
 }
 
+// ---------- ADD THIS FUNCTION RIGHT HERE ----------
+function aqiMalayalamMeaning(aqi) {
+  const map = {
+    1: "നല്ലത് (Good) — 0–50",
+    2: "മിതമായത് (Fair) — 51–100",
+    3: "മധ്യമം (Moderate) — 101–200",
+    4: "മോശം (Poor) — 201–300",
+    5: "അതിമോശം (Very Poor) — 301–500"
+  };
+  return map[aqi] || "ലഭ്യമല്ല";
+}
+// -------------------------------------------------
+
 // inject Malayalam font for better rendering
 (function injectFont(){
   const href = "https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;600&display=swap";
@@ -266,10 +279,15 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
     s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.");
   }
 
-  if (airQuality && (airQuality.aqi != null || airQuality.main != null)) {
-    s.push(
+ if (airQuality && airQuality.aqi != null) {
+   s.push(
   `വായുനില സൂചിക (AQI): ${airQuality.aqi} — ${aqiMalayalamMeaning(airQuality.aqi)}. ` +
-  `ഈ സൂചിക 1 മുതൽ 5 വരെ ആയതിനാൽ, ഉയർന്ന മൂല്യങ്ങൾ ആരോഗ്യത്തിന് കൂടുതൽ അപകടസാധ്യത സൂചിപ്പിക്കുന്നു.`
+  `ഈ മൂല്യം OpenWeather മാനദണ്ഡപ്രകാരമുള്ള 1–5 സ്കെയിലിൽ നിന്നുള്ളതാണ്. ` +
+  `ഇത് ആഗോള AQI സ്കെയിലിൽ ഏകദേശം ${airQuality.aqi === 1 ? "0–50" :
+     airQuality.aqi === 2 ? "51–100" :
+     airQuality.aqi === 3 ? "101–200" :
+     airQuality.aqi === 4 ? "201–300" : "301–500"} പരിധിയോട് സമാനമാണ്. ` +
+  `ഉയർന്ന മൂല്യങ്ങൾ ശ്വാസകോശ പ്രശ്നങ്ങൾക്കും ദീർഘകാല ആരോഗ്യബാധകൾക്കും സാധ്യത വർധിപ്പിക്കുന്നു.`
 );
 
   } else {
@@ -329,16 +347,6 @@ try {
   airQuality = await fetchOpenWeatherAQI();
 } catch (e) {
   airQuality = null;
-}
-function aqiMalayalamMeaning(aqi) {
-  const map = {
-    1: "നല്ലത് (Good)",
-    2: "മിതമായത് (Fair)",
-    3: "മധ്യമം (Moderate)",
-    4: "മോശം (Poor)",
-    5: "അതിമോശം (Very Poor)"
-  };
-  return map[aqi] || "ലഭ്യമല്ല";
 }
 
   const imdAlert = getImdAlertForToday();
