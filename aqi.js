@@ -44,7 +44,7 @@ async function loadAQIBox() {
         const aqiStatus = statusMap[aqi];
 
         // Update text with approximate numeric range
-        aqiDiv.textContent = `AQI ${aqi} — ${aqiStatus.text} (approx. ${aqiStatus.range})`;
+        aqiDiv.textContent = `AQI ${aqi} — ${aqiStatus.text}  ${aqiStatus.range}`;
         aqiAdviceDiv.textContent = healthMap[aqi];
 
         // Update classes safely
