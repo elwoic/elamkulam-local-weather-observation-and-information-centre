@@ -943,12 +943,16 @@ tfoot td {
   cursor: zoom-in;
   transition: transform 0.3s ease;
 }
-
-.poster-image.zoomed {
-  transform: scale(2);   /* 🔍 zoom level */
-  cursor: zoom-out;
+.poster-image {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s ease;
 }
-        
+
+    
 .poster-image {
   transition: transform 0.2s ease;
   cursor: zoom-in;
@@ -1730,6 +1734,28 @@ function handleSwipe() {
 
 </script>
 <script>
+    const openPoster = document.getElementById("openPoster");
+const closePoster = document.getElementById("closePoster");
+const posterModal = document.getElementById("posterModal");
+
+openPoster.addEventListener("click", () => {
+  posterModal.style.display = "flex";
+  resetZoom(); // important
+});
+
+closePoster.addEventListener("click", () => {
+  posterModal.style.display = "none";
+  resetZoom();
+});
+
+// close when clicking outside poster
+posterModal.addEventListener("click", (e) => {
+  if (e.target === posterModal) {
+    posterModal.style.display = "none";
+    resetZoom();
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const posterImg = document.getElementById("posterImg");
@@ -1752,6 +1778,14 @@ document.addEventListener("DOMContentLoaded", () => {
     startY = e.clientY - translateY;
     posterImg.style.cursor = "grabbing";
   });
+posterImg.addEventListener("click", () => {
+  if (scale === 1) {
+    scale = 2;
+  } else {
+    resetZoom();
+  }
+  applyTransform();
+});
 
   window.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
