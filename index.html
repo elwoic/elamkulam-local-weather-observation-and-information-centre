@@ -1736,52 +1736,60 @@ function handleSwipe() {
 
 </script>
 <script>
-let isDragging = false;
-let startX = 0, startY = 0;
-let translateX = 0, translateY = 0;
+document.addEventListener("DOMContentLoaded", () => {
 
-// Mouse down → start dragging
-posterImg.addEventListener("mousedown", (e) => {
-  if (scale <= 1) return; // drag only if zoomed
-  isDragging = true;
-  startX = e.clientX - translateX;
-  startY = e.clientY - translateY;
-  posterImg.style.cursor = "grabbing";
-});
+  const posterImg = document.getElementById("posterImg");
+  if (!posterImg) {
+    console.error("posterImg not found");
+    return;
+  }
 
-// Mouse move → drag
-window.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  translateX = e.clientX - startX;
-  translateY = e.clientY - startY;
-  applyTransform();
-});
+  let scale = 1;
+  let isDragging = false;
+  let startX = 0, startY = 0;
+  let translateX = 0, translateY = 0;
 
-// Mouse up → stop dragging
-window.addEventListener("mouseup", () => {
-  isDragging = false;
   posterImg.style.cursor = "grab";
+
+  posterImg.addEventListener("mousedown", (e) => {
+    if (scale <= 1) return;
+    isDragging = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+    posterImg.style.cursor = "grabbing";
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+    posterImg.style.cursor = "grab";
+  });
+
+  function applyTransform() {
+    posterImg.style.transform =
+      `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+  }
+
+  // Expose functions if buttons need them
+  window.applyZoom = function (newScale) {
+    scale = newScale;
+    applyTransform();
+  };
+
+  window.resetZoom = function () {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    applyTransform();
+  };
+
 });
-
-// Apply zoom + drag together
-function applyTransform() {
-  posterImg.style.transform =
-    `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-}
-
-// Update your existing applyZoom()
-function applyZoom() {
-  posterImg.style.transform =
-    `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-}
-
-// Reset zoom + drag
-function resetZoom() {
-  scale = 1;
-  translateX = 0;
-  translateY = 0;
-  applyTransform();
-}
 </script>
 
 </body>
