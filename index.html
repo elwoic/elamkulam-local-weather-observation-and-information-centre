@@ -931,9 +931,12 @@ tfoot td {
   width: 95%;
   max-width: 700px;
   max-height: 90vh;
-  overflow-y: auto;
   border-radius: 10px;
   box-sizing: border-box;
+}
+        
+.poster-content {
+  overflow: hidden;   /* NOT auto */
 }
 
 .poster-image {
@@ -1768,6 +1771,23 @@ document.addEventListener("DOMContentLoaded", () => {
   let isDragging = false;
   let startX = 0, startY = 0;
   let translateX = 0, translateY = 0;
+posterImg.addEventListener("wheel", (e) => {
+  e.preventDefault(); // stop page scroll
+
+  const zoomSpeed = 0.1;
+  const minScale = 1;
+  const maxScale = 4;
+
+  if (e.deltaY < 0) {
+    scale += zoomSpeed; // zoom in
+  } else {
+    scale -= zoomSpeed; // zoom out
+  }
+
+  scale = Math.min(Math.max(scale, minScale), maxScale);
+
+  applyTransform();
+}, { passive: false });
 
   posterImg.style.cursor = "grab";
 
