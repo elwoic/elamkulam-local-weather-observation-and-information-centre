@@ -26,11 +26,11 @@ function dateOnlyTimestampFromDMY(ddmmyyyy) {
    Config: User messages (edit these)
 ---------------------------- */
 // Manual (message shown on the manual day)
-const manualDate = "22/12/2025";
+const manualDate = "04/12/2025";
 const manualText = "No manual updates";
 
 // Pre-update (message for the next day)
-const preDate = "23/12/2025";
+const preDate = "04/12/2025";
 const preText = "No manual updates";
 
 /* ---------------------------
