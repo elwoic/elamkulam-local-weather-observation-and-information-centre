@@ -2,7 +2,7 @@
    ELWOIC — SMART AUTO UPDATE SYSTEM (fixed & more robust)
    - Normalizes dates to date-only (no time part / timezone safe)
    - Clear rules:
-       1) If today === manualDate -> show manualText (blink)
+       1) If today === manualDate -> show manualText (blink)  
        2) Else if today === preDate    -> show preText in manual slot (blink)
        3) Else                        -> show default manual text (no blink)
    - Pre-update area shows preText while today < preDate, otherwise defaultPre
