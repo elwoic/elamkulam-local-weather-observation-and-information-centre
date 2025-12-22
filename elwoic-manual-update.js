@@ -27,10 +27,10 @@ function dateOnlyTimestampFromDMY(ddmmyyyy) {
 ---------------------------- */
 // Manual (message shown on the manual day)
 const manualDate = "22/12/2025";
-const manualText = " Light Cloudy night, And Full Moon";
+const manualText = "No manual updates";
 
 // Pre-update (message for the next day)
-const preDate = "05/12/2025";
+const preDate = "23/12/2025";
 const preText = "No manual updates";
 
 /* ---------------------------
