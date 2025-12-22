@@ -589,7 +589,49 @@ tfoot td {
     border-top: 1px solid #eef1f5;
     text-align: center;
 }
+/* ===== Ultra-compact CSS for Weather Report ===== */
+body {
+  font-family: 'Noto Sans Malayalam', sans-serif;
+  background-color: #f2f2f2;
+  padding: 10px;
+}
 
+#weather-report, #weather-report-other {
+  background-color: #ffffff;
+  border-left: 4px solid #4CAF50;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  flex-wrap: nowrap;        /* keep items in a single line */
+  overflow-x: auto;         /* horizontal scroll if too long */
+  white-space: nowrap;      /* prevent wrapping */
+  font-size: 12px;          /* smaller font */
+}
+
+#weather-report h3, #weather-report-other h3 {
+  flex: 0 0 100%;
+  margin: 0 0 3px 0;        /* smaller bottom margin */
+  font-size: 13px;
+  color: #333;
+}
+
+#weather-report p, #weather-report-other p {
+  margin: 0 3px 0 0;        /* smaller horizontal gap */
+  padding: 3px 6px;         /* smaller padding */
+  background-color: #f0f0f0; 
+  border-radius: 3px;
+  white-space: nowrap;      /* keep each sentence in one line */
+}
+
+#weather-report strong, #weather-report-other strong {
+  flex: 0 0 100%;
+  margin-top: 3px;          /* smaller top margin */
+  font-size: 12px;
+  color: #000;
+}
 /* Radar Window Section */
 .radar-window-section {
     font-family: 'Roboto', sans-serif;
@@ -1338,7 +1380,7 @@ footer a:hover {
             </div>
         </div>
     </section>
-
+ <div id="weather-report"></div>
     <section class="radar-window-section">
     <div class="container">
         <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
@@ -1552,6 +1594,7 @@ footer a:hover {
     <script src="elwoic-manual-update.js"></script>
     <script src="snapshot.js"></script>
     <script src="table.js"></script>
+    <script src="w-report.js"></script>
     <script src="aqi.js"></script>
     <script src="weather-dashboard.js"></script>
     <script>
