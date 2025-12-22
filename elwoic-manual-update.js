@@ -106,6 +106,31 @@ if (preDiv) {
 if (infoDiv) {
   infoDiv.innerHTML = defaultInfo;
 }
+/* ============================================================
+   FINAL VISIBILITY CHECK — Hide section if no real content
+============================================================ */
+
+const manualSection = document.getElementById("manual-update");
+
+if (manualSection && manualDiv && preDiv && infoDiv) {
+  const manualTextFinal = manualDiv.textContent.trim();
+  const preTextFinal = preDiv.textContent.trim();
+  const infoTextFinal = infoDiv.textContent.trim();
+
+  const isManualEmpty =
+    manualTextFinal === "" || manualTextFinal === defaultManual;
+
+  const isPreEmpty =
+    preTextFinal === "" || preTextFinal === defaultPre;
+
+  const isInfoEmpty =
+    infoTextFinal === "" || infoTextFinal === defaultInfo;
+
+  // If ALL sections are effectively empty → hide whole notice box
+  if (isManualEmpty && isPreEmpty && isInfoEmpty) {
+    manualSection.style.display = "none";
+  }
+}
 
 /* Optional debug output in console for testing */
 console.debug("today:", new Date(todayTs).toDateString(),
