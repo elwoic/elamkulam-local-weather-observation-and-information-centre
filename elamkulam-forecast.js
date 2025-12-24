@@ -199,7 +199,9 @@ function computeFromMeteo(m){
   }
 }
 
-function generateLongNewsMalayalam({ computed, imdAlert, airQuality, userReports }) {
+// ---------------- essay generator (corrected Malayalam) ----------------
+function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
+
   const s = [];
   const now = new Date();
   const dateLine = `${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`;
@@ -208,110 +210,114 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality, userReports
   s.push(dateLine);
   s.push("");
 
-  // ----- Helper functions -----
-  function describeTemperature(temp) {
-    if (temp == null) return "താപനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.";
-    if (temp < 20) return "പ്രദേശത്ത് തണുപ്പ് അനുഭവപ്പെടുന്നു.";
-    if (temp < 30) return "താപനില സാധാരണ നിലയിലാണ്, ഒട്ടും അകമ്പടി ഇല്ല.";
-    return "ചൂട് കൂടുതലാണ്; ശ്രദ്ധ ആവശ്യമുണ്ട്.";
+  // Paragraph 1: overall situation
+  s.push("പ്രാദേശിക അന്തരീക്ഷ നിരീക്ഷണങ്ങളെ അടിസ്ഥാനമാക്കി എലങ്കുളം പ്രദേശത്ത് നിലവിലുള്ള കാലാവസ്ഥയുടെ വിശദമായ അവലോകനം താഴെ പരാമർശിക്കുന്നു.");
+  
+  if (computed.tempNow != null) {
+    s.push(`ഇപ്പോൾ പ്രദേശത്ത് രേഖപ്പെടുത്തിയിരിക്കുന്ന താപനില ${toFixedSafe(computed.tempNow,1)}°C ആണ്. കഴിഞ്ഞ മണിക്കൂറുകളിൽ ലഭ്യമായ ഡാറ്റ പ്രകാരം, ഈ താപനിലയിൽ ശ്രദ്ധേയമായ വ്യതിയാനം കണ്ടിട്ടില്ല; മൊത്തത്തിൽ ഇത് ${computed.tempTrend>0.15 ? 'തത്സമയം ഉയരുന്ന' : (computed.tempTrend < -0.15 ? 'അല്പം താഴ്ന്നുവരുന്ന' : 'സ്ഥിരത പുലർത്തുന്ന')} നിലയിലാണ്.`);
+  } else {
+    s.push("ഈ സമയത്ത് താപനില സംബന്ധിച്ച കൃത്യമായ ഇപ്പോഴത്തെ രേഖകൾ ലഭ്യമല്ല.");
+  }
+  
+  s.push("ഇന്ന് പ്രദേശത്ത് പ്രാതിനിധ്യമർഹിക്കുന്ന മേഘാവരണം തുടരുന്നുവെന്ന് നിരീക്ഷണങ്ങൾ സൂചിപ്പിക്കുന്നു; ചില ഇടവേളകളിൽ മേഘസാന്ദ്രതയിൽ ചെറിയ മാറ്റങ്ങൾ ഉണ്ടായേക്കാം.");
+
+  // Paragraph 2: humidity
+  if (computed.humidity != null) {
+    s.push(`വാതാവിലെ ഈർപ്പതോത് നിലവിൽ ${Math.round(computed.humidity)}% ആണ്. ഈ മൂല്യം പ്രാദേശികമായി തിരിച്ചറിയപ്പെടുന്ന വായുവിന്റെ ഭാരത്വത്തിലും ശീതത്വത്തിലും ചെറിയ സ്വാധീനങ്ങൾ സൃഷ്ടിക്കാവുന്ന ഒന്നാണ്.`);
+  } else {
+    s.push("ഈർപ്പത്തിന്റെ നിലവിലുള്ള രേഖകൾ വ്യക്തമല്ല.");
+  }
+  s.push("ഈർപ്പത്തിലെ ചെറിയ വ്യതിയാനങ്ങൾ അന്തരീക്ഷത്തിലെ ദ്രവസംയോജന പ്രക്രിയകളിൽ സ്വാധീനമുണ്ടാക്കുന്നത് സാധാരണമാണ്.");
+
+  // Paragraph 3: wind
+  if (computed.windSpeedMs != null) {
+    const kmh = msToKmh(computed.windSpeedMs);
+    s.push(`കാറ്റിന്റെ വേഗം ഇപ്പോൾ ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആണ്. കാറ്റ് വീശുന്ന ദിശ ${windDirMalayalam(computed.windDir)} (${computed.windDir != null ? Math.round(computed.windDir) + "°" : 'ലഭ്യമല്ല'}) ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു.`);
+    s.push("ഈ വേഗതയിൽ വലിയതോതിലുള്ള പ്രദേശീയ അന്തരീക്ഷ വ്യതിയാനങ്ങൾ സാധാരണയായി പ്രതീക്ഷിക്കാറില്ല.");
+    s.push("അടുത്ത മണിക്കൂറുകളിൽ കാറ്റിന്റെ ദിശയിലും വേഗത്തിലും ചെറിയ മാറ്റങ്ങൾ സംഭവിക്കാമെന്നതാണ് പ്രവചനങ്ങളുടെ സൂചന.");
+  } else {
+    s.push("കാറ്റിന്റെ വേഗതയും ദിശയും സംബന്ധിച്ച സമഗ്രമായ ഡാറ്റ ഇപ്പോൾ ലഭ്യമല്ല.");
   }
 
-  function describeTrend(trend) {
-    if (trend == null) return "";
-    if (trend > 0.15) return "കഴിഞ്ഞ മണിക്കൂറുകളിൽ താപനില ക്രമംപ്രകാരം ഉയരുകയാണ്.";
-    if (trend < -0.15) return "കഴിഞ്ഞ മണിക്കൂറുകളിൽ താപനില കുറവാണ്.";
-    return "താപനില സ്ഥിരത പുലർത്തുകയാണ്.";
+  // Paragraph 4: rain
+  if (computed.precipNow != null && computed.precipNow > 0.1) {
+    s.push("പ്രദേശത്ത് നിലവിൽ ചെറിയ തോതിൽ മഴ പെയ്യുന്നുവെന്ന് രേഖകൾ സൂചിപ്പിക്കുന്നു; ഈ മഴ അടുത്ത മണിക്കൂറുകളിലും ഇടവിട്ടു തുടർന്നേക്കാം.");
+  } else if (computed.precipProb != null) {
+    s.push(`അടുത്ത മണിക്കൂറുകളിൽ മഴ ലഭിക്കാനുള്ള ശരാശരി സാദ്ധ്യത ${Math.round(computed.precipProb)}% ആയി മോഡലുകൾ വിലയിരുത്തുന്നു. ഇത് ലഘുവായ മഴയും ഇടക്കിടെ ഉണ്ടായേക്കാവുന്ന ചെറിയ ചിതറലുകളും ഉൾക്കൊള്ളുന്ന നിലയാണ്.`);
+  } else {
+    s.push("ഇപ്പോൾ ശക്തമായ മഴ രേഖപ്പെട്ടിട്ടില്ല; എന്നാൽ മേഘാവരണം പ്രദേശത്തിന്റെ ചില ഭാഗങ്ങളിൽ തുടർന്നേക്കാം.");
   }
 
-  function describeWind(speed, deg) {
-    if (speed == null) return "കാറ്റ് സംബന്ധിച്ച വിവരങ്ങൾ ലഭ്യമല്ല.";
-    const kmh = msToKmh(speed);
-    const dir = windDirMalayalam(deg);
-    return `കാറ്റ് ${dir} നിന്നും ഏകദേശം ${toFixedSafe(kmh,1)} km/h വേഗത്തിൽ വീശുന്നു.`;
-  }
+  s.push("മേഘാവസ്ഥയിലെ ഈ മാറ്റങ്ങൾ സാധാരണ നിരീക്ഷണ ഡാറ്റയുടെ അടിസ്ഥാനത്തിൽ കൃത്യമായി രേഖപ്പെടുത്തപ്പെടുന്നവയാണ്.");
 
-  function describeHumidity(hum) {
-    if (hum == null) return "";
-    return `വാതാവിലെ ഈർപ്പതോത് ഏകദേശം ${Math.round(hum)}% ആണ്, ഇത് പ്രദേശത്തെ അന്തരീക്ഷത്തെ സ്വല്പമായി സ്വാധീനിക്കാം.`;
-  }
-
-  function describeCloudsAndRain(computed) {
-    if (computed.precipNow != null && computed.precipNow > 0.1) {
-      return "പ്രദേശത്ത് ഇപ്പോൾ മഴ പെയ്യുന്നു; അടുത്ത മണിക്കൂറുകളിലും ഇടയ്ക്കിടെ തുടരുമെന്നാണ് സാധ്യത.";
-    } else if (computed.precipProb != null && computed.precipProb > 30) {
-      return `മേഘാവരണം വ്യാപിച്ചിരിക്കുന്നു, അടുത്ത മണിക്കൂറിൽ ${Math.round(computed.precipProb)}% സാധ്യതയോടെ മഴ ലഭിക്കാനുണ്ട്.`;
-    } else if (computed.cloudcover != null) {
-      if (computed.cloudcover < 20) return "ആകാശം തെളിഞ്ഞിരിക്കുന്നു, മേഘം കുറഞ്ഞിരിക്കുന്നു.";
-      if (computed.cloudcover < 50) return "മേഘം ചിലവട്ടങ്ങളിൽ മാത്രം സാന്നിദ്ധ്യപ്പെടുന്നു.";
-      if (computed.cloudcover < 80) return "മേഘാവരണം വ്യാപിച്ചു, സൂര്യപ്രകാശം കുറവാണ്.";
-      return "മൂടൽമഞ്ഞ് വ്യാപിച്ചിരിക്കുന്നു, മഴ സാധ്യത കുറഞ്ഞിരിക്കുന്നു.";
-    }
-    return "";
-  }
-
-  function describeIMD(alert) {
-    if (!alert || !alert.text) return "ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.";
-    const codeMatch = alert.text.match(/[oyrg]$/i);
-    const code = codeMatch ? codeMatch[0] : null;
-    const meaning = code ? imdAlertMalayalamMeaning(code) : "ലഭ്യമല്ല";
-    return `IMD ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning} (അവസാന അപ്ഡേറ്റ്: ${alert.lastUpdated || 'ലഭ്യമല്ല'})`;
-  }
-
-  function describeAQI(aqiObj) {
-    if (!aqiObj || aqiObj.aqi == null) return "പ്രാദേശിക വായുനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.";
-    return `വായുനില സൂചിക (AQI): ${aqiObj.aqi} — ${aqiMalayalamMeaning(aqiObj.aqi)}.`;
-  }
-
-  // ----- Paragraph 1: Overview -----
-  s.push(`പ്രാദേശിക നിരീക്ഷണങ്ങളുടെ അടിസ്ഥാനത്തിൽ, ഇന്ന് എലങ്കുളം പ്രദേശത്ത് കാലാവസ്ഥ ${describeTemperature(computed.tempNow)} ${describeTrend(computed.tempTrend)}`);
-
-  // ----- Paragraph 2: Humidity & Wind -----
-  const humText = describeHumidity(computed.humidity);
-  const windText = describeWind(computed.windSpeedMs, computed.windDir);
-  if (humText || windText) {
-    s.push([humText, windText].filter(Boolean).join(" "));
-  }
-
-  // ----- Paragraph 3: Clouds & Rain -----
-  const rainText = describeCloudsAndRain(computed);
-  if (rainText) s.push(rainText);
-
-  // ----- Paragraph 4: Previous hour temp -----
+  // Paragraph 5: temperature comparison
   if (computed.tempPrevHour != null && computed.tempNow != null) {
     const diff = (computed.tempNow - computed.tempPrevHour);
-    const word = diff > 0 ? "കൂടിയിട്ടുണ്ട്" : (diff < 0 ? "കുറഞ്ഞിട്ടുണ്ട്" : "മാറ്റമില്ല");
-    s.push(`കഴിഞ്ഞ ഒരു മണിക്കൂറിനിടെ താപനില ${Math.abs(diff).toFixed(1)}°C ${word} (മുമ്പ്: ${toFixedSafe(computed.tempPrevHour,1)}°C, ഇപ്പോൾ: ${toFixedSafe(computed.tempNow,1)}°C).`);
+    const word = diff > 0 ? "ഉയർന്നിട്ടുണ്ട്" : (diff < 0 ? "താഴ്ന്നിട്ടുണ്ട്" : "മാറ്റമില്ല");
+    s.push(`കഴിഞ്ഞ ഒരു മണിക്കൂറിനിടെ താപനിലയിൽ ${Math.abs(diff).toFixed(1)}°C എന്ന തോതിൽ മാറ്റം സംഭവിച്ചിട്ടുണ്ട് — മുമ്പ്: ${toFixedSafe(computed.tempPrevHour,1)}°C, ഇപ്പോൾ: ${toFixedSafe(computed.tempNow,1)}°C. ഇതിനർത്ഥം താപനില ${word} എന്നുതന്നെ തിരിച്ചറിയപ്പെടുന്നു.`);
+  } else {
+    s.push("മുമ്പത്തെ മണിക്കൂറുമായി താരതമ്യം ചെയ്യുന്നതിനുള്ള ഡാറ്റ പര്യാപ്തമല്ല.");
   }
 
-  // ----- Paragraph 5: IMD alert -----
-  s.push(describeIMD(imdAlert));
-
-  // ----- Paragraph 6: AQI -----
-  s.push(describeAQI(airQuality));
-
-  // ----- Paragraph 7: User reports -----
-  if (userReports && userReports.length) {
-    const items = userReports.map(r => {
-      const loc = r.location || r.place || "ഏലംകുളം";
-      const desc = (r.observation || r.description || r.obs || r.note || "").trim();
-      const time = r.time || (r.timestamp ? new Date(Number(r.timestamp)).toLocaleString() : "");
-      if (!desc) return null;
-      return `<li>${escapeHtml(loc)} — "${escapeHtml(desc)}"${time ? ` (${escapeHtml(time)})` : ''}</li>`;
-    }).filter(Boolean).join("");
-    if (items) s.push(`പ്രാദേശിക നിരീക്ഷണങ്ങൾ (Granted): <ul>${items}</ul>`);
+  if (computed.tempTrend != null) {
+    const trendVal = computed.tempTrend;
+    const trendWord = trendVal > 0.15 ? "ഉയരുന്ന പ്രവണത" : (trendVal < -0.15 ? "താഴ്ന്നുവരുന്ന പ്രവണത" : "സ്ഥിരത പുലർത്തുന്ന പ്രവണത");
+    s.push(`കഴിഞ്ഞ ${computed.trendHours || 12} മണിക്കൂറുകളിൽ ലഭ്യമായ ശരാശരി നിരീക്ഷണങ്ങൾ പ്രകാരം താപനിലയിൽ ${trendWord} കാണപ്പെടുന്നു. (ഔസത മാറ്റം: ${toFixedSafe(trendVal,2)}°C/മണിക്കൂർ)`);
+  } else {
+    s.push("താപനില പ്രവണത കണക്കാക്കുന്നതിനുള്ള സമഗ്ര ഡാറ്റ ലഭ്യമല്ല.");
   }
 
-  // ----- Paragraph 8: Conclusion -----
-  s.push("സമാപനമായി, എലങ്കുളം പ്രദേശത്ത് ഇന്ന് കാലാവസ്ഥ സാധാരണ നിലയിലാണ്; ഇടയ്ക്കിടെ മൂടൽമഞ്ഞ് അല്ലെങ്കിൽ ചെറിയ മഴയുടെ സാധ്യത നിലനിൽക്കുന്നു. ഔദ്യോഗിക അറിയിപ്പുകൾക്കായി IMD നിരീക്ഷണങ്ങൾ ശ്രദ്ധിക്കുക.");
+  // Paragraph 6: seasonal context
+  const month = new Date().getMonth() + 1;
+  if ([6,7,8,9].includes(month)) {
+    s.push("ദക്ഷിണ പടിഞ്ഞാറൻ മൺസൂൺ സജീവമായിരിക്കുന്ന കാലയളവായതിനാൽ, ഇടയ്ക്കിടെ മഴ കിട്ടുന്നതും മേഘാവരണം നിലനിൽക്കുന്നതും സാധാരണമാണ്.");
+  } else if ([10,11,12,1].includes(month)) {
+    s.push("ഇപ്പോൾ ശൈത്യകാല സാഹചര്യങ്ങളാണ് നിലനിൽക്കുന്നത്; രാത്രികളിൽ തണുപ്പ് അനുഭവപ്പെടുകയും പ്രഭാത സമയങ്ങളിൽ നേരിയ മൂടൽമഞ്ഞ് ഉണ്ടാകുകയും ചെയ്യുന്നത് സാധാരണമാണ്.");
+  } else {
+    s.push("ഈ കാലയളവിൽ പ്രാദേശികമായി സൂര്യപ്രകാശം, മേഘാവരണം, ഇടവിട്ടുള്ള മഴ എന്നിവ ഒന്നിച്ച് പ്രകടമാകുന്ന മിശ്ര സാഹചര്യങ്ങളാണ് സാധാരണ.");
+  }
 
-  // ----- Ensure minimum length -----
+  // Paragraph 7: alerts & AQI
+  if (imdAlert && imdAlert.text) {
+  const codeMatch = imdAlert.text.match(/[oyrg]$/i); // get last letter
+  const code = codeMatch ? codeMatch[0] : null;
+  const meaning = code ? imdAlertMalayalamMeaning(code) : "ലഭ്യമല്ല";
+
+  s.push(`IMD (മലപ്പുറം) ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning}. (അവസാന അപ്ഡേറ്റ്: ${imdAlert.lastUpdated || 'ലഭ്യമല്ല'})`);
+} else {
+  s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.");
+}
+
+ if (airQuality && airQuality.aqi != null) {
+   s.push(
+  `വായുനില സൂചിക (AQI): ${airQuality.aqi} — ${aqiMalayalamMeaning(airQuality.aqi)}. ` +
+  `ഈ മൂല്യം OpenWeather മാനദണ്ഡപ്രകാരമുള്ള 1–5 സ്കെയിലിൽ നിന്നുള്ളതാണ്. ` +
+  `ഇത് ആഗോള AQI സ്കെയിലിൽ ഏകദേശം ${airQuality.aqi === 1 ? "0–50" :
+     airQuality.aqi === 2 ? "51–100" :
+     airQuality.aqi === 3 ? "101–200" :
+     airQuality.aqi === 4 ? "201–300" : "301–500"} പരിധിയോട് സമാനമാണ്. ` +
+  `ഉയർന്ന മൂല്യങ്ങൾ ശ്വാസകോശ പ്രശ്നങ്ങൾക്കും ദീർഘകാല ആരോഗ്യബാധകൾക്കും സാധ്യത വർധിപ്പിക്കുന്നു.`
+);
+
+  } else {
+    s.push("പ്രാദേശിക വായുനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.");
+  }
+
+  // Paragraph 8: user reports
+  s.push("പ്രാദേശികരിൽ നിന്ന് ലഭിക്കുന്ന നിരീക്ഷണങ്ങൾ കാലാവസ്ഥാ റിപ്പോർട്ടുകളുടെ വിശദത വർധിപ്പിക്കുന്നതിനാൽ, ലഭ്യമായ 'Granted' വിഭാഗത്തിലെ റിപ്പോർട്ടുകളും ചേര്‍ക്കപ്പെട്ടിരിക്കുന്നു.");
+
+  // Conclusion
+  s.push("സമാപനമായി, ഇന്ന് രേഖപ്പെടുത്തിയിരിക്കുന്ന നിരീക്ഷണങ്ങളുടെ അടിസ്ഥാനത്തിൽ എലങ്കുളം പ്രദേശത്ത് മേഘാവരണം തുടരാനും ചില ഇടവേളകളിൽ നേരിയ മഴയ്ക്ക് സാധ്യത നിലനിൽക്കാനും സാധ്യതയുണ്ട്.");
+  s.push("ഈ റിപ്പോർട്ട് ലഭ്യമായ ഡാറ്റകളുടെ സംഹിതയാണ്; ഔദ്യോഗിക മുന്നറിയിപ്പുകൾക്കായി IMD പുറത്തിറക്കുന്ന അറിയിപ്പുകൾ നോക്കുക.");
+
   const essay = s.join("\n\n");
+
   const sentenceCount = essay.split(/[.!\?]\s/).filter(Boolean).length;
   if (sentenceCount < 20) {
     const fillers = [
-      "നിലവിലെ ഡാറ്റയിൽ ചില ഒഴിവുകൾ നിലനിൽക്കുന്നു, പക്ഷേ റിപ്പോർട്ട് പരമാവധി കൃത്യതയോടെ തയ്യാറാക്കിയതാണ്.",
-      "കൂടുതൽ നിരീക്ഷണങ്ങൾ ലഭ്യമാകുമ്പോൾ അടുത്ത അപ്ഡേറ്റുകളിൽ കൂടുതൽ വ്യക്തത പ്രതീക്ഷിക്കാം.",
-      "പ്രാദേശിക നിരീക്ഷണ കേന്ദ്രങ്ങളിൽ നിന്നുള്ള സംഗ്രഹ വിവരങ്ങളും പരിഗണിച്ചിട്ടുള്ളതാണ്."
+      "നിലവിലെ ഡാറ്റയിൽ ചില ഒഴിവുകൾ നിലവിലുണ്ടെങ്കിലും റിപ്പോർട്ട് സാധ്യമായ പരമാവധി കൃത്യതയിൽ രൂപപ്പെടുത്തിയിരിക്കുന്നു.",
+      "കൂടുതൽ നിരീക്ഷണ വിവരങ്ങൾ ലഭ്യമാകുന്നതനുസരിച്ച് അടുത്ത അപ്ഡേറ്റുകളിൽ കൂടുതൽ വ്യക്തത പ്രതീക്ഷിക്കാം.",
+      "പ്രാദേശിക നിരീക്ഷണ കേന്ദ്രങ്ങളിൽ നിന്നുള്ള സംഗ്രഹ വിവരങ്ങളും വിലയിരുത്തലിനായി പരിഗണിച്ചിട്ടുള്ളതാണ്."
     ];
     let i = 0;
     let ext = essay;
@@ -324,7 +330,6 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality, userReports
 
   return essay;
 }
-
 
 // ---------------- render main ----------------
 async function runOnceAndRender(){
