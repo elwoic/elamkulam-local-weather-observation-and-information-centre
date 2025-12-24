@@ -351,13 +351,7 @@ async function runOnceAndRender(){
     if (computed.tempNow == null && owm.main && owm.main.temp != null) computed.tempNow = owm.main.temp;
   }
 
-  let airQuality = null;
-try {
-  airQuality = await fetchOpenWeatherAQI();
-} catch (e) {
-  airQuality = null;
-}
-let airQuality = null;
+ let airQuality = null;
 try {
   airQuality = await fetchOpenWeatherAQI();
   if (!airQuality) {
@@ -366,8 +360,6 @@ try {
 } catch(e){
   airQuality = null;
 }
-
-
   const imdAlert = getImdAlertForToday();
 
   const essay = generateLongNewsMalayalam({ computed, imdAlert, airQuality });
