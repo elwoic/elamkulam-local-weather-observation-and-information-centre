@@ -72,3 +72,4 @@ async function loadAQIBox() {
 
 loadAQIBox();
 setInterval(loadAQIBox, 600000);
+</script>
