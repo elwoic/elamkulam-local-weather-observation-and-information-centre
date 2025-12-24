@@ -137,29 +137,24 @@ async function fetchGrantedReports(){
     return [];
   }
 }
-async function fetchOpenWeatherAQI(lat = LAT, lon = LON) {
-  if (!OPENWEATHER_API_KEY) return null;
+async function fetchEstimatedAQI() {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data?.current?.pm2_5) return null;
+  const pm25 = data.current.pm2_5;
 
-  const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}`;
-  try {
-    const r = await fetch(url);
-    if (!r.ok) {
-      console.warn("AQI fetch failed:", r.status);
-      return null;
-    }
-    const data = await r.json();
-    if (!data.list || !data.list.length) return null;
+  // Convert PM2.5 → 1–5 scale like OpenWeatherMap
+  let aqi = 1;
+  if (pm25 <= 12) aqi = 1;
+  else if (pm25 <= 35.4) aqi = 2;
+  else if (pm25 <= 55.4) aqi = 3;
+  else if (pm25 <= 150.4) aqi = 4;
+  else aqi = 5;
 
-    const item = data.list[0];
-    return {
-      aqi: item.main.aqi,          // 1–5
-      components: item.components // pm2_5, pm10, etc
-    };
-  } catch (e) {
-    console.warn("AQI error:", e);
-    return null;
-  }
+  return { aqi, pm25, source: "Estimated (Open-Meteo)" };
 }
+
 
 // ---------------- compute metrics ----------------
 function computeFromMeteo(m){
@@ -362,6 +357,13 @@ try {
 } catch (e) {
   airQuality = null;
 }
+let airQuality = null;
+try {
+  airQuality = await fetchOpenWeatherAQI();
+  if (!airQuality) {
+    airQuality = await fetchEstimatedAQI(); // fallback
+  }
+} catch(e){ airQuality = null; }
 
   const imdAlert = getImdAlertForToday();
 
