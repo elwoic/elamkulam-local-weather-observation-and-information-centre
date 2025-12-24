@@ -1392,25 +1392,38 @@ footer a:hover {
     </div>
 </section>
 
-
-    <section class="aqi-dashboard-section">
+<section class="aqi-dashboard-section">
         <h2>🌫️ Air Quality Index (AQI)</h2>
         <div class="aqi-status-container">
             <div class="aqi-circle" id="aqiCircle"></div>
             <div class="aqi-text" id="aqiValue">Loading AQI...</div>
         </div>
-        <div class="aqi-legend">
-            <div class="legend-item aqi-good"><span>1 — Excellent</span></div>
-            <div class="legend-item aqi-fair"><span>2 — Fair</span></div>
-            <div class="legend-item aqi-moderate"><span>3 — Moderate</span></div>
-            <div class="legend-item aqi-poor"><span>4 — Poor</span></div>
-            <div class="legend-item aqi-very-poor"><span>5 — Very Poor</span></div>
-        </div>
+       <div class="aqi-legend">
+    <div class="legend-item aqi-good">
+        <span>0–50 • Good</span>
+    </div>
+    <div class="legend-item aqi-fair">
+        <span>51–100 • Satisfactory</span>
+    </div>
+    <div class="legend-item aqi-moderate">
+        <span>101–200 • Moderate</span>
+    </div>
+    <div class="legend-item aqi-poor">
+        <span>201–300 • Poor</span>
+    </div>
+    <div class="legend-item aqi-very-poor">
+        <span>301–500 • Very Poor</span>
+    </div>
+</div>
+<div style="font-size:11px; color:#666; margin-top:4px;">
+    Source: OpenAQ (Measured PM2.5)
+</div>
+
         <div class="aqi-health-advice" id="aqiAdvice">
             Loading health advice...
         </div>
         <center>
-        <p>ഇന്നത്തെ മലിനീകരണം, നാളെയുടെ രോഗം.</p>
+        <p>ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</p>
             <p>
     <a href="AQI-advise.html" style="font-size:10px; color:#0000EE;">
         AQI എന്തെന്ന് കൂടുതലറിയാം. 
@@ -1418,6 +1431,7 @@ footer a:hover {
 </p>
         </center>
     </section>
+   
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <div class="weather-dashboard-scope">
