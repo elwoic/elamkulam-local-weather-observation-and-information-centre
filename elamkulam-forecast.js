@@ -199,8 +199,7 @@ function computeFromMeteo(m){
   }
 }
 
-// ---------------- essay generator (corrected Malayalam) ----------------
-function generateLongNewsMalayalam({ computed, imdAlert, airQuality }) {
+function generateLongNewsMalayalam({ computed, imdAlert, airQuality, userReports }) {
   const s = [];
   const now = new Date();
   const dateLine = `${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`;
@@ -209,109 +208,108 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }) {
   s.push(dateLine);
   s.push("");
 
-  const month = now.getMonth() + 1;
-
-  // ----- season-aware context -----
-  const seasonData = (() => {
-    if ([6,7,8,9].includes(month)) return { season: "മൺസൂൺ", rainLikely: true, tempComment: "തണുത്ത അന്തരീക്ഷവും മഴയും വ്യാപിച്ച മേഘാവരണം" };
-    if ([10,11].includes(month)) return { season: "വേനൽമഴ അവസാനകാലം", rainLikely: true, tempComment: "മധ്യമം, ചില ഇടവേളകളിൽ മഴ" };
-    if ([12,1,2].includes(month)) return { season: "ശൈത്യകാലം", rainLikely: false, tempComment: "തണുപ്പ്, മൂടൽമഞ്ഞ് ചിലപ്പോഴേ" };
-    return { season: "വേനൽ/ഗ്രീഷ്മം", rainLikely: false, tempComment: "പുതിയ ചൂട്, സൂര്യപ്രകാശം കൂടുതലും" };
-  })();
-
-  // ----- human-like randomizer -----
-  function humanize(text) {
-    const adjs = ["പ്രധാനമായും", "ചെറുതായി", "ഇടക്കിടെ", "സാധാരണയായി", "തത്സമയം"];
-    const idx = Math.floor(Math.random() * adjs.length);
-    return `${adjs[idx]} ${text}`;
+  // ----- Helper functions -----
+  function describeTemperature(temp) {
+    if (temp == null) return "താപനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.";
+    if (temp < 20) return "പ്രദേശത്ത് തണുപ്പ് അനുഭവപ്പെടുന്നു.";
+    if (temp < 30) return "താപനില സാധാരണ നിലയിലാണ്, ഒട്ടും അകമ്പടി ഇല്ല.";
+    return "ചൂട് കൂടുതലാണ്; ശ്രദ്ധ ആവശ്യമുണ്ട്.";
   }
 
-  // ----- temperature & trend -----
-  if (computed.tempNow != null) {
-    const trendWord = computed.tempTrend > 0.15 ? "ഉയരുന്ന പ്രവണത" : (computed.tempTrend < -0.15 ? "താഴ്ന്നുവരുന്ന പ്രവണത" : "സ്ഥിരത പുലർത്തുന്ന പ്രവണത");
-    s.push(`ഇപ്പോൾ പ്രദേശത്ത് രേഖപ്പെടുത്തിയിരിക്കുന്ന താപനില ${toFixedSafe(computed.tempNow,1)}°C ആണ്. കഴിഞ്ഞ ${computed.trendHours || 12} മണിക്കൂറിൽ ${trendWord} കാണപ്പെടുന്നു (ശരാശരി മാറ്റം: ${toFixedSafe(computed.tempTrend,2)}°C/മണിക്കൂർ).`);
-  } else {
-    s.push("ഈ സമയത്ത് താപനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.");
+  function describeTrend(trend) {
+    if (trend == null) return "";
+    if (trend > 0.15) return "കഴിഞ്ഞ മണിക്കൂറുകളിൽ താപനില ക്രമംപ്രകാരം ഉയരുകയാണ്.";
+    if (trend < -0.15) return "കഴിഞ്ഞ മണിക്കൂറുകളിൽ താപനില കുറവാണ്.";
+    return "താപനില സ്ഥിരത പുലർത്തുകയാണ്.";
   }
 
-  // ----- humidity -----
-  if (computed.humidity != null) {
-    s.push(humanize(`അന്തരീക്ഷത്തിലെ ഈർപ്പതൊത് നിലവിൽ ${Math.round(computed.humidity)}% ആണ്.`));
-  } else {
-    s.push("ഈർപ്പത്തിന്റെ നിലവിലുള്ള രേഖകൾ വ്യക്തമല്ല.");
+  function describeWind(speed, deg) {
+    if (speed == null) return "കാറ്റ് സംബന്ധിച്ച വിവരങ്ങൾ ലഭ്യമല്ല.";
+    const kmh = msToKmh(speed);
+    const dir = windDirMalayalam(deg);
+    return `കാറ്റ് ${dir} നിന്നും ഏകദേശം ${toFixedSafe(kmh,1)} km/h വേഗത്തിൽ വീശുന്നു.`;
   }
 
-  // ----- wind -----
-  if (computed.windSpeedMs != null) {
-    const kmh = msToKmh(computed.windSpeedMs);
-    s.push(humanize(`കാറ്റിന്റെ ദിശ ${windDirMalayalam(computed.windDir)} (${computed.windDir != null ? Math.round(computed.windDir) + "°" : 'ലഭ്യമല്ല'}) ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു, വേഗം ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആണ്.`));
-  } else {
-    s.push("കാറ്റിന്റെ വേഗതയും ദിശയും സംബന്ധിച്ച ഡാറ്റ ലഭ്യമല്ല.");
+  function describeHumidity(hum) {
+    if (hum == null) return "";
+    return `വാതാവിലെ ഈർപ്പതോത് ഏകദേശം ${Math.round(hum)}% ആണ്, ഇത് പ്രദേശത്തെ അന്തരീക്ഷത്തെ സ്വല്പമായി സ്വാധീനിക്കാം.`;
   }
 
-  // ----- sky & rain logic -----
-  function describeSky(computed, month) {
-    if ([12,1,2].includes(month)) {
-      return "ഇപ്പോൾ ശൈത്യകാലമാണ്; മഴ ലഭിക്കാൻ സാധ്യത വളരെ കുറവാണ്. മൂടൽമഞ്ഞ് കണപ്പെട്ടേക്കാം, ആകാശം കൂടുതലും വ്യക്തമാകും.";
+  function describeCloudsAndRain(computed) {
+    if (computed.precipNow != null && computed.precipNow > 0.1) {
+      return "പ്രദേശത്ത് ഇപ്പോൾ മഴ പെയ്യുന്നു; അടുത്ത മണിക്കൂറുകളിലും ഇടയ്ക്കിടെ തുടരുമെന്നാണ് സാധ്യത.";
+    } else if (computed.precipProb != null && computed.precipProb > 30) {
+      return `മേഘാവരണം വ്യാപിച്ചിരിക്കുന്നു, അടുത്ത മണിക്കൂറിൽ ${Math.round(computed.precipProb)}% സാധ്യതയോടെ മഴ ലഭിക്കാനുണ്ട്.`;
+    } else if (computed.cloudcover != null) {
+      if (computed.cloudcover < 20) return "ആകാശം തെളിഞ്ഞിരിക്കുന്നു, മേഘം കുറഞ്ഞിരിക്കുന്നു.";
+      if (computed.cloudcover < 50) return "മേഘം ചിലവട്ടങ്ങളിൽ മാത്രം സാന്നിദ്ധ്യപ്പെടുന്നു.";
+      if (computed.cloudcover < 80) return "മേഘാവരണം വ്യാപിച്ചു, സൂര്യപ്രകാശം കുറവാണ്.";
+      return "മൂടൽമഞ്ഞ് വ്യാപിച്ചിരിക്കുന്നു, മഴ സാധ്യത കുറഞ്ഞിരിക്കുന്നു.";
     }
-    if (seasonData.rainLikely && computed.precipProb > 40) {
-      return "ഇടയ്ക്കിടെ മഴക്കൂടി ഉണ്ടാകാവുന്ന സാഹചര്യമാണ്. മേഘാവരണം വ്യാപിച്ചിരിക്കുന്നു.";
-    }
-    if (computed.cloudcover != null) {
-      if (computed.cloudcover < 20) return "പൂർണ്ണ സൂര്യപ്രകാശം, മേഘം കുറഞ്ഞിരിക്കുന്നു.";
-      if (computed.cloudcover < 50) return "മേഘം കുറച്ച് ഇടവേളകൾ സാന്നിദ്ധ്യപ്പെടുന്നു.";
-      if (computed.cloudcover < 80) return "മേഘം വ്യാപിച്ചു നിൽക്കുന്നു, സൂര്യപ്രകാശം കുറവാണ്.";
-      return "മൂടൽമഞ്ഞ് വ്യാപിച്ചു നിൽക്കുന്നു, മഴ സാധ്യത വളരെ കുറവാണ്.";
-    }
-    return seasonData.tempComment;
+    return "";
   }
 
-  s.push(humanize(describeSky(computed, month)));
-
-  // ----- precipitation (if any) -----
-  if (computed.precipNow != null && computed.precipNow > 0.1) {
-    s.push("പ്രദേശത്ത് നിലവിൽ ചെറിയ തോതിൽ മഴ പെയ്യുന്നുവെന്ന് രേഖകൾ സൂചിപ്പിക്കുന്നു; അടുത്ത മണിക്കൂറുകളിലും ഇടവിട്ടു തുടരാൻ സാധ്യതയുണ്ട്.");
-  } else if (computed.precipProb != null && computed.precipProb > 0) {
-    s.push(`അടുത്ത മണിക്കൂറിൽ മഴ ലഭിക്കാൻ ശരാശരി സാധ്യത ${Math.round(computed.precipProb)}% ആയി വിലയിരുത്തുന്നു.`);
-  }
-
-  // ----- previous hour comparison -----
-  if (computed.tempPrevHour != null && computed.tempNow != null) {
-    const diff = (computed.tempNow - computed.tempPrevHour);
-    const word = diff > 0 ? "ഉയർന്നിട്ടുണ്ട്" : (diff < 0 ? "താഴ്ന്നിട്ടുണ്ട്" : "മാറ്റമില്ല");
-    s.push(`കഴിഞ്ഞ ഒരു മണിക്കൂറിനിടെ താപനില ${Math.abs(diff).toFixed(1)}°C ${word}. (മുമ്പ്: ${toFixedSafe(computed.tempPrevHour,1)}°C, ഇപ്പോൾ: ${toFixedSafe(computed.tempNow,1)}°C)`);
-  }
-
-  // ----- IMD alert -----
-  if (imdAlert && imdAlert.text) {
-    const codeMatch = imdAlert.text.match(/[oyrg]$/i);
+  function describeIMD(alert) {
+    if (!alert || !alert.text) return "ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.";
+    const codeMatch = alert.text.match(/[oyrg]$/i);
     const code = codeMatch ? codeMatch[0] : null;
     const meaning = code ? imdAlertMalayalamMeaning(code) : "ലഭ്യമല്ല";
-    s.push(`IMD ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning}. (അവസാന അപ്ഡേറ്റ്: ${imdAlert.lastUpdated || 'ലഭ്യമല്ല'})`);
-  } else {
-    s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.");
+    return `IMD ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning} (അവസാന അപ്ഡേറ്റ്: ${alert.lastUpdated || 'ലഭ്യമല്ല'})`;
   }
 
-  // ----- AQI -----
-  if (airQuality && airQuality.aqi != null) {
-    s.push(`വായുനില സൂചിക (AQI): ${airQuality.aqi} — ${aqiMalayalamMeaning(airQuality.aqi)}. ഉചിതമായ ശ്രദ്ധ നിർദ്ദേശിക്കുന്നു.`);
-  } else {
-    s.push("പ്രാദേശിക വായുനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.");
+  function describeAQI(aqiObj) {
+    if (!aqiObj || aqiObj.aqi == null) return "പ്രാദേശിക വായുനില സംബന്ധിച്ച കൃത്യമായ രേഖകൾ ലഭ്യമല്ല.";
+    return `വായുനില സൂചിക (AQI): ${aqiObj.aqi} — ${aqiMalayalamMeaning(aqiObj.aqi)}.`;
   }
 
-  // ----- user reports -----
-  s.push("പ്രാദേശിക കൃത്യതക്കായി ജനങ്ങളിൽ നിന്നും ലഭിച്ച വിവരങ്ങൾ കൂടി ഉൾപ്പെടുത്തിയിരിക്കുന്നു, റിപ്പോർട്ട് കാലാവസ്ഥ അനുമാനങ്ങൾ ശരിയാണെന്ന് സൂചിപ്പിക്കുന്നു.");
+  // ----- Paragraph 1: Overview -----
+  s.push(`പ്രാദേശിക നിരീക്ഷണങ്ങളുടെ അടിസ്ഥാനത്തിൽ, ഇന്ന് എലങ്കുളം പ്രദേശത്ത് കാലാവസ്ഥ ${describeTemperature(computed.tempNow)} ${describeTrend(computed.tempTrend)}`);
 
-  // ----- conclusion -----
-  s.push("സമാപനമായി, ഇന്നത്തെ കാലാവസ്ഥാ നിരീക്ഷണങ്ങൾ പ്രകാരം എലങ്കുളം പ്രദേശത്ത് കാലാവസ്ഥ സാധാരണ നിലയിൽ തുടരുന്നു; ഇടയ്ക്കിടെ മൂടൽമഞ്ഞ് അല്ലെങ്കിൽ ചെറുതായി മഴയുടെ സാധ്യത നിലനിൽക്കുന്നു.");
-  s.push("റിപ്പോർട്ട് ലഭ്യമായ ഡാറ്റകൾ അടിസ്ഥാനമാക്കി തയ്യാറാക്കിയതാണ്; ഔദ്യോഗിക അറിയിപ്പുകൾക്കായി IMD നിരീക്ഷണങ്ങൾ ശ്രദ്ധിക്കുക.");
+  // ----- Paragraph 2: Humidity & Wind -----
+  const humText = describeHumidity(computed.humidity);
+  const windText = describeWind(computed.windSpeedMs, computed.windDir);
+  if (humText || windText) {
+    s.push([humText, windText].filter(Boolean).join(" "));
+  }
 
-  // ----- ensure essay length -----
+  // ----- Paragraph 3: Clouds & Rain -----
+  const rainText = describeCloudsAndRain(computed);
+  if (rainText) s.push(rainText);
+
+  // ----- Paragraph 4: Previous hour temp -----
+  if (computed.tempPrevHour != null && computed.tempNow != null) {
+    const diff = (computed.tempNow - computed.tempPrevHour);
+    const word = diff > 0 ? "കൂടിയിട്ടുണ്ട്" : (diff < 0 ? "കുറഞ്ഞിട്ടുണ്ട്" : "മാറ്റമില്ല");
+    s.push(`കഴിഞ്ഞ ഒരു മണിക്കൂറിനിടെ താപനില ${Math.abs(diff).toFixed(1)}°C ${word} (മുമ്പ്: ${toFixedSafe(computed.tempPrevHour,1)}°C, ഇപ്പോൾ: ${toFixedSafe(computed.tempNow,1)}°C).`);
+  }
+
+  // ----- Paragraph 5: IMD alert -----
+  s.push(describeIMD(imdAlert));
+
+  // ----- Paragraph 6: AQI -----
+  s.push(describeAQI(airQuality));
+
+  // ----- Paragraph 7: User reports -----
+  if (userReports && userReports.length) {
+    const items = userReports.map(r => {
+      const loc = r.location || r.place || "ഏലംകുളം";
+      const desc = (r.observation || r.description || r.obs || r.note || "").trim();
+      const time = r.time || (r.timestamp ? new Date(Number(r.timestamp)).toLocaleString() : "");
+      if (!desc) return null;
+      return `<li>${escapeHtml(loc)} — "${escapeHtml(desc)}"${time ? ` (${escapeHtml(time)})` : ''}</li>`;
+    }).filter(Boolean).join("");
+    if (items) s.push(`പ്രാദേശിക നിരീക്ഷണങ്ങൾ (Granted): <ul>${items}</ul>`);
+  }
+
+  // ----- Paragraph 8: Conclusion -----
+  s.push("സമാപനമായി, എലങ്കുളം പ്രദേശത്ത് ഇന്ന് കാലാവസ്ഥ സാധാരണ നിലയിലാണ്; ഇടയ്ക്കിടെ മൂടൽമഞ്ഞ് അല്ലെങ്കിൽ ചെറിയ മഴയുടെ സാധ്യത നിലനിൽക്കുന്നു. ഔദ്യോഗിക അറിയിപ്പുകൾക്കായി IMD നിരീക്ഷണങ്ങൾ ശ്രദ്ധിക്കുക.");
+
+  // ----- Ensure minimum length -----
   const essay = s.join("\n\n");
   const sentenceCount = essay.split(/[.!\?]\s/).filter(Boolean).length;
   if (sentenceCount < 20) {
     const fillers = [
-      "നിലവിലെ ഡാറ്റയിൽ ചില ഒഴിവുകൾ നിലനില്ക്കുന്നു, പക്ഷേ റിപ്പോർട്ട് പരമാവധി കൃത്യതയോടെ തയ്യാറാക്കിയതാണ്.",
+      "നിലവിലെ ഡാറ്റയിൽ ചില ഒഴിവുകൾ നിലനിൽക്കുന്നു, പക്ഷേ റിപ്പോർട്ട് പരമാവധി കൃത്യതയോടെ തയ്യാറാക്കിയതാണ്.",
       "കൂടുതൽ നിരീക്ഷണങ്ങൾ ലഭ്യമാകുമ്പോൾ അടുത്ത അപ്ഡേറ്റുകളിൽ കൂടുതൽ വ്യക്തത പ്രതീക്ഷിക്കാം.",
       "പ്രാദേശിക നിരീക്ഷണ കേന്ദ്രങ്ങളിൽ നിന്നുള്ള സംഗ്രഹ വിവരങ്ങളും പരിഗണിച്ചിട്ടുള്ളതാണ്."
     ];
@@ -326,6 +324,7 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }) {
 
   return essay;
 }
+
 
 // ---------------- render main ----------------
 async function runOnceAndRender(){
