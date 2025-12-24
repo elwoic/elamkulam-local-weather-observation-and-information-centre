@@ -234,7 +234,7 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
     const kmh = msToKmh(computed.windSpeedMs);
     s.push(`കാറ്റിന്റെ വേഗം ഇപ്പോൾ ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആണ്. കാറ്റ് വീശുന്ന ദിശ ${windDirMalayalam(computed.windDir)} (${computed.windDir != null ? Math.round(computed.windDir) + "°" : 'ലഭ്യമല്ല'}) ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു.`);
     s.push("ഈ വേഗതയിൽ വലിയതോതിലുള്ള പ്രദേശീയ അന്തരീക്ഷ വ്യതിയാനങ്ങൾ സാധാരണയായി പ്രതീക്ഷിക്കാറില്ല.");
-    s.push("അടുത്ത മണിക്കൂറുകളിൽ കാറ്റിന്റെ ദിശയിലും വേഗത്തിലും ചെറിയ മാറ്റങ്ങൾ בלבד സംഭവിക്കാമെന്നതാണ് പ്രവചനങ്ങളുടെ സൂചന.");
+    s.push("അടുത്ത മണിക്കൂറുകളിൽ കാറ്റിന്റെ ദിശയിലും വേഗത്തിലും ചെറിയ മാറ്റങ്ങൾ സംഭവിക്കാമെന്നതാണ് പ്രവചനങ്ങളുടെ സൂചന.");
   } else {
     s.push("കാറ്റിന്റെ വേഗതയും ദിശയും സംബന്ധിച്ച സമഗ്രമായ ഡാറ്റ ഇപ്പോൾ ലഭ്യമല്ല.");
   }
@@ -330,7 +330,6 @@ function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
 
   return essay;
 }
-
 // ---------------- render main ----------------
 async function runOnceAndRender(){
   const container = document.getElementById(CONTAINER_ID);
@@ -338,10 +337,12 @@ async function runOnceAndRender(){
 
   container.innerHTML = `<div class="meta">അപ്‌ഡേറ്റ് ചെയ്യുന്നു — ${escapeHtml(formatTimeMalayalam(new Date()))}</div>`;
 
-  let meteo = null, owm = null, reports = [];
+  let meteo = null, owm = null, reports = [], airQuality = null;
+
   try { meteo = await fetchOpenMeteoHourly(); } catch(e){ console.warn("Open-Meteo failed", e); }
   try { owm = await fetchOpenWeatherCurrent(); } catch(e){ console.warn("OpenWeather failed", e); }
   try { reports = await fetchGrantedReports(); } catch(e){ reports = []; }
+  try { airQuality = await fetchEstimatedAQI(); } catch(e){ airQuality = null; }
 
   const computed = meteo ? computeFromMeteo(meteo) : {};
   if (owm) {
@@ -351,17 +352,9 @@ async function runOnceAndRender(){
     if (computed.tempNow == null && owm.main && owm.main.temp != null) computed.tempNow = owm.main.temp;
   }
 
- let airQuality = null;
-try {
-  airQuality = await fetchOpenWeatherAQI();
-  if (!airQuality) {
-    airQuality = await fetchEstimatedAQI(); // fallback
-  }
-} catch(e){
-  airQuality = null;
-}
   const imdAlert = getImdAlertForToday();
 
+  // ---------------- Generate essay with AQI ----------------
   const essay = generateLongNewsMalayalam({ computed, imdAlert, airQuality });
 
   const granted = (reports || []).filter(r => (r.granted && String(r.granted).toLowerCase()==='yes') || (r.show_on_site && String(r.show_on_site).toLowerCase()==='yes'));
@@ -382,7 +375,6 @@ try {
   
   container.innerHTML =
     `${heading}${meta}<pre>${escapeHtml(essay)}</pre>` +
-    `${imdAlert && imdAlert.text ? `<div class="imd-alert"><strong>IMD (മലപ്പുറം) അറിയിപ്പ്:</strong> ${escapeHtml(imdAlert.text)} ${imdAlert.lastUpdated ? `(<small>Last updated: ${escapeHtml(imdAlert.lastUpdated)}</small>)` : ''}</div>` : ''}` +
     userHtml;
 }
 
