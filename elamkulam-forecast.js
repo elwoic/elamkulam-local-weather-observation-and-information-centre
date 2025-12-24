@@ -363,7 +363,10 @@ try {
   if (!airQuality) {
     airQuality = await fetchEstimatedAQI(); // fallback
   }
-} catch(e){ airQuality = null; }
+} catch(e){
+  airQuality = null;
+}
+
 
   const imdAlert = getImdAlertForToday();
 
