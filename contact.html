@@ -846,44 +846,23 @@ Malappuram District, Kerala, India</p>
             const currentPath = window.location.pathname.split('/').pop() || 'index.html';
 
             const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
-
             
-
             // Loop through all navigation links
-
             for (let i = 0; i < navLinks.length; i++) {
-
                 const linkHref = navLinks[i].getAttribute('href');
-
                 const linkPath = linkHref ? linkHref.split('/').pop() : '';
 
-
                 if (linkPath === currentPath) {
-
                     // Remove standard white/hover styles
-
                     navLinks[i].classList.remove('text-white', 'hover:text-blue-200', 'transition', 'duration-150');
-
                     // Add the active class
-
                     navLinks[i].classList.add('active-nav');
-
                 }
-
             }
-
         };
-
-
         // We run this *after* all other DOM content is loaded
-
         setActiveNav();
-
     });
-
 </script>
-
-
 </body>
-
 </html> 
