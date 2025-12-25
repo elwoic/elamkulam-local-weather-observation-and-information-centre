@@ -1,218 +1,107 @@
-// elamkulam-forecast.js
-// Version: News-style, very lengthy Malayalam essay, wind in km/h, constant headline
-// Usage: place <div id="elamkulam-forecast-report"></div> in your page and include:
-// <script type="module" src="elamkulam-forecast.js"></script>
-
-// ---------------- CONFIG ----------------
-const OPENWEATHER_API_KEY = "ca13a2cbdc07e7613b6af82cff262295"; 
-const OPEN_METEO_BASE = "https://api.open-meteo.com/v1/forecast";
+// ---------------------------
+// CONFIGURATION
+// ---------------------------
+const OPENWEATHER_API_KEY = "ca13a2cbdc07e7613b6af82cff262295"; // OpenWeatherMap API key
 const LAT = 10.9081;
 const LON = 76.2296;
 const CONTAINER_ID = "elamkulam-forecast-report";
 const AUTO_REFRESH_MS = 60 * 60 * 1000; // 1 hour
 const HEADLINE = "എലങ്കുളം കാലാവസ്ഥാ സമഗ്ര റിപ്പോർട്ട്";
 
-// ----------------------------------------
-const MONTHS_ML = ["ജനുവരി","ഫെബ്രുവരി","മാർച്ച്","ഏപ്രിൽ","മേയ്","ജൂൺ","ജൂലൈ","ഓഗസ്റ്റ്","സെപ്റ്റംബർ","ഒക്ടോബർ","നവംബർ","ഡിസംബർ"];
-
+// ---------------------------
+// UTILS
+// ---------------------------
 function pad(n){ return String(n).padStart(2,'0'); }
-function formatDateMalayalam(d){ return `${pad(d.getDate())} ${MONTHS_ML[d.getMonth()]} ${d.getFullYear()}`; }
+function formatDateMalayalam(d){ 
+  const MONTHS_ML = ["ജനുവരി","ഫെബ്രുവരി","മാർച്ച്","ഏപ്രിൽ","മേയ്","ജൂൺ","ജൂലൈ","ഓഗസ്റ്റ്","സെപ്റ്റംബർ","ഒക്ടോബർ","നവംബർ","ഡിസംബർ"];
+  return `${pad(d.getDate())} ${MONTHS_ML[d.getMonth()]} ${d.getFullYear()}`;
+}
 function formatTimeMalayalam(d){ return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
-function escapeHtml(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ""; }
-function toFixedSafe(v,d=1){ return (v==null||isNaN(Number(v))) ? null : Number(v).toFixed(d); }
-function msToKmh(ms){ return (ms==null||isNaN(ms)) ? null : ms * 3.6; }
-function windDirMalayalam(deg){ 
-  if(deg==null||isNaN(deg)) return "ലഭ്യമല്ല"; 
-  const dirs=["ഉത്തര","ഉത്തര-കിഴക്ക്","കിഴക്ക്","തെക്ക്-കിഴക്ക്","തെക്ക്","തെക്ക്-പശ്ചിമ","പശ്ചിമ","വടക്ക്-പശ്ചിമ"]; 
-  return dirs[Math.round(deg/45)%8]; 
-}
-function imdAlertMalayalamMeaning(code){
-  const map={g:"Green (No warning) സുരക്ഷിതമായ അന്തരീക്ഷം (Safe)",
-             y:"Yellow (Watch) മിതമായ ജാഗ്രത (Moderate Alert)",
-             o:"Orange (Alert) മോശം, ജാഗ്രത ആവശ്യമുണ്ട് (Severe Alert)",
-             r:"Red (Warning) അതി മോശം, കരുതലോടെ പ്രവർത്തിക്കുക (Very Severe Alert)"};
-  return map[code.toLowerCase()]||"ലഭ്യമല്ല";
-}
-function aqiMalayalamMeaning(aqi){
-  const map={1:"നല്ലത് (Good) — 0–50",2:"മിതമായത് (Fair) — 51–100",3:"മധ്യമം (Moderate) — 101–200",
-             4:"മോശം (Poor) — 201–300",5:"അതിമോശം (Very Poor) — 301–500"};
-  return map[aqi]||"ലഭ്യമല്ല";
+function msToKmh(ms){ return ms*3.6; }
+
+// ---------------------------
+// FETCH CURRENT WEATHER
+// ---------------------------
+async function fetchWeatherSnapshot(){
+  // OpenWeatherMap
+  const owRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OPENWEATHER_API_KEY}&units=metric`);
+  const owData = await owRes.json();
+  const temp = owData.main?.temp ?? null;
+  const feels = owData.main?.feels_like ?? null;
+  const humidity = owData.main?.humidity ?? null;
+  const wind = owData.wind?.speed ?? null;
+  const windDeg = owData.wind?.deg ?? null;
+  const condition = owData.weather?.[0]?.main ?? null;
+  const visibility = owData.visibility ?? null;
+
+  // Open-Meteo
+  const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m`;
+  const omRes = await fetch(omUrl);
+  const omData = await omRes.json();
+  const omTemp = omData.current_weather?.temperature ?? null;
+  const omWind = omData.current_weather?.windspeed ?? null;
+
+  return { temp, feels, humidity, wind, windDeg, condition, visibility, omTemp, omWind };
 }
 
-// ---------------- Inject Malayalam font ----------------
-(function injectFont(){
-  const href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;600&display=swap";
-  if(!document.querySelector(`link[href="${href}"]`)){
-    const link=document.createElement('link'); link.rel='stylesheet'; link.href=href; document.head.appendChild(link);
-  }
-  if(!document.getElementById('elam-forecast-style')){
-    const s=document.createElement('style'); s.id='elam-forecast-style';
-    s.innerHTML=`
-      #${CONTAINER_ID} { font-family:'Noto Sans Malayalam', system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:#111; background:#fff; padding:14px; border-radius:6px; line-height:1.6; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-      #${CONTAINER_ID} h2 { margin:0 0 6px 0; font-size:1.05rem; font-weight:600; }
-      #${CONTAINER_ID} .meta { color:#555; font-size:0.9rem; margin-bottom:8px; }
-      #${CONTAINER_ID} pre { white-space: pre-wrap; font-family: inherit; margin:0; font-size:0.95rem; }
-      #${CONTAINER_ID} .imd-alert { margin-top:10px; font-size:0.95rem; color:#111; }
-      #${CONTAINER_ID} .user-reports { margin-top:10px; font-size:0.95rem; padding-left:18px; }
-    `;
-    document.head.appendChild(s);
-  }
-})();
-
-// ---------------- Fetchers ----------------
-async function fetchOpenMeteoHourly(lat=LAT, lon=LON){
-  const params=new URLSearchParams({
-    latitude: lat,
-    longitude: lon,
-    timezone: "auto",
-    hourly:"temperature_2m,relativehumidity_2m,precipitation,precipitation_probability,windspeed_10m,winddirection_10m,cloudcover",
-    past_days:"1",
-    forecast_days:"1"
-  });
-  const url=`${OPEN_METEO_BASE}?${params.toString()}`;
-  const r=await fetch(url);
-  if(!r.ok) throw new Error("Open-Meteo fetch failed: "+r.status);
-  return r.json();
-}
-
-async function fetchOpenWeatherCurrent(lat=LAT, lon=LON){
-  if(!OPENWEATHER_API_KEY) return null;
-  const p=new URLSearchParams({ lat, lon, appid:OPENWEATHER_API_KEY, units:"metric" });
-  const url=`https://api.openweathermap.org/data/2.5/weather?${p.toString()}`;
-  try{
-    const r=await fetch(url);
-    if(!r.ok){ console.warn("OpenWeather failed", r.status); return null; }
-    return r.json();
-  }catch(e){ console.warn("OpenWeather error", e); return null; }
-}
-
-function getImdAlertForToday(){
-  try{
-    const alerts=window.imdAlerts||{};
-    const lastUpdated=window.imdLastUpdated||null;
-    const now=new Date();
-    const key=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
-    if(alerts[key]) return { text:alerts[key].text, lastUpdated };
-    return null;
-  }catch(e){return null;}
-}
-
-async function fetchEstimatedAQI(){
-  try{
-    const url=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(!data?.current?.pm2_5) return null;
-    const pm25=data.current.pm2_5;
-    let aqi=1;
-    if(pm25<=12) aqi=1;
-    else if(pm25<=35.4) aqi=2;
-    else if(pm25<=55.4) aqi=3;
-    else if(pm25<=150.4) aqi=4;
-    else aqi=5;
-    return { aqi, pm25, source:"Estimated (Open-Meteo)" };
-  }catch(e){return null;}
-}
-
-// ---------------- Compute metrics ----------------
-function computeFromMeteo(m){
-  try{
-    const h=m.hourly||{};
-    const times=h.time||[];
-    const temps=h.temperature_2m||[];
-    const hum=h.relativehumidity_2m||[];
-    const precip=h.precipitation||[];
-    const precipProb=h.precipitation_probability||[];
-    const windspeed=h.windspeed_10m||[];
-    const winddir=h.winddirection_10m||[];
-    if(!times.length) return {};
-    const last=times.length-1;
-    const tempNow=temps[last]??null;
-    const tempPrev=last-1>=0 ? temps[last-1] : null;
-    const hours=12;
-    const start=Math.max(0,last-hours+1);
-    const slice=temps.slice(start,last+1).filter(v=>v!=null);
-    let trend=null;
-    if(slice.length>=2) trend=(slice[slice.length-1]-slice[0])/Math.max(1,slice.length-1);
-    const precipNow=precip[last]??null;
-    const precipProbNow=precipProb[last]??null;
-    const windNow=windspeed[last]??null;
-    const windDirNow=winddir[last]??null;
-    const humNow=hum[last]??null;
-    return { tempNow, tempPrevHour:tempPrev, tempTrend:trend, trendHours:slice.length,
-             precipNow, precipProb:precipProbNow, windSpeedMs:windNow, windDir:windDirNow, humidity:humNow };
-  }catch(e){console.warn("computeFromMeteo", e); return {};}
-}
-
-// ---------------- Essay generator ----------------
-function generateLongNewsMalayalam({ computed, imdAlert, airQuality }){
-  const s=[]; const now=new Date();
+// ---------------------------
+// GENERATE MALAYALAM ESSAY
+// ---------------------------
+function generateEssay(weather){
+  const now = new Date();
+  const s = [];
   s.push(HEADLINE);
   s.push(`${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`);
   s.push("");
-  if(computed.tempNow!=null){
-    s.push(`ഇപ്പോൾ പ്രദേശത്ത് രേഖപ്പെടുത്തിയിരിക്കുന്ന താപനില ${toFixedSafe(computed.tempNow,1)}°C ആണ്. കഴിഞ്ഞ മണിക്കൂറുകളിൽ ലഭ്യമായ ഡാറ്റ പ്രകാരം, ഇത് ${computed.tempTrend>0.15?'തത്സമയം ഉയരുന്ന':(computed.tempTrend<-0.15?'അല്പം താഴ്ന്നുവരുന്ന':'സ്ഥിരത പുലർത്തുന്ന')} നിലയിലാണ്.`);
-  }else s.push("ഈ സമയത്ത് താപനില സംബന്ധിച്ച കൃത്യമായ ഇപ്പോഴത്തെ രേഖകൾ ലഭ്യമല്ല.");
-  if(computed.humidity!=null) s.push(`വാതാവിലെ ഈർപ്പതോത് നിലവിൽ ${Math.round(computed.humidity)}% ആണ്.`);
-  else s.push("ഈർപ്പത്തിന്റെ നിലവിലുള്ള രേഖകൾ വ്യക്തമല്ല.");
-  if(computed.windSpeedMs!=null){
-    const kmh=msToKmh(computed.windSpeedMs);
-    s.push(`കാറ്റിന്റെ വേഗം ഇപ്പോൾ ഏകദേശം ${toFixedSafe(kmh,1)} km/h ആണ്. ദിശ: ${windDirMalayalam(computed.windDir)}.`);
-  }else s.push("കാറ്റിന്റെ വേഗതയും ദിശയും സംബന്ധിച്ച ഡാറ്റ ലഭ്യമല്ല.");
-  if(computed.precipNow!=null && computed.precipNow>0.1){
-    s.push("പ്രദേശത്ത് നിലവിൽ ചെറിയ തോതിൽ മഴ പെയ്യുന്നുവെന്ന് രേഖകൾ സൂചിപ്പിക്കുന്നു.");
-  }else if(computed.precipProb!=null){
-    s.push(`അടുത്ത മണിക്കൂറുകളിൽ മഴ ലഭിക്കാനുള്ള സാധ്യത ${Math.round(computed.precipProb)}% ആണ്.`);
-  }else s.push("ഇപ്പോൾ ശക്തമായ മഴ രേഖപ്പെട്ടിട്ടില്ല.");
-  if(computed.tempPrevHour!=null && computed.tempNow!=null){
-    const diff=computed.tempNow-computed.tempPrevHour;
-    const word=diff>0?"ഉയർന്നിട്ടുണ്ട്":(diff<0?"താഴ്ന്നിട്ടുണ്ട്":"മാറ്റമില്ല");
-    s.push(`കഴിഞ്ഞ ഒരു മണിക്കൂറിനിടെ താപനിലയിൽ ${Math.abs(diff).toFixed(1)}°C മാറ്റം ഉണ്ടായിട്ടുണ്ട് — ഇപ്പോൾ: ${toFixedSafe(computed.tempNow,1)}°C. (${word})`);
+
+  if(weather.temp!=null){
+    s.push(`ഇപ്പോൾ പ്രദേശത്ത് താപനില ${weather.temp.toFixed(1)}°C ആണ്. അനുഭവ താപനില ${weather.feels?.toFixed(1)}°C ആണ്.`);
+  }else{
+    s.push("ഇപ്പോൾ താപനില രേഖപ്പെടുത്തിയിട്ടില്ല.");
   }
-  if(imdAlert && imdAlert.text){
-    const codeMatch=imdAlert.text.match(/[oyrg]$/i);
-    const code=codeMatch?codeMatch[0]:null;
-    const meaning=code?imdAlertMalayalamMeaning(code):"ലഭ്യമല്ല";
-    s.push(`IMD ഔദ്യോഗിക മുന്നറിയിപ്പ്: ${meaning}. (അവസാന അപ്ഡേറ്റ്: ${imdAlert.lastUpdated||'ലഭ്യമല്ല'})`);
-  }else s.push("ഇന്നത്തെ തീയതിക്ക് IMD ഔദ്യോഗിക അലർട്ട് രേഖപ്പെടുത്തിയിട്ടില്ല.");
-  if(airQuality && airQuality.aqi!=null){
-    s.push(`വായുനില സൂചിക (AQI): ${airQuality.aqi} — ${aqiMalayalamMeaning(airQuality.aqi)}. (PM2.5: ${airQuality.pm25} µg/m³)`);
-  }else s.push("പ്രാദേശിക വായുനില സംബന്ധിച്ച രേഖകൾ ലഭ്യമല്ല.");
-  s.push("ഈ റിപ്പോർട്ട് ലഭ്യമായ ഡാറ്റകളുടെ അടിസ്ഥാനത്തിലാണ്; ഔദ്യോഗിക മുന്നറിയിപ്പുകൾക്കായി IMD അറിയിപ്പ് കാണുക.");
+
+  if(weather.humidity!=null){
+    s.push(`വാതാവിലെ ഈർപ്പതോത് നിലവിൽ ${weather.humidity}% ആണ്.`);
+  }
+
+  if(weather.wind!=null){
+    s.push(`കാറ്റിന്റെ വേഗം ഏകദേശം ${(msToKmh(weather.wind)).toFixed(1)} km/h ആണ്.`);
+    if(weather.windDeg!=null){
+      s.push(`കാറ്റ് ${weather.windDeg}° ദിശയിൽ വീശുന്നു.`);
+    }
+  }
+
+  if(weather.condition) s.push(`പ്രധാന കാലാവസ്ഥാ അവസ്ഥ: ${weather.condition}.`);
+  if(weather.visibility!=null) s.push(`ദൃശ്യപരിധി: ${(weather.visibility/1000).toFixed(1)} km`);
+
+  if(weather.omTemp!=null) s.push(`Open-Meteo പ്രകാരം നിലവിലെ താപനില: ${weather.omTemp.toFixed(1)}°C`);
+  if(weather.omWind!=null) s.push(`Open-Meteo പ്രകാരം കാറ്റിന്റെ വേഗം: ${weather.omWind.toFixed(1)} km/h`);
+
+  s.push("ഈ റിപ്പോർട്ട് ലഭ്യമായ ഡാറ്റകൾ അടിസ്ഥാനമാക്കി തയ്യാറാക്കിയതാണ്; ഔദ്യോഗിക മുന്നറിയിപ്പുകൾക്കായി IMD അറിയിപ്പ് പരിശോധിക്കുക.");
   return s.join("\n\n");
 }
 
-// ---------------- Render main ----------------
-async function runOnceAndRender(){
-  const container=document.getElementById(CONTAINER_ID);
-  if(!container){ console.warn(`Container #${CONTAINER_ID} not found.`); return; }
+// ---------------------------
+// RENDER
+// ---------------------------
+async function renderForecast(){
+  const container = document.getElementById(CONTAINER_ID);
+  if(!container) return;
 
-  container.innerHTML=`<div class="meta">അപ്‌ഡേറ്റ് ചെയ്യുന്നു — ${escapeHtml(formatTimeMalayalam(new Date()))}</div>`;
+  container.innerHTML = `<div class="meta">അപ്‌ഡേറ്റ് ചെയ്യുന്നു — ${formatTimeMalayalam(new Date())}</div>`;
 
-  let meteo=null, owm=null, airQuality=null;
-
-  try{ meteo=await fetchOpenMeteoHourly(); }catch(e){console.warn("Open-Meteo failed",e);}
-  try{ owm=await fetchOpenWeatherCurrent(); }catch(e){console.warn("OpenWeather failed",e);}
-  try{ airQuality=await fetchEstimatedAQI(); }catch(e){ airQuality=null; }
-
-  const computed=meteo?computeFromMeteo(meteo):{};
-  if(owm){
-    if(computed.humidity==null && owm.main?.humidity!=null) computed.humidity=owm.main.humidity;
-    if(computed.windSpeedMs==null && owm.wind?.speed!=null) computed.windSpeedMs=owm.wind.speed;
-    if(computed.windDir==null && owm.wind?.deg!=null) computed.windDir=owm.wind.deg;
-    if(computed.tempNow==null && owm.main?.temp!=null) computed.tempNow=owm.main.temp;
+  try{
+    const weather = await fetchWeatherSnapshot();
+    const essay = generateEssay(weather);
+    container.innerHTML = `<pre>${essay}</pre>`;
+  }catch(err){
+    console.error("Weather fetch failed:", err);
+    container.innerHTML = `<div class="meta">Error fetching data</div>`;
   }
-
-  const imdAlert=getImdAlertForToday();
-  const essay=generateLongNewsMalayalam({computed,imdAlert,airQuality});
-  const heading=`<h2>${escapeHtml(HEADLINE)}</h2>`;
-  const meta=`<div class="meta">${escapeHtml(formatDateMalayalam(new Date()))} — ${escapeHtml(formatTimeMalayalam(new Date()))}</div>`;
-
-  container.innerHTML=`${heading}${meta}<pre>${escapeHtml(essay)}</pre>`;
 }
 
-// ---------------- Initialize ----------------
-(async function init(){
-  try{ await runOnceAndRender(); }catch(e){console.warn("render error",e);}
-  setInterval(()=>{ try{ runOnceAndRender(); }catch(e){console.warn(e);} }, AUTO_REFRESH_MS);
-})();
+// ---------------------------
+// INIT + AUTO REFRESH
+// ---------------------------
+renderForecast();
+setInterval(renderForecast, AUTO_REFRESH_MS);
