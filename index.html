@@ -1731,10 +1731,42 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
     });
 });
 </script>
-
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ============================
+   Firebase Config
+============================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  authDomain: "report-5d8c0.firebaseapp.com",
+  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "report-5d8c0",
+  storageBucket: "report-5d8c0.firebasestorage.app",
+  messagingSenderId: "831456060916",
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ============================
+   DOM Elements
+============================ */
+const panel = document.getElementById("reportPanel");
+const panelList = document.getElementById("panelReports");
+const badge = document.getElementById("reportBadge");
+const closeBtn = document.getElementById("closePanel");
+
+/* ============================
+   Database Path
+============================ */
 const DB_PATH = "weather_reports";
 
+/* ============================
+   Listen & Render (PUBLIC)
+============================ */
 onValue(ref(db, DB_PATH), (snapshot) => {
   const data = snapshot.val();
   panelList.innerHTML = "";
@@ -1749,92 +1781,55 @@ onValue(ref(db, DB_PATH), (snapshot) => {
 
   Object.entries(data).forEach(([key, r]) => {
 
-    /* -------------------------------
-       1️⃣ AUTO-CLEAN EXPIRED REPORTS
-    --------------------------------*/
-    if (
-      r.expirationTimestamp &&
-      r.expirationTimestamp < now &&
-      r.granted_site1 === "yes"
-    ) {
-      remove(ref(db, DB_PATH + "/" + key));
-      return; // stop processing this report
+    /* 🔥 AUTO-CLEAN EXPIRED */
+    if (r.expirationTimestamp && r.expirationTimestamp < now) {
+      remove(ref(db, `${DB_PATH}/${key}`));
+      return;
     }
 
-    /* -------------------------------
-       2️⃣ PUBLIC FILTER RULE
-    --------------------------------*/
-    if (
-      r.granted_site1 === "yes" &&
-      (!r.expirationTimestamp || r.expirationTimestamp > now)
-    ) {
+    /* ✅ SITE-1 ONLY */
+    if (r.granted_site1 === "yes") {
       validReports.push(r);
     }
   });
 
-  /* -------------------------------
-     3️⃣ SORT (LATEST FIRST)
-  --------------------------------*/
-  validReports.sort(
-    (a, b) => (b.timestamp || 0) - (a.timestamp || 0)
-  );
-
-  /* -------------------------------
-     4️⃣ BADGE UPDATE
-  --------------------------------*/
   badge.textContent = validReports.length;
   badge.style.display = validReports.length ? "flex" : "none";
 
-  /* -------------------------------
-     5️⃣ RENDER
-  --------------------------------*/
-  validReports.forEach(r => {
-    const d = r.timestamp
-      ? new Date(r.timestamp).toLocaleString()
-      : "N/A";
+  validReports
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+    .forEach(r => {
+      const card = document.createElement("div");
+      card.className = "bg-gray-50 p-3 rounded-lg shadow border";
 
-    const reporterName =
-      r.show_name === "yes" ? r.name : "Anonymous";
-
-    const typeIcon =
-      r.report_type?.includes("Rain") ? "🌧" :
-      r.report_type?.includes("Storm") ? "🌪" :
-      r.report_type?.includes("Flood") ? "🌊" : "📌";
-
-    const card = document.createElement("div");
-    card.className =
-      "bg-gray-50 p-3 rounded-lg shadow border border-gray-200";
-
-    card.innerHTML = `
-      <div class="flex justify-between items-center mb-2">
-        <h4 class="font-bold text-blue-700">
-          ${typeIcon} ${r.report_type}
-        </h4>
-        <span class="text-xs text-gray-500">
-          time: ${r.time}
-        </span>
-      </div>
-
-      <p class="text-sm mb-1"><strong>📍 Location:</strong> ${r.location}</p>
-      <p class="text-sm mb-1"><strong>🗓 Date:</strong> ${d.split(",")[0]}</p>
-      <p class="text-sm mb-1"><strong>Observation:</strong> ${r.observation}</p>
-
-      ${
-        r.photo_url && r.photo_url !== "N/A"
-          ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mb-2">`
+      card.innerHTML = `
+        <div class="font-semibold text-blue-700">${r.report_type}</div>
+        <div class="text-xs text-gray-500">${r.time || ""}</div>
+        <div class="text-sm mt-1">${r.observation}</div>
+        ${r.photo_url && r.photo_url !== "N/A"
+          ? `<img src="${r.photo_url}" class="w-full max-h-40 object-cover rounded mt-2">`
           : ""
-      }
+        }
+      `;
 
-      <p class="text-xs text-gray-500">
-        <strong>👤 Reporter:</strong> ${reporterName}
-      </p>
-    `;
-
-    panelList.appendChild(card);
-  });
+      panelList.appendChild(card);
+    });
 });
 
+/* ============================
+   Panel Controls
+============================ */
+badge?.addEventListener("click", () => {
+  panel.classList.toggle("translate-x-full");
+  panel.classList.toggle("translate-x-0");
+});
+
+closeBtn?.addEventListener("click", () => {
+  panel.classList.add("translate-x-full");
+  panel.classList.remove("translate-x-0");
+});
 </script>
+
 
 <script>
     const openPoster = document.getElementById("openPoster");
