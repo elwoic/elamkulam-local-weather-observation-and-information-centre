@@ -1733,10 +1733,12 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, update, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+document.addEventListener("DOMContentLoaded", () => {
 
-const firebaseConfig = {
+  /* ---------------- FIREBASE CONFIG ---------------- */
+  const firebaseConfig = {
     apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
     authDomain: "report-5d8c0.firebaseapp.com",
     databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -1744,99 +1746,117 @@ const firebaseConfig = {
     storageBucket: "report-5d8c0.firebasestorage.app",
     messagingSenderId: "831456060916",
     appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
-};
+  };
 
-const DB_PATH = "weather_reports";
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+  const DB_PATH = "weather_reports";
 
-const sec = document.getElementById("grantedSection");
-const list = document.getElementById("grantedReports");
-const badge = document.getElementById("reportBadge");
-const panel = document.getElementById("reportPanel");
-const panelList = document.getElementById("panelReports");
-const closeBtn = document.getElementById("closePanel");
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-onValue(ref(db, DB_PATH), (snapshot) => {
+  /* ---------------- DOM ELEMENTS ---------------- */
+  const badge = document.getElementById("reportBadge");
+  const panel = document.getElementById("reportPanel");
+  const panelList = document.getElementById("panelReports");
+  const closeBtn = document.getElementById("closePanel");
+
+  if (!panel || !panelList) {
+    console.warn("Report panel elements missing. Script stopped safely.");
+    return;
+  }
+
+  /* ---------------- DATA LISTENER ---------------- */
+  onValue(ref(db, DB_PATH), (snapshot) => {
     const data = snapshot.val();
     panelList.innerHTML = "";
 
     if (!data) {
-        badge.style.display = "none";
-        return;
+      if (badge) badge.style.display = "none";
+      return;
     }
 
-    const currentTime = Date.now();
+    const now = Date.now();
 
     const reports = Object.values(data)
-        .filter(r => r.granted_site1 === "yes" && (r.expirationTimestamp || Infinity) > currentTime)
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      .filter(r =>
+        r.granted_site1 === "yes" &&
+        (r.expirationTimestamp || Infinity) > now
+      )
+      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    // Update badge number
-    badge.textContent = reports.length;
-    badge.style.display = reports.length > 0 ? "flex" : "none";
+    /* Badge */
+    if (badge) {
+      badge.textContent = reports.length;
+      badge.style.display = reports.length ? "flex" : "none";
+    }
 
+    /* Cards */
     reports.forEach(r => {
-        const d = r.timestamp ? new Date(r.timestamp).toLocaleString() : "N/A";
-        const reporterName = r.show_name === "yes" ? r.name : "Anonymous";
-        const typeIcon = (r.report_type || '').includes('Rain') ? '🌧' : 
-                         (r.report_type || '').includes('Storm') ? '🌪' : 
-                         (r.report_type || '').includes('Flood') ? '🌊' : 
-                         '📌';
+      const date = r.timestamp
+        ? new Date(r.timestamp).toLocaleDateString()
+        : "N/A";
 
-        const card = document.createElement("div");
-        card.className = "bg-gray-50 p-3 rounded-lg shadow border border-gray-200";
+      const reporter = r.show_name === "yes" ? r.name : "Anonymous";
 
-        card.innerHTML = `
-            <div class="flex justify-between items-center mb-2">
-                <h4 class="font-bold text-blue-700">${typeIcon} ${r.report_type}</h4>
-                <span class="text-xs text-gray-500">time: ${r.time}</span>
-            </div>
-            <p class="text-sm mb-1 text-black"><strong>📍 Location:</strong> ${r.location}</p>
-            <p class="text-sm mb-1 text-black"><strong>🗓 Submitted:</strong> ${d.split(',')[0]}</p>
-            <p class="text-sm mb-1 text-black"><strong>Observation:</strong> ${r.observation}</p>
-            ${r.photo_url && r.photo_url !== "N/A"
-                ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mb-2">`
-                : ""
-            }
-            <p class="text-xs text-gray-500"><strong>👤 Reporter:</strong> ${reporterName}</p>
-        `;
-        panelList.appendChild(card);
+      const icon =
+        r.report_type?.includes("Rain") ? "🌧" :
+        r.report_type?.includes("Storm") ? "🌪" :
+        r.report_type?.includes("Flood") ? "🌊" :
+        "📌";
+
+      const card = document.createElement("div");
+      card.className = "bg-gray-50 p-3 rounded-lg shadow border border-gray-200";
+
+      card.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <h4 class="font-bold text-blue-700">${icon} ${r.report_type || ""}</h4>
+          <span class="text-xs text-gray-500">${r.time || ""}</span>
+        </div>
+        <p class="text-sm"><strong>📍 Location:</strong> ${r.location || ""}</p>
+        <p class="text-sm"><strong>🗓 Submitted:</strong> ${date}</p>
+        <p class="text-sm"><strong>Observation:</strong> ${r.observation || ""}</p>
+        ${
+          r.photo_url && r.photo_url !== "N/A"
+          ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mt-2">`
+          : ""
+        }
+        <p class="text-xs text-gray-500 mt-1"><strong>👤 Reporter:</strong> ${reporter}</p>
+      `;
+
+      panelList.appendChild(card);
     });
-});
+  });
 
-// Toggle panel on badge click
-badge.addEventListener("click", () => {
-    panel.classList.toggle("translate-x-full"); // if full → remove, if not → add
-    panel.classList.toggle("translate-x-0");    // if 0 → remove, if not → add
-});
+  /* ---------------- PANEL CONTROLS ---------------- */
+  if (badge) {
+    badge.addEventListener("click", () => {
+      panel.classList.toggle("translate-x-full");
+      panel.classList.toggle("translate-x-0");
+    });
+  }
 
-closeBtn.addEventListener("click", () => {
+  closeBtn?.addEventListener("click", () => {
     panel.classList.add("translate-x-full");
     panel.classList.remove("translate-x-0");
-});
-// ---------- ADD SWIPE DETECTION HERE ----------
-let touchStartX = 0;
-let touchEndX = 0;
+  });
 
-panel.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-});
+  /* ---------------- SWIPE TO CLOSE ---------------- */
+  let startX = 0;
 
-panel.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-});
+  panel.addEventListener("touchstart", e => {
+    startX = e.changedTouches[0].screenX;
+  });
 
-function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX;
-    if (swipeDistance > 50) { // left → right swipe
-        panel.classList.add("translate-x-full");
-        panel.classList.remove("translate-x-0");
+  panel.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].screenX;
+    if (endX - startX > 50) {
+      panel.classList.add("translate-x-full");
+      panel.classList.remove("translate-x-0");
     }
-}
+  });
 
+});
 </script>
+
 <script>
     const openPoster = document.getElementById("openPoster");
 const closePoster = document.getElementById("closePoster");
