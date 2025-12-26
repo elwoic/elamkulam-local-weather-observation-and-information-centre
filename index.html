@@ -204,17 +204,44 @@ body {
 .translate-x-0 {
     transform: translateX(0);
 }
+/* --- SLIDING PANEL SYSTEM --- */
 
-/* Smooth transition for the sliding effect */
+/* Reset/Override for Browser Compatibility */
 #reportPanel {
-    transition: transform 0.3s ease-in-out;
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    z-index: 9999; /* Higher than everything else */
-    background-color: white;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    height: 100vh !important;
+    width: 320px;
+    max-width: 85%;
+    background: #ffffff !important;
+    z-index: 10001 !important; /* Ensure it's above the Badge (9999) */
+    box-shadow: -5px 0 25px rgba(0,0,0,0.2) !important;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    overflow-y: auto;
+    display: block !important; /* Prevent it from being hidden by other scripts */
+}
+
+/* Force Hidden State */
+.translate-x-full {
+    transform: translateX(100%) !important;
+    visibility: hidden; /* Helps performance in Opera */
+}
+
+/* Force Visible State */
+.translate-x-0 {
+    transform: translateX(0%) !important;
+    visibility: visible;
+}
+
+/* Badge fix for Firefox */
+#reportBadge {
+    display: none; /* JS will show this if count > 0 */
+    cursor: pointer;
+    user-select: none;
+    z-index: 10000 !important;
+}
+
 }
 /* ---------------------------------------------------- */
 /* 3. MARQUEE SECTIONS & ANIMATIONS (Unified) */
@@ -1696,7 +1723,6 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
     });
 });
 </script>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -1708,26 +1734,25 @@ const firebaseConfig = {
     projectId: "report-5d8c0",
     storageBucket: "report-5d8c0.firebasestorage.app",
     messagingSenderId: "831456060916",
-    appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+    appId: "1:141478371424:web:ab431e8c467084e4fee305" // Ensure this matches your Firebase Console
 };
 
-const DB_PATH = "weather_reports";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Use a function to initialize to ensure elements exist in all browsers
-function initPortal() {
+// Logic inside a function to handle timing
+function startReportSystem() {
     const badge = document.getElementById("reportBadge");
     const panel = document.getElementById("reportPanel");
     const panelList = document.getElementById("panelReports");
     const closeBtn = document.getElementById("closePanel");
 
-    if (!badge || !panel) return; // Exit if elements aren't found yet
+    if(!badge || !panel) return;
 
-    onValue(ref(db, DB_PATH), (snapshot) => {
+    onValue(ref(db, "weather_reports"), (snapshot) => {
         const data = snapshot.val();
         panelList.innerHTML = "";
-
+        
         if (!data) {
             badge.style.display = "none";
             return;
@@ -1742,57 +1767,35 @@ function initPortal() {
         badge.style.display = reports.length > 0 ? "flex" : "none";
 
         reports.forEach(r => {
-            const d = r.timestamp ? new Date(r.timestamp).toLocaleString() : "N/A";
-            const reporterName = r.show_name === "yes" ? r.name : "Anonymous";
-            const typeIcon = (r.report_type || '').includes('Rain') ? '🌧' : 
-                             (r.report_type || '').includes('Storm') ? '🌪' : 
-                             (r.report_type || '').includes('Flood') ? '🌊' : '📌';
-
             const card = document.createElement("div");
             card.className = "bg-gray-50 p-3 rounded-lg shadow border border-gray-200 mb-4";
             card.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-blue-700">${typeIcon} ${r.report_type}</h4>
-                    <span class="text-xs text-gray-500">time: ${r.time}</span>
-                </div>
-                <p class="text-sm mb-1 text-black"><strong>📍 Location:</strong> ${r.location}</p>
-                <p class="text-sm mb-1 text-black"><strong>🗓 Submitted:</strong> ${d.split(',')[0]}</p>
-                <p class="text-sm mb-1 text-black"><strong>Observation:</strong> ${r.observation}</p>
-                ${r.photo_url && r.photo_url !== "N/A" ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mb-2">` : ""}
-                <p class="text-xs text-gray-500"><strong>👤 Reporter:</strong> ${reporterName}</p>
+                <h4 class="font-bold text-blue-700">${r.report_type}</h4>
+                <p class="text-sm text-black"><strong>📍 Location:</strong> ${r.location}</p>
+                <p class="text-sm text-black">${r.observation}</p>
             `;
             panelList.appendChild(card);
         });
     });
 
-    // Panel Toggle Logic
-    badge.addEventListener("click", () => {
-        panel.classList.toggle("translate-x-full");
-        panel.classList.toggle("translate-x-0");
+    // Toggle Logic with Browser Fallback
+    badge.addEventListener("click", (e) => {
+        e.stopPropagation();
+        panel.classList.remove("translate-x-full");
+        panel.classList.add("translate-x-0");
     });
 
     closeBtn.addEventListener("click", () => {
         panel.classList.add("translate-x-full");
         panel.classList.remove("translate-x-0");
     });
-
-    // Swipe Detection
-    let touchStartX = 0;
-    panel.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-    panel.addEventListener("touchend", (e) => {
-        const touchEndX = e.changedTouches[0].screenX;
-        if (touchEndX - touchStartX > 50) { 
-            panel.classList.add("translate-x-full");
-            panel.classList.remove("translate-x-0");
-        }
-    }, {passive: true});
 }
 
-// Start the script
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initPortal);
+// Global initialization check
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startReportSystem);
 } else {
-    initPortal();
+    startReportSystem();
 }
 </script>
 <script>
