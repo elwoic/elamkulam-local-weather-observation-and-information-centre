@@ -1733,35 +1733,41 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
 </script>
 
 <script type="module">
+/* =========================================================
+   ELWOIC — Community Weather Reports Panel (STABLE VERSION)
+   ========================================================= */
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* ---------------- FIREBASE CONFIG ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  authDomain: "report-5d8c0.firebaseapp.com",
+  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "report-5d8c0",
+  storageBucket: "report-5d8c0.firebasestorage.app",
+  messagingSenderId: "831456060916",
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+};
+
+const DB_PATH = "weather_reports";
+
+/* ---------------- INIT AFTER DOM READY ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ---------------- FIREBASE CONFIG ---------------- */
-  const firebaseConfig = {
-    apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-    authDomain: "report-5d8c0.firebaseapp.com",
-    databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "report-5d8c0",
-    storageBucket: "report-5d8c0.firebasestorage.app",
-    messagingSenderId: "831456060916",
-    appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
-  };
-
-  const DB_PATH = "weather_reports";
-
+  /* -------- Firebase init -------- */
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  /* ---------------- DOM ELEMENTS ---------------- */
-  const badge = document.getElementById("reportBadge");
-  const panel = document.getElementById("reportPanel");
-  const panelList = document.getElementById("panelReports");
-  const closeBtn = document.getElementById("closePanel");
+  /* -------- DOM elements -------- */
+  const panel      = document.getElementById("reportPanel");
+  const panelList  = document.getElementById("panelReports");
+  const badge      = document.getElementById("reportBadge");
+  const closeBtn   = document.getElementById("closePanel");
 
-  if (!panel || !panelList) {
-    console.warn("Report panel elements missing. Script stopped safely.");
+  if (!panel || !panelList || !badge || !closeBtn) {
+    console.warn("ELWOIC panel elements missing. Script halted safely.");
     return;
   }
 
@@ -1771,7 +1777,7 @@ document.addEventListener("DOMContentLoaded", () => {
     panelList.innerHTML = "";
 
     if (!data) {
-      if (badge) badge.style.display = "none";
+      badge.style.display = "none";
       return;
     }
 
@@ -1780,26 +1786,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const reports = Object.values(data)
       .filter(r =>
         r.granted_site1 === "yes" &&
-        (r.expirationTimestamp || Infinity) > now
+        (!r.expirationTimestamp || r.expirationTimestamp > now)
       )
       .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     /* Badge */
-    if (badge) {
-      badge.textContent = reports.length;
-      badge.style.display = reports.length ? "flex" : "none";
-    }
+    badge.textContent = reports.length;
+    badge.style.display = reports.length ? "flex" : "none";
 
     /* Cards */
     reports.forEach(r => {
-      const date = r.timestamp
+      const dateStr = r.timestamp
         ? new Date(r.timestamp).toLocaleDateString()
         : "N/A";
 
       const reporter = r.show_name === "yes" ? r.name : "Anonymous";
 
       const icon =
-        r.report_type?.includes("Rain") ? "🌧" :
+        r.report_type?.includes("Rain")  ? "🌧" :
         r.report_type?.includes("Storm") ? "🌪" :
         r.report_type?.includes("Flood") ? "🌊" :
         "📌";
@@ -1809,33 +1813,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.innerHTML = `
         <div class="flex justify-between items-center mb-2">
-          <h4 class="font-bold text-blue-700">${icon} ${r.report_type || ""}</h4>
+          <h4 class="font-bold text-blue-700">${icon} ${r.report_type || "Report"}</h4>
           <span class="text-xs text-gray-500">${r.time || ""}</span>
         </div>
-        <p class="text-sm"><strong>📍 Location:</strong> ${r.location || ""}</p>
-        <p class="text-sm"><strong>🗓 Submitted:</strong> ${date}</p>
-        <p class="text-sm"><strong>Observation:</strong> ${r.observation || ""}</p>
+        <p class="text-sm"><strong>📍 Location:</strong> ${r.location || "N/A"}</p>
+        <p class="text-sm"><strong>🗓 Date:</strong> ${dateStr}</p>
+        <p class="text-sm mb-2"><strong>Observation:</strong> ${r.observation || ""}</p>
         ${
           r.photo_url && r.photo_url !== "N/A"
-          ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mt-2">`
-          : ""
+            ? `<img src="${r.photo_url}" class="w-full max-h-48 object-cover rounded mb-2">`
+            : ""
         }
-        <p class="text-xs text-gray-500 mt-1"><strong>👤 Reporter:</strong> ${reporter}</p>
+        <p class="text-xs text-gray-500"><strong>👤 Reporter:</strong> ${reporter}</p>
       `;
 
       panelList.appendChild(card);
     });
   });
 
-  /* ---------------- PANEL CONTROLS ---------------- */
-  if (badge) {
-    badge.addEventListener("click", () => {
-      panel.classList.toggle("translate-x-full");
-      panel.classList.toggle("translate-x-0");
-    });
-  }
+  /* ---------------- UI CONTROLS ---------------- */
 
-  closeBtn?.addEventListener("click", () => {
+  badge.addEventListener("click", () => {
+    panel.classList.remove("translate-x-full");
+    panel.classList.add("translate-x-0");
+  });
+
+  closeBtn.addEventListener("click", () => {
     panel.classList.add("translate-x-full");
     panel.classList.remove("translate-x-0");
   });
@@ -1849,7 +1852,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   panel.addEventListener("touchend", e => {
     const endX = e.changedTouches[0].screenX;
-    if (endX - startX > 50) {
+    if (endX - startX > 60) {
       panel.classList.add("translate-x-full");
       panel.classList.remove("translate-x-0");
     }
