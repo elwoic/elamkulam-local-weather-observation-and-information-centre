@@ -326,6 +326,69 @@ body {
 } .forecast-box { max-width: 850px; background: #fff; padding: 20px; margin: 25px auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } .forecast-box h2 { color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 6px; } iframe { width: 100%; height: 450px; border: none; border-radius: 10px; }
 
 /* Notice Box - ELWOIC Theme */
+      /* Unique Container for the Static Notice */
+#static-disclaimer {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-left: 6px solid #ff4d4d; /* Red accent line */
+    padding: 22px 28px;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    border-top: 1px solid #f0f0f0; /* Subtle top border for depth */
+}
+
+/* Header inside the ID */
+#static-disclaimer .disclaimer-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#static-disclaimer h2 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #002b5c;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* List Styling */
+#static-disclaimer .disclaimer-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 0;
+}
+
+#static-disclaimer .disclaimer-list li {
+    font-size: 1rem;
+    color: #00315c;
+    font-weight: 600;
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+/* Link Styling */
+#static-disclaimer a {
+    color: #0056ff;
+    text-decoration: underline;
+    transition: opacity 0.2s;
+}
+
+#static-disclaimer a:hover {
+    opacity: 0.8;
+}
+
+/* Footer text */
+#static-disclaimer .disclaimer-footer {
+    margin-top: 15px;
+    color: #555;
+    font-size: 0.9rem;
+    font-style: italic;
+    display: block;
+}  
 /* Notice Box - ELWOIC Theme */
   .notice-box {
     max-width: 900px;
@@ -1124,27 +1187,29 @@ footer a:hover {
 
 
     <main>
-        <div class="notice-box">
-            <div style="display:flex; align-items:center; margin-bottom:12px;">
-                <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:10px;">
-                    <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
-                </svg>
-                <h2 class="notice-title">Important Notice</h2>
-            </div>
-            <ul style="padding-left: 20px; margin:0; line-height:1.6; font-size: 1rem; color: #00315c; font-weight: 600;">
-                <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
-                <li>This is a <b>persoanal project created by a student</b>for informational purposes.</li>
-                <li>
-                    For official weather alerts and warnings, please visit
-                    <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" style="color:#0056ff; text-decoration:underline;">
-                        IMD Kerala (Thiruvananthapuram)
-                    </a>.
-                </li>
-            </ul>
-            <p style="margin-top: 12px; color: #555; font-size: 0.9rem; font-style: italic;">
-                Cross-check severe weather alerts with official IMD sources.
-            </p>
-        </div>
+      <div id="static-disclaimer">
+    <div class="disclaimer-header">
+        <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:12px;">
+            <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
+        </svg>
+        <h2>Important Notice</h2>
+    </div>
+    
+    <ul class="disclaimer-list">
+        <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
+        <li>This is a <b>personal project created by a student</b> for informational purposes.</li>
+        <li>
+            For official weather alerts and warnings, please visit 
+            <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank">
+                IMD Kerala (Thiruvananthapuram)
+            </a>.
+        </li>
+    </ul>
+    
+    <span class="disclaimer-footer">
+        Cross-check severe weather alerts with official IMD sources.
+    </span>
+</div>
 
         <div class="weather-dashboard-scope">
    <section id="manual-update" class="notice-box">
