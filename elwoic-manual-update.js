@@ -86,10 +86,22 @@ onValue(ref(db, "/"), (snapshot) => {
   infoDiv.textContent = data.info?.text || defaultInfo;
 
   /* -------- VISIBILITY -------- */
-  const hasManual = manualDiv.textContent !== defaultManual;
-  const hasPre = preDiv.textContent !== defaultPre;
-  const hasInfo = infoDiv.textContent !== defaultInfo;
-  manualSection.style.display = (hasManual || hasPre || hasInfo) ? "block" : "none";
+  // We check if the content is still the default text or empty
+  const hasManual = manualDiv.textContent !== defaultManual && manualDiv.textContent !== "";
+  const hasPre = preDiv.textContent !== defaultPre && preDiv.textContent !== "";
+  const hasInfo = infoDiv.textContent !== defaultInfo && infoDiv.textContent !== "";
+
+  // If NO sections have real data, hide the entire notice-box
+  if (!hasManual && !hasPre && !hasInfo) {
+    manualSection.style.display = "none";
+  } else {
+    manualSection.style.display = "block";
+  }
+  
+  // Optional: Hide specific headers if their content is default
+  document.querySelector(".manual-title").style.display = hasManual ? "block" : "none";
+  document.querySelector(".pre-title").style.display = hasPre ? "block" : "none";
+  document.querySelector(".info-title").style.display = hasInfo ? "block" : "none";
 
   /* -------- TIMESTAMP -------- */
   if(data.lastUpdated) {
