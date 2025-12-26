@@ -1220,23 +1220,35 @@ footer a:hover {
             The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
         </div>
     </div>
-          <!-- Badge (click to open panel) -->
-<div id="reportBadge"
-     class="fixed top-4 right-4 bg-red-600 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full cursor-pointer z-50"
-     style="display:none">
+         <div id="weather-badge" style="position: fixed; top: 80px; right: 20px; z-index: 1000; cursor: pointer; display: none;">
+  <div style="background: #1e40af; color: white; padding: 12px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    </svg>
+    <span id="badge-count" style="position: absolute; top: -5px; right: -5px; background: white; color: #1e40af; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 1px solid #1e40af;">0</span>
+  </div>
 </div>
 
-<!-- Sliding Panel -->
-<div id="reportPanel" class="fixed top-0 right-0 w-80 max-w-full h-full bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-40 overflow-y-auto">
-    <div class="p-4 flex justify-between items-center border-b">
-        <h3 class="font-bold text-blue-800 text-lg">🌦 Community Weather Reports</h3>
-        <button id="closePanel" class="text-gray-500 hover:text-gray-800">&times;</button>
+<div id="panel-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1100; display: none; opacity: 0; transition: opacity 0.3s;"></div>
+<div id="weather-panel" style="position: fixed; top: 0; right: 0; height: 100%; width: 320px; background: #ffffff; z-index: 1200; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.3s ease-in-out; display: flex; flex-direction: column;">
+  <div style="background: #1e3a8a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; font-size: 18px;">Community Weather Reports</h3>
+    <button id="close-panel" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+  </div>
+  
+  <div style="padding: 12px; background: #ffffff; border-bottom: 1px solid #dbeafe; text-align: center;">
+    <a href="report.html" style="color: #2563eb; font-size: 8px; text-decoration: underline; font-weight: 600; line-height: 1.5; display: inline-block; transition: color 0.2s;">
+        <span style="display: flex; items-right; justify-content: center; gap: 5px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:inline-block; vertical-align: middle;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            ഇതുപോലെ നിങ്ങളുടെ അഭിപ്രായങ്ങളും കാലാവസ്ഥ നിരീക്ഷണങ്ങളും കാഴ്ചപ്പാടും പങ്കുവയ്ക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക.
+        </span>
+    </a>
+</div>
+
+  <div id="panel-content" style="flex: 1; overflow-y: auto; padding: 15px; background: #f8fafc;">
     </div>
-    <p class="text-xs text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
-   onclick="window.location.href='report.html'">
-  ഇതുപോലെ നിങ്ങളുടെ നിരീക്ഷണങ്ങളും പങ്കുവക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക👈
-</p>
-    <div id="panelReports" class="p-4 space-y-4"></div>
 </div>
     </header>
 
@@ -1906,7 +1918,98 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  authDomain: "report-5d8c0.firebaseapp.com",
+  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "report-5d8c0",
+  storageBucket: "report-5d8c0.firebasestorage.app",
+  messagingSenderId: "831456060916",
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
+  measurementId: "G-5MGMM1DYDM"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const badge = document.getElementById('weather-badge');
+const badgeCount = document.getElementById('badge-count');
+const panel = document.getElementById('weather-panel');
+const overlay = document.getElementById('panel-overlay');
+const panelContent = document.getElementById('panel-content');
+const closeBtn = document.getElementById('close-panel');
+
+// Functions to open/close
+function openSidePanel() {
+    overlay.style.display = 'block';
+    panel.style.transform = 'translateX(0)';
+    setTimeout(() => overlay.style.opacity = '1', 10);
+}
+
+function closeSidePanel() {
+    overlay.style.opacity = '0';
+    panel.style.transform = 'translateX(100%)';
+    setTimeout(() => overlay.style.display = 'none', 300);
+}
+
+badge.onclick = openSidePanel;
+closeBtn.onclick = closeSidePanel;
+overlay.onclick = closeSidePanel;
+
+// Listen for Reports
+onValue(ref(db, "weather_reports"), (snapshot) => {
+  const data = snapshot.val();
+  if (!data) {
+    badge.style.display = 'none';
+    return;
+  }
+
+  const now = Date.now();
+  const validReports = [];
+
+  Object.entries(data).forEach(([key, item]) => {
+    if (item.expirationTimestamp && item.expirationTimestamp < now) {
+        remove(ref(db, "weather_reports/" + key));
+        return;
+    }
+    if (item.granted_site1 === "yes") {
+        validReports.push(item);
+    }
+  });
+
+  if (validReports.length > 0) {
+    badge.style.display = 'block';
+    badgeCount.textContent = validReports.length;
+
+    validReports.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    panelContent.innerHTML = validReports.map(item => {
+      // Format the submission date/time
+      const submittedOn = item.timestamp ? new Date(item.timestamp).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+      
+      return `
+      <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #1e40af; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-left: 4px solid #1e40af;">
+        <div style="font-size: 10px; color: #64748b; margin-bottom: 4px; display: flex; justify-content: space-between;">
+           <span>🕒 Event: ${item.time || 'N/A'}</span>
+           <span>📅 Submitted: ${submittedOn}</span>
+        </div>
+        <div style="font-weight: bold; color: #1e40af; font-size: 14px; margin-bottom: 4px;">${item.report_type}</div>
+        <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 4px;">📍 ${item.location}</div>
+        <div style="font-size: 13px; color: #475569; line-height: 1.5; background: #f1f5f9; padding: 8px; border-radius: 4px;">${item.observation}</div>
+        <div style="font-size: 11px; margin-top: 8px; color: #1e3a8a; font-weight: bold;">
+          Reporter: ${item.show_name === 'yes' ? item.name : 'Anonymous'}
+        </div>
+      </div>
+    `}).join('');
+  } else {
+    badge.style.display = 'none';
+  }
+});
+</script>
 </body>
 </html>
 
