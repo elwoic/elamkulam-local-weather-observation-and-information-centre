@@ -374,13 +374,25 @@ body {
 .info-title {
     color: #0073e6; /* Using a common blue from your site's theme */
 }
-
-/* --- NEW RULE: Make the Current Update message red too --- */
-#weather-message {
-    color: red;
-    font-weight: 600; /* Added bolding to make the alert stand out */
+/* --- Message Styling --- */
+#weather-message, #preupdate-message, #info-message {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
 }
 
+/* Default state for manual message (Gray/Black) */
+#weather-message {
+    color: #333; 
+    font-weight: 500;
+}
+
+/* When the "Blink" toggle is ON, it overrides to Red and Bolds it */
+.blink-alert {
+    animation: blink 1.2s infinite;
+    color: red !important;  
+    font-weight: 700 !important;
+}
 /* --- List and Paragraph styles (unchanged) --- */
 .notice-box ul {
     padding-left: 20px; 
@@ -1181,18 +1193,20 @@ footer a:hover {
         </div>
 
         <div class="weather-dashboard-scope">
-    <section id="manual-update" class="notice-box">
-        <h2 class="notice-title" style="border-bottom: 2px solid #e3effa; padding-bottom: 6px;">ELWOIC Manual Update</h2>
+   <section id="manual-update" class="notice-box">
+    <h2 class="notice-title" style="border-bottom: 2px solid #e3effa; padding-bottom: 6px;">
+        ELWOIC Manual Update
+    </h2>
 
-        <h3 class="manual-title">Current Update Section</h3>
-        <p id="weather-message"></p>
+    <h3 class="manual-title">Current Update Section</h3>
+    <p id="weather-message"></p>
 
-        <h3 class="pre-title">Pre-Update Section</h3>
-        <p id="preupdate-message"></p>
+    <h3 class="pre-title">Pre-Update Section</h3>
+    <p id="preupdate-message"></p>
 
-        <h3 class="info-title">Information Section</h3>
-        <p id="info-message"></p>
-    </section>
+    <h3 class="info-title">Information Section</h3>
+    <p id="info-message"></p>
+</section>
 </div>
 
 
