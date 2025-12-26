@@ -1,138 +1,100 @@
 /* ============================================================
-   ELWOIC — SMART AUTO UPDATE SYSTEM (fixed & more robust)
-   - Normalizes dates to date-only (no time part / timezone safe)
-   - Clear rules:
-       1) If today === manualDate -> show manualText (blink)  
-       2) Else if today === preDate    -> show preText in manual slot (blink)
-       3) Else                        -> show default manual text (no blink)
-   - Pre-update area shows preText while today < preDate, otherwise defaultPre
-   ============================================================ */
+   Firebase setup
+============================================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* ---------------------------
-   Helper: create date-only timestamp (local)
-   Returns a number (ms since epoch) for YYYY-MM-DD at local midnight
----------------------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  authDomain: "administration-protal.firebaseapp.com",
+  databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "administration-protal",
+  storageBucket: "administration-protal.firebasestorage.app",
+  messagingSenderId: "141478371424",
+  appId: "1:141478371424:web:ab431e8c467084e4fee305"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ============================================================
+   Helper: DD/MM/YYYY → date-only timestamp
+============================================================ */
 function dateOnlyTimestampFromDMY(ddmmyyyy) {
+  if (!ddmmyyyy) return NaN;
   const parts = ddmmyyyy.split("/");
   if (parts.length !== 3) return NaN;
   const d = parseInt(parts[0], 10);
   const m = parseInt(parts[1], 10) - 1;
   const y = parseInt(parts[2], 10);
-  // Use local midnight to avoid timezone offsets
   return new Date(y, m, d).setHours(0, 0, 0, 0);
 }
 
-/* ---------------------------
-   Config: User messages (edit these)
----------------------------- */
-// Manual (message shown on the manual day)
-const manualDate = "04/12/2025";
-const manualText = "No manual updates";
-
-// Pre-update (message for the next day)
-const preDate = "04/12/2025";
-const preText = "No manual updates";
-
-/* ---------------------------
-   Defaults
----------------------------- */
 const defaultManual = "No manual updates available.";
 const defaultPre = "No new pre-updates.";
 const defaultInfo = "No additional information.";
 
-/* ---------------------------
-   Normalize today's date-only timestamp
----------------------------- */
-const now = new Date();
-const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-
-/* ---------------------------
-   Convert configured dates to timestamps
----------------------------- */
-const manualTs = dateOnlyTimestampFromDMY(manualDate);
-const preTs = dateOnlyTimestampFromDMY(preDate);
-
-/* ---------------------------
-   Select HTML elements (IDs must exist)
----------------------------- */
-const manualDiv = document.getElementById("weather-message");   // manual area
-const preDiv = document.getElementById("preupdate-message");    // pre-update area
-const infoDiv = document.getElementById("info-message");        // static info area
-
-/* ============================================================
-   Main logic
-============================================================ */
-
-// Safety: if parse failed, set defaults and log error
-if (Number.isNaN(manualTs)) {
-  console.error("Invalid manualDate format. Expected DD/MM/YYYY:", manualDate);
-}
-if (Number.isNaN(preTs)) {
-  console.error("Invalid preDate format. Expected DD/MM/YYYY:", preDate);
-}
-
-/* 1) MANUAL area behavior:
-   - If today === manualDate -> show manualText (blink)
-   - Else if today === preDate -> show preText (blink)  // pre moves to manual once pre day arrives
-   - Else -> show defaultManual (no blink)
-*/
-if (manualDiv) {
-  if (!Number.isNaN(manualTs) && todayTs === manualTs) {
-    manualDiv.innerHTML = manualText;
-    manualDiv.classList.add("blink-alert");
-  } else if (!Number.isNaN(preTs) && todayTs === preTs) {
-    // On the pre day, promote the preText into the manual slot (as you wanted)
-    manualDiv.innerHTML = preText;
-    manualDiv.classList.add("blink-alert");
-  } else {
-    manualDiv.innerHTML = defaultManual;
-    manualDiv.classList.remove("blink-alert");
-  }
-}
-
-/* 2) PRE-UPDATE area behavior:
-   - Show preText while TODAY < preDate (i.e., BEFORE the pre-day starts)
-   - Once today >= preDate, hide/reset pre area
-*/
-if (preDiv) {
-  if (!Number.isNaN(preTs) && todayTs < preTs) {
-    preDiv.innerHTML = preText;
-  } else {
-    preDiv.innerHTML = defaultPre;
-  }
-}
-
-/* 3) Static info area */
-if (infoDiv) {
-  infoDiv.innerHTML = defaultInfo;
-}
-/* ============================================================
-   FINAL VISIBILITY CHECK — Hide section if no real content
-============================================================ */
-
+const manualDiv = document.getElementById("weather-message");
+const preDiv = document.getElementById("preupdate-message");
+const infoDiv = document.getElementById("info-message");
 const manualSection = document.getElementById("manual-update");
 
-if (manualSection && manualDiv && preDiv && infoDiv) {
-  const manualTextFinal = manualDiv.textContent.trim();
-  const preTextFinal = preDiv.textContent.trim();
-  const infoTextFinal = infoDiv.textContent.trim();
+// Create a small element for the timestamp
+const timestampDiv = document.createElement('div');
+timestampDiv.style.fontSize = '0.7rem';
+timestampDiv.style.color = '#888';
+timestampDiv.style.marginTop = '10px';
+document.body.appendChild(timestampDiv);
 
-  const isManualEmpty =
-    manualTextFinal === "" || manualTextFinal === defaultManual;
+/* ============================================================
+   READ FROM FIREBASE & APPLY LOGIC
+============================================================ */
+onValue(ref(db, "/"), (snapshot) => {
+  const data = snapshot.val() || {};
+  const now = new Date();
+  const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-  const isPreEmpty =
-    preTextFinal === "" || preTextFinal === defaultPre;
+  // Reset blink classes
+  manualDiv.classList.remove("blink-alert");
+  preDiv.classList.remove("blink-alert");
 
-  const isInfoEmpty =
-    infoTextFinal === "" || infoTextFinal === defaultInfo;
+  const manualTs = dateOnlyTimestampFromDMY(data.manualUpdate?.date);
+  const preTs = dateOnlyTimestampFromDMY(data.preUpdate?.date);
 
-  // If ALL sections are effectively empty → hide whole notice box
-  if (isManualEmpty && isPreEmpty && isInfoEmpty) {
-    manualSection.style.display = "none";
+  /* -------- MANUAL LOGIC (With Hand-off) -------- */
+  if (!Number.isNaN(manualTs) && todayTs === manualTs) {
+    manualDiv.textContent = data.manualUpdate.text;
+    if (data.manualUpdate.blink) manualDiv.classList.add("blink-alert");
+  } 
+  else if (!Number.isNaN(preTs) && todayTs === preTs) {
+    manualDiv.textContent = data.preUpdate.text;
+    if (data.preUpdate.blink) manualDiv.classList.add("blink-alert");
+  } 
+  else {
+    manualDiv.textContent = defaultManual;
   }
-}
 
-/* Optional debug output in console for testing */
-console.debug("today:", new Date(todayTs).toDateString(),
-              "manual:", manualDate, new Date(manualTs).toDateString(),
-              "pre:", preDate, new Date(preTs).toDateString());
+  /* -------- PRE UPDATE LOGIC -------- */
+  if (!Number.isNaN(preTs) && todayTs < preTs) {
+    preDiv.textContent = data.preUpdate.text;
+    if (data.preUpdate.blink) preDiv.classList.add("blink-alert");
+  } else {
+    preDiv.textContent = defaultPre;
+  }
+
+  /* -------- INFO -------- */
+  infoDiv.textContent = data.info?.text || defaultInfo;
+
+  /* -------- VISIBILITY -------- */
+  const hasManual = manualDiv.textContent !== defaultManual;
+  const hasPre = preDiv.textContent !== defaultPre;
+  const hasInfo = infoDiv.textContent !== defaultInfo;
+  manualSection.style.display = (hasManual || hasPre || hasInfo) ? "block" : "none";
+
+  /* -------- TIMESTAMP -------- */
+  if(data.lastUpdated) {
+     timestampDiv.textContent = "Last updated: " + data.lastUpdated;
+  }
+
+  console.debug("Firebase data loaded:", data);
+}); // End of onValue
