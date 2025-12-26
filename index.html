@@ -19,6 +19,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
  <!-- FIRST-VISIT ALERT POPUP -->
     <style>
+        
         /* Popup background overlay */
         #firstVisitOverlay {
             position: fixed;
@@ -74,9 +75,10 @@
             0% { transform: translateY(60px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
+    
     </style>
 
-    <script>
+     <script>
         // Show alert only on first visit (not reload)
         document.addEventListener("DOMContentLoaded", function () {
             if (!sessionStorage.getItem("firstVisitShown")) {
@@ -107,6 +109,7 @@
             }
         });
     </script>
+    
     
     <style>
 /* ---------------------------------------------------- */
@@ -324,9 +327,60 @@ body {
 /* 4. MAIN CONTENT & SECTIONS */
 /* ---------------------------------------------------- */
 } .forecast-box { max-width: 850px; background: #fff; padding: 20px; margin: 25px auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } .forecast-box h2 { color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 6px; } iframe { width: 100%; height: 450px; border: none; border-radius: 10px; }
+/* Specific Container for the Static Important Notice */
+.notice-box {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-left: 5px solid #ff4d4d; /* The red vertical line */
+    padding: 25px 30px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Soft shadow like the image */
+    text-align: left;
+}
 
+/* Heading inside the Important Notice */
+.notice-box .notice-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #002b5c; /* Dark blue color */
+    margin: 0;
+    border-bottom: none !important; /* Ensures no underline from other styles */
+    padding-bottom: 0 !important;
+}
+
+/* List styling to match the screenshot */
+.notice-box ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 15px 0 0 0;
+}
+
+.notice-box li {
+    font-size: 1.05rem;
+    color: #002b5c;
+    font-weight: 500;
+    line-height: 1.8;
+    margin-bottom: 5px;
+}
+
+/* Link styling */
+.notice-box a {
+    color: #0056ff;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* Footer italic text */
+.notice-box p {
+    margin-top: 15px;
+    color: #666;
+    font-size: 0.95rem;
+    font-style: italic;
+}
 /* Notice Box - ELWOIC Theme */
-      /* Unique Container for the Static Notice */
+/* Unique Container for the Static Notice */
 #static-disclaimer {
     max-width: 900px;
     margin: 20px auto;
@@ -388,7 +442,7 @@ body {
     font-size: 0.9rem;
     font-style: italic;
     display: block;
-}  
+}
 /* Notice Box - ELWOIC Theme */
   .notice-box {
     max-width: 900px;
@@ -1166,8 +1220,7 @@ footer a:hover {
             The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933316750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
         </div>
     </div>
-        
-  <!-- Notification Badge -->
+           <!-- Notification Badge -->
 <div id="reportBadge" class="fixed top-4 right-4 bg-blue-600 text-white text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center cursor-pointer shadow-lg z-50">
     0
 </div>
@@ -1188,7 +1241,7 @@ footer a:hover {
 
 
     <main>
-      <div id="static-disclaimer">
+       <div id="static-disclaimer">
     <div class="disclaimer-header">
         <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:12px;">
             <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
@@ -1677,6 +1730,7 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
     });
 });
 </script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, push, remove, update, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -1951,3 +2005,4 @@ db.ref("weatherData/" + today).on("value", snap => {
 
 </body>
 </html>
+
