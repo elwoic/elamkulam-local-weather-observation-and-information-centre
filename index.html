@@ -1653,7 +1653,6 @@ footer a:hover {
     <script type="module" src="elwoic-manual-update.js"></script>
     <script src="snapshot.js"></script>
     <script src="table.js"></script>
-    <script src="w-report.js"></script>
     <script src="aqi.js"></script>
     <script src="weather-dashboard.js"></script>
     <script>
@@ -1731,44 +1730,19 @@ document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
     });
 });
 </script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-/* ============================
-   Firebase Config
-============================ */
-const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-  authDomain: "report-5d8c0.firebaseapp.com",
-  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.firebasestorage.app",
-  messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-/* ============================
-   DOM Elements
-============================ */
-const panel = document.getElementById("reportPanel");
+<script>
+const REPORT_DB_PATH = "weather_reports";
+    
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.getElementById("reportPanel");
+  if (!panel) return;
+    
 const panelList = document.getElementById("panelReports");
 const badge = document.getElementById("reportBadge");
 const closeBtn = document.getElementById("closePanel");
 
-/* ============================
-   Database Path
-============================ */
-const DB_PATH = "weather_reports";
-
-/* ============================
-   Listen & Render (PUBLIC)
-============================ */
-onValue(ref(db, DB_PATH), (snapshot) => {
-  const data = snapshot.val();
+firebase.database().ref(REPORT_DB_PATH).on("value", snap => {
+  const data = snap.val();
   panelList.innerHTML = "";
 
   if (!data) {
@@ -1777,48 +1751,39 @@ onValue(ref(db, DB_PATH), (snapshot) => {
   }
 
   const now = Date.now();
-  const validReports = [];
+  const valid = [];
 
-  Object.entries(data).forEach(([key, r]) => {
+  Object.keys(data).forEach(key => {
+    const r = data[key];
 
-    /* 🔥 AUTO-CLEAN EXPIRED */
+    // 🔥 AUTO-CLEAN
     if (r.expirationTimestamp && r.expirationTimestamp < now) {
-      remove(ref(db, `${DB_PATH}/${key}`));
+      firebase.database().ref(`${REPORT_DB_PATH}/${key}`).remove();
       return;
     }
 
-    /* ✅ SITE-1 ONLY */
-    if (r.granted_site1 === "yes") {
-      validReports.push(r);
-    }
+    if (r.granted_site1 === "yes") valid.push(r);
   });
 
-  badge.textContent = validReports.length;
-  badge.style.display = validReports.length ? "flex" : "none";
+  badge.textContent = valid.length;
+  badge.style.display = valid.length ? "flex" : "none";
 
-  validReports
-    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+  valid
+    .sort((a,b) => (b.timestamp||0)-(a.timestamp||0))
     .forEach(r => {
       const card = document.createElement("div");
-      card.className = "bg-gray-50 p-3 rounded-lg shadow border";
+      card.className = "bg-gray-50 p-3 rounded shadow";
 
       card.innerHTML = `
-        <div class="font-semibold text-blue-700">${r.report_type}</div>
-        <div class="text-xs text-gray-500">${r.time || ""}</div>
-        <div class="text-sm mt-1">${r.observation}</div>
-        ${r.photo_url && r.photo_url !== "N/A"
-          ? `<img src="${r.photo_url}" class="w-full max-h-40 object-cover rounded mt-2">`
-          : ""
-        }
+        <strong>${r.report_type}</strong><br>
+        <small>${r.time || ""}</small>
+        <p>${r.observation}</p>
       `;
-
       panelList.appendChild(card);
     });
 });
 
-/* ============================
-   Panel Controls
-============================ */
+// panel controls
 badge?.addEventListener("click", () => {
   panel.classList.toggle("translate-x-full");
   panel.classList.toggle("translate-x-0");
