@@ -327,7 +327,7 @@ body {
 
 /* Notice Box - ELWOIC Theme */
 /* Notice Box - ELWOIC Theme */
-.notice-box {
+  .notice-box {
     max-width: 900px;
     margin: 20px auto;
     width: auto;
@@ -337,97 +337,51 @@ body {
     border-radius: 8px;
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-}
+    display: none; /* Controlled by JS */
+  }
 
-/* --- Default styles for general titles (fallback) --- */
-.notice-box .notice-title, .manual-title, .pre-title, .info-title {
+  .notice-box .notice-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #002b5c;
+    margin: 0;
+    border-bottom: 2px solid #e3effa;
+    padding-bottom: 6px;
+  }
+
+  /* Headings - Now consistently visible */
+  .manual-title, .pre-title, .info-title {
     font-size: 1.2rem;
     font-weight: 600;
     margin-top: 15px;
     margin-bottom: 5px;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
-}
+    display: block !important; /* Forces visibility */
+  }
 
-/* --- Specific Styles for the Main Title --- */
-.notice-box .notice-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #002b5c; /* Blue color for the main 'ELWOIC Manual Update' title */
-    margin:0;
-    border-bottom: none;
-}
+  .manual-title { color: red; }
+  .pre-title { color: #f1c40f; }
+  .info-title { color: #0073e6; }
 
-/* --- Heading Color Fixes --- */
-
-/* Current Update in RED */
-.manual-title {
-    color: red;
-}
-
-/* Pre-Update in YELLOW (using a dark yellow for visibility) */
-.pre-title {
-    color: #f1c40f; /* Darker yellow for better contrast */
-}
-
-/* Information Section in BLUE */
-.info-title {
-    color: #0073e6; /* Using a common blue from your site's theme */
-}
-/* --- Message Styling --- */
-#weather-message, #preupdate-message, #info-message {
+  /* Message Styling */
+  #weather-message, #preupdate-message, #info-message {
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 10px;
-}
-
-/* Default state for manual message (Gray/Black) */
-#weather-message {
-    color: #333; 
     font-weight: 500;
-}
+    min-height: 1.2em; /* Keeps space even when empty */
+  }
 
-/* When the "Blink" toggle is ON, it overrides to Red and Bolds it */
-.blink-alert {
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .blink-alert {
     animation: blink 1.2s infinite;
-    color: red !important;  
     font-weight: 700 !important;
-}
-/* --- List and Paragraph styles (unchanged) --- */
-.notice-box ul {
-    padding-left: 20px; 
-    margin:0; 
-    line-height:1.6; 
-    font-size: 1rem; 
-    color: #00315c; 
-    font-weight: 600;
-}
-.notice-box p {
-    font-size: 1rem;
-    color: #333;
-}
-/* ---------------------------------------------------- */
-/* --- NEW: Blinking Animation for Current Update Section --- */
-/* ---------------------------------------------------- */
-
-/* blinking animation */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-
-/* Blinking class ONLY for non-default messages */
-.blink-alert {
-  animation: blink 1.2s infinite;
-  color: red !important;  /* blinking messages must be red */
-}
-
-/* Default (non-blinking) message color */
-#weather-message {
-  color: #333; /* gray normal text */
-}
-
-
+  }
 /* Weather Snapshot */
 .weather-mini-dashboard {
     max-width: 900px;
