@@ -11,14 +11,17 @@ const firebaseConfig = {
   appId: "1:141478371424:web:ab431e8c467084e4fee305"
 };
 
-// Initialize with a unique name 'manualApp'
 const appManual = getApps().find(a => a.name === "manualApp") || initializeApp(firebaseConfig, "manualApp");
 const dbManual = getDatabase(appManual);
 
 function dateOnlyTimestampFromDMY(ddmmyyyy) {
   if (!ddmmyyyy) return NaN;
-  const [d, m, y] = ddmmyyyy.split("/").map(Number);
-  return new Date(y, m - 1, d).setHours(0, 0, 0, 0);
+  const parts = ddmmyyyy.split("/");
+  if (parts.length !== 3) return NaN;
+  const d = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const y = parseInt(parts[2], 10);
+  return new Date(y, m, d).setHours(0, 0, 0, 0);
 }
 
 const manualDiv = document.getElementById("weather-message");
@@ -34,8 +37,15 @@ manualSection.appendChild(timestampDiv);
 
 onValue(ref(dbManual, "/"), (snapshot) => {
   const data = snapshot.val() || {};
-  const todayTs = new Date().setHours(0,0,0,0);
+  const now = new Date();
+  const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
+  // Reset states
+  manualDiv.classList.remove("blink-alert");
+  preDiv.classList.remove("blink-alert");
+  manualDiv.style.color = ""; 
+  preDiv.style.color = "";
+  
   manualDiv.textContent = "No update provided.";
   preDiv.textContent = "No pre-update scheduled.";
   infoDiv.textContent = "No additional info.";
@@ -43,20 +53,33 @@ onValue(ref(dbManual, "/"), (snapshot) => {
   const manualTs = dateOnlyTimestampFromDMY(data.manualUpdate?.date);
   const preTs = dateOnlyTimestampFromDMY(data.preUpdate?.date);
 
-  if (data.manualUpdate && todayTs === manualTs) {
+  /* -------- MANUAL LOGIC (RED) -------- */
+  if (data.manualUpdate && !Number.isNaN(manualTs) && todayTs === manualTs) {
     manualDiv.textContent = data.manualUpdate.text;
-  } else if (data.preUpdate && todayTs === preTs) {
+    manualDiv.style.color = "red";
+    if (data.manualUpdate.blink) manualDiv.classList.add("blink-alert");
+  } 
+  // Fallback to pre-update text if it matches today
+  else if (data.preUpdate && !Number.isNaN(preTs) && todayTs === preTs) {
     manualDiv.textContent = data.preUpdate.text;
+    manualDiv.style.color = "red";
+    if (data.preUpdate.blink) manualDiv.classList.add("blink-alert");
   }
 
-  if (data.preUpdate && todayTs < preTs) {
+  /* -------- PRE UPDATE LOGIC (YELLOW) -------- */
+  if (data.preUpdate && !Number.isNaN(preTs) && todayTs < preTs) {
     preDiv.textContent = data.preUpdate.text;
+    preDiv.style.color = "#f1c40f"; // Yellow
+    if (data.preUpdate.blink) preDiv.classList.add("blink-alert");
   }
 
-  if (data.info?.text) infoDiv.textContent = data.info.text;
+  /* -------- INFO LOGIC -------- */
+  if (data.info?.text) {
+    infoDiv.textContent = data.info.text;
+  }
 
-  manualSection.style.display =
-    data.manualUpdate || data.preUpdate || data.info ? "block" : "none";
+  /* -------- VISIBILITY -------- */
+  manualSection.style.display = (data.manualUpdate || data.preUpdate || data.info) ? "block" : "none";
 
   if (data.lastUpdated) {
     timestampDiv.textContent = "Last updated: " + data.lastUpdated;
