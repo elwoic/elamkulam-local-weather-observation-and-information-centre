@@ -386,111 +386,93 @@
 
     </button>
 <!-- Dropdown panel -->
-
-    <div id="adminDropdown"
-
-         class="hidden absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-300 p-4 transform origin-top transition-all duration-300 scale-y-0 opacity-0">
-
-
-        <p class="text-sm font-medium mb-2">Admin Portal — Authorized Personnel Only</p>
-
-
-        <button onclick="checkAdminPass()"
-
-                class="w-full bg-blue-600 text-white py-1.5 rounded-md text-sm hover:bg-blue-700 transition">
-
-            Enter Portal
-        </button>
-<button onclick="checkContactAdminPass()"
-        class="w-full bg-green-600 text-white py-1.5 rounded-md text-sm hover:bg-green-700 transition mt-2">
-    Contact Messages
-</button>
+<div id="adminDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-300 p-5 transform origin-top transition-all duration-300 scale-y-0 opacity-0 z-50">
+    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 border-b pb-2">Admin Portals</p>
+    <div class="flex flex-col gap-3">
+        <a href="javascript:void(0)" onclick="handleAdminAccess('admin.html')" class="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
+           <span class="material-icons text-base">mail</span> Contact Massages
+        </a>
+        <a href="javascript:void(0)" onclick="handleAdminAccess('report-admin.html')" class="text-sm font-semibold text-green-600 hover:text-green-800 hover:underline flex items-center gap-2">
+           <span class="material-icons text-base">reports</span> Submited reports
+        </a>
+        <a href="javascript:void(0)" onclick="handleAdminAccess('administration.html')" class="text-sm font-semibold text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-2">
+           <span class="material-icons text-base">admin_panel_settings</span> Administration Portal
+        </a>
     </div>
-
 </div>
-
-
+    <p class="text-[10px] text-gray-400 mt-4 italic border-t pt-2"></p>
+</div>
 <script>
-
-function checkAdminPass() {
-
-    const password = prompt("Enter admin password:");
-
-    if (password === "04933") {
-
-        window.location.href = "admin.html";
-
-    } else {
-
-        alert("Incorrect password!");
-
-    }
-}
-function checkContactAdminPass() {
-    const password = prompt("Enter admin password:");
-
-    if (password === "04933") {
-        window.location.href = "report-admin.html";  // <--- Change this to your admin page
-    } else {
-        alert("Incorrect password!");
-    }
-}
-
-
-// Dropdown toggle logic
-
+// Unified Admin Access Logic
+/* ELWOIC Security Layer - Obfuscated */
+/* ELWOIC Security Layer - Updated & Obfuscated */
+var _0x510f=["\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4D\x44\x51\x35\x4D\x7A\x4D\x3D","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4E\x54\x49\x7A\x4F\x54\x45\x79","\x61\x64\x6D\x69\x6E\x69\x73\x74\x72\x61\x74\x69\x6F\x6E\x2D\x70\x6F\x72\x74\x61\x6C\x2E\x68\x74\x6D\x6C","\x5A\x57\x78\x33\x62\x32\x6C\x6A\x4D\x44\x45\x30\x4E\x6A\x67\x34","\x45\x6E\x74\x65\x72\x20\x61\x75\x74\x68\x6F\x72\x69\x7A\x61\x74\x69\x6F\x6E\x20\x63\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64\x21"];function handleAdminAccess(_0x2287x2){var _0x2287x3=prompt(_0x510f[6]);if(_0x2287x3===null){return}var _0x2287x4=btoa(_0x2287x3);var _0x2287x5=false;if(_0x2287x2===_0x510f[0]&&_0x2287x4===_0x510f[1]){_0x2287x5=true}else {if(_0x2287x2===_0x510f[2]&&_0x2287x4===_0x510f[3]){_0x2287x5=true}else {if(_0x2287x2===_0x510f[4]&&_0x2287x4===_0x510f[5]){_0x2287x5=true}}}if(_0x2287x5){window[_0x510f[8]][_0x510f[7]]=_0x2287x2}else {alert(_0x510f[9])}}document.addEventListener("\x44\x4F\x4D\x43\x6F\x6E\x74\x65\x6E\x74\x4C\x6F\x61\x64\x65\x64",function(){const _0x2287x6=document.getElementById("\x61\x64\x6D\x69\x6E\x54\x6F\x67\x67\x6C\x65");const _0x2287x7=document.getElementById("\x61\x64\x6D\x69\x6E\x44\x72\x6F\x70\x64\x6F\x77\x6E");let _0x2287x8=false;_0x2287x6.addEventListener("\x63\x6C\x69\x63\x6B",function(_0x2287x9){_0x2287x9.stopPropagation();_0x2287x8=!_0x2287x8;if(_0x2287x8){_0x2287x7.classList.remove("\x68\x69\x64\x64\x65\x6E");setTimeout(()=>{_0x2287x7.classList.remove("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x30");_0x2287x7.classList.add("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x31\x30\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x31\x30\x30")},10)}else {_0x2287xa()}});document.addEventListener("\x63\x6C\x69\x63\x6B",function(){if(_0x2287x8){_0x2287xa()}});function _0x2287xa(){_0x2287x8=false;_0x2287x7.classList.add("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x30");_0x2287x7.classList.remove("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x31\x30\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x31\x30\x30");setTimeout(()=>_0x2287x7.classList.add("\x68\x69\x64\x64\x65\x6E"),300)}});
+// Keep the same dropdown toggle logic from the previous response
 document.addEventListener("DOMContentLoaded", () => {
-
     const toggle = document.getElementById("adminToggle");
-
     const dropdown = document.getElementById("adminDropdown");
-
-
     let open = false;
 
-
-    toggle.addEventListener("click", () => {
-
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
         open = !open;
-
-
         if (open) {
-
             dropdown.classList.remove("hidden");
-
             setTimeout(() => {
-
                 dropdown.classList.remove("scale-y-0", "opacity-0");
-
                 dropdown.classList.add("scale-y-100", "opacity-100");
-
             }, 10);
-
         } else {
-
-            dropdown.classList.add("scale-y-0", "opacity-0");
-
-            dropdown.classList.remove("scale-y-100", "opacity-100");
-
-
-            setTimeout(() => dropdown.classList.add("hidden"), 300);
-
+            closeDropdown();
         }
-
     });
 
+    document.addEventListener("click", () => { if (open) closeDropdown(); });
+
+    function closeDropdown() {
+        open = false;
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    }
 });
 
+// Dropdown toggle logic
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("adminToggle");
+    const dropdown = document.getElementById("adminDropdown");
+    let open = false;
+
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        open = !open;
+        if (open) {
+            dropdown.classList.remove("hidden");
+            setTimeout(() => {
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
+        } else {
+            closeDropdown();
+        }
+    });
+
+    // Close dropdown if clicking outside
+    document.addEventListener("click", () => {
+        if (open) closeDropdown();
+    });
+
+    function closeDropdown() {
+        open = false;
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    }
+});
 </script>
 
-
-
     </nav>
-
 </header>
-
-
-
 <main class="container mx-auto px-4 py-8">
 
 
