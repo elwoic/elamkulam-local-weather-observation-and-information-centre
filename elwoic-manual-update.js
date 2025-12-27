@@ -1,9 +1,6 @@
-import { initializeApp, getApps } from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* 1️⃣ CONFIG FIRST */
 const firebaseConfig = {
   apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
   authDomain: "administration-protal.firebaseapp.com",
@@ -14,6 +11,11 @@ const firebaseConfig = {
   appId: "1:141478371424:web:ab431e8c467084e4fee305"
 };
 
+// Initialize with a unique name 'manualApp'
+const appManual = getApps().find(a => a.name === "manualApp") || initializeApp(firebaseConfig, "manualApp");
+const db = getDatabase(appManual);
+
+// ... rest of your manual update logic stays exactly the same ...
 /* 2️⃣ CREATE OR REUSE NAMED APP */
 const app =
   getApps().find(a => a.name === "manualApp")
