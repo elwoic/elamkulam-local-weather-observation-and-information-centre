@@ -1,17 +1,6 @@
-import { initializeApp, getApps } from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase } from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const firebaseConfig = { /* config */ };
-
-const app =
-  getApps().find(a => a.name === "reportApp")
-  ?? initializeApp(firebaseConfig, "reportApp");
-
-const db = getDatabase(app);
-
-/* 1️⃣ CONFIG FIRST */
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
   authDomain: "report-5d8c0.firebaseapp.com",
@@ -22,6 +11,12 @@ const firebaseConfig = {
   appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
   measurementId: "G-5MGMM1DYDM"
 };
+
+// Initialize with a unique name 'badgeApp'
+const appBadge = getApps().find(a => a.name === "badgeApp") || initializeApp(firebaseConfig, "badgeApp");
+const db = getDatabase(appBadge);
+
+// ... rest of your notie badge logic stays exactly the same ...
 
 /* 2️⃣ CREATE / REUSE NAMED APP */
 const app =
