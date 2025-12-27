@@ -13,21 +13,7 @@ const firebaseConfig = {
 
 // Initialize with a unique name 'manualApp'
 const appManual = getApps().find(a => a.name === "manualApp") || initializeApp(firebaseConfig, "manualApp");
-const db = getDatabase(appManual);
-
-// ... rest of your manual update logic stays exactly the same ...
-/* 2️⃣ CREATE OR REUSE NAMED APP */
-const app =
-  getApps().find(a => a.name === "manualApp")
-  ?? initializeApp(firebaseConfig, "manualApp");
-
-/* 3️⃣ DATABASE FROM THAT APP */
-const db = getDatabase(app);
-
-/* DEBUG (optional, remove later) */
-console.log("Manual apps:", getApps().map(a => a.name));
-
-/* ---------- YOUR EXISTING LOGIC CONTINUES ---------- */
+const dbManual = getDatabase(appManual);
 
 function dateOnlyTimestampFromDMY(ddmmyyyy) {
   if (!ddmmyyyy) return NaN;
@@ -46,7 +32,7 @@ timestampDiv.style.color = "#888";
 timestampDiv.style.marginTop = "10px";
 manualSection.appendChild(timestampDiv);
 
-onValue(ref(db, "/"), (snapshot) => {
+onValue(ref(dbManual, "/"), (snapshot) => {
   const data = snapshot.val() || {};
   const todayTs = new Date().setHours(0,0,0,0);
 
@@ -76,4 +62,3 @@ onValue(ref(db, "/"), (snapshot) => {
     timestampDiv.textContent = "Last updated: " + data.lastUpdated;
   }
 });
-
