@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELWOIC Admin Portal</title>
+  <style>
+    :root {
+      --primary: #007acc;
+      --success: #28a745;
+      --danger: #ff4e4e;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+    }
+    /* Layout Modification: Top-Left alignment */
+    body { 
+      font-family: 'Segoe UI', 'Segoe UI Variable', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); 
+  margin: 0; 
+  padding: 20px; 
+  display: flex; 
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh; 
+    }
+    
+    #login-container, #admin-portal { 
+      width: 100%; 
+      max-width: 800px; /* Wider to accommodate grid */
+      background: var(--card); 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    }
+
+    #admin-portal { display: none; }
+
+    /* Grid System for Sections */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .section { 
+      padding: 15px; 
+      border: 1px solid #eee; 
+      border-radius: 8px; 
+      background: #fff;
+    }
+
+    /* Status Badge Styling */
+    .status-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; text-transform: uppercase; }
+    .status-live { background: #d4edda; color: var(--success); }
+    .status-offline { background: #f8d7da; color: var(--danger); }
+
+    h3 { margin-top: 0; font-size: 1rem; color: #555; display: flex; flex-direction: column; gap: 5px; }
+    
+    input[type="text"], textarea { 
+      width: 100%; 
+      padding: 8px; 
+      margin-bottom: 8px; 
+      border: 1px solid #ddd; 
+      border-radius: 5px; 
+      box-sizing: border-box; 
+      font-size: 0.9rem;
+    }
+
+    .btn-group { display: flex; gap: 8px; }
+    button { padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+    
+    .update-btn { background: var(--primary); color: white; flex: 2; }
+    .revoke-btn { background: #fff; color: var(--danger); border: 1px solid var(--danger); flex: 1; }
+    .update-btn:hover { background: #005fa3; }
+    .revoke-btn:hover { background: var(--danger); color: white; }
+
+    .action-bar { 
+      margin-top: 20px; 
+      padding-top: 15px; 
+      border-top: 2px solid #eee;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .submit-all { background: var(--success); color: white; width: 100%; padding: 12px; }
+    .revoke-all { background: #000; color: white; width: 100%; padding: 12px; }
+    .logout-btn { background: #666; color: white; width: 100%; margin-top: 10px; }
+
+    .toggle-group { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: #777; }
+  
+  @media (min-width: 1024px) {
+  body {
+    padding: 15px 20px;
+  }
+
+  #login-container,
+  #admin-portal {
+    margin: 0;
+    max-width: 900px;
+  }
+
+  .admin-grid {
+    align-items: start;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<div id="login-container">
+  <h2 style="text-align:center">ELWOIC Login</h2>
+  <input type="email" id="login-email" placeholder="Email Address">
+  <input type="password" id="login-password" placeholder="Password">
+  <button style="background:var(--primary); color:white; width: 100%;" id="loginBtn">Login</button>
+</div>
+
+<div id="admin-portal">
+  <h2 style="color:var(--primary); margin:0 0 15px 0; font-size: 1.4rem;">ELWOIC Administration</h2>
+
+  <div class="admin-grid">
+    <div class="section">
+      <h3>
+        <span>Manual Update <span id="status-manual" class="status-badge status-offline">Offline</span></span>
+        <div class="toggle-group">
+          <span>Blink?</span>
+          <input type="radio" name="manualBlink" value="true" id="m-blink-on"> <label for="m-blink-on">On</label>
+          <input type="radio" name="manualBlink" value="false" id="m-blink-off" checked> <label for="m-blink-off">Off</label>
+        </div>
+      </h3>
+      <input type="text" id="manual-date" placeholder="Date (DD/MM/YYYY)">
+      <textarea id="manual-text" rows="3" placeholder="Message content..."></textarea>
+      <div class="btn-group">
+        <button class="update-btn" onclick="submitField('manualUpdate')">Update</button>
+        <button class="revoke-btn" onclick="revokeField('manualUpdate')">Revoke</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>
+        <span>Pre Update <span id="status-pre" class="status-badge status-offline">Offline</span></span>
+        <div class="toggle-group">
+          <span>Blink?</span>
+          <input type="radio" name="preBlink" value="true" id="p-blink-on"> <label for="p-blink-on">On</label>
+          <input type="radio" name="preBlink" value="false" id="p-blink-off" checked> <label for="p-blink-off">Off</label>
+        </div>
+      </h3>
+      <input type="text" id="pre-date" placeholder="Target Date (DD/MM/YYYY)">
+      <textarea id="pre-text" rows="3" placeholder="Message content..."></textarea>
+      <div class="btn-group">
+        <button class="update-btn" onclick="submitField('preUpdate')">Update</button>
+        <button class="revoke-btn" onclick="revokeField('preUpdate')">Revoke</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>General Info <span id="status-info" class="status-badge status-offline">Offline</span></h3>
+      <textarea id="info-text" rows="5" placeholder="General news or notes..."></textarea>
+      <div class="btn-group">
+        <button class="update-btn" onclick="submitField('info')">Update</button>
+        <button class="revoke-btn" onclick="revokeField('info')">Revoke</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button id="submitBtn" class="submit-all">Update All Sections Simultaneously</button>
+    <button id="revokeAllBtn" class="revoke-all">Revoke All Updates (Clear Portal)</button>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+    authDomain: "administration-protal.firebaseapp.com",
+    databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "administration-protal",
+    storageBucket: "administration-protal.firebasestorage.app",
+    messagingSenderId: "141478371424",
+    appId: "1:141478371424:web:ab431e8c467084e4fee305"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value)
+      .catch(error => alert(error.message));
+  });
+
+  auth.onAuthStateChanged(user => {
+    document.getElementById('login-container').style.display = user ? 'none' : 'block';
+    document.getElementById('admin-portal').style.display = user ? 'block' : 'none';
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+  
+  function formatDate(d) {
+  return String(d.getDate()).padStart(2, '0') + "/" +
+         String(d.getMonth() + 1).padStart(2, '0') + "/" +
+         d.getFullYear();
+}
+
+  db.ref("/").on('value', (snapshot) => {
+  const data = snapshot.val() || {};
+
+  const manualLive = !!data.manualUpdate;
+  const preLive = !!data.preUpdate;
+
+  updateStatusBadge('status-manual', manualLive);
+  updateStatusBadge('status-pre', preLive);
+  updateStatusBadge('status-info', !!data.info);
+
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  if (!manualLive && !document.getElementById('manual-date').value) {
+    document.getElementById('manual-date').value = formatDate(today);
+  }
+
+  if (!preLive && !document.getElementById('pre-date').value) {
+    document.getElementById('pre-date').value = formatDate(tomorrow);
+  }
+});
+
+
+  function updateStatusBadge(id, isLive) {
+    const badge = document.getElementById(id);
+    badge.textContent = isLive ? "Live" : "Offline";
+    badge.className = isLive ? "status-badge status-live" : "status-badge status-offline";
+  }
+
+  window.submitField = function(path) {
+    let payload = {};
+    if (path === 'manualUpdate') {
+      payload = {
+        date: document.getElementById('manual-date').value,
+        text: document.getElementById('manual-text').value,
+        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true"
+      };
+    } else if (path === 'preUpdate') {
+      payload = {
+        date: document.getElementById('pre-date').value,
+        text: document.getElementById('pre-text').value,
+        blink: document.querySelector('input[name="preBlink"]:checked').value === "true"
+      };
+    } else if (path === 'info') {
+      payload = { text: document.getElementById('info-text').value };
+    }
+    db.ref(path).set(payload).then(() => db.ref('lastUpdated').set(new Date().toLocaleString())).then(() => alert("Updated!")).catch(err => alert(err.message));
+  };
+
+  window.revokeField = function(path) {
+    if(confirm("Revoke this section?")) {
+      db.ref(path).remove().then(() => {
+        if(path === 'manualUpdate') { document.getElementById('manual-date').value = ""; document.getElementById('manual-text').value = ""; }
+        if(path === 'preUpdate') { document.getElementById('pre-date').value = ""; document.getElementById('pre-text').value = ""; }
+        if(path === 'info') { document.getElementById('info-text').value = ""; }
+      });
+    }
+  };
+
+  // REVOKE ALL LOGIC
+  document.getElementById('revokeAllBtn').addEventListener('click', () => {
+    if(confirm("CRITICAL: This will remove ALL updates from the website. Proceed?")) {
+      db.ref("/").update({
+        manualUpdate: null,
+        preUpdate: null,
+        info: null
+      }).then(() => {
+        document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = "");
+        alert("All updates revoked.");
+      }).catch(err => alert(err.message));
+    }
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    db.ref("/").update({
+      manualUpdate: {
+        date: document.getElementById('manual-date').value,
+        text: document.getElementById('manual-text').value,
+        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true"
+      },
+      preUpdate: {
+        date: document.getElementById('pre-date').value,
+        text: document.getElementById('pre-text').value,
+        blink: document.querySelector('input[name="preBlink"]:checked').value === "true"
+      },
+      info: { text: document.getElementById('info-text').value },
+      lastUpdated: new Date().toLocaleString()
+    }).then(() => alert("All updated!")).catch(err => alert(err.message));
+  });
+</script>
+</body>
+</html>
