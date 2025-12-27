@@ -1,7 +1,15 @@
 import { initializeApp, getApps } from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, remove } from
+import { getDatabase } from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = { /* config */ };
+
+const app =
+  getApps().find(a => a.name === "reportApp")
+  ?? initializeApp(firebaseConfig, "reportApp");
+
+const db = getDatabase(app);
 
 /* 1️⃣ CONFIG FIRST */
 const firebaseConfig = {
