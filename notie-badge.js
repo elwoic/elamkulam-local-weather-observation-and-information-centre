@@ -1,6 +1,13 @@
- 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+ import { initializeApp, getApps } from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const app = getApps().find(a => a.name === "reportApp")
+  ?? initializeApp(firebaseConfig, "reportApp");
+
+const db = getDatabase(app);
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
