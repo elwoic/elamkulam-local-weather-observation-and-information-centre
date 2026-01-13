@@ -48,6 +48,7 @@ if (closeBtn) closeBtn.onclick = closeSidePanel;
 if (overlay) overlay.onclick = closeSidePanel;
 
 /* ---------- DATABASE LISTENER ---------- */
+/* ---------- DATABASE LISTENER ---------- */
 onValue(ref(dbBadge, "weather_reports"), (snapshot) => {
   const data = snapshot.val();
   
@@ -60,25 +61,23 @@ onValue(ref(dbBadge, "weather_reports"), (snapshot) => {
   const validReports = [];
 
   Object.entries(data).forEach(([key, item]) => {
-    // Check for expired reports
-    if (item.expirationTimestamp && item.expirationTimestamp < now) {
-      remove(ref(dbBadge, `weather_reports/${key}`));
-      return;
-    }
-    // Only show reports granted for site1
-    if (item.granted_site1 === "yes") {
+    // 1. Check if expired (but DON'T delete from DB)
+    const isExpired = item.expirationTimestamp && item.expirationTimestamp < now;
+    
+    // 2. Only show reports that are NOT expired AND are granted for site1
+    if (!isExpired && item.granted_site1 === "yes") {
       validReports.push(item);
     }
   });
 
+  // Toggle Badge visibility
   if (validReports.length === 0) {
     if (badge) badge.style.display = "none";
     return;
+  } else {
+    if (badge) badge.style.display = "block";
+    if (badgeCount) badgeCount.textContent = validReports.length;
   }
-
-  // Update Badge
-  if (badge) badge.style.display = "block";
-  if (badgeCount) badgeCount.textContent = validReports.length;
 
   // Sort: Newest First
   validReports.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -94,7 +93,7 @@ onValue(ref(dbBadge, "weather_reports"), (snapshot) => {
         : "N/A";
 
       return `
-        <div style="background:white;padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid #1e40af;box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-left:4px solid #1e40af;">
+        <div style="background:white;padding:12px;border-radius:8px;margin-bottom:12px;border: 1px solid #e2e8f0; border-left:4px solid #1e40af;">
           <div style="font-size:10px;color:#64748b;display:flex;justify-content:space-between;margin-bottom:4px;">
             <span>🕒 Event: ${item.time || "N/A"}</span>
             <span>📅 Submitted: ${submittedOn}</span>
