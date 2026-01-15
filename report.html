@@ -93,14 +93,25 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
   <p id="form-success">✔ Submitted successfully — Thank You!</p>
 
   <hr style="margin-top:30px;border-top:1px solid #ccc">
-  
+  <input type="hidden" name="priority" id="priority" value="normal">
+
+<button type="button" id="urgentBtn"
+  style="margin-top:15px;width:100%;background:#fff3f3;color:#b91c1c;
+  border:1px solid #fecaca;padding:12px;border-radius:6px;
+  font-weight:700;cursor:pointer;">
+  ⚠ Mark as URGENT (And then submite)
+</button>
+
 </section>
-<!-- Firebase + Upload Logic -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
+const FORMSPREE_URL = "https://formspree.io/f/xpqqzknw";
+let isUrgent = false;
+
+/* Firebase config */
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
   authDomain: "report-5d8c0.firebaseapp.com",
@@ -117,14 +128,40 @@ const storage = getStorage(app);
 
 const form = document.getElementById("weather-report-form");
 const successMsg = document.getElementById("form-success");
+const urgentBtn = document.getElementById("urgentBtn");
+const priorityField = document.getElementById("priority");
 
+/* URGENT BUTTON */
+urgentBtn?.addEventListener("click", () => {
+  const confirmUrgent = confirm(
+    "⚠ URGENT WEATHER REPORT\n\n" +
+    "This will immediately notify ELWOIC via email.\n\n" +
+    "Do NOT misuse this option.\n\n" +
+    "Proceed?"
+  );
+
+  if (confirmUrgent) {
+    isUrgent = true;
+    priorityField.value = "urgent";
+    urgentBtn.textContent = "⚠ Marked as URGENT";
+    urgentBtn.style.background = "#b91c1c";
+    urgentBtn.style.color = "#fff";
+  }
+});
+
+/* FORM SUBMIT */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(form));
-  data.timestamp = Date.now();
-  let photoURL = "N/A";
 
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+
+  data.priority = priorityField.value;
+  data.timestamp = new Date().toLocaleString();
+
+  let photoURL = "N/A";
   const photo = document.getElementById("photo-file").files[0];
+
   if (photo) {
     const filePath = "weather_photos/" + Date.now() + "_" + photo.name;
     const storageRef = sRef(storage, filePath);
@@ -132,25 +169,37 @@ form.addEventListener("submit", async (e) => {
     photoURL = await getDownloadURL(storageRef);
   }
 
-  await push(ref(db, "weather_reports"), { ...data, photo_url: photoURL });
+  /* Save to Firebase (always) */
+  await push(ref(db, "weather_reports"), {
+    ...data,
+    photo_url: photoURL
+  });
+
+  /* Send email ONLY if urgent */
+  if (isUrgent) {
+    const emailData = new FormData();
+    for (const key in data) emailData.append(key, data[key]);
+    emailData.append("photo_url", photoURL);
+
+    fetch(FORMSPREE_URL, {
+      method: "POST",
+      body: emailData,
+      headers: { "Accept": "application/json" }
+    });
+  }
+
+  /* Reset everything */
   form.reset();
+  isUrgent = false;
+  priorityField.value = "normal";
+  urgentBtn.textContent = "⚠ Mark as URGENT (Email will be sent)";
+  urgentBtn.style.background = "#fff3f3";
+  urgentBtn.style.color = "#b91c1c";
+
   successMsg.style.display = "block";
   setTimeout(() => successMsg.style.display = "none", 3000);
 });
-
-/* admin login */
-document.getElementById("admin-login").onclick = () => {
-  const ps = document.getElementById("admin-password").value.trim();
-  if (["04933", "elwoic811", "elwoic822"].includes(ps)) {
-    window.location.href = "report-admin.html";
-  } else document.getElementById("admin-error").style.display = "block";
-};
-
-/* panel slide */
-const t = document.getElementById("admin-toggle");
-const p = document.getElementById("admin-panel");
-t.onclick = () => { p.classList.toggle("active"); t.classList.toggle("open"); };
 </script>
+
 </body>
 </html>
-
