@@ -47,6 +47,7 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
 </p>
 
   <form id="weather-report-form">
+     <input type="hidden" name="priority" id="priority" value="normal">
     <label>Your Name </label>
     <input type="text" name="name" required>
 
@@ -101,19 +102,15 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
   <p id="form-success">✔ Submitted successfully — Thank You!</p>
 
   <hr style="margin-top:30px;border-top:1px solid #ccc">
-  <input type="hidden" name="priority" id="priority" value="normal">
+ 
 
 </section>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-const allowedDomains = [
-  "@gmail.com","@gmail.in",
-  "@yahoo.com","@outlook.com",
-  "@hotmail.com"
-];
+const FORMSPREE_URL = "https://formspree.io/f/xpqqzknw";
+const allowedDomains = ["@gmail.com", "@gmail.in", "@yahoo.com", "@outlook.com", "@hotmail.com"];
 
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
@@ -127,7 +124,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
 const form = document.getElementById("weather-report-form");
 const urgentBtn = document.getElementById("urgentBtn");
@@ -136,54 +132,81 @@ const successMsg = document.getElementById("form-success");
 
 let isUrgent = false;
 
+// --- URGENT TOGGLE LOGIC ---
 urgentBtn.addEventListener("click", () => {
-  if (confirm("⚠ Mark this report as URGENT? “Our observer will receive the message directly and respond as quickly as possible after the submission.”")) {
-    isUrgent = true;
-    priorityField.value = "urgent";
-    urgentBtn.textContent = "⚠ Marked as URGENT";
-    urgentBtn.style.background = "#b91c1c";
-    urgentBtn.style.color = "#fff";
+  if (isUrgent) {
+    resetUrgentButton();
+  } else {
+    if (confirm("⚠ Mark this report as URGENT? \n\n“Our observer will receive the message directly and respond as quickly as possible.”")) {
+      isUrgent = true;
+      priorityField.value = "urgent";
+      urgentBtn.textContent = "⚠ Marked as URGENT (Click to cancel)";
+      urgentBtn.style.background = "#b91c1c";
+      urgentBtn.style.color = "#fff";
+    }
   }
 });
 
+function resetUrgentButton() {
+  isUrgent = false;
+  priorityField.value = "normal";
+  urgentBtn.textContent = "⚠ Mark as URGENT (Notifies observer immediately)";
+  urgentBtn.style.background = "#fff3f3";
+  urgentBtn.style.color = "#b91c1c";
+}
+
+// --- FORM SUBMIT ---
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  // Email Domain Validation
   const email = form.email.value.toLowerCase();
   if (!allowedDomains.some(domain => email.endsWith(domain))) {
-    alert("Please use a valid email like gmail.com, gmail.in, yahoo.com, outlook.com");
+    alert("Please use a valid email (e.g., gmail.com, yahoo.com)");
     return;
   }
 
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
   data.timestamp = Date.now();
+  data.priority = priorityField.value; // Ensure priority is captured
+  data.photo_url = "N/A"; // Explicitly set to N/A since photos are removed
 
-  let photoURL = "N/A";
-  const photo = document.getElementById("photo-file").files[0];
-  if (photo) {
-    const filePath = `weather_photos/${Date.now()}_${photo.name}`;
-    const storageRef = sRef(storage, filePath);
-    await uploadBytes(storageRef, photo);
-    photoURL = await getDownloadURL(storageRef);
+  try {
+    // 1. Generate Human ID (e.g., 001, 002)
+    const counterRef = ref(db, "report_counter");
+    const result = await runTransaction(counterRef, v => (v || 0) + 1);
+    const humanId = String(result.snapshot.val()).padStart(3, "0");
+
+    // 2. Save to Firebase
+    await push(ref(db, "weather_reports"), {
+      ...data,
+      humanId: humanId,
+      granted_site1: "no",
+      granted_site2: "no"
+    });
+
+    // 3. Formspree (Only for Urgent)
+    if (isUrgent) {
+      fetch(FORMSPREE_URL, { 
+        method: "POST", 
+        body: JSON.stringify({...data, humanId}), 
+        headers: { "Content-Type": "application/json", "Accept": "application/json" } 
+      });
+    }
+
+    // 4. UI Reset
+    form.reset();
+    resetUrgentButton();
+    successMsg.style.display = "block";
+    setTimeout(() => successMsg.style.display = "none", 5000);
+    alert(`Report #${humanId} submitted successfully!`);
+
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Submission failed. Please check your internet connection.");
   }
-
-  const counterRef = ref(db, "report_counter");
-  const result = await runTransaction(counterRef, v => (v || 0) + 1);
-  const humanId = String(result.snapshot.val()).padStart(3, "0");
-
-  await push(ref(db, "weather_reports"), {
-    ...data,
-    humanId,
-    photo_url: photoURL
-  });
-
-  form.reset();
-  successMsg.style.display = "block";
-  setTimeout(()=>successMsg.style.display="none",5000);
-  alert(`Report #${humanId} submitted successfully`);
 });
 </script>
-
 </body>
 </html>
