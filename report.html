@@ -51,7 +51,7 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
     <input type="text" name="name" required>
 
     <label>Location/Ward No:/Place *</label>
-<input type="text" name="location" placeholder="Enter the event happening location" required>
+<input type="text" name="location" placeholder="Eg:-Elamkulam/Ward No:1/Kunnakkavu/etc" required>
 
     <label>Report Type *</label>
     <select name="report_type" required>
@@ -69,7 +69,7 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
     <textarea name="observation" required></textarea>
 
     <label>Time of Event </label>
-<input type="text" name="time" placeholder="Enter the time of the event happened/ing">
+<input type="text" name="time" placeholder="Morning/17:00">
 
     <label>Your Email *</label>
 <input type="email" name="email" 
@@ -88,6 +88,13 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
   <label><input type="radio" name="show_name" value="yes" required> Yes</label><br>
   <label><input type="radio" name="show_name" value="no" required> No</label>
 </div>
+    <button type="button" id="urgentBtn"
+  style="margin-top:15px;width:100%;background:#fff3f3;color:#b91c1c;
+  border:1px solid #fecaca;padding:12px;border-radius:6px;
+  font-weight:700;cursor:pointer;">
+  ⚠ Mark as URGENT (This will make the observer noties you report as much fast)
+</button>
+    
     <button type="submit">Submit Weather Report</button>
   </form>
 
@@ -95,13 +102,6 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
 
   <hr style="margin-top:30px;border-top:1px solid #ccc">
   <input type="hidden" name="priority" id="priority" value="normal">
-
-<button type="button" id="urgentBtn"
-  style="margin-top:15px;width:100%;background:#fff3f3;color:#b91c1c;
-  border:1px solid #fecaca;padding:12px;border-radius:6px;
-  font-weight:700;cursor:pointer;">
-  ⚠ Mark as URGENT (And then submite)
-</button>
 
 </section>
 <script type="module">
@@ -137,7 +137,7 @@ const successMsg = document.getElementById("form-success");
 let isUrgent = false;
 
 urgentBtn.addEventListener("click", () => {
-  if (confirm("⚠ Mark this report as URGENT?")) {
+  if (confirm("⚠ Mark this report as URGENT? “Our observer will receive the message directly and respond as quickly as possible after the submission.”")) {
     isUrgent = true;
     priorityField.value = "urgent";
     urgentBtn.textContent = "⚠ Marked as URGENT";
