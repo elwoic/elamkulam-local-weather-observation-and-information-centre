@@ -51,7 +51,7 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
     <input type="text" name="name" required>
 
     <label>Location/Ward No:/Place *</label>
-    <input type="text" name="location" required>
+<input type="text" name="location" placeholder="Enter the event happening location" required>
 
     <label>Report Type *</label>
     <select name="report_type" required>
@@ -69,13 +69,17 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
     <textarea name="observation" required></textarea>
 
     <label>Time of Event </label>
-    <input type="text" name="time">
+<input type="text" name="time" placeholder="Enter the time of the event happened/ing">
 
     <label>Attach Weather Photo (optional)</label>
     <input type="file" id="photo-file" accept="image/*">
 
-    <label>Your Email </label>
-    <input type="email" name="email" required>
+    <label>Your Email *</label>
+<input type="email" name="email" 
+       placeholder="example@gmail.com" 
+       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+       title="Please enter a valid email address (e.g. name@gmail.com)" 
+       required>
 <label>Do you want to show your report on our site? *</label>
 <div style="margin-top:6px; font-size:0.97rem;">
   <label><input type="radio" name="show_on_site" value="yes" required> Yes</label><br>
@@ -105,13 +109,15 @@ BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
 </section>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-const FORMSPREE_URL = "https://formspree.io/f/xpqqzknw";
-let isUrgent = false;
+const allowedDomains = [
+  "@gmail.com","@gmail.in",
+  "@yahoo.com","@outlook.com",
+  "@hotmail.com"
+];
 
-/* Firebase config */
 const firebaseConfig = {
   apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
   authDomain: "report-5d8c0.firebaseapp.com",
@@ -127,20 +133,14 @@ const db = getDatabase(app);
 const storage = getStorage(app);
 
 const form = document.getElementById("weather-report-form");
-const successMsg = document.getElementById("form-success");
 const urgentBtn = document.getElementById("urgentBtn");
 const priorityField = document.getElementById("priority");
+const successMsg = document.getElementById("form-success");
 
-/* URGENT BUTTON */
-urgentBtn?.addEventListener("click", () => {
-  const confirmUrgent = confirm(
-    "⚠ URGENT WEATHER REPORT\n\n" +
-    "This will immediately notify ELWOIC via email.\n\n" +
-    "Do NOT misuse this option.\n\n" +
-    "Proceed?"
-  );
+let isUrgent = false;
 
-  if (confirmUrgent) {
+urgentBtn.addEventListener("click", () => {
+  if (confirm("⚠ Mark this report as URGENT?")) {
     isUrgent = true;
     priorityField.value = "urgent";
     urgentBtn.textContent = "⚠ Marked as URGENT";
@@ -149,55 +149,42 @@ urgentBtn?.addEventListener("click", () => {
   }
 });
 
-/* FORM SUBMIT */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const email = form.email.value.toLowerCase();
+  if (!allowedDomains.some(domain => email.endsWith(domain))) {
+    alert("Please use a valid email like gmail.com, gmail.in, yahoo.com, outlook.com");
+    return;
+  }
+
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
-
-  data.priority = priorityField.value;
-  data.timestamp = new Date().toLocaleString();
+  data.timestamp = Date.now();
 
   let photoURL = "N/A";
   const photo = document.getElementById("photo-file").files[0];
-
   if (photo) {
-    const filePath = "weather_photos/" + Date.now() + "_" + photo.name;
+    const filePath = `weather_photos/${Date.now()}_${photo.name}`;
     const storageRef = sRef(storage, filePath);
     await uploadBytes(storageRef, photo);
     photoURL = await getDownloadURL(storageRef);
   }
 
-  /* Save to Firebase (always) */
+  const counterRef = ref(db, "report_counter");
+  const result = await runTransaction(counterRef, v => (v || 0) + 1);
+  const humanId = String(result.snapshot.val()).padStart(3, "0");
+
   await push(ref(db, "weather_reports"), {
     ...data,
+    humanId,
     photo_url: photoURL
   });
 
-  /* Send email ONLY if urgent */
-  if (isUrgent) {
-    const emailData = new FormData();
-    for (const key in data) emailData.append(key, data[key]);
-    emailData.append("photo_url", photoURL);
-
-    fetch(FORMSPREE_URL, {
-      method: "POST",
-      body: emailData,
-      headers: { "Accept": "application/json" }
-    });
-  }
-
-  /* Reset everything */
   form.reset();
-  isUrgent = false;
-  priorityField.value = "normal";
-  urgentBtn.textContent = "⚠ Mark as URGENT (Email will be sent)";
-  urgentBtn.style.background = "#fff3f3";
-  urgentBtn.style.color = "#b91c1c";
-
   successMsg.style.display = "block";
-  setTimeout(() => successMsg.style.display = "none", 3000);
+  setTimeout(()=>successMsg.style.display="none",5000);
+  alert(`Report #${humanId} submitted successfully`);
 });
 </script>
 
