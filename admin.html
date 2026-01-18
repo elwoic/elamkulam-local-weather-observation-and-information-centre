@@ -149,12 +149,16 @@ function render(list) {
       <div class="flex justify-between items-start gap-4">
         <div class="flex-1">
           <h3 class="text-lg font-semibold text-slate-800">
-  ${escape(item.subject)}
-</h3>
+            ${escape(item.subject)}
+          </h3>
 
-<p class="text-xs mt-1 text-blue-700 font-medium">
-  Topic: ${escape(item.questionType || "Not specified")}
-</p>
+          <p class="text-xs mt-1 text-blue-700 font-medium">
+            Topic: ${escape(item.questionType || "Not specified")}
+          </p>
+
+          <p class="text-xs mt-1 text-gray-500">
+            Reference #: <strong>${escape(item.refNumber || "N/A")}</strong>
+          </p>
 
           <span class="text-xs text-slate-500">${d}</span>
           <p class="text-sm text-slate-600 mt-1">
@@ -185,8 +189,9 @@ filterInput.addEventListener("input", () => {
     (m.name||"").toLowerCase().includes(q) ||
     (m.email||"").toLowerCase().includes(q) ||
     (m.subject||"").toLowerCase().includes(q) ||
-(m.message||"").toLowerCase().includes(q) ||
-(m.questionType||"").toLowerCase().includes(q)
+    (m.message||"").toLowerCase().includes(q) ||
+    (m.questionType||"").toLowerCase().includes(q) ||
+    (m.refNumber||"").toLowerCase().includes(q) // <-- added refNumber search
   );
   render(filtered);
 });
