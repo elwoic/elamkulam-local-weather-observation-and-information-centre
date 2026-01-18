@@ -148,7 +148,14 @@ function render(list) {
     card.innerHTML = `
       <div class="flex justify-between items-start gap-4">
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-slate-800">${escape(item.subject)}</h3>
+          <h3 class="text-lg font-semibold text-slate-800">
+  ${escape(item.subject)}
+</h3>
+
+<p class="text-xs mt-1 text-blue-700 font-medium">
+  Topic: ${escape(item.questionType || "Not specified")}
+</p>
+
           <span class="text-xs text-slate-500">${d}</span>
           <p class="text-sm text-slate-600 mt-1">
             <strong>${escape(item.name)}</strong> —
@@ -178,7 +185,8 @@ filterInput.addEventListener("input", () => {
     (m.name||"").toLowerCase().includes(q) ||
     (m.email||"").toLowerCase().includes(q) ||
     (m.subject||"").toLowerCase().includes(q) ||
-    (m.message||"").toLowerCase().includes(q)
+(m.message||"").toLowerCase().includes(q) ||
+(m.questionType||"").toLowerCase().includes(q)
   );
   render(filtered);
 });
@@ -189,10 +197,10 @@ exportBtn.onclick = () => {
     alert("No messages to export.");
     return;
   }
-  const header = "key,timestamp,name,email,subject,message\n";
-  const rows = currentData.map(x => 
-    `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.subject}","${x.message.replace(/"/g,'""')}"`
-  ).join("\n");
+  const header = "key,timestamp,name,email,topic,subject,message\n";
+ const rows = currentData.map(x => 
+  `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
+).join("\n");
   const blob = new Blob([header + rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
