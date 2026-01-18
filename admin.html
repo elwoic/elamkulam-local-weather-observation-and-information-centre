@@ -203,8 +203,8 @@ exportBtn.onclick = () => {
     return;
   }
   const header = "key,timestamp,name,email,topic,subject,message\n";
- const rows = currentData.map(x => 
-  `"${x.key}","${x.timestamp}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
+const rows = currentData.map(x => 
+  `"${x.key}","${x.timestamp}","${x.refNumber || ""}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
 ).join("\n");
   const blob = new Blob([header + rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
