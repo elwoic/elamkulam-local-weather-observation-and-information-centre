@@ -379,7 +379,7 @@ body {
     font-size: 0.95rem;
     font-style: italic;
 }
-/* Notice Box - ELWOIC Theme */
+/* Notice Box - Disclaimer */
 /* Unique Container for the Static Notice */
 #static-disclaimer {
     max-width: 900px;
@@ -394,12 +394,25 @@ body {
     border-top: 1px solid #f0f0f0; /* Subtle top border for depth */
 }
 
-/* Header inside the ID */
 #static-disclaimer .disclaimer-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* FORCE LEFT ALIGN */
+    gap: 10px;
     margin-bottom: 15px;
 }
+.disclaimer-toggle {
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.35s ease;
+    line-height: 1;
+}
+
+#static-disclaimer.collapsed .disclaimer-toggle {
+    transform: rotate(90deg);
+}
+
 
 #static-disclaimer h2 {
     font-size: 1.65rem;
@@ -442,6 +455,25 @@ body {
     font-size: 0.9rem;
     font-style: italic;
     display: block;
+}
+#static-disclaimer {
+    overflow: hidden;
+    transition: height 0.6s ease;
+}
+
+#static-disclaimer.collapsed {
+    height: 70px;
+}
+
+.disclaimer-toggle {
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.35s ease;
+    line-height: 1;
+}
+#static-disclaimer.collapsed .disclaimer-toggle {
+    transform: rotate(-90deg);
 }
 /* Notice Box - ELWOIC Theme */
   .notice-box {
@@ -1254,14 +1286,20 @@ footer a:hover {
 
 
     <main>
-       <div id="static-disclaimer">
-    <div class="disclaimer-header">
-        <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='#ff4d4d' viewBox='0 0 24 24' style="margin-right:12px;">
-            <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/>
-        </svg>
-        <h2>Important Notice</h2>
-    </div>
-    
+         <div id="static-disclaimer">
+  <div class="disclaimer-header">
+    <span class="disclaimer-toggle" title="Expand / Collapse">▼</span>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ff4d4d"
+         viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+                 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    </svg>
+
+    <h2>Important Notice</h2>
+</div>
+
+
     <ul class="disclaimer-list">
         <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
         <li>This is a <b>personal project created by a student</b> for informational purposes.</li>
@@ -1854,6 +1892,46 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const box = document.getElementById("static-disclaimer");
+    const toggle = box.querySelector(".disclaimer-toggle");
+
+    const VISIT_KEY = "disclaimerVisitCount";
+    const MAX_VISITS = 6;
+    const AUTO_COLLAPSE_TIME = 35000;
+    const COLLAPSED_HEIGHT = 70;
+
+    let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+    localStorage.setItem(VISIT_KEY, ++visits);
+
+    // Set initial height
+    box.style.height = box.scrollHeight + "px";
+
+    // Start collapsed for frequent visitors
+    if (visits > MAX_VISITS) {
+        collapse();
+    } else {
+        setTimeout(collapse, AUTO_COLLAPSE_TIME);
+    }
+
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        box.classList.contains("collapsed") ? expand() : collapse();
+    });
+
+    function collapse() {
+        box.classList.add("collapsed");
+        box.style.height = COLLAPSED_HEIGHT + "px";
+    }
+
+    function expand() {
+        box.classList.remove("collapsed");
+        box.style.height = box.scrollHeight + "px";
+    }
+});
+</script>
+
 </body>
 </html>
 
