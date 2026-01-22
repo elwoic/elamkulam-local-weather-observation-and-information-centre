@@ -1892,23 +1892,21 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
-   <script>
+ <script>
 document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("static-disclaimer");
     const toggle = box.querySelector(".disclaimer-toggle");
 
     const VISIT_KEY = "disclaimerVisitCount";
     const MAX_VISITS = 6;
-    const AUTO_COLLAPSE_TIME = 35000;
+    const AUTO_COLLAPSE_TIME = 30000;
     const COLLAPSED_HEIGHT = 70;
 
     let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
     localStorage.setItem(VISIT_KEY, ++visits);
 
-    // Set initial height
     box.style.height = box.scrollHeight + "px";
 
-    // Start collapsed for frequent visitors
     if (visits > MAX_VISITS) {
         collapse();
     } else {
@@ -1918,6 +1916,13 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", (e) => {
         e.stopPropagation();
         box.classList.contains("collapsed") ? expand() : collapse();
+    });
+
+    // ✅ Collapse on outside click / tap (desktop + mobile)
+    document.addEventListener("click", (e) => {
+        if (!box.contains(e.target) && !box.classList.contains("collapsed")) {
+            collapse();
+        }
     });
 
     function collapse() {
