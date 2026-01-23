@@ -1918,8 +1918,8 @@ document.addEventListener("DOMContentLoaded", () => {
         box.classList.contains("collapsed") ? expand() : collapse();
     });
 
-    // ✅ Outside click / tap (mobile-safe)
-    document.addEventListener("pointerdown", (e) => {
+    // ✅ Mobile-safe outside tap / click handler
+    const outsideHandler = (e) => {
         if (
             box.classList.contains("collapsed") ||
             box.contains(e.target) ||
@@ -1927,16 +1927,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ) return;
 
         collapse();
-    }, { passive: true });
+    };
 
-    // ✅ ADD THIS PART HERE 👇
-    let scrollTimeout;
-    window.addEventListener("scroll", () => {
-        if (box.classList.contains("collapsed")) return;
-
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(collapse, 120);
-    }, { passive: true });
+    document.addEventListener("pointerdown", outsideHandler, { passive: true });
 
     function collapse() {
         box.classList.add("collapsed");
