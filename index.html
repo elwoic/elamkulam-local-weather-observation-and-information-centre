@@ -1903,6 +1903,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("static-disclaimer");
     const toggle = box.querySelector(".disclaimer-toggle");
 
+    if (!box || !toggle) return; // Safety check
+
     const VISIT_KEY = "disclaimerVisitCount";
     const MAX_VISITS = 6;
     const AUTO_COLLAPSE_TIME = 30000;
@@ -1911,34 +1913,40 @@ document.addEventListener("DOMContentLoaded", () => {
     let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
     localStorage.setItem(VISIT_KEY, visits + 1);
 
-    /* Ensure layout is fully ready (critical for mobile) */
-    requestAnimationFrame(() => {
-        box.style.height = box.scrollHeight + "px";
-    });
+    // FIX 1: Use a function to get real height, handling mobile rendering delays
+    const getFullHeight = () => {
+        box.style.height = 'auto'; 
+        const height = box.offsetHeight; // offsetHeight is more reliable on mobile
+        return height;
+    };
 
-    if (visits + 1 > MAX_VISITS) {
-        setTimeout(collapse, 400); // small delay for safety
+    // Initial State Setup
+    const startCollapsed = (visits + 1 > MAX_VISITS);
+    
+    if (startCollapsed) {
+        box.classList.add("collapsed");
+        box.style.height = COLLAPSED_HEIGHT + "px";
     } else {
+        // Force full height on start
+        box.style.height = getFullHeight() + "px";
+        // Auto-collapse timer
         setTimeout(collapse, AUTO_COLLAPSE_TIME);
     }
 
     toggle.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
         box.classList.contains("collapsed") ? expand() : collapse();
     });
 
-    /* Mobile-safe outside click */
-    document.addEventListener("click", (e) => {
-        if (
-            box.classList.contains("collapsed") ||
-            box.contains(e.target)
-        ) return;
-
-        collapse();
+    // Mobile-safe outside click (using pointerdown for better touch response)
+    document.addEventListener("pointerdown", (e) => {
+        if (!box.classList.contains("collapsed") && !box.contains(e.target)) {
+            collapse();
+        }
     });
 
     function collapse() {
-        box.style.height = box.scrollHeight + "px"; // recalc before collapsing
         requestAnimationFrame(() => {
             box.classList.add("collapsed");
             box.style.height = COLLAPSED_HEIGHT + "px";
@@ -1947,7 +1955,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function expand() {
         box.classList.remove("collapsed");
-        box.style.height = box.scrollHeight + "px";
+        box.style.height = getFullHeight() + "px";
     }
 });
 </script>
