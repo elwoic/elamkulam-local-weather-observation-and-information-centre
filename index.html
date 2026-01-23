@@ -1918,12 +1918,25 @@ document.addEventListener("DOMContentLoaded", () => {
         box.classList.contains("collapsed") ? expand() : collapse();
     });
 
-    // ✅ Collapse on outside click / tap (desktop + mobile)
-    document.addEventListener("click", (e) => {
-        if (!box.contains(e.target) && !box.classList.contains("collapsed")) {
-            collapse();
-        }
-    });
+    // ✅ Outside click / tap (mobile-safe)
+    document.addEventListener("pointerdown", (e) => {
+        if (
+            box.classList.contains("collapsed") ||
+            box.contains(e.target) ||
+            toggle.contains(e.target)
+        ) return;
+
+        collapse();
+    }, { passive: true });
+
+    // ✅ ADD THIS PART HERE 👇
+    let scrollTimeout;
+    window.addEventListener("scroll", () => {
+        if (box.classList.contains("collapsed")) return;
+
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(collapse, 120);
+    }, { passive: true });
 
     function collapse() {
         box.classList.add("collapsed");
