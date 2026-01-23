@@ -392,6 +392,17 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: left;
     border-top: 1px solid #f0f0f0; /* Subtle top border for depth */
+    
+    /* MOBILE STABILITY FIXES */
+    overflow: hidden;
+    display: block;
+    transition: max-height 0.6s ease-in-out;
+    max-height: 1500px; /* Large enough for full content */
+}
+
+/* Collapsed State for Mobile and Desktop */
+#static-disclaimer.collapsed {
+    max-height: 85px !important; /* Slightly taller to prevent text cutoff on small screens */
 }
 
 #static-disclaimer .disclaimer-header {
@@ -401,18 +412,20 @@ body {
     gap: 10px;
     margin-bottom: 15px;
 }
+
 .disclaimer-toggle {
     font-size: 1rem;
     cursor: pointer;
     user-select: none;
     transition: transform 0.35s ease;
     line-height: 1;
+    display: inline-block;
 }
 
+/* Toggle Arrow Direction */
 #static-disclaimer.collapsed .disclaimer-toggle {
-    transform: rotate(90deg);
+    transform: rotate(-90deg);
 }
-
 
 #static-disclaimer h2 {
     font-size: 1.65rem;
@@ -456,24 +469,15 @@ body {
     font-style: italic;
     display: block;
 }
-#static-disclaimer {
-    overflow: hidden;
-    transition: height 0.6s ease;
-}
 
-#static-disclaimer.collapsed {
-    height: 70px;
-}
-
-.disclaimer-toggle {
-    font-size: 1rem;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.35s ease;
-    line-height: 1;
-}
-#static-disclaimer.collapsed .disclaimer-toggle {
-    transform: rotate(-90deg);
+/* Responsive adjustment for very small phones */
+@media (max-width: 480px) {
+    #static-disclaimer h2 {
+        font-size: 1.3rem;
+    }
+    #static-disclaimer.collapsed {
+        max-height: 80px !important;
+    }
 }
 /* Notice Box - ELWOIC Theme */
   .notice-box {
@@ -1903,60 +1907,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("static-disclaimer");
     const toggle = box.querySelector(".disclaimer-toggle");
 
-    if (!box || !toggle) return; // Safety check
+    if (!box || !toggle) return;
 
     const VISIT_KEY = "disclaimerVisitCount";
     const MAX_VISITS = 6;
     const AUTO_COLLAPSE_TIME = 30000;
-    const COLLAPSED_HEIGHT = 70;
 
     let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
     localStorage.setItem(VISIT_KEY, visits + 1);
 
-    // FIX 1: Use a function to get real height, handling mobile rendering delays
-    const getFullHeight = () => {
-        box.style.height = 'auto'; 
-        const height = box.offsetHeight; // offsetHeight is more reliable on mobile
-        return height;
-    };
-
-    // Initial State Setup
-    const startCollapsed = (visits + 1 > MAX_VISITS);
-    
-    if (startCollapsed) {
+    // Initial Logic: If more than 6 visits, start collapsed immediately
+    if (visits >= MAX_VISITS) {
         box.classList.add("collapsed");
-        box.style.height = COLLAPSED_HEIGHT + "px";
     } else {
-        // Force full height on start
-        box.style.height = getFullHeight() + "px";
-        // Auto-collapse timer
-        setTimeout(collapse, AUTO_COLLAPSE_TIME);
+        // Otherwise, wait 30 seconds then collapse
+        setTimeout(() => {
+            box.classList.add("collapsed");
+        }, AUTO_COLLAPSE_TIME);
     }
 
+    // Toggle click/tap
     toggle.addEventListener("click", (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        box.classList.contains("collapsed") ? expand() : collapse();
+        box.classList.toggle("collapsed");
     });
 
-    // Mobile-safe outside click (using pointerdown for better touch response)
+    // Close when clicking outside (mobile-safe)
     document.addEventListener("pointerdown", (e) => {
         if (!box.classList.contains("collapsed") && !box.contains(e.target)) {
-            collapse();
+            box.classList.add("collapsed");
         }
     });
-
-    function collapse() {
-        requestAnimationFrame(() => {
-            box.classList.add("collapsed");
-            box.style.height = COLLAPSED_HEIGHT + "px";
-        });
-    }
-
-    function expand() {
-        box.classList.remove("collapsed");
-        box.style.height = getFullHeight() + "px";
-    }
 });
 </script>
 
