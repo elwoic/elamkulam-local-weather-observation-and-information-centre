@@ -1288,7 +1288,13 @@ footer a:hover {
     <main>
          <div id="static-disclaimer">
   <div class="disclaimer-header">
-    <span class="disclaimer-toggle" title="Expand / Collapse">▼</span>
+    <button class="disclaimer-toggle"
+        type="button"
+        aria-label="Expand or collapse notice"
+        title="Expand / Collapse">
+  ▼
+</button>
+
 
     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ff4d4d"
          viewBox="0 0 24 24">
@@ -1892,7 +1898,7 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
- <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("static-disclaimer");
     const toggle = box.querySelector(".disclaimer-toggle");
@@ -1903,12 +1909,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const COLLAPSED_HEIGHT = 70;
 
     let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
-    localStorage.setItem(VISIT_KEY, ++visits);
+    localStorage.setItem(VISIT_KEY, visits + 1);
 
-    box.style.height = box.scrollHeight + "px";
+    /* Ensure layout is fully ready (critical for mobile) */
+    requestAnimationFrame(() => {
+        box.style.height = box.scrollHeight + "px";
+    });
 
-    if (visits > MAX_VISITS) {
-        collapse();
+    if (visits + 1 > MAX_VISITS) {
+        setTimeout(collapse, 400); // small delay for safety
     } else {
         setTimeout(collapse, AUTO_COLLAPSE_TIME);
     }
@@ -1918,22 +1927,22 @@ document.addEventListener("DOMContentLoaded", () => {
         box.classList.contains("collapsed") ? expand() : collapse();
     });
 
-    // ✅ Mobile-safe outside tap / click handler
-    const outsideHandler = (e) => {
+    /* Mobile-safe outside click */
+    document.addEventListener("click", (e) => {
         if (
             box.classList.contains("collapsed") ||
-            box.contains(e.target) ||
-            toggle.contains(e.target)
+            box.contains(e.target)
         ) return;
 
         collapse();
-    };
-
-    document.addEventListener("pointerdown", outsideHandler, { passive: true });
+    });
 
     function collapse() {
-        box.classList.add("collapsed");
-        box.style.height = COLLAPSED_HEIGHT + "px";
+        box.style.height = box.scrollHeight + "px"; // recalc before collapsing
+        requestAnimationFrame(() => {
+            box.classList.add("collapsed");
+            box.style.height = COLLAPSED_HEIGHT + "px";
+        });
     }
 
     function expand() {
@@ -1942,6 +1951,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 </script>
+
 
 </body>
 </html>
