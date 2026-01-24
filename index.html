@@ -385,46 +385,66 @@ body {
     max-width: 900px;
     margin: 20px auto;
     background: #ffffff;
-    border-left: 6px solid #ff4d4d; /* Red accent line */
+    border-left: 6px solid #ff4d4d;
     padding: 22px 28px;
     border-radius: 10px;
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: left;
-    border-top: 1px solid #f0f0f0; /* Subtle top border for depth */
+    border-top: 1px solid #f0f0f0;
     
-    /* MOBILE STABILITY FIXES */
+    /* ANIMATION CORE */
     overflow: hidden;
     display: block;
-    transition: max-height 0.6s ease-in-out;
-    max-height: 1500px; /* Large enough for full content */
+    transition: max-height 0.6s ease-in-out, padding 0.4s ease, opacity 0.4s ease;
+    max-height: 1000px; /* Large enough for full content */
 }
 
-/* Collapsed State for Mobile and Desktop */
+/* THE MAGIC: Collapsed State */
 #static-disclaimer.collapsed {
-    max-height: 85px !important; /* Slightly taller to prevent text cutoff on small screens */
+    max-height: 75px !important; /* Shrunk to header height */
+    padding-bottom: 0;
+    padding-top: 18px;
+}
+
+/* Hide content when collapsed to prevent overlap/layout issues */
+#static-disclaimer.collapsed .disclaimer-list,
+#static-disclaimer.collapsed .disclaimer-footer {
+    opacity: 0;
+    pointer-events: none;
 }
 
 #static-disclaimer .disclaimer-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FORCE LEFT ALIGN */
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
     margin-bottom: 15px;
+    height: 40px; /* Fixed height for consistent alignment */
 }
 
+/* ARROW & ANIMATION */
 .disclaimer-toggle {
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
     user-select: none;
     transition: transform 0.35s ease;
     line-height: 1;
     display: inline-block;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
-/* Toggle Arrow Direction */
+/* Shrunk Arrow Animation (Points Right & Pulses) */
 #static-disclaimer.collapsed .disclaimer-toggle {
     transform: rotate(-90deg);
+    animation: arrow-bounce 2s infinite;
+}
+
+@keyframes arrow-bounce {
+    0%, 100% { transform: rotate(-90deg) translateX(0); }
+    50% { transform: rotate(-90deg) translateX(4px); }
 }
 
 #static-disclaimer h2 {
@@ -440,6 +460,7 @@ body {
     list-style-type: disc;
     padding-left: 20px;
     margin: 0;
+    transition: opacity 0.3s ease;
 }
 
 #static-disclaimer .disclaimer-list li {
@@ -468,15 +489,20 @@ body {
     font-size: 0.9rem;
     font-style: italic;
     display: block;
+    transition: opacity 0.3s ease;
 }
 
-/* Responsive adjustment for very small phones */
+/* Responsive adjustment for small phones */
 @media (max-width: 480px) {
+    #static-disclaimer {
+        margin: 10px;
+        padding: 15px 20px;
+    }
     #static-disclaimer h2 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     #static-disclaimer.collapsed {
-        max-height: 80px !important;
+        max-height: 70px !important;
     }
 }
 /* Notice Box - ELWOIC Theme */
@@ -1903,45 +1929,61 @@ posterImg.addEventListener("click", () => {
 });
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const box = document.getElementById("static-disclaimer");
-    const toggle = box.querySelector(".disclaimer-toggle");
+document.addEventListener('DOMContentLoaded', () => {
+    const disclaimer = document.getElementById('static-disclaimer');
+    const toggleBtn = disclaimer.querySelector('.disclaimer-toggle');
 
-    if (!box || !toggle) return;
+    // --- 1. VISIT TRACKING LOGIC ---
+    let visitCount = localStorage.getItem('disclaimer_visits') || 0;
+    visitCount = parseInt(visitCount) + 1;
+    localStorage.setItem('disclaimer_visits', visitCount);
 
-    const VISIT_KEY = "disclaimerVisitCount";
-    const MAX_VISITS = 6;
-    const AUTO_COLLAPSE_TIME = 30000;
-
-    let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
-    localStorage.setItem(VISIT_KEY, visits + 1);
-
-    // Initial Logic: If more than 6 visits, start collapsed immediately
-    if (visits >= MAX_VISITS) {
-        box.classList.add("collapsed");
-    } else {
-        // Otherwise, wait 30 seconds then collapse
-        setTimeout(() => {
-            box.classList.add("collapsed");
-        }, AUTO_COLLAPSE_TIME);
+    // If they have visited more than 5 times, start collapsed immediately
+    if (visitCount > 5) {
+        disclaimer.classList.add('collapsed');
     }
 
-    // Toggle click/tap
-    toggle.addEventListener("click", (e) => {
-        e.preventDefault();
-        box.classList.toggle("collapsed");
+    // --- 2. TOGGLE FUNCTIONS ---
+    const collapseBox = () => disclaimer.classList.add('collapsed');
+    const expandBox = () => disclaimer.classList.remove('collapsed');
+
+    // --- 3. AUTO-SHRINK AFTER 30 SECONDS ---
+    // Only sets the timer if it isn't already collapsed
+    setTimeout(() => {
+        if (!disclaimer.classList.contains('collapsed')) {
+            collapseBox();
+        }
+    }, 30000);
+
+    // --- 4. CLICK EVENTS ---
+
+    // Click on the Arrow Toggle
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents document click from firing
+        if (disclaimer.classList.contains('collapsed')) {
+            expandBox();
+        } else {
+            collapseBox();
+        }
     });
 
-    // Close when clicking outside (mobile-safe)
-    document.addEventListener("pointerdown", (e) => {
-        if (!box.classList.contains("collapsed") && !box.contains(e.target)) {
-            box.classList.add("collapsed");
+    // Expand if the user clicks the shrunken bar itself (better for mobile)
+    disclaimer.addEventListener('click', (e) => {
+        if (disclaimer.classList.contains('collapsed')) {
+            expandBox();
+            e.stopPropagation();
+        }
+    });
+
+    // --- 5. CLICK OUTSIDE TO SHRINK ---
+    document.addEventListener('click', (e) => {
+        // If the click is NOT inside the disclaimer, shrink it
+        if (!disclaimer.contains(e.target)) {
+            collapseBox();
         }
     });
 });
 </script>
-
-
 </body>
 </html>
 
