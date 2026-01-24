@@ -1480,35 +1480,27 @@ footer a:hover {
     </section>
  <div id="weather-report"></div>
 
-    <section class="radar-window-section">
+   <section class="radar-window-section">
     <div class="container">
         <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
 
         <div class="tabs">
-            <div class="tab active" data-i="0">ELWOIC Radar</div>
-            <div class="tab" data-i="1">Windy Forecast</div>
-            <div class="tab" data-i="2">Windy Radar</div>
-            <div class="tab" data-i="3">AccuWeather Links</div>
-            <div class="tab" data-i="4">IMD Radar Links</div>
+            <div class="tab active" data-i="0">Windy Forecast</div>
+            <div class="tab" data-i="1">Windy Radar</div>
+            <div class="tab" data-i="2">AccuWeather Links</div>
+            <div class="tab" data-i="3">IMD Radar Links</div>
+            <div class="tab" data-i="4">ELWOIC Radar</div>
         </div>
 
-        <!-- ELWOIC Radar view -->
         <div class="view" data-view-id="0" style="display:block;">
-            <iframe src="radar.html" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-        <!-- Windy Forecast -->
-        <div class="view" data-view-id="1">
             <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
         </div>
 
-        <!-- Windy Radar -->
-        <div class="view" data-view-id="2">
+        <div class="view" data-view-id="1">
             <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
         </div>
 
-        <!-- AccuWeather -->
-        <div class="view" data-view-id="3">
+        <div class="view" data-view-id="2">
             <div class="panel">
                 <div>
                     <p style="margin-bottom:12px;">Click below to open the official pages of AccuWeather:</p>
@@ -1519,14 +1511,17 @@ footer a:hover {
             </div>
         </div>
 
-        <!-- IMD -->
-        <div class="view" data-view-id="4">
+        <div class="view" data-view-id="3">
             <div class="panel">
                 <div>
                     <p style="margin-bottom:12px;">To see IMD animated weather radar Kochi click below:</p>
                     <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
                 </div>
             </div>
+        </div>
+
+        <div class="view" data-view-id="4">
+            <iframe src="radar.html" allowfullscreen loading="lazy"></iframe>
         </div>
 
     </div>
