@@ -978,64 +978,80 @@ function getPartOfDay(hour) {
 }
 
 /* ---------------- 3. Core Decision Engine ---------------- */
+/* ---------------- 1. Enhanced Decision Logic ---------------- */
 function recommend(key, temp, humidity, wind, condition) {
     const now = new Date();
+    const month = now.getMonth(); // 0 = Jan, 1 = Feb...
     const hour = now.getHours();
-    const season = getKeralaSeason(now.getMonth());
-    const time = getPartOfDay(hour);
-    const feelsLike = calculateHeatIndex(temp, humidity);
-
+    
     const c = condition.toLowerCase();
-    const isRain = /rain|drizzle|shower/i.test(c);
+    const isRainy = /rain|drizzle|shower/i.test(c);
     const isThunder = /thunder|storm|lightning/i.test(c);
-    const isStrongWind = wind >= 25; // km/h
-    const isExtremeHeat = feelsLike >= 38;
+    
+    // Seasonal Context: Kerala Dry Season (Dec to March)
+    const isDrySeason = (month >= 11 || month <= 2); 
 
-    // Default safety overrides
+    // Safety Override: Only stop EVERYTHING if there is lightning.
     if (isThunder) return "avoid"; 
 
     switch(key) {
         case "swimming":
-            if (season === "monsoon" || isStrongWind || temp < 20) return "avoid";
-            if (isRain || hour > 19 || hour < 6) return "moderate";
+            // In Dry Season, a little rain is NO problem for swimming.
+            if (isDrySeason) {
+                if (isRainy && wind > 30) return "moderate"; // Only wind makes it choppy
+                return "good"; 
+            }
+            if (isRainy || wind > 25) return "avoid"; // Monsoon safety
             return "good";
 
-        case "walking":
-        case "cycling":
-            if (isExtremeHeat && time === "afternoon") return "moderate";
-            if (isRain && isStrongWind) return "avoid";
-            if (isRain) return "moderate";
+        case "drying":
+            // Logic: It's all about Humidity & Sun.
+            if (isRainy) {
+                // If it's dry season, rain is usually a "passing cloud"
+                return isDrySeason ? "moderate" : "avoid";
+            }
+            if (humidity > 80) return "moderate"; // Too damp, takes forever
+            if (hour >= 18 || hour <= 6) return "moderate"; // Night/Fog
             return "good";
 
         case "climbing":
-            if (isRain || isStrongWind || season === "monsoon" || hour > 17 || hour < 6) return "avoid";
-            if (humidity > 80) return "moderate"; // Leech & Slippery warning
-            return "good";
-
-        case "fishing":
-            if (isStrongWind || (isRain && season === "monsoon")) return "avoid";
-            if (isRain) return "moderate";
+        case "walking":
+            // January/February trekking is great even with light clouds.
+            if (isRainy) {
+                if (isDrySeason) return "moderate"; // "Carry an umbrella, but go ahead"
+                return "avoid"; // Slippery in Monsoon
+            }
+            if (temp > 35) return "moderate"; // Heat stroke risk
             return "good";
 
         case "construction":
         case "farming":
-            if (isExtremeHeat && time === "afternoon") return "avoid"; // Sunstroke policy
-            if (isRain || feelsLike > 35) return "moderate";
-            return "good";
-
-        case "drying":
-            if (isRain || humidity > 85) return "avoid";
-            if (humidity > 60 || hour > 17) return "moderate";
-            return "good";
-
-        case "outing":
-            if (isRain && isStrongWind) return "avoid";
-            if (isRain || feelsLike > 38) return "moderate";
+            if (isRainy && !isDrySeason) return "avoid";
+            if (temp > 37) return "moderate"; // Heavy heat
             return "good";
 
         default:
-            return "moderate";
+            return "good";
     }
+}
+
+/* ---------------- 2. UI Explanation Logic ---------------- */
+// This adds the "WHY" to the card
+function getWhy(key, status, isRainy, humidity, isDrySeason) {
+    if (status === "good") return "കാലാവസ്ഥ അനുകൂലമാണ്.";
+    
+    if (key === "drying") {
+        if (isRainy && isDrySeason) return "നേരിയ മഴ സാധ്യത, ശ്രദ്ധിക്കുക.";
+        if (humidity > 80) return "അന്തരീക്ഷത്തിൽ ഈർപ്പം കൂടുതലാണ് (Humidity).";
+        return "രാത്രിയിലെ തണുപ്പ്/മഞ്ഞ് കാരണം വൈകും.";
+    }
+    
+    if (key === "swimming" && isDrySeason) {
+        return "കടൽ ശാന്തമാണ്, നീന്താൻ അനുയോജ്യം.";
+    }
+
+    if (isRainy) return "മഴയ്ക്ക് സാധ്യതയുണ്ട്.";
+    return "ശ്രദ്ധിച്ചു മാത്രം മുന്നോട്ട് പോവുക.";
 }
 
 /* ---------------- 4. UI Rendering ---------------- */
