@@ -1,156 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elamkulam Weather & Air Station</title>
-    <style>
-        :root { --primary: #007bff; --success: #28a745; --dark: #2c3e50; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        h2 { margin: 0 0 20px 0; font-size: 1.4rem; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 15px; }
-        
-        /* Stats Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; }
-        .stat-box { background: #fff; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #eee; transition: transform 0.2s; }
-        .stat-box:hover { transform: translateY(-5px); }
-        .stat-box small { color: #6c757d; display: block; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 8px; }
-        .stat-box span { font-size: 1.3rem; font-weight: 700; color: var(--dark); }
-        
-        /* AQI Specific Styling */
-        .aqi-value { font-size: 2rem !important; display: block; margin-top: 5px; }
-        .status-good { color: #00af50 !important; }
-        .status-moderate { color: #ffde33 !important; }
-        .status-poor { color: #ff9900 !important; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELWOIC — Elamkulam Data Centre</title>
 
-        /* Table Styling */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f8f9fa; color: #6c757d; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 15px; text-align: left; }
-        td { padding: 15px; border-bottom: 1px solid #f1f1f1; font-size: 0.9rem; }
-        tr:hover { background-color: #fcfcfc; }
-        
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; background: #e9ecef; }
-        .status-tag { font-size: 0.8rem; background: var(--success); color: white; padding: 5px 12px; border-radius: 50px; }
-    </style>
+<style>
+:root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --border: #e1e4e8;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --header: #0f172a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px;
+}
+
+/* Header */
+.header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--header);
+}
+
+.header small {
+    color: var(--muted);
+}
+
+/* Panels */
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.panel-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 15px;
+}
+
+/* Filters */
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 15px;
+}
+
+.filters label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.filters input,
+.filters select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Table */
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+th {
+    background: #f1f5f9;
+    text-align: left;
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: #e5e7eb;
+}
+
+/* Footer */
+.footer {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
+
+    <!-- HEADER -->
     <div class="header">
-        <h1>Elamkulam Station</h1>
-        <span id="sync-status" class="status-tag">Live Sync Active</span>
+        <h1>ELWOIC — Elamkulam Data Centre</h1>
+        <small>Weather & Air Quality Archival Viewer</small>
     </div>
 
-    <div class="card">
-        <h2>Current Weather</h2>
-        <div class="grid">
-            <div class="stat-box"><small>Temp</small><span id="curr-temp">--</span>°C</div>
-            <div class="stat-box"><small>Feels Like</small><span id="curr-feels">--</span>°C</div>
-            <div class="stat-box"><small>Humidity</small><span id="curr-hum">--</span>%</div>
-            <div class="stat-box"><small>Visibility</small><span id="curr-vis">--</span> km</div>
-            <div class="stat-box"><small>Wind</small><span id="curr-wind">--</span> km/h</div>
-            <div class="stat-box"><small>Sky</small><span id="curr-cond">--</span></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>Air Quality Index (AQI)</h2>
-        <div class="grid">
-            <div class="stat-box" style="grid-column: span 2;">
-                <small>Health Status</small>
-                <span id="curr-aqi-status" class="aqi-value">Loading...</span>
+    <!-- FILTER PANEL -->
+    <div class="panel">
+        <div class="panel-title">Search & Filter Records</div>
+        <div class="filters">
+            <div>
+                <label>Date</label>
+                <input type="date" id="filter-date">
             </div>
-            <div class="stat-box"><small>AQI Level</small><span id="curr-aqi-num">--</span></div>
-            <div class="stat-box"><small>PM2.5</small><span id="curr-pm25">--</span> µg/m³</div>
+            <div>
+                <label>Condition</label>
+                <input type="text" id="filter-condition" placeholder="Rain, Clear, Clouds…">
+            </div>
+            <div>
+                <label>Min Temperature (°C)</label>
+                <input type="number" id="filter-temp-min">
+            </div>
+            <div>
+                <label>Max Temperature (°C)</label>
+                <input type="number" id="filter-temp-max">
+            </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>Hourly History</h2>
-        <div class="table-container">
+    <!-- DATA TABLE -->
+    <div class="panel">
+        <div class="panel-title">Stored Weather Logs</div>
+        <div class="table-wrap">
             <table>
                 <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Temp / Feels</th>
-                        <th>Sky</th>
-                        <th>AQI Status</th>
-                        <th>Wind</th>
-                        <th>Visibility</th>
-                    </tr>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Temperature</th>
+                    <th>Condition</th>
+                    <th>Humidity</th>
+                    <th>Wind</th>
+                    <th>Visibility</th>
+                    <th>AQI</th>
+                </tr>
                 </thead>
-                <tbody id="history-table-body">
-                    <tr><td colspan="6">Waiting for data from Firebase...</td></tr>
+                <tbody id="table-body">
+                    <tr><td colspan="7">Loading records from ELWOIC servers…</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="footer">
+        Live data connection • Firebase RTDB
+    </div>
+
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
-        authDomain: "report-20d26.firebaseapp.com",
-        databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "report-20d26",
-        storageBucket: "report-20d26.firebasestorage.app",
-        messagingSenderId: "293755368519",
-        appId: "1:293755368519:web:a41877cad54a65f93c2d62"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
+    authDomain: "report-20d26.firebaseapp.com",
+    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-20d26",
+    storageBucket: "report-20d26.firebasestorage.app",
+    messagingSenderId: "293755368519",
+    appId: "1:293755368519:web:a41877cad54a65f93c2d62"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    // Fetch the last 24 logs
-    const recentLogsQuery = query(ref(db, 'weather_logs'), limitToLast(24));
+const tableBody = document.getElementById("table-body");
+const filters = {
+    date: document.getElementById("filter-date"),
+    condition: document.getElementById("filter-condition"),
+    minTemp: document.getElementById("filter-temp-min"),
+    maxTemp: document.getElementById("filter-temp-max")
+};
 
-    onValue(recentLogsQuery, (snapshot) => {
-        const tableBody = document.getElementById("history-table-body");
-        const data = snapshot.val();
-        
-        if (!data) {
-            tableBody.innerHTML = "<tr><td colspan='6'>No records found in database.</td></tr>";
-            return;
-        }
+let allLogs = [];
 
-        const logs = Object.values(data).reverse();
-        const latest = logs[0];
+onValue(ref(db, "weather_logs"), snap => {
+    allLogs = Object.values(snap.val() || {}).reverse();
+    renderTable();
+});
 
-        // 1. Update Current Weather UI
-        document.getElementById("curr-temp").textContent = latest.weather.temp;
-        document.getElementById("curr-feels").textContent = latest.weather.feels_like;
-        document.getElementById("curr-hum").textContent = latest.weather.humidity;
-        document.getElementById("curr-vis").textContent = latest.weather.visibility_km;
-        document.getElementById("curr-wind").textContent = latest.weather.wind_kmh;
-        document.getElementById("curr-cond").textContent = latest.weather.condition;
+Object.values(filters).forEach(f => f.addEventListener("input", renderTable));
 
-        // 2. Update Current AQI UI
-        document.getElementById("curr-aqi-status").textContent = latest.air_quality.status;
-        document.getElementById("curr-aqi-num").textContent = latest.air_quality.aqi;
-        document.getElementById("curr-pm25").textContent = latest.air_quality.pm2_5;
+function renderTable() {
+    tableBody.innerHTML = "";
 
-        // 3. Populate History Table
-        tableBody.innerHTML = "";
-        logs.forEach(log => {
-            const row = `<tr>
-                <td><strong>${log.time.split(',')[1] || log.time}</strong><br><small>${log.time.split(',')[0]}</small></td>
-                <td>${log.weather.temp}°C <br><small>Feels ${log.weather.feels_like}°C</small></td>
-                <td><span class="badge">${log.weather.condition}</span></td>
-                <td><strong>${log.air_quality.status}</strong><br><small>AQI: ${log.air_quality.aqi}</small></td>
-                <td>${log.weather.wind_kmh} km/h</td>
-                <td>${log.weather.visibility_km} km</td>
-            </tr>`;
-            tableBody.innerHTML += row;
-        });
-        
-        document.getElementById("sync-status").textContent = "Updated: " + new Date().toLocaleTimeString();
+    const rows = allLogs.filter(log => {
+        if (filters.date.value && !log.time.includes(filters.date.value)) return false;
+        if (filters.condition.value && !log.weather.condition.toLowerCase().includes(filters.condition.value.toLowerCase())) return false;
+        if (filters.minTemp.value && log.weather.temp < filters.minTemp.value) return false;
+        if (filters.maxTemp.value && log.weather.temp > filters.maxTemp.value) return false;
+        return true;
     });
+
+    if (!rows.length) {
+        tableBody.innerHTML = "<tr><td colspan='7'>No matching records found.</td></tr>";
+        return;
+    }
+
+    rows.forEach(log => {
+        tableBody.innerHTML += `
+        <tr>
+            <td>${log.time}</td>
+            <td>${log.weather.temp}°C</td>
+            <td><span class="badge">${log.weather.condition}</span></td>
+            <td>${log.weather.humidity}%</td>
+            <td>${log.weather.wind_kmh} km/h</td>
+            <td>${log.weather.visibility_km} km</td>
+            <td>${log.air_quality.aqi} (${log.air_quality.status})</td>
+        </tr>`;
+    });
+}
 </script>
 
 </body>
