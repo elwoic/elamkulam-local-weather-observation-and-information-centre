@@ -118,7 +118,10 @@
 </div>
 
 <div id="admin-portal">
-  <h2 style="color:var(--primary); margin:0 0 15px 0; font-size: 1.4rem;">ELWOIC Administration</h2>
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 20px; padding-bottom: 10px;">
+    <h2 style="color:var(--primary); margin:0; font-size: 1.4rem;">ELWOIC Administration</h2>
+    <button onclick="auth.signOut()" class="revoke-btn" style="flex: none; padding: 5px 15px;">Logout</button>
+  </div>
 
   <div class="admin-grid">
     <div class="section">
@@ -197,9 +200,20 @@
   });
 
   auth.onAuthStateChanged(user => {
-    document.getElementById('login-container').style.display = user ? 'none' : 'block';
-    document.getElementById('admin-portal').style.display = user ? 'block' : 'none';
-  });
+  if (user) {
+    // User is signed in
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('admin-portal').style.display = 'block';
+    console.log("Admin logged in:", user.email);
+  } else {
+    // User is signed out
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('admin-portal').style.display = 'none';
+    
+    // Clear the inputs for security so the next person doesn't see your last message
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = "");
+  }
+});
 
   document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
   
@@ -241,23 +255,49 @@
 
   window.submitField = function(path) {
     let payload = {};
+    const timestamp = new Date().toLocaleString();
+    const isoDate = new Date().toISOString();
+
     if (path === 'manualUpdate') {
       payload = {
         date: document.getElementById('manual-date').value,
         text: document.getElementById('manual-text').value,
-        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true"
+        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true",
+        updatedAt: timestamp
       };
     } else if (path === 'preUpdate') {
       payload = {
         date: document.getElementById('pre-date').value,
         text: document.getElementById('pre-text').value,
-        blink: document.querySelector('input[name="preBlink"]:checked').value === "true"
+        blink: document.querySelector('input[name="preBlink"]:checked').value === "true",
+        updatedAt: timestamp
       };
     } else if (path === 'info') {
-      payload = { text: document.getElementById('info-text').value };
+      payload = { 
+        text: document.getElementById('info-text').value,
+        updatedAt: timestamp 
+      };
     }
-    db.ref(path).set(payload).then(() => db.ref('lastUpdated').set(new Date().toLocaleString())).then(() => alert("Updated!")).catch(err => alert(err.message));
-  };
+
+    // 1. Update the LIVE status (what appears on site)
+    const liveUpdate = db.ref(path).set(payload);
+
+    // 2. SAVE TO HISTORY (This creates the permanent log)
+    const historyUpdate = db.ref('grant_history').push({
+        type: path,
+        data: payload,
+        timestamp: timestamp,
+        sortDate: isoDate
+    });
+
+    // Run both and notify
+    Promise.all([liveUpdate, historyUpdate])
+      .then(() => {
+          db.ref('lastUpdated').set(timestamp);
+          alert("Success: Live updated and Logged to History!");
+      })
+      .catch(err => alert(err.message));
+};
 
   window.revokeField = function(path) {
     if(confirm("Revoke this section?")) {
@@ -269,35 +309,85 @@
     }
   };
 
-  // REVOKE ALL LOGIC
+  // --- REVOKE ALL LOGIC ---
   document.getElementById('revokeAllBtn').addEventListener('click', () => {
-    if(confirm("CRITICAL: This will remove ALL updates from the website. Proceed?")) {
-      db.ref("/").update({
+    if (confirm("CRITICAL: This will remove ALL live updates from the website. Proceed?")) {
+      const timestamp = new Date().toLocaleString();
+      
+      // 1. Prepare the reset object
+      const resetPayload = {
         manualUpdate: null,
         preUpdate: null,
-        info: null
-      }).then(() => {
-        document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = "");
-        alert("All updates revoked.");
-      }).catch(err => alert(err.message));
+        info: null,
+        lastUpdated: timestamp
+      };
+
+      // 2. Clear the Live Database
+      const clearLive = db.ref("/").update(resetPayload);
+
+      // 3. Log the "Revoke All" action to History so you have a record
+      const logRevoke = db.ref('grant_history').push({
+        type: "REVOKE_ALL",
+        timestamp: timestamp,
+        details: "Admin cleared all live sections"
+      });
+
+      Promise.all([clearLive, logRevoke])
+        .then(() => {
+          // Clear the text fields in the UI for the admin
+          document.getElementById('manual-date').value = "";
+          document.getElementById('manual-text').value = "";
+          document.getElementById('pre-date').value = "";
+          document.getElementById('pre-text').value = "";
+          document.getElementById('info-text').value = "";
+          
+          alert("All updates revoked and logged in history.");
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Revoke failed: " + err.message);
+        });
     }
   });
 
+  // --- SUBMIT ALL LOGIC ---
   document.getElementById('submitBtn').addEventListener('click', () => {
-    db.ref("/").update({
+    const timestamp = new Date().toLocaleString();
+    
+    // Construct the full data package
+    const payload = {
       manualUpdate: {
         date: document.getElementById('manual-date').value,
         text: document.getElementById('manual-text').value,
-        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true"
+        blink: document.querySelector('input[name="manualBlink"]:checked').value === "true",
+        updatedAt: timestamp
       },
       preUpdate: {
         date: document.getElementById('pre-date').value,
         text: document.getElementById('pre-text').value,
-        blink: document.querySelector('input[name="preBlink"]:checked').value === "true"
+        blink: document.querySelector('input[name="preBlink"]:checked').value === "true",
+        updatedAt: timestamp
       },
-      info: { text: document.getElementById('info-text').value },
-      lastUpdated: new Date().toLocaleString()
-    }).then(() => alert("All updated!")).catch(err => alert(err.message));
+      info: { 
+        text: document.getElementById('info-text').value,
+        updatedAt: timestamp 
+      },
+      lastUpdated: timestamp
+    };
+
+    // 1. Update Live Sections
+    const updateLive = db.ref("/").update(payload);
+
+    // 2. Log this "Bulk Update" to History
+    const logHistory = db.ref('grant_history').push({
+        type: "BULK_UPDATE",
+        data: payload,
+        timestamp: timestamp
+    });
+
+    Promise.all([updateLive, logHistory])
+      .then(() => alert("All sections updated and logged!"))
+      .catch(err => alert(err.message));
   });
 </script>
 </body>
