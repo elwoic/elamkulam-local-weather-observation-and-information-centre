@@ -39,16 +39,16 @@ button {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 1. Setup the connection to your Admin project
-const firebaseConfig = {
+// THIS IS THE ADMIN PROJECT CONFIG (Where your users are)
+const adminConfig = {
     apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
     authDomain: "administration-protal.firebaseapp.com"
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize once
+const app = initializeApp(adminConfig);
 const auth = getAuth(app);
 
-// 2. Define the login function
 window.login = () => {
     const emailValue = document.getElementById('email').value;
     const passwordValue = document.getElementById('password').value;
@@ -59,20 +59,20 @@ window.login = () => {
         return;
     }
 
-    errField.textContent = "Authenticating...";
+    errField.textContent = "Checking credentials...";
 
     signInWithEmailAndPassword(auth, emailValue, passwordValue)
-    .then((userCredential) => {
-        // Logged in! Now go to the Data Centre
-        console.log("Success:", userCredential.user);
+    .then(() => {
+        // SUCCESS: Move to the Data Centre
         window.location.href = "index.html"; 
     })
     .catch(e => {
         console.error("Login Error:", e.code);
-        if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
-            errField.textContent = "Invalid Email or Password.";
+        // This is usually why it "doesn't work"
+        if (e.code === 'auth/invalid-credential') {
+            errField.textContent = "User not found in Administration Project.";
         } else {
-            errField.textContent = e.message;
+            errField.textContent = "Error: " + e.message;
         }
     });
 };
