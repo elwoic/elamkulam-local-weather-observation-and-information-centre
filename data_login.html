@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ELWOIC Login</title>
+<style>
+body {
+  display: flex; justify-content: center; align-items: center;
+  height: 100vh; background: #0f172a; color: white;
+  font-family: system-ui;
+}
+.box {
+  background: #020617; padding: 30px;
+  border-radius: 12px; width: 300px;
+}
+input, button {
+  width: 100%; padding: 10px;
+  margin-top: 10px; border-radius: 6px;
+  border: none;
+}
+button {
+  background: #2563eb; color: white;
+  font-weight: bold; cursor: pointer;
+}
+.error { color: #f87171; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔐 ELWOIC Access</h2>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div class="error" id="err"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from
+  "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com"
+});
+
+const auth = getAuth(app);
+
+window.login = () => {
+  signInWithEmailAndPassword(
+    auth,
+    email.value,
+    password.value
+  ).then(() => {
+    window.location.href = "index.html"; // dashboard
+  }).catch(e => {
+    err.textContent = e.message;
+  });
+};
+</script>
+</body>
+</html>
