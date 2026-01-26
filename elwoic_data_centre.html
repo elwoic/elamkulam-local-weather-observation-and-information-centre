@@ -1,265 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ELWOIC — Elamkulam Data Centre</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ELWOIC — Complete Data Centre</title>
+    <style>
+        :root {
+            --bg: #f1f5f9; --panel: #ffffff; --border: #cbd5e1;
+            --text: #0f172a; --muted: #64748b; --accent: #2563eb;
+        }
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; background: #1e293b; color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .nav-tabs { display: flex; gap: 10px; }
+        .nav-btn { padding: 10px 20px; border-radius: 6px; border: none; background: #334155; color: #94a3b8; cursor: pointer; font-weight: bold; }
+        .nav-btn.active { background: var(--accent); color: white; }
 
-<style>
-:root {
-    --bg: #f6f7f9;
-    --panel: #ffffff;
-    --border: #e1e4e8;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --accent: #2563eb;
-    --header: #0f172a;
-}
+        .search-box { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
 
-* { box-sizing: border-box; }
+        /* Grouping Style */
+        .date-group { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .date-header { padding: 15px 20px; background: #f8fafc; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .date-header h3 { margin: 0; font-size: 1.1rem; color: var(--accent); }
+        .date-content { display: none; padding: 15px; }
+        .date-content.open { display: block; }
 
-body {
-    margin: 0;
-    font-family: Inter, "Segoe UI", system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-}
+        /* Entry Cards */
+        .entry-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; }
+        .entry-top { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px; }
+        .time-label { font-weight: bold; color: #334155; }
+        
+        /* Metadata Block (The "Everything" Part) */
+        .raw-data-title { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--muted); margin-top: 10px; display: block; }
+        .raw-data-box { 
+            background: #f1f5f9; padding: 10px; border-radius: 5px; font-family: 'Consolas', monospace; 
+            font-size: 0.75rem; color: #475569; overflow-x: auto; white-space: pre-wrap; 
+            border: 1px solid #e2e8f0; max-height: 200px; overflow-y: auto;
+        }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 25px;
-}
-
-/* Header */
-.header {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 1.6rem;
-    color: var(--header);
-}
-
-.header small {
-    color: var(--muted);
-}
-
-/* Panels */
-.panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-.panel-title {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--muted);
-    margin-bottom: 15px;
-}
-
-/* Filters */
-.filters {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-    gap: 15px;
-}
-
-.filters label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    display: block;
-    margin-bottom: 5px;
-}
-
-.filters input,
-.filters select {
-    width: 100%;
-    padding: 9px 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-
-/* Table */
-.table-wrap {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
-}
-
-th {
-    background: #f1f5f9;
-    text-align: left;
-    font-size: 0.75rem;
-    color: var(--muted);
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-}
-
-td {
-    padding: 12px;
-    font-size: 0.85rem;
-    border-bottom: 1px solid var(--border);
-}
-
-tbody tr:hover {
-    background: #f8fafc;
-}
-
-.badge {
-    font-size: 0.7rem;
-    padding: 3px 8px;
-    border-radius: 20px;
-    background: #e5e7eb;
-}
-
-/* Footer */
-.footer {
-    font-size: 0.75rem;
-    color: var(--muted);
-    text-align: right;
-}
-</style>
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .status-good { background: #dcfce7; color: #166534; }
+        .status-warn { background: #fee2e2; color: #991b1b; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-
-    <!-- HEADER -->
     <div class="header">
-        <h1>ELWOIC — Elamkulam Data Centre</h1>
-        <small>Weather & Air Quality Archival Viewer</small>
-    </div>
-
-    <!-- FILTER PANEL -->
-    <div class="panel">
-        <div class="panel-title">Search & Filter Records</div>
-        <div class="filters">
-            <div>
-                <label>Date</label>
-                <input type="date" id="filter-date">
-            </div>
-            <div>
-                <label>Condition</label>
-                <input type="text" id="filter-condition" placeholder="Rain, Clear, Clouds…">
-            </div>
-            <div>
-                <label>Min Temperature (°C)</label>
-                <input type="number" id="filter-temp-min">
-            </div>
-            <div>
-                <label>Max Temperature (°C)</label>
-                <input type="number" id="filter-temp-max">
-            </div>
+        <div><h1 style="margin:0">ELWOIC Data Centre</h1><small>Full System Transparency</small></div>
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="switchTab('weather')">Weather Archive</button>
+            <button class="nav-btn" onclick="switchTab('history')">Admin History</button>
         </div>
     </div>
 
-    <!-- DATA TABLE -->
-    <div class="panel">
-        <div class="panel-title">Stored Weather Logs</div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>Date & Time</th>
-                    <th>Temperature</th>
-                    <th>Condition</th>
-                    <th>Humidity</th>
-                    <th>Wind</th>
-                    <th>Visibility</th>
-                    <th>AQI</th>
-                </tr>
-                </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="7">Loading records from ELWOIC servers…</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <input type="text" id="globalSearch" class="search-box" placeholder="Search any detail (date, temperature, action, visibility, etc)...">
 
-    <div class="footer">
-        Live data connection • Firebase RTDB
+    <div id="data-container">
+        <p style="text-align: center; padding: 50px;">Syncing with ELWOIC Firebase Nodes...</p>
     </div>
-
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
-    authDomain: "report-20d26.firebaseapp.com",
-    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "report-20d26",
-    storageBucket: "report-20d26.firebasestorage.app",
-    messagingSenderId: "293755368519",
-    appId: "1:293755368519:web:a41877cad54a65f93c2d62"
-};
+    const weatherConfig = { apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4", databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app" };
+    const adminConfig = { apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ", databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app" };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    const wApp = initializeApp(weatherConfig, "wApp");
+    const aApp = initializeApp(adminConfig, "aApp");
 
-const tableBody = document.getElementById("table-body");
-const filters = {
-    date: document.getElementById("filter-date"),
-    condition: document.getElementById("filter-condition"),
-    minTemp: document.getElementById("filter-temp-min"),
-    maxTemp: document.getElementById("filter-temp-max")
-};
+    const wDb = getDatabase(wApp);
+    const aDb = getDatabase(aApp);
+    
+    let currentTab = 'weather';
+    let rawWeather = [];
+    let rawHistory = [];
 
-let allLogs = [];
+    onValue(ref(wDb, "weather_logs"), snap => { rawWeather = Object.values(snap.val() || {}).reverse(); if(currentTab==='weather') render(); });
+    onValue(ref(aDb, "grant_history"), snap => { rawHistory = Object.values(snap.val() || {}).reverse(); if(currentTab==='history') render(); });
 
-onValue(ref(db, "weather_logs"), snap => {
-    allLogs = Object.values(snap.val() || {}).reverse();
-    renderTable();
-});
+    document.getElementById('globalSearch').addEventListener('input', render);
 
-Object.values(filters).forEach(f => f.addEventListener("input", renderTable));
+    function render() {
+        const container = document.getElementById('data-container');
+        const search = document.getElementById('globalSearch').value.toLowerCase();
+        container.innerHTML = "";
 
-function renderTable() {
-    tableBody.innerHTML = "";
+        const list = currentTab === 'weather' ? rawWeather : rawHistory;
+        const filtered = list.filter(item => JSON.stringify(item).toLowerCase().includes(search));
 
-    const rows = allLogs.filter(log => {
-        if (filters.date.value && !log.time.includes(filters.date.value)) return false;
-        if (filters.condition.value && !log.weather.condition.toLowerCase().includes(filters.condition.value.toLowerCase())) return false;
-        if (filters.minTemp.value && log.weather.temp < filters.minTemp.value) return false;
-        if (filters.maxTemp.value && log.weather.temp > filters.maxTemp.value) return false;
-        return true;
-    });
+        const groups = {};
+        filtered.forEach(item => {
+            const dateStr = item.time || item.timestamp || "Unknown";
+            const dateKey = dateStr.split(',')[0];
+            if (!groups[dateKey]) groups[dateKey] = [];
+            groups[dateKey].push(item);
+        });
 
-    if (!rows.length) {
-        tableBody.innerHTML = "<tr><td colspan='7'>No matching records found.</td></tr>";
-        return;
+        Object.keys(groups).forEach(date => {
+            const div = document.createElement('div');
+            div.className = 'date-group';
+            div.innerHTML = `
+                <div class="date-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                    <h3>📅 ${date}</h3>
+                    <span>${groups[date].length} Total Logs ▾</span>
+                </div>
+                <div class="date-content">
+                    ${groups[date].map(item => renderEntry(item)).join('')}
+                </div>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    rows.forEach(log => {
-        tableBody.innerHTML += `
-        <tr>
-            <td>${log.time}</td>
-            <td>${log.weather.temp}°C</td>
-            <td><span class="badge">${log.weather.condition}</span></td>
-            <td>${log.weather.humidity}%</td>
-            <td>${log.weather.wind_kmh} km/h</td>
-            <td>${log.weather.visibility_km} km</td>
-            <td>${log.air_quality.aqi} (${log.air_quality.status})</td>
-        </tr>`;
-    });
-}
-</script>
+    function renderEntry(item) {
+        const time = (item.time || item.timestamp || "").split(',')[1] || "N/A";
+        const title = currentTab === 'weather' ? 
+            `🌡️ ${item.weather?.temp}°C - ${item.weather?.condition}` : 
+            `🛠️ Action: ${item.type}`;
 
+        return `
+            <div class="entry-card">
+                <div class="entry-top">
+                    <span class="time-label">${time}</span>
+                    <span class="badge ${currentTab==='weather'?'status-good':'status-warn'}">${title}</span>
+                </div>
+                
+                <span class="raw-data-title">Full Database Record (Firebase Object)</span>
+                <div class="raw-data-box">${JSON.stringify(item, null, 4)}</div>
+            </div>
+        `;
+    }
+
+    window.switchTab = (t) => {
+        currentTab = t;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(t)));
+        render();
+    };
+</script>
 </body>
 </html>
