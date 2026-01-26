@@ -36,14 +36,22 @@ button {
 </div>
 
 <script type="module">
+// TOP OF DATA CENTRE PAGE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
+// Initialize Auth specifically for the Admin Project
+const authApp = initializeApp({
     apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
     authDomain: "administration-protal.firebaseapp.com"
-};
+}, "authCheck"); // <--- The "authCheck" name is important!
 
+const auth = getAuth(authApp);
+
+onAuthStateChanged(auth, user => {
+    if (!user) window.location.replace("data_login.html");
+});
+  
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
