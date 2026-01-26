@@ -39,25 +39,34 @@ button {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from
   "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// Use your specific Project B (Admin Portal) config
+const firebaseConfig = {
+    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+    authDomain: "administration-protal.firebaseapp.com"
+};
 
-const app = initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com"
-});
-
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 window.login = () => {
-  signInWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  ).then(() => {
-    window.location.href = "index.html"; // dashboard
-  }).catch(e => {
-    err.textContent = e.message;
-  });
+    const emailField = document.getElementById('email').value;
+    const passwordField = document.getElementById('password').value;
+    const errField = document.getElementById('err');
+
+    signInWithEmailAndPassword(auth, emailField, passwordField)
+    .then(() => {
+        window.location.href = "index.html"; 
+    })
+    .catch(e => {
+        // Friendly error message
+        if (e.code === 'auth/wrong-password') {
+            errField.textContent = "Incorrect password. (Note: UID is not a password!)";
+        } else {
+            errField.textContent = e.message;
+        }
+    });
 };
+
 </script>
 </body>
 </html>
