@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ELWOIC — Complete Data Centre</title>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from
+  "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com"
+});
+
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.replace("login.html");
+  }
+});
+</script>
+
     <style>
         :root {
             --bg: #f1f5f9; --panel: #ffffff; --border: #cbd5e1;
@@ -44,6 +63,7 @@
         .status-good { background: #dcfce7; color: #166534; }
         .status-warn { background: #fee2e2; color: #991b1b; }
     </style>
+    
 </head>
 <body>
 
