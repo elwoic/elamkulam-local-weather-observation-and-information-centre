@@ -37,9 +37,8 @@ button {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from
-  "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// Use your specific Project B (Admin Portal) config
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
     authDomain: "administration-protal.firebaseapp.com"
@@ -49,24 +48,30 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 window.login = () => {
-    const emailField = document.getElementById('email').value;
-    const passwordField = document.getElementById('password').value;
+    // Correctly grabbing elements by ID
+    const emailValue = document.getElementById('email').value;
+    const passwordValue = document.getElementById('password').value;
     const errField = document.getElementById('err');
 
-    signInWithEmailAndPassword(auth, emailField, passwordField)
+    errField.textContent = "Authenticating..."; // Feedback for the user
+
+    signInWithEmailAndPassword(auth, emailValue, passwordValue)
     .then(() => {
+        // SUCCESS: Go to the Data Centre page
+        // IMPORTANT: Ensure this filename matches your weather log page!
         window.location.href = "index.html"; 
     })
     .catch(e => {
-        // Friendly error message
-        if (e.code === 'auth/wrong-password') {
-            errField.textContent = "Incorrect password. (Note: UID is not a password!)";
+        console.error(e.code);
+        if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+            errField.textContent = "Invalid Email or Password.";
+        } else if (e.code === 'auth/invalid-email') {
+            errField.textContent = "Please enter a valid email address.";
         } else {
-            errField.textContent = e.message;
+            errField.textContent = "Error: " + e.message;
         }
     });
 };
-
 </script>
 </body>
 </html>
