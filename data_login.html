@@ -3,79 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <title>ELWOIC Login</title>
+
 <style>
 body {
-  display: flex; justify-content: center; align-items: center;
-  height: 100vh; background: #0f172a; color: white;
-  font-family: system-ui;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#0f172a;
+  color:white;
+  font-family:system-ui;
 }
+
 .box {
-  background: #020617; padding: 30px;
-  border-radius: 12px; width: 300px;
+  background:#020617;
+  padding:30px;
+  border-radius:12px;
+  width:300px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
+
 input, button {
-  width: 100%; padding: 10px;
-  margin-top: 10px; border-radius: 6px;
-  border: none;
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  border:none;
 }
+
 button {
-  background: #2563eb; color: white;
-  font-weight: bold; cursor: pointer;
+  background:#2563eb;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
-.error { color: #f87171; font-size: 0.85rem; }
+
+button:disabled {
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.error {
+  margin-top:10px;
+  color:#f87171;
+  font-size:.85rem;
+}
 </style>
 </head>
+
 <body>
 
 <div class="box">
   <h2>🔐 ELWOIC Access</h2>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+  <input id="email" type="email" placeholder="Email" autocomplete="username">
+  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="loginBtn">Login</button>
   <div class="error" id="err"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// THIS IS THE ADMIN PROJECT CONFIG (Where your users are)
+/* 🔐 ADMIN AUTH PROJECT */
 const adminConfig = {
-    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-    authDomain: "administration-protal.firebaseapp.com"
+  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  authDomain: "administration-protal.firebaseapp.com"
 };
 
-// Initialize once
-const app = initializeApp(adminConfig);
+/* Named app to avoid collisions */
+const app = initializeApp(adminConfig, "adminAuthApp");
 const auth = getAuth(app);
 
-window.login = () => {
-    const emailValue = document.getElementById('email').value;
-    const passwordValue = document.getElementById('password').value;
-    const errField = document.getElementById('err');
+/* Ensure login survives reloads */
+await setPersistence(auth, browserLocalPersistence);
 
-    if(!emailValue || !passwordValue) {
-        errField.textContent = "Please enter both email and password.";
-        return;
-    }
+const emailInput = document.getElementById("email");
+const passInput = document.getElementById("password");
+const errField  = document.getElementById("err");
+const loginBtn  = document.getElementById("loginBtn");
 
-    errField.textContent = "Checking credentials...";
+function showError(msg) {
+  errField.textContent = msg;
+  loginBtn.disabled = false;
+}
 
-    signInWithEmailAndPassword(auth, emailValue, passwordValue)
+function login() {
+  const email = emailInput.value.trim();
+  const password = passInput.value;
+
+  if (!email || !password) {
+    showError("Please enter both email and password.");
+    return;
+  }
+
+  errField.textContent = "Verifying access…";
+  loginBtn.disabled = true;
+
+  signInWithEmailAndPassword(auth, email, password)
     .then(() => {
-        // SUCCESS: Move to the Data Centre
-        window.location.href = "index.html"; 
+      /* ✅ SUCCESS */
+      window.location.replace("index.html");
     })
-    .catch(e => {
-        console.error("Login Error:", e.code);
-        // This is usually why it "doesn't work"
-        if (e.code === 'auth/invalid-credential') {
-            errField.textContent = "User not found in Administration Project.";
-        } else {
-            errField.textContent = "Error: " + e.message;
-        }
+    .catch(err => {
+      console.error("Login error:", err.code);
+
+      switch (err.code) {
+        case "auth/user-not-found":
+        case "auth/invalid-credential":
+          showError("Invalid email or password.");
+          break;
+
+        case "auth/too-many-requests":
+          showError("Too many attempts. Try again later.");
+          break;
+
+        case "auth/network-request-failed":
+          showError("Network error. Check your connection.");
+          break;
+
+        default:
+          showError("Login failed. " + err.message);
+      }
     });
-};
+}
+
+/* Button click */
+loginBtn.addEventListener("click", login);
+
+/* Enter key support */
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter") login();
+});
 </script>
+
 </body>
 </html>
