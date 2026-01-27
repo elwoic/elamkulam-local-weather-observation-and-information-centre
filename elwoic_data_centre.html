@@ -111,26 +111,34 @@ body { margin:0; font-family:'Segoe UI',sans-serif; background:var(--bg); color:
     </div>
 
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// --- CONFIGURATION ---
-const config = {
+// --- 1. ADMIN PROJECT CONFIG ---
+const adminConfig = {
     apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-    // Note: Ensure this URL matches your Weather Database URL if they are different!
+    databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+// --- 2. WEATHER PROJECT CONFIG ---
+const weatherConfig = {
+    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
     databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-const app = initializeApp(config, "dataCentreApp");
-const db = getDatabase(app);
+// Initialize both apps
+const adminApp = initializeApp(adminConfig, "adminApp");
+const weatherApp = initializeApp(weatherConfig, "weatherApp");
 
-// Data Stores
+// Connect to both databases
+const adminDb = getDatabase(adminApp);
+const weatherDb = getDatabase(weatherApp);
+
 let adminHistory = [];
 let weatherHistory = [];
 
-// --- TAB SWITCHING LOGIC ---
+// --- TAB SWITCHING ---
 window.showTab = (tab) => {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'weather-active'));
@@ -146,14 +154,14 @@ window.showTab = (tab) => {
 };
 
 // --- DATA LISTENERS ---
-// 1. Admin History
-onValue(ref(db, "grant_history"), snap => {
+// Listen to Admin Data
+onValue(ref(adminDb, "grant_history"), snap => {
     adminHistory = Object.values(snap.val() || {}).reverse();
     renderAll();
 });
 
-// 2. Weather History
-onValue(ref(db, "weather_logs"), snap => {
+// Listen to Weather Data
+onValue(ref(weatherDb, "weather_logs"), snap => {
     weatherHistory = Object.values(snap.val() || {}).reverse();
     renderAll();
 });
@@ -162,10 +170,7 @@ document.getElementById("globalSearch").addEventListener("input", renderAll);
 
 function renderAll() {
     const q = document.getElementById("globalSearch").value.toLowerCase();
-    
-    // Render Admin Section
     renderAdmin(q);
-    // Render Weather Section
     renderWeather(q);
 }
 
@@ -206,26 +211,19 @@ function renderWeather(q) {
     const filtered = weatherHistory.filter(w => JSON.stringify(w).toLowerCase().includes(q));
     tbody.innerHTML = "";
 
-    if(filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">No weather data matches search.</td></tr>`;
-        return;
-    }
-
     filtered.forEach(w => {
         const row = document.createElement("tr");
         row.className = "weather-row";
         const dateObj = new Date(w.timestamp);
-        
         row.innerHTML = `
             <td>
                 <div style="font-weight:bold">${dateObj.toLocaleTimeString()}</div>
                 <div style="font-size:0.7rem;color:gray">${dateObj.toLocaleDateString()}</div>
             </td>
             <td>${w.temp || '--'}°C</td>
-            <td style="font-weight:bold">${w.aqi || '--'}</td>
+            <td>${w.aqi || '--'}</td>
             <td><span class="badge" style="background:${getAQIColor(w.aqi)};color:white">${w.aqi_status || 'N/A'}</span></td>
-            <td style="text-transform:capitalize">${w.condition || '--'}</td>
-        `;
+            <td style="text-transform:capitalize">${w.condition || '--'}</td>`;
         tbody.appendChild(row);
     });
 }
@@ -233,7 +231,6 @@ function renderWeather(q) {
 function getAQIColor(aqi) {
     if(aqi <= 50) return "#10b981";
     if(aqi <= 100) return "#facc15";
-    if(aqi <= 200) return "#f97316";
     return "#ef4444";
 }
 </script>
