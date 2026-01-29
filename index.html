@@ -544,6 +544,38 @@ body {
     font-size: 1.1em;
     margin-bottom: 8px;
 }
+ #log-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 3px 7px;          /* 👈 very small */
+  border-radius: 999px;      /* pill look */
+  font-weight: 500;
+  font-size: 0.72rem;        /* 👈 tiny text */
+  cursor: pointer;
+  line-height: 1;
+  transition: 0.15s ease;
+}
+
+#log-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+#log-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+#cooldown-timer {
+  font-weight: 600;
+  font-size: 0.75rem;
+  min-width: 42px;
+  text-align: center;
+}
+
+#cooldown-text {
+  font-size: 0.72rem;
+  color: #64748b;
+}      
 .info-boxes {
     display: flex;
     flex-wrap: wrap;
@@ -1360,7 +1392,7 @@ footer a:hover {
     
 </div>
 
- <section id="weather-snapshot-section">
+<section id="weather-snapshot-section">
      <div class="weather-mini-dashboard">
          <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം </h2>
          <div class="info-boxes"> <div class="info-box">
@@ -1384,9 +1416,19 @@ footer a:hover {
                      <div class="info-value" id="om-temp">--</div>
                      <div class="info-unit">°C</div></div> <div class="info-box">
                          <div class="info-title">OM Wind</div><div class="info-value" id="om-wind">--</div>
-                         <div class="info-unit">km/h</div></div> 
-         </div> <p class="last-update">Last updated: <span id="updated">--</span></p> </div>
-    
+                         <div class="info-unit">km/h</div>
+                          </div> <p class="last-update">Last updated: <span id="updated">--</span></p> </div>
+    <div class="push-bar">
+  <button id="log-btn">📤 Push Weather into our cloud storage.</button>
+  <span id="cooldown-timer">30:00</span>
+  <span id="cooldown-text"></span>
+</div>
+
+
+<p id="log-status"></p>
+                         </div> 
+        
+
  </section>
 
     <h3 style="max-width: 1200px; margin: 25px auto 10px; color: #333;">Average KERALA</h3>
@@ -1931,6 +1973,184 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+</script>
+   <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getDatabase,
+    ref,
+    push,
+    onValue,
+    query,
+    limitToLast
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  /* ---------- Firebase ---------- */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
+    authDomain: "report-20d26.firebaseapp.com",
+    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-20d26",
+    storageBucket: "report-20d26.firebasestorage.app",
+    messagingSenderId: "293755368519",
+    appId: "1:293755368519:web:a41877cad54a65f93c2d62"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  /* ---------- Elements ---------- */
+  const logBtn = document.getElementById("log-btn");
+  const cooldownTimerEl = document.getElementById("cooldown-timer");
+  const cooldownText = document.getElementById("cooldown-text");
+  const statusText = document.getElementById("log-status");
+
+  /* ---------- Constants ---------- */
+  const LAT = 10.9081;
+  const LON = 76.2296;
+  const API_KEY = "ca13a2cbdc07e7613b6af82cff262295";
+  const COOLDOWN_MINUTES = 30;
+
+  let lastPushTimeUTC = null;
+  let timer = null;
+
+  /* ---------- Helpers ---------- */
+  function formatMMSS(sec) {
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+function aqiStatus(aqi) {
+  if (aqi <= 50) return "Good";
+  if (aqi <= 100) return "Moderate";
+  if (aqi <= 150) return "Unhealthy (Sensitive)";
+  if (aqi <= 200) return "Unhealthy";
+  if (aqi <= 300) return "Very Unhealthy";
+  return "Hazardous";
+}
+
+  function pm25ToAQI(pm) {
+    const bp = [
+      { cL: 0, cH: 12, aL: 0, aH: 50 },
+      { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
+      { cL: 35.5, cH: 55.4, aL: 101, aH: 150 },
+      { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
+      { cL: 150.5, cH: 250.4, aL: 201, aH: 300 },
+      { cL: 250.5, cH: 500, aL: 301, aH: 500 }
+    ];
+    for (const r of bp) {
+      if (pm >= r.cL && pm <= r.cH) {
+        return Math.round(
+          ((r.aH - r.aL) / (r.cH - r.cL)) * (pm - r.cL) + r.aL
+        );
+      }
+    }
+    return 0;
+  }
+
+  /* ---------- Cooldown Logic ---------- */
+  function startCooldown() {
+    if (timer) clearInterval(timer);
+
+    timer = setInterval(() => {
+      const elapsedSec = Math.floor((Date.now() - lastPushTimeUTC) / 1000);
+      const remainingSec = COOLDOWN_MINUTES * 60 - elapsedSec;
+
+      if (remainingSec <= 0) {
+        logBtn.disabled = false;
+        cooldownTimerEl.textContent = "30:00";
+        cooldownTimerEl.style.color = "#22c55e";
+        cooldownText.textContent = "You can push now";
+        clearInterval(timer);
+      } else {
+        logBtn.disabled = true;
+        cooldownTimerEl.textContent = formatMMSS(remainingSec);
+        cooldownTimerEl.style.color = "#facc15";
+        cooldownText.textContent = "Cooldown running, please wait for the next push";
+      }
+    }, 1000);
+  }
+
+  /* ---------- Firebase Listener ---------- */
+  const latestLogQuery = query(ref(db, "weather_logs"), limitToLast(1));
+
+  onValue(latestLogQuery, (snapshot) => {
+    if (!snapshot.exists()) {
+      logBtn.disabled = false;
+      cooldownTimerEl.textContent = "30:00";
+      cooldownTimerEl.style.color = "#22c55e";
+      cooldownText.textContent = "You can push now";
+      return;
+    }
+
+    const data = Object.values(snapshot.val())[0];
+    lastPushTimeUTC = new Date(data.timestamp_utc).getTime();
+    startCooldown();
+  });
+
+  /* ---------- Button ---------- */
+  logBtn.addEventListener("click", async () => {
+    if (logBtn.disabled) return;
+
+    try {
+      const [wRes, aRes] = await Promise.all([
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric`),
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`)
+      ]);
+
+      const w = await wRes.json();
+      const a = await aRes.json();
+
+      const windMps = w.wind.speed;
+const windKmh = +(windMps * 3.6).toFixed(1);
+const windMph = +(windMps * 2.237).toFixed(1);
+const visibilityKm = w.visibility ? +(w.visibility / 1000).toFixed(1) : null;
+
+const pm25 = a.current.pm2_5;
+const aqiValue = pm25ToAQI(pm25);
+
+const payload = {
+  city: "Elamkulam",
+
+  /* 🌡 Temperature */
+  temp_c: w.main.temp,
+  feels_like_c: w.main.feels_like,
+
+  /* 💧 Atmosphere */
+  humidity: w.main.humidity,
+  pressure_hpa: w.main.pressure,
+  visibility_km: visibilityKm,
+
+  /* 🌬 Wind */
+  wind_mps: windMps,
+  wind_kmh: windKmh,
+  wind_mph: windMph,
+
+  /* ☁ Weather */
+  condition: w.weather[0].description,
+
+  /* 🫁 Air quality */
+  pm25: pm25,
+  aqi: aqiValue,
+  aqi_status: aqiStatus(aqiValue),
+
+  /* 🕒 Time */
+  timestamp_utc: new Date().toISOString(),
+  timestamp_ist: new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: false
+  })
+};
+
+
+      await push(ref(db, "weather_logs"), payload);
+      statusText.textContent = "✅ Data pushed";
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = "❌ Push failed";
+    }
+  });
 </script>
 </body>
 </html>
