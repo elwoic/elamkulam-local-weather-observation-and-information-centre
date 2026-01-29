@@ -2149,10 +2149,10 @@ const payload = {
 
 
       await push(ref(db, "weather_logs"), payload);
-      statusText.textContent = "✅ Data pushed";
+      statusText.textContent = "✅ Data pushed. Thank you for your help";
     } catch (err) {
       console.error(err);
-      statusText.textContent = "❌ Push failed";
+      statusText.textContent = "❌ Push failed. Check your internet connection or sent a feedback.";
     }
   });
 </script>
