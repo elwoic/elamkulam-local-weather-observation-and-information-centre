@@ -1,4 +1,4 @@
-        // elamkulam-forecast.js
+// elamkulam-forecast.js
 // Version: News-style, very lengthy Malayalam essay, wind in km/h, constant headline
 // Usage: place <div id="elamkulam-forecast-report"></div> in your page and include:
 // <script type="module" src="elamkulam-forecast.js">
@@ -74,12 +74,17 @@ async function runOnceAndRender(){
   const computed = meteo ? computeFromMeteo(meteo) : {};
 
   // fallback from OpenWeather
-  if (owm?.main) {
-    if (computed.tempNow == null) computed.tempNow = owm.main.temp;
-    if (computed.humidity == null) computed.humidity = owm.main.humidity;
-    if (computed.windSpeedMs == null) computed.windSpeedMs = owm.wind?.speed;
-    if (computed.windDir == null) computed.windDir = owm.wind?.deg;
-  }
+ // ---------------- CURRENT WEATHER AUTHORITY ----------------
+// OpenWeather is treated as the source of truth for CURRENT conditions
+
+if (owm?.main) {
+  // 🔥 Use OpenWeather temp directly (same logic as weather-dashboard.js)
+  computed.tempNow = owm.main.temp;
+  computed.humidity = owm.main.humidity;
+  computed.windSpeedMs = owm.wind?.speed;
+  computed.windDir = owm.wind?.deg;
+}
+
 // --- IMD ALERT BRIDGE ---
 // --- IMD ALERT BRIDGE (WITH DEFAULT FALLBACK) ---
 let imdAlert = {
@@ -303,11 +308,11 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
       `നിലവിൽ എലങ്കുളത്ത് ${heatDesc} ചൂടാണ് അനുഭവപ്പെടുന്നത്. താപനില ഏകദേശം ${toFixedSafe(temp, 1)}°C ആണ്. ഈർപ്പനിരക്കിന്റെ സ്വാധീനത്തിൽ ഇത് ${bodyFeel}.`
     );
 
-    if (feelsLike != null && Math.abs(feelsLike - temp) >= 2) {
-      s.push(
-        `ശാരീരികമായി അനുഭവപ്പെടുന്ന ചൂട് (Feels Like) ${toFixedSafe(feelsLike, 1)}°C വരെ എത്തുന്നുണ്ട്.`
-      );
-    }
+    if (feelsLike != null) {
+  s.push(
+    `ശാരീരികമായി അനുഭവപ്പെടുന്ന ചൂട് (Feels Like) ഏകദേശം ${toFixedSafe(feelsLike, 1)}°C ആയി വിലയിരുത്തപ്പെടുന്നു.`
+  );
+}
   }
 
   // --------------------------------------------------
