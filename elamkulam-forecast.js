@@ -1,4 +1,4 @@
-// elamkulam-forecast.js
+        // elamkulam-forecast.js
 // Version: News-style, very lengthy Malayalam essay, wind in km/h, constant headline
 // Usage: place <div id="elamkulam-forecast-report"></div> in your page and include:
 // <script type="module" src="elamkulam-forecast.js">
@@ -150,22 +150,74 @@ async function fetchOpenWeatherCurrent(lat=LAT, lon=LON){
   }catch(e){ console.warn("OpenWeather error", e); return null; }
 }
 
-async function fetchEstimatedAQI(){
-  try{
-    const url=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(!data?.current?.pm2_5) return null;
-    const pm25=data.current.pm2_5;
-    let aqi=1;
-    if(pm25<=12) aqi=1;
-    else if(pm25<=35.4) aqi=2;
-    else if(pm25<=55.4) aqi=3;
-    else if(pm25<=150.4) aqi=4;
-    else aqi=5;
-    return { aqi, pm25, source:"Estimated (Open-Meteo)" };
-  }catch(e){return null;}
+/* ---------- AQI CALCULATION (PM2.5 → AQI) ---------- */
+
+function pm25ToAQI(pm) {
+  const bp = [
+    { cL: 0, cH: 12, aL: 0, aH: 50 },
+    { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
+    { cL: 35.5, cH: 55.4, aL: 101, aH: 150 },
+    { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
+    { cL: 150.5, cH: 250.4, aL: 201, aH: 300 },
+    { cL: 250.5, cH: 500, aL: 301, aH: 500 }
+  ];
+  for (const r of bp) {
+    if (pm >= r.cL && pm <= r.cH) {
+      return Math.round(
+        ((r.aH - r.aL) / (r.cH - r.cL)) * (pm - r.cL) + r.aL
+      );
+    }
+  }
+  return null;
 }
+
+function getAQIStatus(aqi) {
+  if (aqi <= 50) return { text: "നല്ലത്", emoji: "😀" };
+  if (aqi <= 100) return { text: "തൃപ്തികരം", emoji: "🙂" };
+  if (aqi <= 200) return { text: "മിതമായ മലിനീകരണം", emoji: "😐" };
+  if (aqi <= 300) return { text: "മോശം", emoji: "😷" };
+  return { text: "അതിമോശം", emoji: "☹️" };
+}
+
+function getHealthAdviceMalayalam(aqi) {
+  if (aqi <= 50)
+    return "വായു ഗുണനിലവാരം വളരെ നല്ലതാണ്. പുറംപ്രവർത്തനങ്ങൾക്ക് അനുയോജ്യം.";
+  if (aqi <= 100)
+    return "സാധാരണ ആളുകൾക്ക് സുരക്ഷിതം. എന്നാൽ സെൻസിറ്റീവ് വിഭാഗങ്ങൾ ജാഗ്രത പാലിക്കുക.";
+  if (aqi <= 200)
+    return "ദീർഘനേരം പുറത്ത് പ്രവർത്തിക്കുന്നത് കുറയ്ക്കുന്നത് നല്ലതാണ്.";
+  if (aqi <= 300)
+    return "പുറംപ്രവർത്തനങ്ങൾ പരിമിതപ്പെടുത്തുക.";
+  return "പുറംപ്രവർത്തനങ്ങൾ ഒഴിവാക്കുന്നത് ശക്തമായി ശുപാർശ ചെയ്യുന്നു.";
+}
+
+async function fetchEstimatedAQI() {
+  try {
+    const url =
+      `https://air-quality-api.open-meteo.com/v1/air-quality` +
+      `?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const pm25 = data?.current?.pm2_5;
+    if (pm25 == null) return null;
+
+    const aqi = pm25ToAQI(pm25);
+    if (aqi == null) return null;
+
+    return {
+      aqi,
+      pm25,
+      status: getAQIStatus(aqi),
+      advice: getHealthAdviceMalayalam(aqi),
+      source: "Estimated (Open-Meteo)"
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
 
 function computeFromMeteo(m){
   try{
@@ -215,7 +267,7 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
 
   // --------------------------------------------------
   // HEADLINE
-  s.push(`📰 ${HEADLINE}`);
+  
   s.push(`${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`);
   s.push("--------------------------------------------------");
 
@@ -227,7 +279,7 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
     );
   } else if (hour < 15) {
     s.push(
-      "പകൽ സമയം പുരോഗമിക്കുമ്പോൾ എലങ്കുളത്ത് ചൂട് വ്യക്തമായി അനുഭവപ്പെടുന്നു. നേരിട്ട് സൂര്യപ്രകാശം ലഭിക്കുന്ന പ്രദേശങ്ങളിൽ നിൽക്കുമ്പോൾ ശരീരത്തിന് ക്ഷീണം തോന്നാൻ സാധ്യതയുണ്ട്."
+      "പകൽ സമയം പുരോഗമിക്കുമ്പോൾ എലങ്കുളത്ത് സൂര്യന്റെ ചൂട് ശക്തമായി അനുഭവപ്പെടുന്നു. തുറന്ന പ്രദേശങ്ങളിൽ നിൽക്കുമ്പോൾ ശരീരത്തിന് വിയർപ്പും ക്ഷീണവും തോന്നാൻ സാധ്യതയുണ്ട്."
     );
   } else {
     s.push(
@@ -290,11 +342,17 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
 
   // --------------------------------------------------
   // AIR QUALITY – HEALTH TONE
-  if (airQuality) {
-    s.push(
-      `വായുനില ${aqiMalayalamMeaning(airQuality.aqi)} വിഭാഗത്തിലാണ്. ശ്വാസകോശ സംബന്ധമായ അസുഖമുള്ളവർ ദീർഘനേരം പുറത്ത് കഴിയുന്നത് പരിമിതപ്പെടുത്തുന്നത് നല്ലതാണ്.`
-    );
-  }
+ // --------------------------------------------------
+// AIR QUALITY – REAL AQI WITH ADVICE
+if (airQuality) {
+  s.push(
+    `വായു ഗുണനിലവാര സൂചിക (AQI) ഇന്ന് ${airQuality.aqi} ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു ` +
+    `(${airQuality.status.text} ${airQuality.status.emoji}). ` +
+    `PM2.5 അളവ് ഏകദേശം ${toFixedSafe(airQuality.pm25, 1)} µg/m³ ആണ്.\n\n` +
+    `ആരോഗ്യ നിർദ്ദേശം: ${airQuality.advice}`
+  );
+}
+
 
   // --------------------------------------------------
   // PUBLIC ADVICE – VERY IMPORTANT
