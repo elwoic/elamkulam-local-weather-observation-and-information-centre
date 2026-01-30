@@ -1,4 +1,4 @@
-// elamkulam-forecast.js
+                // elamkulam-forecast.js
 // Version: News-style, very lengthy Malayalam essay, wind in km/h, constant headline
 // Usage: place <div id="elamkulam-forecast-report"></div> in your page and include:
 // <script type="module" src="elamkulam-forecast.js">
@@ -12,12 +12,30 @@ const CONTAINER_ID = "elamkulam-forecast-report";
 const AUTO_REFRESH_MS = 60 * 60 * 1000; // 1 hour
 const HEADLINE = "എലങ്കുളം കാലാവസ്ഥാ സമഗ്ര റിപ്പോർട്ട്";
 const MONTHS_ML = ["ജനുവരി","ഫെബ്രുവരി","മാർച്ച്","ഏപ്രിൽ","മേയ്","ജൂൺ","ജൂലൈ","ഓഗസ്റ്റ്","സെപ്റ്റംബർ","ഒക്ടോബർ","നവംബർ","ഡിസംബർ"];
+// ---------------- REPORT STYLE ----------------
+// "mathrubhumi" = formal, editorial
+// "radio"       = conversational, short
+const REPORT_STYLE = "mathrubhumi";
 
 function pad(n){ return String(n).padStart(2,'0'); }
 function formatDateMalayalam(d){ return `${pad(d.getDate())} ${MONTHS_ML[d.getMonth()]} ${d.getFullYear()}`; }
 function formatTimeMalayalam(d){ return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 function escapeHtml(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ""; }
 function toFixedSafe(v,d=1){ return (v==null||isNaN(Number(v))) ? null : Number(v).toFixed(d); }
+function getKeralaSeason(month, rainProb, humidity) {
+  // month: 0 = Jan
+  if (month >= 5 && month <= 8 && rainProb >= 40) {
+    return "കാലവർഷം"; // Monsoon
+  }
+  if (month >= 2 && month <= 4 && humidity >= 60) {
+    return "ഇടവപ്പാതി"; // Pre-monsoon heat build-up
+  }
+  if (month >= 9 && month <= 10) {
+    return "പോസ്റ്റ്-കാലവർഷം";
+  }
+  return "സാധാരണ";
+}
+
 function msToKmh(ms){ return (ms==null||isNaN(ms)) ? null : ms * 3.6; }
 function windDirMalayalam(deg){ 
   if(deg==null||isNaN(deg)) return "ലഭ്യമല്ല"; 
@@ -252,6 +270,65 @@ function computeFromMeteo(m){
              precipNow, precipProb:precipProbNow, windSpeedMs:windNow, windDir:windDirNow, humidity:humNow };
   }catch(e){console.warn("computeFromMeteo", e); return {};}
 }
+function getHeatImpact({ temp, hour, humidity, windKmh }) {
+  if (temp == null) return null;
+
+  const isMidday = hour >= 11 && hour <= 16;
+  const humidRisk = humidity != null && humidity >= 60;
+  const lowWind = windKmh != null && windKmh < 6;
+
+  if (temp >= 35 && humidity >= 70) {
+    return "ഈ ചൂടും ഉയർന്ന ഈർപ്പവും ചേർന്ന സാഹചര്യത്തിൽ ചൂടേറ്റൽ (Heat Stress) ഉണ്ടാകാൻ സാധ്യതയുള്ളതിനാൽ അധിക ജാഗ്രത ആവശ്യമാണ്.";
+  }
+
+  if (temp >= 32 && isMidday && (humidRisk || lowWind)) {
+    return `താപനില ഏകദേശം ${toFixedSafe(temp,1)}°C ആയതിനാൽ തുറന്ന പ്രദേശങ്ങളിൽ ദീർഘസമയം ചെലവഴിക്കുന്നത് ക്ഷീണത്തിനും ജലക്ഷയത്തിനും ഇടയാക്കാൻ സാധ്യതയുണ്ട്.`;
+  }
+
+  if (temp >= 30) {
+    return "താപനില ഉയർന്ന നിലയിലായതിനാൽ തുറന്ന പ്രദേശങ്ങളിൽ നിൽക്കുമ്പോൾ ചെറിയ അസ്വസ്ഥത അനുഭവപ്പെടാം.";
+  }
+
+  return null;
+}
+function getHumidityImpact(humidity, hour) {
+  if (humidity == null) return null;
+
+  if (humidity >= 70 && hour >= 18) {
+    return "സന്ധ്യയോടെ ഉയർന്ന ഈർപ്പനിരക്ക് തുടരുന്നതിനാൽ ഉറക്കത്തിൽ അസ്വസ്ഥത ഉണ്ടാകാൻ സാധ്യതയുണ്ട്.";
+  }
+
+  if (humidity >= 65) {
+    return "ഉയർന്ന ഈർപ്പനിരക്കിനെ തുടർന്ന് വിയർപ്പ് ശരീരത്തിൽ നിന്ന് പെട്ടെന്ന് ഉണങ്ങാതെ തുടരുന്നു.";
+  }
+
+  return null;
+}
+function getWindImpact(windKmh) {
+  if (windKmh == null) return null;
+
+  if (windKmh < 5) {
+    return "കാറ്റിന്റെ വേഗത കുറവായതിനാൽ ചൂട് അന്തരീക്ഷത്തിൽ കുടുങ്ങുന്ന അവസ്ഥയാണ് കാണുന്നത്.";
+  }
+
+  if (windKmh >= 10) {
+    return "മിതമായ കാറ്റ് വീശുന്നതിനാൽ ചില സമയങ്ങളിൽ ചൂടിൽ നിന്ന് ആശ്വാസം ലഭിക്കുന്നു.";
+  }
+
+  return null;
+}
+function styleWrap(text) {
+  if (!text) return null;
+
+  if (REPORT_STYLE === "radio") {
+    return text
+      .replace("സാധ്യതയുണ്ട്.", "എന്ന സൂചനയുണ്ട്.")
+      .replace("ആവശ്യമാണ്.", "ശ്രദ്ധിക്കണം.");
+  }
+
+  // Mathrubhumi = unchanged, formal
+  return text;
+}
 
 // ---------------- Essay generator ----------------
 // elamkulam-forecast.js - Mega Essay Version
@@ -269,14 +346,30 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
   const windDir = computed.windDir != null ? windDirMalayalam(computed.windDir) : null;
   const feelsLike = owmData?.main?.feels_like ?? null;
   const rainProb = computed.precipProb ?? 0;
+  const season = getKeralaSeason(
+  now.getMonth(),
+  rainProb,
+  humidity
+);
 
   /* -------------------------------------------------- */
   /* HEADER */
   s.push(`${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`);
   s.push("--------------------------------------------------");
 
+
   /* -------------------------------------------------- */
   /* TIME CONTEXT */
+  if (season === "ഇടവപ്പാതി") {
+  s.push(
+    "ഇടവപ്പാതി കാലഘട്ടത്തിന്റെ സ്വഭാവം പ്രകടമായതിനാൽ ചൂടും ഈർപ്പവും ചേർന്ന അസ്വസ്ഥതയാണ് പ്രധാനമായി അനുഭവപ്പെടുന്നത്."
+  );
+} else if (season === "കാലവർഷം") {
+  s.push(
+    "കാലവർഷത്തിന്റെ സ്വാധീനത്തിൽ അന്തരീക്ഷം പെട്ടെന്ന് മാറാവുന്ന അവസ്ഥയിലാണ്."
+  );
+}
+
   if (hour < 9) {
     s.push(
       "രാവിലെ മണിക്കൂറുകളിൽ എലങ്കുളത്ത് അന്തരീക്ഷം പൊതുവെ ശാന്തമായ നിലയിലാണ്. " +
@@ -300,54 +393,40 @@ function generateLongNewsMalayalam({ computed, owmData, airQuality, imdAlert }) 
   /* -------------------------------------------------- */
   /* TEMPERATURE + FEELS LIKE */
   if (temp != null) {
-    let heatLevel = "സാധാരണ";
-    if (temp >= 35) heatLevel = "വളരെ കടുത്ത";
-    else if (temp >= 32) heatLevel = "കടുത്ത";
-    else if (temp <= 24) heatLevel = "താരതമ്യേന കുറഞ്ഞ";
+  s.push(
+    `നിലവിൽ എലങ്കുളത്ത് താപനില ഏകദേശം ${toFixedSafe(temp,1)}°C ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു.`
+  );
 
-    s.push(
-      `നിലവിൽ എലങ്കുളത്ത് ${heatLevel} ചൂടാണ് അനുഭവപ്പെടുന്നത്. ` +
-      `താപനില ഏകദേശം ${toFixedSafe(temp,1)}°C ആയി രേഖപ്പെടുത്തിയിരിക്കുന്നു. ` +
-      `സാധാരണ കാലാവസ്ഥയുമായി താരതമ്യം ചെയ്യുമ്പോൾ, ഈ നിലയിലെ ചൂട് ` +
-      `ദീർഘനേരം പുറംപ്രവർത്തനങ്ങളിൽ ഏർപ്പെടുന്നവർക്ക് ക്ഷീണം ഉണ്ടാക്കാൻ സാധ്യതയുണ്ട്.`
-    );
-
-    if (humidity != null) {
-      s.push(
-        `ഈർപ്പനിരക്ക് ഏകദേശം ${humidity}% ആയി തുടരുന്നതാണ് ശ്രദ്ധേയമാകുന്നത്. ` +
-        `ഇതിന്റെ ഫലമായി വിയർപ്പ് ശരീരത്തിൽ നിന്ന് പെട്ടെന്ന് ഉണങ്ങാതെ തുടരുകയും, ` +
-        `ചൂട് യഥാർത്ഥത്തേക്കാൾ കൂടുതൽ ശക്തമായി അനുഭവപ്പെടുകയും ചെയ്യുന്നു.`
-      );
-    }
-
-    if (feelsLike != null) {
-      s.push(
-        `ശാരീരികമായി അനുഭവപ്പെടുന്ന ചൂട് (Feels Like) ` +
-        `${toFixedSafe(feelsLike,1)}°C വരെ എത്തുന്നുവെന്ന വിലയിരുത്തലാണ് ലഭിക്കുന്നത്. ` +
-        `ഇത് ശരീരത്തിന് മേൽ ചൂടിന്റെ സമ്മർദ്ദം കൂടുതലാകുന്നതിന്റെ സൂചനയാണ്.`
-      );
-    }
+  if (humidity != null) {
+    s.push(`ഈർപ്പനിരക്ക് ഏകദേശം ${humidity}% ആയി തുടരുന്നു.`);
   }
+
+  if (feelsLike != null) {
+    s.push(
+      `ശാരീരികമായി അനുഭവപ്പെടുന്ന ചൂട് (Feels Like) ` +
+      `${toFixedSafe(feelsLike,1)}°C വരെ എത്തുന്നുവെന്നാണ് വിലയിരുത്തൽ.`
+    );
+  }
+}
+const heatText = getHeatImpact({ temp, hour, humidity, windKmh });
+if (heatText) s.push(styleWrap(heatText));
+
+const humidityText = getHumidityImpact(humidity, hour);
+if (humidityText) s.push(styleWrap(humidityText));
+
+const windText = getWindImpact(windKmh);
+if (windText) s.push(styleWrap(windText));
 
   /* -------------------------------------------------- */
   /* WIND */
-  if (windKmh != null) {
-    if (windKmh < 5) {
-      s.push(
-        "കാറ്റിന്റെ വേഗത വളരെ കുറവായതിനാൽ അന്തരീക്ഷത്തിലെ ചൂട് പിരിഞ്ഞുപോകാൻ സഹായിക്കുന്നില്ല. " +
-        "ഇത് ചൂട് കൂടുതൽ കുടുങ്ങുന്ന അനുഭവത്തിന് കാരണമാകുന്നു."
-      );
-    } else {
-      s.push(
-        `ഏകദേശം ${toFixedSafe(windKmh,1)} km/h വേഗതയിൽ ` +
-        `${windDir || ""} ദിശയിൽ നിന്ന് കാറ്റ് വീശുന്നുണ്ട്. ` +
-        `ഇത് ചില സമയങ്ങളിൽ ചെറിയ ആശ്വാസം നൽകുന്നുണ്ടെങ്കിലും, ` +
-        `പൂർണ്ണമായ തണുപ്പിന് ഇത് മതിയാകുന്നില്ല.`
-      );
-    }
-  }
-
-  /* -------------------------------------------------- */
+  if (windKmh != null && windDir) {
+  s.push(
+    `ഏകദേശം ${toFixedSafe(windKmh,1)} km/h വേഗതയിൽ ` +
+    `${windDir} ദിശയിൽ നിന്നാണ് കാറ്റ് വീശുന്നത്.`
+  );
+}
+  
+/* -------------------------------------------------- */
   /* RAIN ANALYSIS */
   if (rainProb > 70) {
     s.push(
