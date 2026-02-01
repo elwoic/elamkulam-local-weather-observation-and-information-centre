@@ -1251,18 +1251,45 @@ footer a:hover {
         font-size: 12px;
     }
 }
+       .audio-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.audio-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.audio-btn:active {
+    transform: scale(0.95);
+}
+
     </style>
 </head>
 <body>
     <header class="imd-header">
         <div class="imd-top">
-            <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
-                 <div class="imd-title">
-                <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-                <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
-            </div>
-            <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo">
-        </div>
+    <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
+    <div class="imd-title">
+        <h2>Elamkulam Local Weather Observation & Information Centre</h2>
+        <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
+    </div>
+    <!-- AUDIO BUTTON -->
+    <button id="audioBtn" title="Play ELWOIC audio message" class="audio-btn">
+        🔊
+    </button>
+    <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo" class="imd-logo">
+</div>
+<audio id="siteAudio" src="audio/elwoic-intro.mp3"></audio>
+
         <div id="dateTime" class="text-white text-sm font-semibold"></div>
         <nav class="imd-nav" id="main-nav">
             <a href="index.html" class="active-nav">HOME</a>
@@ -2156,6 +2183,26 @@ const payload = {
     }
   });
 </script>
+   <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("audioBtn");
+    const audio = document.getElementById("siteAudio");
+
+    if (!btn || !audio) return;
+
+    btn.addEventListener("click", () => {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+
+      // Auto-stop after 5 seconds
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, 5000);
+    });
+  });
+</script>
+
 </body>
 </html>
 
