@@ -21,7 +21,9 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 15px 0;
+  overflow-x: hidden;    /* 🔥 ADD THIS LINE */
 }
+
 
 .imd-logo {
   background: white;
@@ -31,10 +33,10 @@ body {
   width: 45px;
   height: 45px;
 }
-
 .imd-title {
   text-align: center;
   flex: 1;
+  min-width: 0;          /* 🔥 ADD THIS LINE */
   display: flex;
   flex-direction: column;
   justify-content: center;
