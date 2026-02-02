@@ -1271,6 +1271,54 @@ footer a:hover {
 .audio-btn:active {
     transform: scale(0.95);
 }
+/* Header layout (important if not already set) */
+.imd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Logos default (desktop) */
+.imd-logo {
+    height: 50px;
+}
+
+/* Title spacing */
+.imd-title h2 {
+    margin: 0;
+}
+.imd-title h4 {
+    margin: 4px 0 0;
+}
+
+/* ---------- MOBILE FIX ---------- */
+@media (max-width: 600px) {
+    .imd-top {
+        flex-wrap: nowrap;          /* prevent vertical growth */
+    }
+
+    .imd-logo {
+        height: 32px;               /* smaller logos */
+    }
+
+    .imd-title h2 {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .imd-title h4 {
+        font-size: 11px;
+    }
+
+    .audio-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        margin-right: 0;
+    }
+}
 
     </style>
 </head>
