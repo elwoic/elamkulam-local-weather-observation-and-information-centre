@@ -121,38 +121,21 @@ body {
 @media (max-width: 600px) {
 
   .imd-top {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
+    flex-direction: row;   /* ← keep horizontal */
+    padding: 8px 6px;
   }
 
   .imd-logo {
-    width: 55px;
-    height: 55px;
-    margin: 5px 0;
+    width: 32px;
+    height: 32px;
+    margin: 0 6px;
   }
 
   .imd-title h2 {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .imd-title h4 {
-    font-size: 13px;
-  }
-
-  .imd-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 8px 0;
-  }
-
-  .imd-nav a {
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-
-  .scroll-text {
-    font-size: 14px;
-    animation-duration: 40s;
+    font-size: 11px;
   }
 }
