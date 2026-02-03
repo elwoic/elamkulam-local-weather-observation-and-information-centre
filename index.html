@@ -1907,49 +1907,7 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const disclaimer = document.getElementById('static-disclaimer');
-    const toggleBtn = disclaimer.querySelector('.disclaimer-toggle');
 
-    // 1. Visit Tracking (Shrink if > 5 visits)
-    let visits = parseInt(localStorage.getItem('user_site_visits') || 0);
-    visits++;
-    localStorage.setItem('user_site_visits', visits);
-
-    if (visits > 5) {
-        disclaimer.classList.add('collapsed');
-    }
-
-    // 2. Shrink function
-    const shrink = () => disclaimer.classList.add('collapsed');
-    const expand = () => disclaimer.classList.remove('collapsed');
-
-    // 3. Auto-shrink after 30 seconds
-    setTimeout(shrink, 30000);
-
-    // 4. Arrow Click (Toggle)
-    toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        disclaimer.classList.contains('collapsed') ? expand() : shrink();
-    });
-
-    // 5. Click Bar to Expand (Easy for mobile users)
-    disclaimer.addEventListener('click', (e) => {
-        if (disclaimer.classList.contains('collapsed')) {
-            expand();
-            e.stopPropagation();
-        }
-    });
-
-    // 6. Click Outside to Shrink
-    document.addEventListener('click', (e) => {
-        if (!disclaimer.contains(e.target)) {
-            shrink();
-        }
-    });
-});
-</script>
    <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
