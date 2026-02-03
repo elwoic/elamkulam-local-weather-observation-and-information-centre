@@ -327,11 +327,11 @@ body {
 /* 4. MAIN CONTENT & SECTIONS */
 /* ---------------------------------------------------- */
 } .forecast-box { max-width: 850px; background: #fff; padding: 20px; margin: 25px auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } .forecast-box h2 { color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 6px; } iframe { width: 100%; height: 450px; border: none; border-radius: 10px; }
+/* ------------------------------ */
+/* UNIQUE DISCLAIMER STYLES       */
+/* ------------------------------ */
 
-/* Notice Box - Disclaimer */
-/* Unique Container for the Static Notice */
-/* Container styling */
-#static-disclaimer {
+#unique-disclaimer {
     max-width: 900px;
     margin: 20px auto;
     background: #ffffff;
@@ -341,85 +341,93 @@ body {
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: left;
-    border-top: 1px solid #f0f0f0;
     overflow: hidden;
-    display: block;
-    /* Hardware acceleration for smooth mobile movement */
-    transform: translateZ(0); 
     transition: max-height 0.6s ease-in-out, padding 0.4s ease;
-    max-height: 1000px; 
+    max-height: 1000px;
+    transform: translateZ(0);
 }
 
-/* Collapsed State (Active after 30s, 5+ visits, or click-outside) */
-#static-disclaimer.collapsed {
-    max-height: 75px !important; 
+/* Collapsed state */
+#unique-disclaimer.collapsed {
+    max-height: 75px !important;
     padding-bottom: 0 !important;
     cursor: pointer;
 }
 
-/* Hide content smoothly so it doesn't look messy while shrinking */
-#static-disclaimer.collapsed .disclaimer-list,
-#static-disclaimer.collapsed .disclaimer-footer {
+#unique-disclaimer.collapsed .unique-disclaimer-list,
+#unique-disclaimer.collapsed .unique-disclaimer-footer {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s;
 }
 
-#static-disclaimer .disclaimer-header {
+/* Header */
+.unique-disclaimer-header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 15px;
-    height: 40px; 
+    height: 40px;
 }
 
-/* Animating Arrow Toggle */
-.disclaimer-toggle {
+/* Arrow toggle */
+.unique-disclaimer-toggle {
     font-size: 1.2rem;
     cursor: pointer;
     background: none;
     border: none;
-    padding: 5px; /* Bigger tap area for mobile */
+    padding: 5px;
     transition: transform 0.35s ease;
 }
 
-#static-disclaimer.collapsed .disclaimer-toggle {
+#unique-disclaimer.collapsed .unique-disclaimer-toggle {
     transform: rotate(-90deg);
-    animation: arrow-bounce 2s infinite;
+    animation: unique-arrow-bounce 2s infinite;
 }
 
-@keyframes arrow-bounce {
+@keyframes unique-arrow-bounce {
     0%, 100% { transform: rotate(-90deg) translateX(0); }
     50% { transform: rotate(-90deg) translateX(5px); }
 }
 
-#static-disclaimer h2 {
+/* Heading */
+#unique-disclaimer h2 {
     font-size: 1.65rem;
     font-weight: 700;
     color: #002b5c;
     margin: 0;
 }
 
-#static-disclaimer .disclaimer-list li {
+/* List items */
+.unique-disclaimer-list li {
     font-size: 1rem;
     color: #00315c;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
-#static-disclaimer .disclaimer-footer {
+/* Footer */
+.unique-disclaimer-footer {
     margin-top: 15px;
     color: #555;
     font-size: 0.9rem;
     font-style: italic;
 }
 
-/* Mobile Fixes */
+/* Mobile fixes */
 @media (max-width: 480px) {
-    #static-disclaimer { margin: 10px; padding: 15px 20px; }
-    #static-disclaimer h2 { font-size: 1.2rem; }
-    #static-disclaimer.collapsed { max-height: 70px !important; }
+    #unique-disclaimer {
+        margin: 10px;
+        padding: 15px 20px;
+    }
+    #unique-disclaimer h2 {
+        font-size: 1.2rem;
+    }
+    #unique-disclaimer.collapsed {
+        max-height: 70px !important;
+    }
 }
+
 /* Notice Box - ELWOIC Theme */
   .notice-box {
     max-width: 900px;
@@ -1286,15 +1294,14 @@ footer a:hover {
 
 
     <main>
-         <div id="static-disclaimer">
-  <div class="disclaimer-header">
-    <button class="disclaimer-toggle"
+        <div id="unique-disclaimer">
+  <div class="unique-disclaimer-header">
+    <button class="unique-disclaimer-toggle"
         type="button"
         aria-label="Expand or collapse notice"
         title="Expand / Collapse">
-  ▼
-</button>
-
+      ▼
+    </button>
 
     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ff4d4d"
          viewBox="0 0 24 24">
@@ -1303,23 +1310,22 @@ footer a:hover {
     </svg>
 
     <h2>Important Notice</h2>
-</div>
+  </div>
 
-
-    <ul class="disclaimer-list">
-        <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
-        <li>This is a <b>personal project created by a student</b> for informational purposes.</li>
-        <li>
-            For official weather alerts and warnings, please visit 
-            <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank">
-                IMD Kerala (Thiruvananthapuram)
-            </a>.
-        </li>
-    </ul>
-    
-    <span class="disclaimer-footer">
-        Cross-check severe weather alerts with official IMD sources.
-    </span>
+  <ul class="unique-disclaimer-list">
+      <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
+      <li>This is a <b>personal project created by a student</b> for informational purposes.</li>
+      <li>
+          For official weather alerts and warnings, please visit 
+          <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank">
+              IMD Kerala (Thiruvananthapuram)
+          </a>.
+      </li>
+  </ul>
+  
+  <span class="unique-disclaimer-footer">
+      Cross-check severe weather alerts with official IMD sources.
+  </span>
 </div>
 
         <div class="weather-dashboard-scope">
@@ -1907,7 +1913,50 @@ posterImg.addEventListener("click", () => {
 
 });
 </script>
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+    const disclaimer = document.getElementById('unique-disclaimer');
+    const toggleBtn = disclaimer.querySelector('.unique-disclaimer-toggle');
 
+    // 1. Visit Tracking (Shrink if > 5 visits)
+    let visits = parseInt(localStorage.getItem('unique_disclaimer_visits') || 0);
+    visits++;
+    localStorage.setItem('unique_disclaimer_visits', visits);
+
+    if (visits > 5) {
+        disclaimer.classList.add('collapsed');
+    }
+
+    // 2. Shrink / Expand functions
+    const shrink = () => disclaimer.classList.add('collapsed');
+    const expand = () => disclaimer.classList.remove('collapsed');
+
+    // 3. Auto-shrink after 30 seconds
+    setTimeout(shrink, 30000);
+
+    // 4. Arrow click toggle
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        disclaimer.classList.contains('collapsed') ? expand() : shrink();
+    });
+
+    // 5. Click header to expand (mobile-friendly)
+    disclaimer.querySelector('.unique-disclaimer-header').addEventListener('click', (e) => {
+        if (disclaimer.classList.contains('collapsed')) {
+            expand();
+            e.stopPropagation();
+        }
+    });
+
+    // 6. Click outside to shrink
+    document.addEventListener('click', (e) => {
+        if (!disclaimer.contains(e.target)) {
+            shrink();
+        }
+    });
+});
+
+</script>
    <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
