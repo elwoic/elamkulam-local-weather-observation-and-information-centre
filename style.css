@@ -120,24 +120,42 @@ body {
 /* RESPONSIVE FIXES */
 /* -------------------------------------- */
 
+/* ✅ MOBILE HEADER FIX */
 @media (max-width: 600px) {
 
   .imd-top {
-    flex-direction: row;   /* ← keep horizontal */
-    padding: 8px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    overflow: hidden;
   }
 
   .imd-logo {
-    width: 32px;
-    height: 32px;
-    margin: 0 6px;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    flex-shrink: 0; /* 🔥 prevents logo from being pushed out */
+  }
+
+  .imd-title {
+    flex: 1;
+    min-width: 0; /* 🔥 VERY IMPORTANT */
+    padding: 0 6px;
+    text-align: center;
   }
 
   .imd-title h2 {
-    font-size: 14px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* prevents push */
   }
 
   .imd-title h4 {
-    font-size: 11px;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
