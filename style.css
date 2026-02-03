@@ -135,27 +135,29 @@ body {
     width: 34px;
     height: 34px;
     margin: 0;
-    flex-shrink: 0; /* 🔥 prevents logo from being pushed out */
+    flex-shrink: 0; /* logos never shrink */
   }
 
   .imd-title {
     flex: 1;
-    min-width: 0; /* 🔥 VERY IMPORTANT */
+    min-width: 0;   /* 🔥 allows wrapping */
     padding: 0 6px;
     text-align: center;
   }
 
+  .imd-title h2,
+  .imd-title h4 {
+    white-space: normal;   /* 🔥 text goes downward */
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.25;
+  }
+
   .imd-title h2 {
     font-size: 13px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* prevents push */
   }
 
   .imd-title h4 {
     font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
