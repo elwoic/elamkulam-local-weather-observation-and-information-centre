@@ -11,7 +11,7 @@ const alerts = {
 };
 
 // Last updated time (manual)
-const lastUpdated = "2026-02-05 08:21 AM";
+const lastUpdated = "2026-02-05 08:21 PM";
 
 // Function to update the marquee
 function updateMarquee(marqueeTextEl, marqueeContainerEl) {
