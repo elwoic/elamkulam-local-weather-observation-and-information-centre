@@ -1411,9 +1411,13 @@ footer a:hover {
                          <div class="info-unit">km/h</div>
                           </div> <p class="last-update">Last updated: <span id="updated">--</span></p> </div>
     <div class="push-bar">
-  <button id="log-btn">📤 Push Weather into our cloud storage.</button>
-  <span id="cooldown-timer">30:00</span>
-  <span id="cooldown-text"></span>
+  <button id="log-btn" disabled>
+  ⏳ Checking push availability…
+</button>
+
+<span id="cooldown-timer">--:--</span>
+<span id="cooldown-text">Checking last push status…</span>
+
        <div style="margin-top: 1px; text-align: center;">
   <a href="about-weather-push.html" style="font-size: 10px; color: #64748b; text-decoration: none; border-bottom: 1px solid #e2e8f0;">
     weather data push എന്തെന്ന് അറിയാൻ.
@@ -2014,6 +2018,7 @@ function aqiStatus(aqi) {
 
       if (remainingSec <= 0) {
         logBtn.disabled = false;
+         logBtn.textContent = "⏳ Push on cooldown";
         cooldownTimerEl.textContent = "30:00";
         cooldownTimerEl.style.color = "#22c55e";
         cooldownText.textContent = "You can push now";
@@ -2031,18 +2036,23 @@ function aqiStatus(aqi) {
   const latestLogQuery = query(ref(db, "weather_logs"), limitToLast(1));
 
   onValue(latestLogQuery, (snapshot) => {
-    if (!snapshot.exists()) {
-      logBtn.disabled = false;
-      cooldownTimerEl.textContent = "30:00";
-      cooldownTimerEl.style.color = "#22c55e";
-      cooldownText.textContent = "You can push now";
-      return;
-    }
 
-    const data = Object.values(snapshot.val())[0];
-    lastPushTimeUTC = new Date(data.timestamp_utc).getTime();
-    startCooldown();
-  });
+  if (!snapshot.exists()) {
+    // Nobody has pushed yet
+    logBtn.disabled = false;
+    logBtn.textContent = "📤 Push Weather into our cloud storage.";
+    cooldownTimerEl.textContent = "30:00";
+    cooldownTimerEl.style.color = "#22c55e";
+    cooldownText.textContent = "You can push now";
+    return;
+  }
+
+  const data = Object.values(snapshot.val())[0];
+  lastPushTimeUTC = new Date(data.timestamp_utc).getTime();
+  startCooldown();
+
+});
+
 
   /* ---------- Button ---------- */
   logBtn.addEventListener("click", async () => {
