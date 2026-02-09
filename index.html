@@ -428,25 +428,74 @@ body {
     }
 }
 
-/* Notice Box - ELWOIC Theme */
- .notice-box { 
-    max-width: 900px; 
-    margin: 20px auto; 
-    width: auto; 
-    background: #FFFFFF;
-    border-left: 6px solid #ff4e4e;
-    padding: 18px 20px; 
-    border-radius: 8px; 
-    font-family: 'Poppins', sans-serif; 
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
- } 
-       .notice-box .notice-title { font-size: 1.6rem; font-weight: 700; 
-      color: #002b5c; 
-       margin: 0; 
-      border-bottom: 2px solid #e3effa; 
-      padding-bottom: 6px; } /* Headings - Now consistently visible */ 
-       .manual-title, .pre-title, .info-title { font-size: 1.2rem; font-weight: 600; margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: block !important; /* Forces visibility */ } .manual-title { color: red; } .pre-title { color: #f1c40f; } .info-title { color: #0073e6; } /* Message Styling */ #weather-message, #preupdate-message, #info-message { font-size: 1rem; line-height: 1.6; margin-bottom: 10px; font-weight: 500; min-height: 1.2em; /* Keeps space even when empty */ } @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } } .blink-alert { 
-    animation: blink 1.2s infinite; font-weight: 700 !important; }
+/* ===== Alerts Panel – ELWOIC Theme ===== */
+
+#alerts-panel {
+  max-width: 900px;
+  margin: 20px auto;
+  background: #ffffff;
+  border-left: 6px solid #ff4e4e;
+  padding: 18px 20px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  display: none; /* JS controls visibility */
+}
+
+/* Panel Title (optional, if you add one later) */
+#alerts-panel .panel-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #002b5c;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #e3effa;
+  padding-bottom: 6px;
+}
+
+/* Alert lines */
+.alert-line {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* Manual / Current update (RED) */
+#alert-manual {
+  color: red;
+  font-weight: 600;
+}
+
+/* Pre-update (YELLOW) */
+#alert-pre {
+  color: #f1c40f;
+  font-weight: 600;
+}
+
+/* Info (BLUE) */
+#alert-info {
+  color: #0073e6;
+  font-weight: 500;
+}
+
+/* Timestamp */
+#alert-timestamp {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 12px;
+}
+
+/* Blink animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.blink {
+  animation: blink 1.2s infinite;
+  font-weight: 700;
+}
+
 /* Weather Snapshot */
 .weather-mini-dashboard {
     max-width: 900px;
