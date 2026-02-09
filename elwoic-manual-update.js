@@ -1,87 +1,92 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  authDomain: "administration-protal.firebaseapp.com",
-  databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "administration-protal",
-  storageBucket: "administration-protal.firebasestorage.app",
-  messagingSenderId: "141478371424",
-  appId: "1:141478371424:web:ab431e8c467084e4fee305"
-};
+document.addEventListener("DOMContentLoaded", () => {
 
-const appManual = getApps().find(a => a.name === "manualApp") || initializeApp(firebaseConfig, "manualApp");
-const dbManual = getDatabase(appManual);
+  const firebaseConfig = {
+    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+    authDomain: "administration-protal.firebaseapp.com",
+    databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "administration-protal",
+    storageBucket: "administration-protal.firebasestorage.app",
+    messagingSenderId: "141478371424",
+    appId: "1:141478371424:web:ab431e8c467084e4fee305"
+  };
 
-function dateOnlyTimestampFromDMY(ddmmyyyy) {
-  if (!ddmmyyyy) return NaN;
-  const parts = ddmmyyyy.split("/");
-  if (parts.length !== 3) return NaN;
-  const d = parseInt(parts[0], 10);
-  const m = parseInt(parts[1], 10) - 1;
-  const y = parseInt(parts[2], 10);
-  return new Date(y, m, d).setHours(0, 0, 0, 0);
-}
+  const app =
+    getApps().find(a => a.name === "alertsApp") ||
+    initializeApp(firebaseConfig, "alertsApp");
 
-const manualDiv = document.getElementById("weather-message");
-const preDiv = document.getElementById("preupdate-message");
-const infoDiv = document.getElementById("info-message");
-const manualSection = document.getElementById("manual-update");
+  const db = getDatabase(app);
 
-const timestampDiv = document.createElement("div");
-timestampDiv.style.fontSize = "0.7rem";
-timestampDiv.style.color = "#888";
-timestampDiv.style.marginTop = "10px";
-manualSection.appendChild(timestampDiv);
+  const panel = document.getElementById("alerts-panel");
+  const manualEl = document.getElementById("alert-manual");
+  const preEl = document.getElementById("alert-pre");
+  const infoEl = document.getElementById("alert-info");
+  const timeEl = document.getElementById("alert-timestamp");
 
-onValue(ref(dbManual, "/"), (snapshot) => {
-  const data = snapshot.val() || {};
-  const now = new Date();
-  const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  panel.style.display = "none";
 
-  // Reset states
-  manualDiv.classList.remove("blink-alert");
-  preDiv.classList.remove("blink-alert");
-  manualDiv.style.color = ""; 
-  preDiv.style.color = "";
-  
-  manualDiv.textContent = "No update provided.";
-  preDiv.textContent = "No pre-update scheduled.";
-  infoDiv.textContent = "No additional info.";
-
-  const manualTs = dateOnlyTimestampFromDMY(data.manualUpdate?.date);
-  const preTs = dateOnlyTimestampFromDMY(data.preUpdate?.date);
-
-  /* -------- MANUAL LOGIC (RED) -------- */
-  if (data.manualUpdate && !Number.isNaN(manualTs) && todayTs === manualTs) {
-    manualDiv.textContent = data.manualUpdate.text;
-    manualDiv.style.color = "red";
-    if (data.manualUpdate.blink) manualDiv.classList.add("blink-alert");
-  } 
-  // Fallback to pre-update text if it matches today
-  else if (data.preUpdate && !Number.isNaN(preTs) && todayTs === preTs) {
-    manualDiv.textContent = data.preUpdate.text;
-    manualDiv.style.color = "red";
-    if (data.preUpdate.blink) manualDiv.classList.add("blink-alert");
+  function dateTs(ddmmyyyy) {
+    if (!ddmmyyyy) return NaN;
+    const [d, m, y] = ddmmyyyy.split("/").map(n => parseInt(n, 10));
+    return new Date(y, m - 1, d).setHours(0, 0, 0, 0);
   }
 
-  /* -------- PRE UPDATE LOGIC (YELLOW) -------- */
-  if (data.preUpdate && !Number.isNaN(preTs) && todayTs < preTs) {
-    preDiv.textContent = data.preUpdate.text;
-    preDiv.style.color = "#f1c40f"; // Yellow
-    if (data.preUpdate.blink) preDiv.classList.add("blink-alert");
-  }
+  onValue(ref(db, "/"), (snap) => {
+    const data = snap.val();
+    if (!data) {
+      panel.style.display = "none";
+      return;
+    }
 
-  /* -------- INFO LOGIC -------- */
-  if (data.info?.text) {
-    infoDiv.textContent = data.info.text;
-  }
+    const today = new Date();
+    const todayTs = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    ).getTime();
 
-  /* -------- VISIBILITY -------- */
-  manualSection.style.display = (data.manualUpdate || data.preUpdate || data.info) ? "block" : "none";
+    let hasContent = false;
 
-  if (data.lastUpdated) {
-    timestampDiv.textContent = "Last updated: " + data.lastUpdated;
-  }
+    // reset
+    [manualEl, preEl, infoEl].forEach(el => {
+      el.textContent = "";
+      el.className = "alert-line";
+      el.style.display = "none";
+    });
+
+    /* MANUAL */
+    const manualTs = dateTs(data.manualUpdate?.date);
+    if (data.manualUpdate?.text && manualTs === todayTs) {
+      manualEl.textContent = data.manualUpdate.text;
+      manualEl.classList.add("alert-red");
+      if (data.manualUpdate.blink) manualEl.classList.add("blink");
+      manualEl.style.display = "block";
+      hasContent = true;
+    }
+
+    /* PRE */
+    const preTs = dateTs(data.preUpdate?.date);
+    if (data.preUpdate?.text && todayTs < preTs) {
+      preEl.textContent = data.preUpdate.text;
+      preEl.classList.add("alert-yellow");
+      if (data.preUpdate.blink) preEl.classList.add("blink");
+      preEl.style.display = "block";
+      hasContent = true;
+    }
+
+    /* INFO */
+    if (data.info?.text) {
+      infoEl.textContent = data.info.text;
+      infoEl.style.display = "block";
+      hasContent = true;
+    }
+
+    if (data.lastUpdated) {
+      timeEl.textContent = `Last updated: ${data.lastUpdated}`;
+    }
+
+    panel.style.display = hasContent ? "block" : "none";
+  });
 });
