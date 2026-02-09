@@ -2017,13 +2017,18 @@ function aqiStatus(aqi) {
       const remainingSec = COOLDOWN_MINUTES * 60 - elapsedSec;
 
       if (remainingSec <= 0) {
-        logBtn.disabled = false;
-         logBtn.textContent = "⏳ Push on cooldown";
-        cooldownTimerEl.textContent = "30:00";
-        cooldownTimerEl.style.color = "#22c55e";
-        cooldownText.textContent = "You can push now";
-        clearInterval(timer);
-      } else {
+  clearInterval(timer);
+
+  logBtn.disabled = true;
+  logBtn.textContent = "🔄 Checking push availability…";
+  cooldownTimerEl.textContent = "00:00";
+  cooldownTimerEl.style.color = "#94a3b8";
+  cooldownText.textContent = "Rechecking permission…";
+
+  // 🔥 Force Firebase to re-evaluate authority
+  onValue(latestLogQuery, () => {}, { onlyOnce: true });
+}
+else {
         logBtn.disabled = true;
         cooldownTimerEl.textContent = formatMMSS(remainingSec);
         cooldownTimerEl.style.color = "#facc15";
