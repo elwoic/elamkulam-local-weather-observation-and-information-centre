@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     infoEl.textContent = "No additional information.";
 
     /* ---------- DATE PARSE ---------- */
-    const manualTs = dateOnlyTs(data.manualUpdate?.date);
+    const manualTs = dateOnlyTs(data?.date);
     const preTs = dateOnlyTs(data.preUpdate?.date);
 
     /* ---------- MANUAL (TODAY) ---------- */
@@ -69,13 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
       data.manualUpdate &&
       !Number.isNaN(manualTs) &&
       manualTs === todayTs &&
-      data.manualUpdate.text
+      data.text
     ) {
       manualEl.textContent = data.manualUpdate.text;
       manualEl.style.color = "red";
       hasManual = true;
 
-      if (data.manualUpdate.blink) {
+      if (data.blink) {
         manualEl.classList.add("blink");
       }
     }
