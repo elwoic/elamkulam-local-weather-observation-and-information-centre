@@ -74,8 +74,9 @@ infoEl.classList.add("alert-default");
       data.manualUpdate.text
     ) {
       manualEl.textContent = data.manualUpdate.text;
-      manualEl.style.color = "red";
-      hasManual = true;
+manualEl.classList.remove("alert-default");
+manualEl.style.color = "red";
+hasManual = true;
 
       if (data.manualUpdate.blink) {
         manualEl.classList.add("blink");
@@ -93,8 +94,9 @@ infoEl.classList.add("alert-default");
       data.preUpdate.text
     ) {
       preEl.textContent = data.preUpdate.text;
-      preEl.style.color = "#f1c40f";
-      hasPre = true;
+preEl.classList.remove("alert-default");
+preEl.style.color = "#f1c40f";
+hasPre = true;
 
       if (data.preUpdate.blink) {
         preEl.classList.add("blink");
@@ -105,7 +107,8 @@ infoEl.classList.add("alert-default");
   /* ---------- INFO ---------- */
   if (data.info?.text) {
     infoEl.textContent = data.info.text;
-    hasInfo = true;
+infoEl.classList.remove("alert-default");
+hasInfo = true;
   }
 
   const shouldShowPanel = hasManual || hasPre || hasInfo;
