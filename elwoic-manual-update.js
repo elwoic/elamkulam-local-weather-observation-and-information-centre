@@ -35,54 +35,53 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(y, m - 1, d).setHours(0, 0, 0, 0);
   }
 
-  /* ---------- FIREBASE LISTENER ---------- */
- onValue(ref(db, "/"), (snapshot) => {
-    const data = snapshot.val() || {};
-    const now = new Date();
-    const todayTs = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    ).getTime();
+  onValue(ref(db, "/"), (snapshot) => {
+  const data = snapshot.val() || {};
+  const now = new Date();
+  const todayTs = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  ).getTime();
 
-    let hasManual = false;
-    let hasPre = false;
-    let hasInfo = false;
+  let hasManual = false;
+  let hasPre = false;
+  let hasInfo = false;
 
-    /* ---------- RESET ---------- */
-    manualEl.classList.remove("blink");
-    preEl.classList.remove("blink");
+  manualEl.classList.remove("blink");
+  preEl.classList.remove("blink");
 
-    manualEl.style.color = "";
-    preEl.style.color = "";
+  manualEl.style.color = "";
+  preEl.style.color = "";
 
-    manualEl.textContent = "No manual update available.";
-    preEl.textContent = "No pre-update scheduled.";
-    infoEl.textContent = "No additional information.";
+  manualEl.textContent = "No manual update available.";
+  preEl.textContent = "No pre-update scheduled.";
+  infoEl.textContent = "No additional information.";
 
-    /* ---------- DATE PARSE ---------- */
-    const manualTs = dateOnlyTs(data?.date);
-    const preTs = dateOnlyTs(data.preUpdate?.date);
+  /* ---------- MANUAL ---------- */
+  if (data.manualUpdate) {
+    const manualTs = dateOnlyTs(data.manualUpdate.date);
 
-    /* ---------- MANUAL (TODAY) ---------- */
     if (
-      data.manualUpdate &&
       !Number.isNaN(manualTs) &&
       manualTs === todayTs &&
-      data.text
+      data.manualUpdate.text
     ) {
       manualEl.textContent = data.manualUpdate.text;
       manualEl.style.color = "red";
       hasManual = true;
 
-      if (data.blink) {
+      if (data.manualUpdate.blink) {
         manualEl.classList.add("blink");
       }
     }
+  }
 
-    /* ---------- PRE UPDATE (FUTURE) ---------- */
+  /* ---------- PRE UPDATE ---------- */
+  if (data.preUpdate) {
+    const preTs = dateOnlyTs(data.preUpdate.date);
+
     if (
-      data.preUpdate &&
       !Number.isNaN(preTs) &&
       todayTs < preTs &&
       data.preUpdate.text
@@ -95,22 +94,21 @@ document.addEventListener("DOMContentLoaded", () => {
         preEl.classList.add("blink");
       }
     }
+  }
 
-    /* ---------- INFO ---------- */
-    if (data.info?.text) {
-      infoEl.textContent = data.info.text;
-      hasInfo = true;
-    }
+  /* ---------- INFO ---------- */
+  if (data.info?.text) {
+    infoEl.textContent = data.info.text;
+    hasInfo = true;
+  }
 
-    /* ---------- PANEL VISIBILITY ---------- */
-    const shouldShowPanel = hasManual || hasPre || hasInfo;
-    panel.style.display = shouldShowPanel ? "block" : "none";
+  const shouldShowPanel = hasManual || hasPre || hasInfo;
+  panel.style.display = shouldShowPanel ? "block" : "none";
 
-    /* ---------- TIMESTAMP ---------- */
-    if (shouldShowPanel && data.lastUpdated) {
-      timeEl.textContent = "Last updated: " + data.lastUpdated;
-    } else {
-      timeEl.textContent = "";
-    }
-  });
+  if (shouldShowPanel && data.lastUpdated) {
+    timeEl.textContent = "Last updated: " + data.lastUpdated;
+  } else {
+    timeEl.textContent = "";
+  }
+});
 });
