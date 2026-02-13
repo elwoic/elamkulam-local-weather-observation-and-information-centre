@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- FIREBASE LISTENER ---------- */
- onValue(ref(db, "manualUpdate"), (snapshot) => {
+ onValue(ref(db, "/"), (snapshot) => {
     const data = snapshot.val() || {};
     const now = new Date();
     const todayTs = new Date(
