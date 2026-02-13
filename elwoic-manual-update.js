@@ -54,9 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
   manualEl.style.color = "";
   preEl.style.color = "";
 
-  manualEl.textContent = "No manual update available.";
-  preEl.textContent = "No pre-update scheduled.";
-  infoEl.textContent = "No additional information.";
+  manualEl.textContent = "No active alerts for today.";
+manualEl.classList.add("alert-default");
+
+preEl.textContent = "No upcoming updates scheduled.";
+preEl.classList.add("alert-default");
+
+infoEl.textContent = "No general announcements at this time.";
+infoEl.classList.add("alert-default");
+
 
   /* ---------- MANUAL ---------- */
   if (data.manualUpdate) {
