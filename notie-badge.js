@@ -90,9 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const validReports = [];
 
     Object.values(data).forEach(item => {
-      const expired =
-        item.expirationTimestamp &&
-        item.expirationTimestamp < now;
+     const expired =
+  item.expiration_site1 &&
+  item.expiration_site1 < now;
+
 
       if (!expired && item.granted_site1 === "yes") {
         validReports.push(item);
@@ -144,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
             justify-content:space-between;
             margin-bottom:4px;
           ">
-            <span>🕒 Event: ${item.time || "N/A"}</span>
+            <span>🕒 Event: ${(item.admin_time || item.time) || "N/A"}</span>
             <span>📅 Submitted: ${submittedOn}</span>
           </div>
 
@@ -164,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             padding:8px;
             border-radius:4px;
           ">
-            ${item.observation || "No details provided."}
+            ${(item.admin_observation || item.observation) || "No details provided."}
           </div>
 
           <div style="
@@ -173,7 +174,12 @@ document.addEventListener("DOMContentLoaded", () => {
             color:#1e3a8a;
             font-weight:700;
           ">
-            Reporter: ${item.show_name === "yes" ? item.name : "Anonymous"}
+            Reporter: ${
+  item.show_name === "yes"
+    ? (item.admin_name || item.name)
+    : "Anonymous"
+}
+
           </div>
         </div>
       `;
