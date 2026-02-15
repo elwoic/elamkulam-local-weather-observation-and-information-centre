@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, query, limitToLast, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* =========================================================
    FIREBASE CONFIG
@@ -68,9 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
      DATABASE LISTENER (LIMITED & OPTIMIZED)
   ========================================================= */
   const reportsQuery = query(
-    ref(dbBadge, "weather_reports"),
-    limitToLast(50) // future-proof
-  );
+  ref(dbBadge, "weather_reports"),
+  orderByChild("granted_site1"),
+  equalTo("yes"),
+  limitToLast(50)
+);
 
   onValue(reportsQuery, (snapshot) => {
     const data = snapshot.val();
@@ -95,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   item.expiration_site1 < now;
 
 
-      if (!expired && item.granted_site1 === "yes") {
+      if (!expired) {
         validReports.push(item);
       }
     });
