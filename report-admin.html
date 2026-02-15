@@ -225,7 +225,10 @@ if (item.granted_site2 === "yes" && exp2 && exp2 < Date.now()) {
 
             <p class="text-sm text-slate-600 mt-2"><strong>Location:</strong> ${escape(item.location)}</p>
             <p class="text-sm text-slate-600"><strong>Reporter:</strong> <input class="input-edit" value="${escape(item.name)}" id="name-${item.key}"></p>
-            <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium"><textarea class="input-edit" id="obs-${item.key}" rows="3">${escape(item.observation)}</textarea></p>
+            <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium"><textarea class="input-edit" id="obs-${item.key}" rows="3">
+${escape(item.observation)}
+</textarea>
+</p>
             
             <div class="text-sm mt-3 p-3 bg-slate-50 rounded border border-slate-200">
                 <div class="grid grid-cols-2 gap-4">
@@ -273,7 +276,6 @@ if (item.granted_site2 === "yes" && exp2 && exp2 < Date.now()) {
         }
     });
 }
-
 const createGrantRevokeButton = (siteNum, isGranted, key, color, hId, item) => {
     const btn = document.createElement('button');
     const grantField = `granted_site${siteNum}`;
@@ -284,7 +286,10 @@ const createGrantRevokeButton = (siteNum, isGranted, key, color, hId, item) => {
         btn.textContent = `Revoke Site ${siteNum}`;
         btn.className = 'revoke-btn'; 
         btn.onclick = async () => {
-            await update(ref(db, DB_PATH + "/" + key), { [grantField]: "no" });
+            await update(ref(db, DB_PATH + "/" + key), { 
+                [grantField]: "no",
+                [expField]: null
+            });
             setStatus(`Report ${hId} revoked from Site ${siteNum} ❌`, "info");
         };
     } else {
@@ -293,21 +298,22 @@ const createGrantRevokeButton = (siteNum, isGranted, key, color, hId, item) => {
         btn.onclick = async () => {
             const duration = document.getElementById(durInputId).value;
             const durationMs = parseInt(duration) * 3600000;
-            
-            const updatedData = {
-                time: document.getElementById(`time-${key}`).value,
-                name: (item.show_name === 'yes') ? document.getElementById(`name-${key}`).value : "Anonymous",
-                observation: document.getElementById(`obs-${key}`).value,
+
+            await update(ref(db, DB_PATH + "/" + key), {
+                admin_observation: document.getElementById(`obs-${key}`).value.trim(),
+                admin_name: document.getElementById(`name-${key}`).value.trim(),
+                admin_time: document.getElementById(`time-${key}`).value.trim(),
                 [grantField]: "yes",
                 [expField]: Date.now() + durationMs
-            };
-            
-            await update(ref(db, DB_PATH + "/" + key), updatedData);
+            });
+
             setStatus(`Report ${hId} live on Site ${siteNum} for ${duration}h ✔`, "success");
         };
     }
     return btn;
 };
+
+
 // Helper: Create Delete Button with Detailed Status Logging
 const createDeleteButton = (key, hId) => {
     const deleteBtn = document.createElement('button');
