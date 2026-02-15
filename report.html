@@ -266,10 +266,23 @@ form.addEventListener("submit", async (e) => {
   data.photo_url = "N/A"; // Explicitly set to N/A since photos are removed
 
   try {
-    // 1. Generate Human ID (e.g., 001, 002)
-    const counterRef = ref(db, "report_counter");
-    const result = await runTransaction(counterRef, v => (v || 0) + 1);
-    const humanId = String(result.snapshot.val()).padStart(3, "0");
+    
+// 1️⃣ Get today's date
+const now = new Date();
+const year = String(now.getFullYear()).slice(-2);
+const month = String(now.getMonth() + 1).padStart(2, "0");
+const day = String(now.getDate()).padStart(2, "0");
+
+const datePart = `${year}${month}${day}`; // 260215
+
+// 2️⃣ Global counter (NEVER resets)
+const counterRef = ref(db, "report_counter");
+const result = await runTransaction(counterRef, v => (v || 0) + 1);
+const globalCount = String(result.snapshot.val()).padStart(3, "0");
+
+// 3️⃣ Final ID
+const humanId = `ELW-${datePart}${globalCount}`;
+
 
     // 2. Save to Firebase
     await push(ref(db, "weather_reports"), {
