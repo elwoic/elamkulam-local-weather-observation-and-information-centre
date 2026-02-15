@@ -22,8 +22,9 @@
       <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Weather Reports</h1>
       <p class="text-xs opacity-80">Realtime community weather observation viewer</p>
     </div>
-    <div class="space-x-2">
-      <a href="report.html" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm hover:bg-slate-200">← Back to Submission</a>
+    <div class="flex space-x-2">
+      <a href="report.html" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm hover:bg-slate-200">←Go to Submission page</a>
+      <button id="logoutBtn" class="px-3 py-2 bg-red-600 text-white rounded shadow-sm text-sm hover:bg-red-700 hidden">Logout</button>
     </div>
   </div>
 </header>
@@ -86,6 +87,7 @@ const loginMessage = document.getElementById("loginMessage");
 const statusEl = document.getElementById("status");
 const messagesList = document.getElementById("messagesList");
 const emptyEl = document.getElementById("empty");
+const logoutBtn = document.getElementById("logoutBtn");
 
 // --- SEARCH & DATA STORAGE ---
 let allReports = []; 
@@ -115,10 +117,13 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     loginContainer.style.display = "none";
     reportContainer.classList.remove("hidden");
+    logoutBtn.classList.remove("hidden"); // Show logout when logged in
     startListening();
   } else {
     loginContainer.style.display = "flex";
     reportContainer.classList.add("hidden");
+    logoutBtn.classList.add("hidden"); // Hide logout when logged out
+    messagesList.innerHTML = ""; // Clear list on logout
   }
 });
 
@@ -335,7 +340,18 @@ const createDeleteButton = (key, hId) => {
     };
     return btn;
 };
-
+// Logout Event Listener
+logoutBtn.addEventListener("click", () => {
+  if (confirm("Are you sure you want to logout?")) {
+    signOut(auth)
+      .then(() => {
+        setStatus("Logged out successfully.", "info");
+      })
+      .catch((error) => {
+        setStatus("Error logging out: " + error.message, "error");
+      });
+  }
+});
 function escape(s) {
   if (!s) return "";
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
