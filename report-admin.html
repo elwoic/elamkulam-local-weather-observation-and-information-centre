@@ -78,6 +78,23 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
+
+/* =========================================================
+   BRIDGE FIREBASE (weather-report-66bdf)
+========================================================= */
+const bridgeConfig = {
+  apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
+  authDomain: "weather-report-66bdf.firebaseapp.com",
+  databaseURL: "https://weather-report-66bdf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "weather-report-66bdf",
+  storageBucket: "weather-report-66bdf.firebasestorage.app",
+  messagingSenderId: "599939260562",
+  appId: "1:599939260562:web:a0fbf532279a191559864b"
+};
+
+const bridgeApp = initializeApp(bridgeConfig, "bridgeApp");
+const bridgeDB = getDatabase(bridgeApp);
+
 const loginContainer = document.getElementById("loginContainer");
 const reportContainer = document.getElementById("reportContainer");
 const loginBtn = document.getElementById("loginBtn");
@@ -127,39 +144,42 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-function setStatus(text, type="info") {
+  function setStatus(text, type="info") {
+
   statusEl.textContent = text;
+
   statusEl.className = "mb-4 p-3 rounded text-sm";
+
   if(type==="info") statusEl.classList.add("bg-blue-100","text-blue-800");
+
   if(type==="success") statusEl.classList.add("bg-green-100","text-green-800");
+
   if(type==="error") statusEl.classList.add("bg-red-100","text-red-800");
+
 }
-
 function startListening() {
-  setStatus("Connecting to Firebase..."); // This shows initially
+  setStatus("Connecting to Firebase...");
   const reportsRef = ref(db, DB_PATH);
+  const bridgeRef = ref(bridgeDB, DB_PATH);
 
+  // We listen to the main DB, then look up the Bridge DB for each item
   onValue(reportsRef, (snapshot) => {
-    const data = snapshot.val();
-    
-    // 1. If no data exists
-    if (!data) {
-      allReports = [];
+    const reportData = snapshot.val() || {};
+
+    onValue(bridgeRef, (bridgeSnap) => {
+      const bridgeData = bridgeSnap.val() || {};
+
+      allReports = Object.entries(reportData).map(([key, v]) => {
+        return {
+          key,
+          ...v,
+          ...(bridgeData[key] || {}) // Merges bridge status (granted/expired)
+        };
+      }).reverse();
+
       updateDashboard();
-      setStatus("No reports found.", "info");
-      return;
-    }
-    
-    // 2. Data exists - process it
-    allReports = Object.entries(data).map(([key, v]) => ({ key, ...v })).reverse();
-    updateDashboard(); 
-    
-    // --- ADD THIS LINE BELOW ---
-    // This hides the "Connecting..." message by replacing it with a success message
-    setStatus(`Updated: ${allReports.length} reports loaded.`, "success"); 
-    
-    // Optional: If you want the message to disappear completely after 3 seconds:
-    // setTimeout(() => { statusEl.textContent = ""; statusEl.className = "hidden"; }, 3000);
+      setStatus(`Updated: ${allReports.length} reports loaded.`, "success");
+    });
   });
 }
 
@@ -300,11 +320,17 @@ const createGrantRevokeButton = (siteNum, isGranted, key, color, hId) => {
     const expField = `expiration_site${siteNum}`;
     const durInputId = `dur${siteNum}-${key}`;
 
+    // Find the specific item in our local data
+    const item = allReports.find(r => r.key === key);
+
     if (isGranted) {
         btn.textContent = `Revoke Site ${siteNum}`;
         btn.className = 'revoke-btn'; 
         btn.onclick = async () => {
-            await update(ref(db, DB_PATH + "/" + key), { [grantField]: "no", [expField]: null });
+            await update(ref(bridgeDB, DB_PATH + "/" + key), { 
+                [grantField]: "no",
+                [expField]: null 
+            });
             setStatus(`Report ${hId} revoked from Site ${siteNum} ❌`, "info");
         };
     } else {
@@ -313,15 +339,24 @@ const createGrantRevokeButton = (siteNum, isGranted, key, color, hId) => {
         btn.onclick = async () => {
             const duration = document.getElementById(durInputId).value;
             const durationMs = parseInt(duration) * 3600000;
+            
+            // Privacy Logic: If user said 'no' to name, we send 'Anonymous'
+            const adminNameInput = document.getElementById(`name-${key}`).value.trim();
+            const finalDisplayName = (item.show_name === 'yes') ? adminNameInput : "Anonymous";
 
-            // RESTORED SAVING OF ALL ADMIN EDITS
-            await update(ref(db, DB_PATH + "/" + key), {
-                admin_observation: document.getElementById(`obs-${key}`).value.trim(),
-                admin_name: document.getElementById(`name-${key}`).value.trim(),
-                admin_time: document.getElementById(`time-${key}`).value.trim(),
-                [grantField]: "yes",
-                [expField]: Date.now() + durationMs
-            });
+            // The exact package you requested for the bridge
+            const bridgeData = {
+                report_type: item.report_type || "General", // Added Report Type
+                display_name: finalDisplayName,             
+                location: item.location,                    
+                submitted_at: item.timestamp,               
+                event_time: document.getElementById(`time-${key}`).value.trim(), 
+                report_content: document.getElementById(`obs-${key}`).value.trim(), 
+                [grantField]: "yes",                        
+                [expField]: Date.now() + durationMs         
+            };
+
+            await update(ref(bridgeDB, DB_PATH + "/" + key), bridgeData);
             setStatus(`Report ${hId} live on Site ${siteNum} for ${duration}h ✔`, "success");
         };
     }
