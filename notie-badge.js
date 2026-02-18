@@ -124,15 +124,14 @@ onValue(reportsQuery, (snapshot) => {
       <div style="background:#fff; padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid #e2e8f0; border-left:4px solid #1e40af;">
         <div style="font-size:10px; color:#64748b; display:flex; justify-content:space-between; margin-bottom:4px;">
           <span>🕒 Event Time: ${item.event_time || "N/A"}</span>
-          <span>📅 ${submittedOn}</span>
+          <span>📅 Submited at: ${submittedOn}</span>
         </div>
 
         <div style="font-weight:700;color:#1e40af;font-size:14px;margin-bottom:4px;">
-          ${item.report_type || "Weather Update"}
-        </div>
-
+  <span style="opacity:0.7; font-weight:400;">type:</span> ${(item.report_type || "General").toLowerCase()}
+</div>
         <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:4px;">
-          📍 ${item.location || "Unknown location"}
+          📍Location: ${item.location || "Unknown location"}
         </div>
 
         <div style="font-size:13px; color:#475569; line-height:1.5; background:#f1f5f9; padding:8px; border-radius:4px;">
