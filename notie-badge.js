@@ -2,17 +2,18 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getDatabase, ref, onValue, query, limitToLast, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* =========================================================
-   FIREBASE CONFIG
+   FIREBASE CONFIG (MUST POINT TO BRIDGE DB)
 ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
-  authDomain: "report-5d8c0.firebaseapp.com",
-  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.firebasestorage.app",
-  messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
-  measurementId: "G-5MGMM1DYDM"
+  // Use the Bridge API Key
+  apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA", 
+  authDomain: "weather-report-66bdf.firebaseapp.com",
+  // THIS IS THE IMPORTANT PART:
+  databaseURL: "https://weather-report-66bdf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "weather-report-66bdf",
+  storageBucket: "weather-report-66bdf.firebasestorage.app",
+  messagingSenderId: "599939260562",
+  appId: "1:599939260562:web:a0fbf532279a191559864b"
 };
 
 /* =========================================================
