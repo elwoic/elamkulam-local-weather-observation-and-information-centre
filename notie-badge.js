@@ -5,7 +5,7 @@ import { getDatabase, ref, onValue, query, limitToLast, orderByChild, equalTo } 
    FIREBASE CONFIG
 ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
   authDomain: "report-5d8c0.firebaseapp.com",
   databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "report-5d8c0",
