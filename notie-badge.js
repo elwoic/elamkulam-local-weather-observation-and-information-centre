@@ -64,127 +64,85 @@ document.addEventListener("DOMContentLoaded", () => {
       </p>`;
   }
 
-  /* =========================================================
-     DATABASE LISTENER (LIMITED & OPTIMIZED)
-  ========================================================= */
-  const reportsQuery = query(
+/* =========================================================
+   DATABASE LISTENER (UPDATED FOR BRIDGE DATA)
+========================================================= */
+// 1. Ensure this points to the BRIDGE database URL
+const reportsQuery = query(
   ref(dbBadge, "weather_reports"),
   orderByChild("granted_site1"),
   equalTo("yes"),
   limitToLast(50)
 );
 
-  onValue(reportsQuery, (snapshot) => {
-    const data = snapshot.val();
+onValue(reportsQuery, (snapshot) => {
+  const data = snapshot.val();
 
-    if (!data) {
-      if (badge) badge.style.display = "none";
-      if (panelContent) {
-        panelContent.innerHTML =
-          `<p style="font-size:13px;color:#64748b;text-align:center;">
-            No active updates.
-          </p>`;
-      }
-      return;
+  if (!data) {
+    if (badge) badge.style.display = "none";
+    if (panelContent) {
+      panelContent.innerHTML = `<p style="font-size:13px;color:#64748b;text-align:center;">No active updates.</p>`;
     }
+    return;
+  }
 
-    const now = Date.now();
-    const validReports = [];
+  const now = Date.now();
+  const validReports = [];
 
-    Object.values(data).forEach(item => {
-     const expired =
-  item.expiration_site1 &&
-  item.expiration_site1 < now;
-
-
-      if (!expired) {
-        validReports.push(item);
-      }
-    });
-
-    /* ---------- BADGE VISIBILITY ---------- */
-    if (validReports.length === 0) {
-      if (badge) badge.style.display = "none";
-      if (panelContent) {
-        panelContent.innerHTML =
-          `<p style="font-size:13px;color:#64748b;text-align:center;">
-            No current alerts.
-          </p>`;
-      }
-      return;
+  // 2. Filter out expired reports (Self-cleaning on the client side)
+  Object.values(data).forEach(item => {
+    const expired = item.expiration_site1 && item.expiration_site1 < now;
+    if (!expired && item.granted_site1 === "yes") {
+      validReports.push(item);
     }
-
-    if (badge) badge.style.display = "block";
-    if (badgeCount) badgeCount.textContent = validReports.length;
-
-    /* ---------- SORT (NEWEST FIRST) ---------- */
-    validReports.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-    /* ---------- RENDER PANEL ---------- */
-    if (!panelContent) return;
-
-    panelContent.innerHTML = validReports.map(item => {
-      const submittedOn = item.timestamp
-        ? new Date(item.timestamp).toLocaleString("en-IN", {
-            dateStyle: "short",
-            timeStyle: "short"
-          })
-        : "N/A";
-
-      return `
-        <div style="
-          background:#fff;
-          padding:12px;
-          border-radius:8px;
-          margin-bottom:12px;
-          border:1px solid #e2e8f0;
-          border-left:4px solid #1e40af;
-        ">
-          <div style="
-            font-size:10px;
-            color:#64748b;
-            display:flex;
-            justify-content:space-between;
-            margin-bottom:4px;
-          ">
-            <span>🕒 Event: ${(item.admin_time || item.time) || "N/A"}</span>
-            <span>📅 Submitted: ${submittedOn}</span>
-          </div>
-
-          <div style="font-weight:700;color:#1e40af;font-size:14px;margin-bottom:4px;">
-            ${item.report_type || "Weather Update"}
-          </div>
-
-          <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:4px;">
-            📍 ${item.location || "Unknown location"}
-          </div>
-
-          <div style="
-            font-size:13px;
-            color:#475569;
-            line-height:1.5;
-            background:#f1f5f9;
-            padding:8px;
-            border-radius:4px;
-          ">
-            ${(item.admin_observation || item.observation) || "No details provided."}
-          </div>
-
-          <div style="
-            font-size:11px;
-            margin-top:8px;
-            color:#1e3a8a;
-            font-weight:700;
-          ">
-            Reporter: ${
-  item.show_name === "yes"
-    ? (item.admin_name || item.name)
-    : "Anonymous"
-}
-
-          </div>
-        </div>
-      `;
-    }).join("");
   });
+
+  if (validReports.length === 0) {
+    if (badge) badge.style.display = "none";
+    return;
+  }
+
+  if (badge) badge.style.display = "block";
+  if (badgeCount) badgeCount.textContent = validReports.length;
+
+  // Sort: Newest first based on submission time
+  validReports.sort((a, b) => (b.submitted_at || 0) - (a.submitted_at || 0));
+
+  if (!panelContent) return;
+
+  /* ---------- RENDER PANEL USING NEW BRIDGE KEYS ---------- */
+  panelContent.innerHTML = validReports.map(item => {
+    const submittedOn = item.submitted_at
+      ? new Date(item.submitted_at).toLocaleString("en-IN", {
+          dateStyle: "short",
+          timeStyle: "short"
+        })
+      : "N/A";
+
+    return `
+      <div style="background:#fff; padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid #e2e8f0; border-left:4px solid #1e40af;">
+        <div style="font-size:10px; color:#64748b; display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span>🕒 Event Time: ${item.event_time || "N/A"}</span>
+          <span>📅 ${submittedOn}</span>
+        </div>
+
+        <div style="font-weight:700;color:#1e40af;font-size:14px;margin-bottom:4px;">
+          ${item.report_type || "Weather Update"}
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:4px;">
+          📍 ${item.location || "Unknown location"}
+        </div>
+
+        <div style="font-size:13px; color:#475569; line-height:1.5; background:#f1f5f9; padding:8px; border-radius:4px;">
+          ${item.report_content || "No details provided."}
+        </div>
+
+        <div style="font-size:11px; margin-top:8px; color:#1e3a8a; font-weight:700;">
+          Reporter: ${item.display_name || "Anonymous"}
+        </div>
+      </div>
+    `;
+  }).join("");
+});
 });
