@@ -1120,55 +1120,68 @@ setInterval(updateActivityRecommendations, 15 * 60 * 1000);
 <script type="module" src="elamkulam-forecast.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const firebaseConfig = {
+/* =========================================================
+   BRIDGE FIREBASE CONFIG (Site 2)
+========================================================= */
+const bridgeConfig = {
     apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
-    authDomain: "report-5d8c0.firebaseapp.com",
-    databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "report-5d8c0",
-    storageBucket: "report-5d8c0.firebasestorage.app",
-    messagingSenderId: "831456060916",
-    appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+    authDomain: "weather-report-66bdf.firebaseapp.com",
+    databaseURL: "https://weather-report-66bdf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "weather-report-66bdf",
+    storageBucket: "weather-report-66bdf.firebasestorage.app",
+    messagingSenderId: "599939260562",
+    appId: "1:599939260562:web:a0fbf532279a191559864b"
 };
 
 const DB_PATH = "weather_reports";
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(bridgeConfig, "site2App");
 const db = getDatabase(app);
 
 const sec = document.getElementById("grantedSection");
 const list = document.getElementById("grantedReports");
 
-onValue(ref(db, DB_PATH), (snapshot) => {
+/* ---------- DATABASE LISTENER ---------- */
+// Only fetch reports where granted_site2 is "yes"
+const site2Query = query(ref(db, DB_PATH), orderByChild("granted_site2"), equalTo("yes"));
+
+onValue(site2Query, (snapshot) => {
     const data = snapshot.val();
     list.innerHTML = "";
 
     if (!data) {
-        sec.classList.add("hidden");
+        if (sec) sec.classList.add("hidden");
         return;
     }
 
     const currentTime = Date.now(); 
-  const reports = Object.values(data)
-    .filter(r => r.granted_site2 === "yes" && (r.expirationTimestamp || Infinity) > currentTime)
-    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    
+    // Process and Filter out expired items
+    const reports = Object.values(data)
+        .filter(r => {
+            const isNotExpired = !r.expiration_site2 || r.expiration_site2 > currentTime;
+            return r.granted_site2 === "yes" && isNotExpired;
+        })
+        .sort((a, b) => (b.submitted_at || 0) - (a.submitted_at || 0));
 
     if (reports.length === 0) {
-        sec.classList.add("hidden");
+        if (sec) sec.classList.add("hidden");
         return;
     }
 
-    sec.classList.remove("hidden");
+    if (sec) sec.classList.remove("hidden");
 
     reports.forEach(r => {
         const line = document.createElement("div");
-        line.className = "p-4 bg-white border-l-4 border--500 shadow-sm -md mb-2 text-gray-800 leading-relaxed";
+        line.className = "p-4 bg-white border-l-4 border-blue-500 shadow-sm rounded-md mb-2 text-gray-800 leading-relaxed";
 
-        // Constructing the Malayalam sentence template
+        // Mapped to use the new Bridge keys: event_time and report_content
         line.innerHTML = `
             ഈ സമയത്ത് നാട്ടുകാരുടെ നിരീക്ഷണങ്ങളും കാലാവസ്ഥാ വകുപ്പിന്റെ നിരീക്ഷണങ്ങളുമായി പൊരുത്തപ്പെടുന്ന സാഹചര്യമാണുണ്ടായത്. 
-            <strong>"${r.time || 'N/A'}"</strong> സമയത്ത് <strong>"${r.location || 'Unknown Location'}"</strong> 
-            നിന്നുള്ള ഒരു റിപ്പോർട്ടിൽ <strong>"${r.observation || 'വിവരങ്ങൾ ലഭ്യമല്ല'}"</strong> എന്ന് സൂചിപ്പിക്കുന്നു.
+            <strong>"${r.event_time || 'N/A'}"</strong> സമയത്ത് <strong>"${r.location || 'Unknown Location'}"</strong> 
+            നിന്നുള്ള ഒരു റിപ്പോർട്ടിൽ <strong>"${r.report_content || 'വിവരങ്ങൾ ലഭ്യമല്ല'}"</strong> എന്ന് സൂചിപ്പിക്കുന്നു.
+            <div style="font-size: 11px; color: #64748b; margin-top: 5px;">Reporter: ${r.display_name}</div>
         `;
         
         list.appendChild(line);
