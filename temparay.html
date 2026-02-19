@@ -1,342 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ELWOIC — Weather Report Admin</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  .report-photo-thumb { max-height: 120px; width: auto; border-radius: 4px; margin-top: 8px; object-fit: cover; }
-  .input-edit { border: 1px solid #ccc; border-radius: 4px; padding: 4px 6px; font-size: 0.95rem; width: 100%; margin-top: 3px; }
-  .grant-btn { background-color: #16a34a; color: white; padding: 6px 10px; border-radius: 5px; font-size: 0.85rem; margin-top: 6px; cursor: pointer; }
-  .grant-btn:hover { background-color: #15803d; }
-  .revoke-btn { background-color: #ef4444; color: white; padding: 6px 10px; border-radius: 5px; font-size: 0.85rem; cursor: pointer; }
-  .revoke-btn:hover { background-color: #b91c1c; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Site Status Control</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --text: #1f2937;
+            --temp-bg: #eff6ff;
+        }
+
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: var(--text); padding: 40px 20px; margin: 0; }
+        .admin-panel { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; border: 1px solid var(--gray-300); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100); padding-bottom: 20px; margin-bottom: 30px; }
+        .live-preview { padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; border: 1px solid var(--gray-300); }
+        .preview-on { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .preview-off { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+
+        .section { margin-bottom: 20px; border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; }
+        .section-header { background: #fff; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-100); }
+        .section-content { padding: 20px; display: none; }
+        .section.active .section-content { display: block; }
+        
+        h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 0; }
+        
+        .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 4px; border: 1px solid var(--gray-300); cursor: pointer; background: white; transition: all 0.2s; color: var(--text); }
+        .btn-sm:disabled { cursor: not-allowed; opacity: 0.5; background: var(--gray-100); }
+        
+        .active-online { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .active-offline { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+        .active-auto { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
+        .btn-blue { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .status-pill { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
+        
+        .temp-session-box { background: var(--temp-bg); border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; display: flex; gap: 15px; align-items: center; font-size: 13px; }
+
+        .schedule-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .schedule-grid td { padding: 12px 8px; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+        .day-label { font-weight: 600; width: 140px; }
+        
+        input[type="time"], input[type="text"], input[type="date"] { border: 1px solid var(--gray-300); padding: 6px; border-radius: 4px; font-size: 13px; }
+        
+        .update-box { background: var(--gray-100); padding: 15px; border-radius: 8px; text-align: right; margin-top: 10px; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body>
 
-<header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
-  <div class="container mx-auto flex items-center justify-between">
-    <div>
-      <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Weather Reports</h1>
-      <p class="text-xs opacity-80">Realtime community weather observation viewer</p>
+<div class="admin-panel">
+    <div class="header">
+        <div>
+            <h1 style="margin:0; font-size: 22px;">Site Management</h1>
+            <p style="color: #64748b; margin: 5px 0 0 0;">Control your contact availability in real-time.</p>
+        </div>
+        <div id="status-display" class="live-preview">● LOADING...</div>
     </div>
-    <div class="space-x-2">
-      <a href="report.html" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm hover:bg-slate-200">← Back to Submission</a>
-    </div>
-  </div>
-</header>
 
-<div id="loginContainer" class="min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-    <h2 class="text-xl font-bold mb-4">Admin Login</h2>
-    <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-3">
-    <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-4">
-    <button id="loginBtn" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Login</button>
-    <p id="loginMessage" class="text-red-600 mt-2 hidden"></p>
-  </div>
+    <div style="margin-bottom: 35px;">
+        <h3>1. Manual Status & Temporary Session</h3>
+        <div class="status-pill" style="margin-top:15px;">
+            <button id="btn-force-online" class="btn-sm" onclick="setManual('available')">Force Online</button>
+            <button id="btn-force-offline" class="btn-sm" onclick="setManual('away')">Force Offline</button>
+            <button id="btn-auto-schedule" class="btn-sm" onclick="setManual('auto')">Switch to Auto-Schedule</button>
+
+            <div class="temp-session-box">
+                <strong>Temp Online:</strong>
+                <input type="time" id="temp-start">
+                <span>to</span>
+                <input type="time" id="temp-end">
+                <div style="font-size:11px; display:flex; flex-direction:column; gap:2px;">
+                    <label><input type="radio" name="temp-after" value="auto" checked> Then Auto</label>
+                    <label><input type="radio" name="temp-after" value="away"> Then Offline</label>
+                </div>
+                <button class="btn-sm btn-blue" onclick="setTempSession()">Set Session</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <label style="font-size: 13px; display: block; margin-bottom: 5px;">Reason for being away (Force Offline mode):</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="away-note" placeholder="Write reason..." style="width:100%" disabled>
+                <button id="btn-update-note" class="btn-sm" onclick="updateNoteAndOffline()" disabled>Update Note</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="sec-weekly">
+        <div class="section-header" onclick="toggleSection('sec-weekly')">
+            <h3>2. Weekly Schedule Settings</h3>
+            <span id="weekly-arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <div style="margin-bottom:15px;">
+                <label style="font-size: 14px;"><input type="checkbox" id="master-switch"> Master: Follow Schedules</label>
+            </div>
+            <table class="schedule-grid" id="days-table"></table>
+            <div class="update-box">
+                <button class="btn-sm btn-blue" onclick="saveWeeklySchedule()">Update Weekly Hours</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="sec-dated">
+        <div class="section-header" onclick="toggleSection('sec-dated')">
+            <h3>3. Dated Overrides (Next 7 Days)</h3>
+            <span id="dated-arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <p style="font-size:12px; color:#64748b; margin-top:0;">Overrides Auto-Schedule for specific dates.</p>
+            <table class="schedule-grid" id="dated-table"></table>
+            <div class="update-box">
+                <button class="btn-sm btn-blue" onclick="saveDatedSchedule()">Update Dated Overrides</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<main id="reportContainer" class="hidden px-4 py-6 container mx-auto">
-  <div id="summaryBox" class="mb-4 p-4 bg-white rounded-lg shadow-sm border border-blue-200 text-sm text-slate-700 leading-relaxed">
-    Loading summary...
-  </div>
-  <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Initializing...</div>
-  
-  <div id="messagesList" class="space-y-4"></div>
-  <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
-    <p class="text-gray-600">No weather reports found in the database.</p>
-  </div>
- 
-</main>
-
 <script type="module">
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-  authDomain: "report-5d8c0.firebaseapp.com",
-  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
-  storageBucket: "report-5d8c0.firebasestorage.app",
-  messagingSenderId: "831456060916",
-  appId: "1:831456060916:web:1e06b9d3897dd9637305a1",
-  measurementId: "G-5MGMM1DYDM"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTdb7oM8hayioOOkyNycm10Pnb8sAOVm4",
+        authDomain: "contact-controll.firebaseapp.com",
+        databaseURL: "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "contact-controll",
+        storageBucket: "contact-controll.firebasestorage.app",
+        messagingSenderId: "357811399820",
+        appId: "1:357811399820:web:6674904d6e18e68d7cdfa9"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'site_config');
+    
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-// 2️⃣ **Add these lines here**
-const loginContainer = document.getElementById("loginContainer");
-const reportContainer = document.getElementById("reportContainer");
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginMessage = document.getElementById("loginMessage");
+    // Setup UI
+    window.toggleSection = (id) => {
+        document.getElementById(id).classList.toggle('active');
+    };
 
-const statusEl = document.getElementById("status");
-const messagesList = document.getElementById("messagesList");
-const emptyEl = document.getElementById("empty");
-
-
-loginBtn.addEventListener("click", () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      loginContainer.style.display = "none";
-      reportContainer.classList.remove("hidden");
-      startListening(); // Call your Firebase DB listener after login
-    })
-    .catch((error) => {
-      loginMessage.textContent = error.message;
-      loginMessage.classList.remove("hidden");
+    // Render Weekly Table
+    const wTable = document.getElementById('days-table');
+    days.forEach(day => {
+        wTable.innerHTML += `<tr><td class="day-label">${day}</td><td><input type="checkbox" id="check-${day}"> Active</td><td><input type="time" id="start-${day}"></td><td>to</td><td><input type="time" id="end-${day}"></td></tr>`;
     });
-});
 
-
-// Optional: auto-logout after closing session or refresh
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loginContainer.style.display = "none";
-    reportContainer.classList.remove("hidden");
-    startListening(); // Load reports
-  } else {
-    loginContainer.style.display = "flex";
-    reportContainer.classList.add("hidden");
-  }
-});
-const DB_PATH = "weather_reports"; // replace with the actual path in your Firebase DB
-
-
-
-function setStatus(text, type="info") {
-  statusEl.textContent = text;
-  statusEl.className = "mb-4 p-3 rounded text-sm";
-  if(type==="info") statusEl.classList.add("bg-blue-100","text-blue-800");
-  if(type==="success") setTimeout(()=>{statusEl.textContent=text; statusEl.className="mb-4 p-3 rounded text-sm bg-green-100 text-green-800"}, 0);
-  if(type==="error") statusEl.classList.add("bg-red-100","text-red-800");
-}
-
-function startListening() {
-  setStatus("Connecting to Firebase...");
-  const reportsRef = ref(db, DB_PATH);
-
-  onValue(reportsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data) {
-      messagesList.innerHTML = "";
-      emptyEl.classList.remove("hidden");
-      document.getElementById("summaryBox").classList.add("hidden");
-      setStatus("No reports found.", "info");
-      return;
+    // Render Dated Table (Next 7 days)
+    const dTable = document.getElementById('dated-table');
+    for(let i=0; i<7; i++) {
+        let date = new Date();
+        date.setDate(date.today ? date.getDate() : date.getDate() + i);
+        let dateStr = date.toISOString().split('T')[0];
+        let displayStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        
+        dTable.innerHTML += `
+            <tr data-date="${dateStr}">
+                <td class="day-label">${displayStr}</td>
+                <td><input type="checkbox" id="date-active-${dateStr}"> Override</td>
+                <td><input type="checkbox" id="date-24h-${dateStr}"> 24h Online</td>
+                <td><input type="time" id="date-start-${dateStr}"> to <input type="time" id="date-end-${dateStr}"></td>
+            </tr>`;
     }
-    emptyEl.classList.add("hidden");
-    document.getElementById("summaryBox").classList.remove("hidden");
 
-    const reports = Object.entries(data).map(([key, v]) => ({ key, ...v }));
-
-    // --- SUMMARY LOGIC ---
-    const total = reports.length;
-    const urgentCount = reports.filter(r => r.priority === 'urgent').length;
-    const normalCount = total - urgentCount;
-    
-    const grantedSite1 = reports.filter(r => r.granted_site1 === 'yes').length;
-    const grantedSite2 = reports.filter(r => r.granted_site2 === 'yes').length;
-    const userDenied = reports.filter(r => r.show_on_site !== 'yes').length;
-
-    // Update the Summary Box
-    document.getElementById("summaryBox").innerHTML = `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div>
-          <p>📊 <strong>Total:</strong> ${total} reports (${urgentCount} urgent, ${normalCount} normal)</p>
-          <p>🚫 <strong>User Denied:</strong> ${userDenied} reports hidden by users</p>
-        </div>
-        <div>
-          <p>🌐 <strong>Site 1:</strong> ${grantedSite1} reports currently live</p>
-          <p>🌐 <strong>Site 2:</strong> ${grantedSite2} reports currently live</p>
-        </div>
-      </div>
-    `;
-
-    // 2. Reverse to show latest on top
-    reports.reverse();
-
-    render(reports);
-    setStatus(`Loaded ${reports.length} report(s).`, "success");
-  });
-}
-// ... (Firebase imports and config remain the same) ...
-function render(list) {
-    messagesList.innerHTML = "";
-    list.forEach((item, index) => { // Added 'index' here
+    // Load Data
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        const mode = data.useSchedule ? 'auto' : (data.currentStatus === 'available' ? 'available' : 'away');
         
-        // This creates a clean number like 001, 002, 015
-        const humanId = String(index + 1).padStart(3, '0'); 
+        document.getElementById('btn-force-online').className = 'btn-sm ' + (mode === 'available' ? 'active-online' : '');
+        document.getElementById('btn-force-offline').className = 'btn-sm ' + (mode === 'away' ? 'active-offline' : '');
+        document.getElementById('btn-auto-schedule').className = 'btn-sm ' + (mode === 'auto' ? 'active-auto' : '');
+
+        const noteInput = document.getElementById('away-note');
+        const noteBtn = document.getElementById('btn-update-note');
+        noteInput.disabled = (mode !== 'away');
+        noteBtn.disabled = (mode !== 'away');
+        if(mode === 'away') noteBtn.classList.add('btn-blue'); else noteBtn.classList.remove('btn-blue');
+
+        const display = document.getElementById('status-display');
+        display.innerText = "● LIVE: " + data.currentStatus.toUpperCase();
+        display.className = "live-preview " + (data.currentStatus === 'available' ? 'preview-on' : 'preview-off');
+
+        document.getElementById('master-switch').checked = data.useSchedule || false;
+        document.getElementById('away-note').value = data.awayNote || "";
         
-        const d = item.timestamp ? (isNaN(item.timestamp) ? item.timestamp : new Date(item.timestamp).toLocaleString()) : "N/A";
-        const granted1 = item.granted_site1 === "yes";
-        const granted2 = item.granted_site2 === "yes";
-        const userAllowsReportDisplay = item.show_on_site === "yes";
-        const isUrgent = item.priority === "urgent";
-
-        const expirationTime = item.expirationTimestamp ? new Date(item.expirationTimestamp).toLocaleString() : 'Never Set';
-        const isExpired = item.expirationTimestamp && item.expirationTimestamp < Date.now();
-        const expirationText = isExpired ? 
-            `<span class="text-red-600 font-semibold">Expired: ${expirationTime}</span>` : 
-            `Expires: ${expirationTime}`;
-
-        const card = document.createElement("div");
-        card.className = `bg-white p-4 md:p-6 rounded-lg shadow border-l-4 ${userAllowsReportDisplay ? 'border-blue-600' : 'border-red-600'}`;
-
-        card.innerHTML = `
-          <div class="flex flex-col gap-2">
-            <div class="flex justify-between items-center">
-                <div>
-                   <span class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-1 rounded mr-2">#${humanId}</span>
-                   <h3 class="text-lg font-semibold text-red-700 inline">${escape(item.report_type)} Report</h3>
-                </div>
-                ${isUrgent ? '<span class="text-xs bg-red-600 text-white px-2 py-1 rounded font-bold animate-pulse">⚠ URGENT</span>' : ''}
-            </div>
-            
-            <p class="text-[9px] text-slate-400">System Ref: ${item.key}</p>
-
-            <span class="text-xs text-slate-500">Submitted: ${d} | Event Time: <input class="input-edit" value="${escape(item.time)}" id="time-${item.key}"></span>
-          
-            
-            <p class="text-xs text-blue-800 font-bold">Email: <span class="font-normal text-slate-600">${escape(item.email || 'N/A')}</span></p>
-
-            <p class="text-sm text-slate-600 mt-2"><strong>Location:</strong> ${escape(item.location)}</p>
-            <p class="text-sm text-slate-600"><strong>Reporter:</strong> <input class="input-edit" value="${escape(item.name)}" id="name-${item.key}"></p>
-            <p class="mt-3 text-slate-800 whitespace-pre-wrap font-medium"><textarea class="input-edit" id="obs-${item.key}" rows="3">${escape(item.observation)}</textarea></p>
-            
-            <div class="text-sm mt-2 flex justify-between items-center flex-wrap">
-                <div>
-                    <strong>User Permission:</strong> 
-                    <span class="font-semibold ${userAllowsReportDisplay ? 'text-green-600' : 'text-red-600'}">
-                        Show Report: ${userAllowsReportDisplay ? '✅ Yes' : '❌ No'}
-                    </span>
-                    <span class="ml-4 font-semibold ${item.show_name === 'yes' ? 'text-green-600' : 'text-red-600'}">
-                        Show Name: ${item.show_name === 'yes' ? '✅ Yes' : '❌ No'}
-                    </span>
-                </div>
-                
-                <div class="mt-2 md:mt-0">
-                    <strong class="mr-2">Duration (Hours):</strong> 
-                    <input type="number" min="1" value="24" class="input-edit w-20 inline-block p-1" id="duration-${item.key}">
-                </div>
-            </div>
-
-            <p class="text-xs text-slate-500">${expirationText}</p>
-
-            ${item.photo_url && item.photo_url!=="N/A" ? `<a href="${escape(item.photo_url)}" target="_blank"><img src="${escape(item.photo_url)}" class="report-photo-thumb"></a>` : ''}
-            
-            <div class="flex flex-wrap gap-3 mt-2 items-center">
-                <span class="text-xs font-semibold p-1 rounded ${granted1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
-                    Site 1: ${granted1 ? '✅ Granted' : '❌ Not Granted'}
-                </span>
-                <span class="text-xs font-semibold p-1 rounded ${granted2 ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}">
-                    Site 2: ${granted2 ? '✅ Granted' : '❌ Not Granted'}
-                </span>
-            </div>
-
-            <div id="btn-container-${item.key}" class="flex gap-2 mt-3 flex-wrap">
-                </div>
-          </div>
-        `;
-
-        // ... (Rest of your button logic remains exactly the same) ...
-
-        messagesList.appendChild(card);
-
-        // Helper function remains the same
-        const getEditedValues = (key) => ({
-            time: document.getElementById(`time-${key}`).value,
-            name: document.getElementById(`name-${key}`).value,
-            observation: document.getElementById(`obs-${key}`).value,
-        });
-        
-        // --- UPDATED: Toggle Button Creator Function ---
-       // Add 'humanId' as a parameter at the end
-const createGrantRevokeButton = (siteNum, isGranted, key, color, humanId) => {
-    const btn = document.createElement('button');
-    const grantField = `granted_site${siteNum}`;
-    
-    if (isGranted) {
-        btn.textContent = `Revoke Site ${siteNum}`;
-        btn.className = 'revoke-btn'; 
-        btn.onclick = async () => {
-            await update(ref(db, DB_PATH + "/" + key), { [grantField]: "no" });
-            // Using humanId here for the status bar
-            setStatus(`Report #${humanId} revoked from Site ${siteNum} ❌`, "info");
-        };
-    } else {
-        btn.textContent = `Grant Site ${siteNum}`;
-        btn.className = `grant-btn ${color}`; 
-        btn.onclick = async () => {
-            const updatedData = getEditedValues(key);
-            const durationInput = document.getElementById(`duration-${key}`).value;
-            const durationMs = parseInt(durationInput) * 60 * 60 * 1000;
-            
-            updatedData[grantField] = "yes"; 
-            updatedData.expirationTimestamp = Date.now() + durationMs; 
-            
-            if (item.show_name !== 'yes') {
-                 updatedData.name = "Anonymous";
+        if (data.schedule) days.forEach(d => {
+            if(data.schedule[d]) {
+                document.getElementById(`check-${d}`).checked = data.schedule[d].active;
+                document.getElementById(`start-${d}`).value = data.schedule[d].start;
+                document.getElementById(`end-${d}`).value = data.schedule[d].end;
             }
-            
-            await update(ref(db, DB_PATH + "/" + key), updatedData);
-            // Using humanId here for the status bar
-            setStatus(`Report #${humanId} granted to Site ${siteNum} ✔`, "success");
-        };
-    }
-    return btn;
-};
-        
-        // --- DELETE HANDLER (Moved into a reusable function) ---
-        const createDeleteButton = (key) => {
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = "delete-btn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700";
-            deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = async () => {
-                if (confirm("Permanently delete this report?")) {
-                  await remove(ref(db, DB_PATH + "/" + key));
-                  setStatus("Report deleted.", "success");
+        });
+
+        if (data.datedOverrides) {
+            Object.keys(data.datedOverrides).forEach(date => {
+                const el = document.getElementById(`date-active-${date}`);
+                if (el) {
+                    el.checked = data.datedOverrides[date].active;
+                    document.getElementById(`date-24h-${date}`).checked = data.datedOverrides[date].is24h;
+                    document.getElementById(`date-start-${date}`).value = data.datedOverrides[date].start;
+                    document.getElementById(`date-end-${date}`).value = data.datedOverrides[date].end;
                 }
-            };
-            return deleteBtn;
-        };
-
-
-        const btnContainer = document.getElementById(`btn-container-${item.key}`);
-        
-      if (!userAllowsReportDisplay) {
-    btnContainer.innerHTML = `
-        <div class="p-3 bg-red-50 text-red-700 rounded-md font-medium text-sm w-full">
-            ❌ User denied permission. This report cannot be displayed on the website.
-        </div>
-    `;
-    btnContainer.appendChild(createDeleteButton(item.key));
-    return; // STOP — do not show any grant buttons
-}
-
-btnContainer.appendChild(createGrantRevokeButton(1, granted1, item.key, ''));
-btnContainer.appendChild(createGrantRevokeButton(2, granted2, item.key, '!bg-indigo-600 hover:!bg-indigo-700'));
-btnContainer.appendChild(createDeleteButton(item.key));
-
+            });
+        }
     });
-}
 
-function escape(s) {
-  if (!s) return "";
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+    window.setManual = (mode) => {
+        const status = mode === 'available' ? 'available' : 'away';
+        update(dbRef, { currentStatus: status, useSchedule: (mode === 'auto'), tempSession: null });
+    };
+
+    window.setTempSession = () => {
+        const start = document.getElementById('temp-start').value;
+        const end = document.getElementById('temp-end').value;
+        const after = document.querySelector('input[name="temp-after"]:checked').value;
+        
+        if(!start || !end) return alert("Please set both times.");
+
+        // Validation: Cannot set past hour
+        const now = new Date();
+        const [h, m] = start.split(':');
+        const startTimeObj = new Date();
+        startTimeObj.setHours(h, m, 0);
+
+        if (startTimeObj < now) {
+            return alert("Error: Start time cannot be in the past!");
+        }
+
+        update(dbRef, { useSchedule: false, currentStatus: 'available', tempSession: { start, end, revertTo: after } });
+        alert("Temp session active.");
+    };
+
+    window.saveWeeklySchedule = () => {
+        const schedule = {};
+        days.forEach(d => { schedule[d] = { active: document.getElementById(`check-${d}`).checked, start: document.getElementById(`start-${d}`).value, end: document.getElementById(`end-${d}`).value }; });
+        update(dbRef, { schedule, useSchedule: document.getElementById('master-switch').checked });
+        alert("Weekly Schedule Saved");
+    };
+
+    window.saveDatedSchedule = () => {
+        const dated = {};
+        const rows = document.querySelectorAll('#dated-table tr');
+        rows.forEach(row => {
+            const date = row.getAttribute('data-date');
+            dated[date] = {
+                active: document.getElementById(`date-active-${date}`).checked,
+                is24h: document.getElementById(`date-24h-${date}`).checked,
+                start: document.getElementById(`date-start-${date}`).value,
+                end: document.getElementById(`date-end-${date}`).value
+            };
+        });
+        update(dbRef, { datedOverrides: dated });
+        alert("Dated Overrides Saved");
+    };
+
+    window.updateNoteAndOffline = () => {
+        update(dbRef, { awayNote: document.getElementById('away-note').value, currentStatus: 'away', useSchedule: false, tempSession: null });
+    };
 </script>
 </body>
 </html>
