@@ -394,6 +394,32 @@ The data shown here is collected from multiple publicly available weather provid
                     <p><a href="mailto:aswanthkrishnak822@gmail.com" class="text-blue-500 hover:underline">aswanthkrishnak822@gmail.com</a></p>
                     <p class="font-semibold mt-3">Phone:</p>
                     <p><a href="tel:+914933316750" class="text-blue-500 hover:underline">04933 316 750 (Placeholder)</a></p>
+                    <div id="availability-widget" class="mt-6 p-4 rounded-xl border transition-all duration-300 bg-gray-50 border-gray-200">
+    <div class="flex items-center gap-3">
+        <div class="relative flex h-3 w-3">
+            <span id="status-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+            <span id="status-dot" class="relative inline-flex rounded-full h-3 w-3"></span>
+        </div>
+        <span id="status-text" class="text-[11px] font-bold uppercase tracking-wider">Loading status...</span>
+    </div>
+    
+    <div id="status-desc" class="text-[10px] mt-1 leading-relaxed"></div>
+    
+    <div id="note-container" class="hidden mt-2 pt-2 border-t border-red-100">
+        <p id="status-note" class="text-[10px] text-red-700 italic inline"></p>
+        <button id="note-read-more" onclick="showFullNote()" class="text-[10px] font-bold underline ml-1 text-red-800 hidden">Read More</button>
+    </div>
+</div>
+
+<div id="noteModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-5 max-w-xs w-full shadow-2xl">
+        <h4 class="text-xs font-bold text-red-600 mb-2 uppercase">Status Message</h4>
+        <p id="full-note-text" class="text-sm text-gray-700 leading-snug"></p>
+        <button onclick="closeNoteModal()" class="mt-4 w-full py-2 bg-gray-100 text-gray-800 text-xs font-bold rounded hover:bg-gray-200">Close</button>
+    </div>
+</div>
+                </div>
+            </div>
                 </div>
             </div>
 
@@ -824,5 +850,200 @@ document.addEventListener("DOMContentLoaded", () => {
     </button>
   </div>
 </div>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCTdb7oM8hayioOOkyNycm10Pnb8sAOVm4",
+    authDomain: "contact-controll.firebaseapp.com",
+    databaseURL: "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "contact-controll",
+    storageBucket: "contact-controll.firebasestorage.app",
+    messagingSenderId: "357811399820",
+    appId: "1:357811399820:web:6674904d6e18e68d7cdfa9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dbRef = ref(db, 'site_config');
+
+let fullNoteContent = "";
+let latestData = null;
+
+// ----------------------------
+// STATUS ENGINE
+// ----------------------------
+function getAutoStatus(data) {
+    const now = new Date();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const currentDay = days[now.getDay()];
+    const currentTime = now.getHours() * 100 + now.getMinutes();
+    const todayStr = now.toISOString().split('T')[0];
+
+    // 1️⃣ TEMP SESSION
+    if (data.tempSession) {
+        const start = parseInt(data.tempSession.start.replace(':', ''));
+        const end = parseInt(data.tempSession.end.replace(':', ''));
+
+        let inside = false;
+
+        if (start <= end) {
+            if (currentTime >= start && currentTime <= end) inside = true;
+        } else {
+            if (currentTime >= start || currentTime <= end) inside = true;
+        }
+
+        if (inside) {
+    return "available";
+} else {
+
+    if (data.tempSession.revertTo === "away") {
+        update(dbRef, {
+            tempSession: null,
+            currentStatus: "away",
+            useSchedule: false
+        });
+    } else {
+        update(dbRef, {
+            tempSession: null,
+            useSchedule: true
+        });
+    }
+}
+return data.currentStatus;
+
+    }
+
+    // 2️⃣ DATED OVERRIDE
+    if (data.datedOverrides &&
+        data.datedOverrides[todayStr] &&
+        data.datedOverrides[todayStr].active) {
+
+        const o = data.datedOverrides[todayStr];
+
+        if (o.is24h) return "available";
+
+        const start = parseInt(o.start.replace(':',''));
+        const end = parseInt(o.end.replace(':',''));
+
+        if (start <= end) {
+            if (currentTime >= start && currentTime <= end) return "available";
+        } else {
+            if (currentTime >= start || currentTime <= end) return "available";
+        }
+        return "away";
+    }
+
+    // 3️⃣ WEEKLY SCHEDULE
+    const sched = data.schedule ? data.schedule[currentDay] : null;
+
+    if (sched && sched.active) {
+        const start = parseInt(sched.start.replace(':',''));
+        const end = parseInt(sched.end.replace(':',''));
+
+        if (start <= end) {
+            if (currentTime >= start && currentTime <= end) return "available";
+        } else {
+            if (currentTime >= start || currentTime <= end) return "available";
+        }
+    }
+
+    return "away";
+}
+
+// ----------------------------
+// UI RENDER
+// ----------------------------
+function renderStatus(data) {
+  let finalStatus;
+
+// Always let engine decide if tempSession OR schedule is active
+if (data.tempSession || data.useSchedule) {
+    finalStatus = getAutoStatus(data);
+} else {
+    finalStatus = data.currentStatus;
+}
+
+
+
+    const widget = document.getElementById('availability-widget');
+    const dot = document.getElementById('status-dot');
+    const pulse = document.getElementById('status-pulse');
+    const text = document.getElementById('status-text');
+    const desc = document.getElementById('status-desc');
+    const noteContainer = document.getElementById('note-container');
+    const noteText = document.getElementById('status-note');
+    const readMoreBtn = document.getElementById('note-read-more');
+
+    if (finalStatus === 'available') {
+        widget.className = "mt-6 p-4 rounded-xl border transition-all duration-300 bg-green-50 border-green-200";
+        dot.className = "relative inline-flex rounded-full h-3 w-3 bg-green-500";
+        pulse.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75";
+        pulse.classList.remove('hidden');
+
+        text.innerText = "Office Online";
+        text.className = "text-[11px] font-bold uppercase tracking-wider text-green-700";
+        desc.innerText = "Staff are available. You can contact us via phone.";
+        desc.className = "text-[10px] mt-1 leading-relaxed text-green-600";
+
+        noteContainer.classList.add('hidden');
+
+    } else {
+        widget.className = "mt-6 p-4 rounded-xl border transition-all duration-300 bg-red-50 border-red-200";
+        dot.className = "relative inline-flex rounded-full h-3 w-3 bg-red-500";
+        pulse.classList.add('hidden');
+
+        text.innerText = "Phone Support Unavailable";
+        text.className = "text-[11px] font-bold uppercase tracking-wider text-red-700";
+        desc.innerText = "Calling is temporarily unavailable. Please use the contact form or email.";
+        desc.className = "text-[10px] mt-1 leading-relaxed text-red-600";
+
+        if (data.awayNote) {
+            noteContainer.classList.remove('hidden');
+            fullNoteContent = data.awayNote;
+            noteText.innerText = "Note: " +
+                (data.awayNote.length > 20
+                ? data.awayNote.substring(0,20) + "..."
+                : data.awayNote);
+
+            readMoreBtn.classList.toggle('hidden', data.awayNote.length <= 20);
+        } else {
+            noteContainer.classList.add('hidden');
+        }
+    }
+}
+
+// ----------------------------
+// REALTIME LISTENER
+// ----------------------------
+onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    latestData = data;
+    renderStatus(data);
+});
+
+// 🔁 auto refresh every minute
+setInterval(() => {
+    if (latestData) {
+        renderStatus(latestData);
+    }
+}, 60000);
+
+// ----------------------------
+// MODAL
+// ----------------------------
+window.showFullNote = () => {
+    document.getElementById('full-note-text').innerText = fullNoteContent;
+    document.getElementById('noteModal').classList.remove('hidden');
+};
+
+window.closeNoteModal = () => {
+    document.getElementById('noteModal').classList.add('hidden');
+};
+</script>
+
 </body>
 </html> 
