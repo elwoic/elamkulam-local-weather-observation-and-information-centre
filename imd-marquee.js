@@ -2,16 +2,16 @@
 
 // Preset alert data
 const alerts = {
-  "2026-02-13": { text: "IMD Alert For Malappuram District: g" },
-  "2026-02-14": { text: "IMD Alert For Malappuram District: g" },
-  "2026-02-15": { text: "IMD Alert For Malappuram District: g" },
-  "2026-02-16": { text: "IMD Alert For Malappuram District: g" },
-  "2026-02-17": { text: "IMD Alert For Malappuram District: g" },
-  "2026-02-18": { text: "IMD Alert For Malappuram District: g" }
+  "2026-02-19": { text: "IMD Alert For Malappuram District: g" },
+  "2026-02-20": { text: "IMD Alert For Malappuram District: y" },
+  "2026-02-21": { text: "IMD Alert For Malappuram District: y" },
+  "2026-02-22": { text: "IMD Alert For Malappuram District: y" },
+  "2026-02-23": { text: "IMD Alert For Malappuram District: y" },
+  "2026-02-24": { text: "IMD Alert For Malappuram District: g" }
 };
 
 // Last updated time (manual)
-const lastUpdated = "2026-02-13 11:36 AM";
+const lastUpdated = "2026-02-19 12:55 PM";
 
 // Function to update the marquee
 function updateMarquee(marqueeTextEl, marqueeContainerEl) {
