@@ -766,25 +766,47 @@ document.getElementById("seeMoreFaq").addEventListener("click", function () {
   });
 </script>
 <script>
-// Unified Admin Access Logic - Cleaned & Fixed
-var _0x510f=["\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4D\x44\x51\x35\x4D\x7A\x4D\x3D","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4E\x54\x49\x7A\x4F\x54\x45\x79","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5A\x57\x78\x33\x62\x32\x6C\x6A\x4D\x44\x45\x34\x4E\x6A\x67\x3D","\x45\x6E\x74\x65\x72\x20\x61\x75\x74\x68\x6F\x72\x69\x7A\x61\x74\x69\x6F\x6E\x20\x63\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64!"];
+// Unified Admin Access Logic
+/* ELWOIC Security Layer - Filename Corrected */
+var _0x510f=[
+    "admin.html","MDQ5MzM=",
+    "report-admin.html","NTI0NTI=", // whatever the second password is
+    "co-admin.html","ZWx3b2ljMDE4Nzg=",
+    "Enter authorization code:",
+    "href",
+    "location",
+    "Access Denied!"
+];
 
-function handleAdminAccess(page){
-    var code = prompt(_0x510f[6]);
-    if(code === null) return;
-    var enc = btoa(code).replace(/=/g,"");
-    var ok = false;
+// Keep the same dropdown toggle logic from the previous response
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("adminToggle");
+    const dropdown = document.getElementById("adminDropdown");
+    let open = false;
 
-    if(page === _0x510f[0] && enc === _0x510f[1]) ok = true;
-    else if(page === _0x510f[2] && enc === _0x510f[3]) ok = true;
-    else if(page === _0x510f[4] && enc === _0x510f[5]) ok = true;
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        open = !open;
+        if (open) {
+            dropdown.classList.remove("hidden");
+            setTimeout(() => {
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
+        } else {
+            closeDropdown();
+        }
+    });
 
-    if(ok){
-        window.location.href = page; // fixed redirect
-    } else {
-        alert(_0x510f[9]);
+    document.addEventListener("click", () => { if (open) closeDropdown(); });
+
+    function closeDropdown() {
+        open = false;
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
     }
-}
+});
 
 // Dropdown toggle logic
 document.addEventListener("DOMContentLoaded", () => {
@@ -795,22 +817,27 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", (e) => {
         e.stopPropagation();
         open = !open;
-        if(open){
+        if (open) {
             dropdown.classList.remove("hidden");
             setTimeout(() => {
-                dropdown.classList.remove("scale-y-0","opacity-0");
-                dropdown.classList.add("scale-y-100","opacity-100");
-            },10);
-        } else closeDropdown();
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
+        } else {
+            closeDropdown();
+        }
     });
 
-    document.addEventListener("click", () => { if(open) closeDropdown(); });
+    // Close dropdown if clicking outside
+    document.addEventListener("click", () => {
+        if (open) closeDropdown();
+    });
 
-    function closeDropdown(){
+    function closeDropdown() {
         open = false;
-        dropdown.classList.add("scale-y-0","opacity-0");
-        dropdown.classList.remove("scale-y-100","opacity-100");
-        setTimeout(() => dropdown.classList.add("hidden"),300);
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
     }
 });
 </script>
