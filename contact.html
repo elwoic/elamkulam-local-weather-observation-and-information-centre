@@ -848,7 +848,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </button>
   </div>
 </div>
-    <script type="module">
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -857,7 +857,7 @@ const firebaseConfig = {
     authDomain: "contact-controll.firebaseapp.com",
     databaseURL: "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "contact-controll",
-    storageBucket: "contact-controll.firebasestorage.app",
+    storageBucket: "contact-controll.firebasedatabase.app",
     messagingSenderId: "357811399820",
     appId: "1:357811399820:web:6674904d6e18e68d7cdfa9"
 };
@@ -870,100 +870,85 @@ let fullNoteContent = "";
 let latestData = null;
 
 // ----------------------------
+// HELPER FUNCTIONS
+// ----------------------------
+function timeToNumber(timeStr) {
+    return parseInt(timeStr.replace(':', ''));
+}
+
+// Check if currentTime is inside start → end range, supports overnight
+function isInside(start, end, current) {
+    if (start <= end) return current >= start && current <= end;
+    return current >= start || current <= end;
+}
+
+// ----------------------------
 // STATUS ENGINE
 // ----------------------------
 function getAutoStatus(data) {
     const now = new Date();
     const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const currentDay = days[now.getDay()];
-    const currentTime = now.getHours() * 100 + now.getMinutes();
+    const todayIndex = now.getDay();
+    const yesterdayIndex = (todayIndex + 6) % 7;
+
+    const todayName = days[todayIndex];
+    const yesterdayName = days[yesterdayIndex];
     const todayStr = now.toISOString().split('T')[0];
+    const currentTime = now.getHours()*100 + now.getMinutes();
 
     // 1️⃣ TEMP SESSION
     if (data.tempSession) {
-        const start = parseInt(data.tempSession.start.replace(':', ''));
-        const end = parseInt(data.tempSession.end.replace(':', ''));
+        const start = timeToNumber(data.tempSession.start);
+        const end = timeToNumber(data.tempSession.end);
 
-        let inside = false;
+        if (isInside(start, end, currentTime)) return "available";
 
-        if (start <= end) {
-            if (currentTime >= start && currentTime <= end) inside = true;
+        // Temp session ended, revert
+        if (data.tempSession.revertTo === "away") {
+            update(dbRef, { tempSession: null, currentStatus: "away", useSchedule: false });
         } else {
-            if (currentTime >= start || currentTime <= end) inside = true;
+            update(dbRef, { tempSession: null, useSchedule: true });
         }
-
-        if (inside) {
-    return "available";
-} else {
-
-    if (data.tempSession.revertTo === "away") {
-        update(dbRef, {
-            tempSession: null,
-            currentStatus: "away",
-            useSchedule: false
-        });
-    } else {
-        update(dbRef, {
-            tempSession: null,
-            useSchedule: true
-        });
-    }
-}
-return data.currentStatus;
-
+        return data.currentStatus;
     }
 
-    // 2️⃣ DATED OVERRIDE
-    if (data.datedOverrides &&
-        data.datedOverrides[todayStr] &&
-        data.datedOverrides[todayStr].active) {
-
+    // 2️⃣ DATED OVERRIDES
+    if (data.datedOverrides && data.datedOverrides[todayStr] && data.datedOverrides[todayStr].active) {
         const o = data.datedOverrides[todayStr];
-
         if (o.is24h) return "available";
+        const start = timeToNumber(o.start);
+        const end = timeToNumber(o.end);
 
-        const start = parseInt(o.start.replace(':',''));
-        const end = parseInt(o.end.replace(':',''));
-
-        if (start <= end) {
-            if (currentTime >= start && currentTime <= end) return "available";
-        } else {
-            if (currentTime >= start || currentTime <= end) return "available";
-        }
+        if (isInside(start, end, currentTime)) return "available";
         return "away";
     }
 
     // 3️⃣ WEEKLY SCHEDULE
-    const sched = data.schedule ? data.schedule[currentDay] : null;
+    const todaySched = data.schedule ? data.schedule[todayName] : null;
+    const yesterdaySched = data.schedule ? data.schedule[yesterdayName] : null;
 
-    if (sched && sched.active) {
-        const start = parseInt(sched.start.replace(':',''));
-        const end = parseInt(sched.end.replace(':',''));
+    // Check yesterday overnight
+    if (yesterdaySched && yesterdaySched.active) {
+        const startY = timeToNumber(yesterdaySched.start);
+        const endY = timeToNumber(yesterdaySched.end);
+        if (startY > endY && currentTime <= endY) return "available";
+    }
 
-        if (start <= end) {
-            if (currentTime >= start && currentTime <= end) return "available";
-        } else {
-            if (currentTime >= start || currentTime <= end) return "available";
-        }
+    // Check today schedule
+    if (todaySched && todaySched.active) {
+        const startT = timeToNumber(todaySched.start);
+        const endT = timeToNumber(todaySched.end);
+        if (isInside(startT, endT, currentTime)) return "available";
     }
 
     return "away";
 }
 
 // ----------------------------
-// UI RENDER
+// RENDER UI
 // ----------------------------
 function renderStatus(data) {
-  let finalStatus;
-
-// Always let engine decide if tempSession OR schedule is active
-if (data.tempSession || data.useSchedule) {
-    finalStatus = getAutoStatus(data);
-} else {
-    finalStatus = data.currentStatus;
-}
-
-
+    const finalStatus = (data.tempSession || data.useSchedule) ? getAutoStatus(data) : data.currentStatus;
 
     const widget = document.getElementById('availability-widget');
     const dot = document.getElementById('status-dot');
@@ -973,6 +958,8 @@ if (data.tempSession || data.useSchedule) {
     const noteContainer = document.getElementById('note-container');
     const noteText = document.getElementById('status-note');
     const readMoreBtn = document.getElementById('note-read-more');
+
+    if (!widget || !dot || !pulse || !text || !desc) return; // safety
 
     if (finalStatus === 'available') {
         widget.className = "mt-6 p-4 rounded-xl border transition-all duration-300 bg-green-50 border-green-200";
@@ -1000,11 +987,7 @@ if (data.tempSession || data.useSchedule) {
         if (data.awayNote) {
             noteContainer.classList.remove('hidden');
             fullNoteContent = data.awayNote;
-            noteText.innerText = "Note: " +
-                (data.awayNote.length > 20
-                ? data.awayNote.substring(0,20) + "..."
-                : data.awayNote);
-
+            noteText.innerText = "Note: " + (data.awayNote.length > 20 ? data.awayNote.substring(0,20) + "..." : data.awayNote);
             readMoreBtn.classList.toggle('hidden', data.awayNote.length <= 20);
         } else {
             noteContainer.classList.add('hidden');
@@ -1018,28 +1001,26 @@ if (data.tempSession || data.useSchedule) {
 onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
     if (!data) return;
-
     latestData = data;
     renderStatus(data);
 });
 
-// 🔁 auto refresh every minute
-setInterval(() => {
-    if (latestData) {
-        renderStatus(latestData);
-    }
-}, 60000);
+// Auto refresh every 30s
+setInterval(() => { if(latestData) renderStatus(latestData); }, 30000);
 
 // ----------------------------
 // MODAL
 // ----------------------------
 window.showFullNote = () => {
-    document.getElementById('full-note-text').innerText = fullNoteContent;
-    document.getElementById('noteModal').classList.remove('hidden');
+    const fullTextEl = document.getElementById('full-note-text');
+    if(fullTextEl) fullTextEl.innerText = fullNoteContent;
+    const modalEl = document.getElementById('noteModal');
+    if(modalEl) modalEl.classList.remove('hidden');
 };
 
 window.closeNoteModal = () => {
-    document.getElementById('noteModal').classList.add('hidden');
+    const modalEl = document.getElementById('noteModal');
+    if(modalEl) modalEl.classList.add('hidden');
 };
 </script>
 
