@@ -766,52 +766,64 @@ document.getElementById("seeMoreFaq").addEventListener("click", function () {
   });
 </script>
 <script>
-// ELWOIC Secure Admin Access v2
+// ELWOIC Secure Admin Access v3 - Functional
 (function(){
-    const _0xA1=["\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x77eZlRj0=","\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4d5aV2Q0","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5a4xRjV2","\x45\x6E\x74\x65\x72\x20\x41\x75\x74\x68\x20\x43\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64!"];
+    const _0xS=["\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x77eZlRj0=","\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4d5aV2Q0","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5a4xRjV2","\x45\x6E\x74\x65\x72\x20\x41\x75\x74\x68\x20\x43\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64!"];
 
     function accessCheck(page){
-        let code=prompt(_0xA1[6]);
+        let code=prompt(_0xS[6]); // "Enter Auth Code:"
         if(!code) return;
-        let enc=btoa(code).replace(/=/g,"");
+        let enc=btoa(code).replace(/=/g,""); 
         let ok=false;
 
-        if(page===_0xA1[0] && enc===_0xA1[1]) ok=true;
-        else if(page===_0xA1[2] && enc===_0xA1[3]) ok=true;
-        else if(page===_0xA1[4] && enc===_0xA1[5]) ok=true;
+        // Password checks
+        if(page===_0xS[0] && enc===_0xS[1]) ok=true;
+        else if(page===_0xS[2] && enc===_0xS[3]) ok=true;
+        else if(page===_0xS[4] && enc===_0xS[5]) ok=true;
 
-        if(ok) window[_0xA1[8]][_0xA1[7]]=page;
-        else alert(_0xA1[9]);
+        if(ok){
+            // Redirect to page
+            window.location.href=page;
+        } else {
+            alert(_0xS[9]);
+        }
     }
 
+    // Dropdown toggle (optional)
     document.addEventListener("DOMContentLoaded",function(){
         const t=document.getElementById("adminToggle");
         const d=document.getElementById("adminDropdown");
         let open=false;
 
-        t.addEventListener("click",e=>{
-            e.stopPropagation();
-            open=!open;
-            if(open){
-                d.classList.remove("hidden");
-                setTimeout(()=>{d.classList.remove("scale-y-0","opacity-0");d.classList.add("scale-y-100","opacity-100");},10);
-            } else { closeDropdown(); }
-        });
+        if(t && d){
+            t.addEventListener("click",e=>{
+                e.stopPropagation();
+                open=!open;
+                if(open){
+                    d.classList.remove("hidden");
+                    setTimeout(()=>{
+                        d.classList.remove("scale-y-0","opacity-0");
+                        d.classList.add("scale-y-100","opacity-100");
+                    },10);
+                } else { closeDropdown(); }
+            });
 
-        document.addEventListener("click",()=>{ if(open) closeDropdown(); });
+            document.addEventListener("click",()=>{ if(open) closeDropdown(); });
 
-        function closeDropdown(){
-            open=false;
-            d.classList.add("scale-y-0","opacity-0");
-            d.classList.remove("scale-y-100","opacity-100");
-            setTimeout(()=>d.classList.add("hidden"),300);
+            function closeDropdown(){
+                open=false;
+                d.classList.add("scale-y-0","opacity-0");
+                d.classList.remove("scale-y-100","opacity-100");
+                setTimeout(()=>d.classList.add("hidden"),300);
+            }
         }
 
-        // Expose for button onclick
+        // Make function globally accessible
         window.secureAccess=accessCheck;
     });
 })();
 </script>
+
 
 <div id="refModal" style="display:none;" class="fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[100] p-4">
   <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform transition-all">
