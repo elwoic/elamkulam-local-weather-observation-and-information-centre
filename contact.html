@@ -765,79 +765,61 @@ document.getElementById("seeMoreFaq").addEventListener("click", function () {
     }
   });
 </script>
+
 <script>
 // Unified Admin Access Logic
 /* ELWOIC Security Layer - Filename Corrected */
-var _0x510f=[
-    "admin.html","MDQ5MzM=",
-    "report-admin.html","NTI0NTI=", // whatever the second password is
-    "co-admin.html","ZWx3b2ljMDE4Nzg=",
-    "Enter authorization code:",
-    "href",
-    "location",
-    "Access Denied!"
-];
+var _0x510f=["\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4D\x44\x51\x35\x4D\x7A\x4D\x3D","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4E\x54\x49\x7A\x4F\x54\x45\x79","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5A\x57\x78\x33\x62\x32\x6C\x6A\x4D\x44\x45\x34\x4E\x6A\x67\x3D","\x45\x6E\x74\x65\x72\x20\x61\x75\x74\x68\x6F\x72\x69\x7A\x61\x74\x69\x6F\x6E\x20\x63\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64\x21"];
 
-// Keep the same dropdown toggle logic from the previous response
-document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("adminToggle");
-    const dropdown = document.getElementById("adminDropdown");
-    let open = false;
+function handleAdminAccess(_0x2287x2){
+    var _0x2287x3=prompt(_0x510f[6]);
+    if(_0x2287x3===null){return}
+    var _0x2287x4=btoa(_0x2287x3);
+    var _0x2287x5=false;
 
-    toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        open = !open;
-        if (open) {
-            dropdown.classList.remove("hidden");
-            setTimeout(() => {
-                dropdown.classList.remove("scale-y-0", "opacity-0");
-                dropdown.classList.add("scale-y-100", "opacity-100");
-            }, 10);
-        } else {
-            closeDropdown();
-        }
-    });
-
-    document.addEventListener("click", () => { if (open) closeDropdown(); });
-
-    function closeDropdown() {
-        open = false;
-        dropdown.classList.add("scale-y-0", "opacity-0");
-        dropdown.classList.remove("scale-y-100", "opacity-100");
-        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    if(_0x2287x2===_0x510f[0]&&_0x2287x4===_0x510f[1]){
+        _0x2287x5=true;
+    } else if(_0x2287x2===_0x510f[2]&&_0x2287x4===_0x510f[3]){
+        _0x2287x5=true;
+    } else if(_0x2287x2===_0x510f[4]&&_0x2287x4===_0x510f[5]){
+        _0x2287x5=true;
     }
-});
 
-// Dropdown toggle logic
-document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("adminToggle");
-    const dropdown = document.getElementById("adminDropdown");
-    let open = false;
+    if(_0x2287x5){
+        window[_0x510f[8]][_0x510f[7]]=_0x2287x2;
+    } else {
+        alert(_0x510f[9]);
+    }
+}
 
-    toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        open = !open;
-        if (open) {
-            dropdown.classList.remove("hidden");
-            setTimeout(() => {
-                dropdown.classList.remove("scale-y-0", "opacity-0");
-                dropdown.classList.add("scale-y-100", "opacity-100");
-            }, 10);
+document.addEventListener("DOMContentLoaded",function(){
+    const _0x2287x6=document.getElementById("adminToggle");
+    const _0x2287x7=document.getElementById("adminDropdown");
+    let _0x2287x8=false;
+
+    _0x2287x6.addEventListener("click",function(_0x2287x9){
+        _0x2287x9.stopPropagation();
+        _0x2287x8=!_0x2287x8;
+        if(_0x2287x8){
+            _0x2287x7.classList.remove("hidden");
+            setTimeout(()=>{
+                _0x2287x7.classList.remove("scale-y-0","opacity-0");
+                _0x2287x7.classList.add("scale-y-100","opacity-100");
+            },10);
         } else {
             closeDropdown();
         }
     });
 
-    // Close dropdown if clicking outside
-    document.addEventListener("click", () => {
-        if (open) closeDropdown();
+    document.addEventListener("click",()=>{
+        if(_0x2287x8) closeDropdown();
     });
 
-    function closeDropdown() {
-        open = false;
-        dropdown.classList.add("scale-y-0", "opacity-0");
-        dropdown.classList.remove("scale-y-100", "opacity-100");
-        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    function closeDropdown(){
+        _0x2287x8=false;
+        _0x2287x7.classList.add("scale-y-0","opacity-0");
+        _0x2287x7.classList.remove("scale-y-100","opacity-100");
+        setTimeout(()=>_0x2287x7.classList.add("hidden"),300);
     }
 });
 </script>
