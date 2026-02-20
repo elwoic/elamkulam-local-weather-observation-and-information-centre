@@ -766,65 +766,73 @@ document.getElementById("seeMoreFaq").addEventListener("click", function () {
   });
 </script>
 <script>
-// ELWOIC Secure Admin Access v3 - Functional
-(function(){
-    const _0xS=["\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x77eZlRj0=","\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4d5aV2Q0","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5a4xRjV2","\x45\x6E\x74\x65\x72\x20\x41\x75\x74\x68\x20\x43\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64!"];
+// Unified Admin Access Logic
+/* ELWOIC Security Layer - Filename Corrected */
+var _0x510f=["\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4D\x44\x51\x35\x4D\x7A\x4D\x3D","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4E\x54\x49\x7A\x4F\x54\x45\x79","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5A\x57\x78\x33\x62\x32\x6C\x6A\x4D\x44\x45\x34\x4E\x6A\x67\x3D","\x45\x6E\x74\x65\x72\x20\x61\x75\x74\x68\x6F\x72\x69\x7A\x61\x74\x69\x6F\x6E\x20\x63\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64!"];function handleAdminAccess(_0x2287x2){var _0x2287x3=prompt(_0x510f[6]);if(_0x2287x3===null){return}var _0x2287x4=btoa(_0x2287x3);var _0x2287x5=false;if(_0x2287x2===_0x510f[0]&&_0x2287x4===_0x510f[1]){_0x2287x5=true}else{if(_0x2287x2===_0x510f[2]&&_0x2287x4===_0x510f[3]){_0x2287x5=true}else{if(_0x2287x2===_0x510f[4]&&_0x2287x4===_0x510f[5]){_0x2287x5=true}}}if(_0x2287x5){window[_0x510f[8]][_0x510f[7]]=_0x2287x2}else{alert(_0x510f[9])} } document.addEventListener("\x44\x4F\x4D\x43\x6F\x6E\x74\x65\x6E\x74\x4C\x6F\x61\x64\x65\x64",function(){const _0x2287x6=document.getElementById("\x61\x64\x6D\x69\x6E\x54\x6F\x67\x67\x6C\x65");const _0x2287x7=document.getElementById("\x61\x64\x6D\x69\x6E\x44\x72\x6F\x70\x64\x6F\x77\x6E");let _0x2287x8=false;_0x2287x6.addEventListener("\x63\x6C\x69\x63\x6B",function(_0x2287x9){_0x2287x9.stopPropagation();_0x2287x8=!_0x2287x8;if(_0x2287x8){_0x2287x7.classList.remove("\x68\x69\x64\x64\x65\x6E");setTimeout(()=>{_0x2287x7.classList.remove("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x30");_0x2287x7.classList.add("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x31\x30\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x31\x30\x30")},10)}else{_0x2287xa()}});document.addEventListener("\x63\x6C\x69\x63\x6B",function(){if(_0x2287x8){_0x2287xa()}});function _0x2287xa(){_0x2287x8=false;_0x2287x7.classList.add("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x30");_0x2287x7.classList.remove("\x73\x63\x61\x6C\x65\x2D\x79\x2D\x31\x30\x30","\x6F\x70\x61\x63\x69\x74\x79\x2D\x31\x30\x30");setTimeout(()=>_0x2287x7.classList.add("\x68\x69\x64\x64\x65\x6E"),300)});
 
-    function accessCheck(page){
-        let code=prompt(_0xS[6]); // "Enter Auth Code:"
-        if(!code) return;
-        let enc=btoa(code).replace(/=/g,""); 
-        let ok=false;
+// Keep the same dropdown toggle logic from the previous response
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("adminToggle");
+    const dropdown = document.getElementById("adminDropdown");
+    let open = false;
 
-        // Password checks
-        if(page===_0xS[0] && enc===_0xS[1]) ok=true;
-        else if(page===_0xS[2] && enc===_0xS[3]) ok=true;
-        else if(page===_0xS[4] && enc===_0xS[5]) ok=true;
-
-        if(ok){
-            // Redirect to page
-            window.location.href=page;
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        open = !open;
+        if (open) {
+            dropdown.classList.remove("hidden");
+            setTimeout(() => {
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
         } else {
-            alert(_0xS[9]);
+            closeDropdown();
         }
-    }
-
-    // Dropdown toggle (optional)
-    document.addEventListener("DOMContentLoaded",function(){
-        const t=document.getElementById("adminToggle");
-        const d=document.getElementById("adminDropdown");
-        let open=false;
-
-        if(t && d){
-            t.addEventListener("click",e=>{
-                e.stopPropagation();
-                open=!open;
-                if(open){
-                    d.classList.remove("hidden");
-                    setTimeout(()=>{
-                        d.classList.remove("scale-y-0","opacity-0");
-                        d.classList.add("scale-y-100","opacity-100");
-                    },10);
-                } else { closeDropdown(); }
-            });
-
-            document.addEventListener("click",()=>{ if(open) closeDropdown(); });
-
-            function closeDropdown(){
-                open=false;
-                d.classList.add("scale-y-0","opacity-0");
-                d.classList.remove("scale-y-100","opacity-100");
-                setTimeout(()=>d.classList.add("hidden"),300);
-            }
-        }
-
-        // Make function globally accessible
-        window.secureAccess=accessCheck;
     });
-})();
+
+    document.addEventListener("click", () => { if (open) closeDropdown(); });
+
+    function closeDropdown() {
+        open = false;
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    }
+});
+
+// Dropdown toggle logic
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("adminToggle");
+    const dropdown = document.getElementById("adminDropdown");
+    let open = false;
+
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        open = !open;
+        if (open) {
+            dropdown.classList.remove("hidden");
+            setTimeout(() => {
+                dropdown.classList.remove("scale-y-0", "opacity-0");
+                dropdown.classList.add("scale-y-100", "opacity-100");
+            }, 10);
+        } else {
+            closeDropdown();
+        }
+    });
+
+    // Close dropdown if clicking outside
+    document.addEventListener("click", () => {
+        if (open) closeDropdown();
+    });
+
+    function closeDropdown() {
+        open = false;
+        dropdown.classList.add("scale-y-0", "opacity-0");
+        dropdown.classList.remove("scale-y-100", "opacity-100");
+        setTimeout(() => dropdown.classList.add("hidden"), 300);
+    }
+});
 </script>
-
-
 <div id="refModal" style="display:none;" class="fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[100] p-4">
   <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform transition-all">
     <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
