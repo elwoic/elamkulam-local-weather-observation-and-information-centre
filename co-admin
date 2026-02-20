@@ -60,16 +60,17 @@
 </head>
 <body>
 
-    <nav class="nav-bar">
-        <button class="nav-btn active" onclick="loadPage('administration.html', this)">
-            Portal Updates
-        </button>
-        <button class="nav-btn" onclick="loadPage('contact-status.html', this)">
-            Site Status Control
-        </button>
-    </nav>
+   <nav class="nav-bar">
+    <button class="nav-btn active" onclick="loadPage('co-admin.html', this)">
+        Portal Updates
+    </button>
+    
+    <button class="nav-btn" onclick="loadPage('admin.html', this)">
+        Site Status Control
+    </button>
+</nav>
 
-    <iframe id="content-frame" src="admin.html"></iframe>
+<iframe id="content-frame" src="co-admin.html"></iframe>
 
     <script>
         function loadPage(fileName, btn) {
