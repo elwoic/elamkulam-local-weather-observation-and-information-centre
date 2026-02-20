@@ -984,11 +984,24 @@ function renderStatus(data) {
         desc.innerText = "Calling is temporarily unavailable. Please use the contact form or email.";
         desc.className = "text-[10px] mt-1 leading-relaxed text-red-600";
 
-        if (data.awayNote) {
+        // -----------------------------
+        // NEW NOTE LOGIC
+        // -----------------------------
+        let reason = "";
+
+        if (data.currentStatus === "away" && !data.useSchedule) {
+            // Manual offline
+            reason = data.awayNote || "";
+        } else if (data.useSchedule) {
+            // Auto-schedule offline
+            reason = data.autoOfflineNote || "";
+        }
+
+        if (reason) {
             noteContainer.classList.remove('hidden');
-            fullNoteContent = data.awayNote;
-            noteText.innerText = "Note: " + (data.awayNote.length > 20 ? data.awayNote.substring(0,20) + "..." : data.awayNote);
-            readMoreBtn.classList.toggle('hidden', data.awayNote.length <= 20);
+            fullNoteContent = reason;
+            noteText.innerText = "Note: " + (reason.length > 20 ? reason.substring(0, 20) + "..." : reason);
+            readMoreBtn.classList.toggle('hidden', reason.length <= 20);
         } else {
             noteContainer.classList.add('hidden');
         }
@@ -1023,6 +1036,5 @@ window.closeNoteModal = () => {
     if(modalEl) modalEl.classList.add('hidden');
 };
 </script>
-
 </body>
 </html> 
