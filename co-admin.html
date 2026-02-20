@@ -1,87 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Control Panel</title>
-    <style>
-        :root {
-            --nav-bg: #1e293b;
-            --active-blue: #2563eb;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELWOIC | Global Administration</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: sans-serif;
-            overflow: hidden; /* Prevents double scrollbars */
-        }
+<style>
+:root {
+    --bg-main: #f8fafc;
+    --nav-dark: #0b1220;
+    --accent-blue: #0284c7;
+    --led-green: #22c55e;
+    --led-red: #ef4444;
+}
 
-        /* Top Navigation Bar */
-        .nav-bar {
-            background: var(--nav-bg);
-            display: flex;
-            padding: 10px 20px;
-            gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 10;
-        }
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--bg-main);
+    overflow: hidden;
+}
 
-        .nav-btn {
-            padding: 12px 24px;
-            border: none;
-            background: #334155;
-            color: #cbd5e1;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-        }
+/* Warning Strip */
+.warning-strip {
+    background: #7f1d1d;
+    color: #fca5a5;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    padding: 4px;
+    animation: warnFlash 2s infinite;
+    text-transform: uppercase;
+}
 
-        .nav-btn:hover {
-            background: #475569;
-            color: white;
-        }
+/* Header */
+.header-bar {
+    background: linear-gradient(90deg, #0b1220, #0f172a);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    height: 85px;
+    position: relative;
+    color: #e2e8f0;
+    border-bottom: 2px solid var(--accent-blue);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
 
-        .nav-btn.active {
-            background: var(--active-blue);
-            color: white;
-        }
+/* Digital subtle scan */
+.header-bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.01),
+        rgba(255,255,255,0.01) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+}
 
-        /* The Viewport Container */
-        #content-frame {
-            width: 100%;
-            height: calc(100vh - 64px); /* Full height minus nav bar */
-            border: none;
-        }
-    </style>
+/* Brand */
+.brand-section { display: flex; flex-direction: column; gap: 4px; }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(2,132,199,0.5);
+}
+
+/* Clearance */
+.clearance {
+    font-size: 9px;
+    color: #22c55e;
+    letter-spacing: 2px;
+}
+
+/* Navigation */
+.nav-group { display: flex; gap: 8px; }
+
+.nav-btn {
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #94a3b8;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+}
+
+.nav-btn:hover {
+    background: rgba(2, 132, 199, 0.1);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+.nav-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 0 15px rgba(2,132,199,0.4);
+}
+
+/* Status */
+.status-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.led-row { display: flex; gap: 12px; align-items: center; }
+
+.led-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    font-weight: bold;
+    color: #64748b;
+}
+
+.led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #334155;
+}
+
+.led-active {
+    background: var(--led-green);
+    box-shadow: 0 0 6px var(--led-green);
+    animation: pulse 1.5s infinite;
+}
+
+.led-red {
+    background: var(--led-red);
+    box-shadow: 0 0 6px var(--led-red);
+    animation: pulse 1s infinite;
+}
+
+#digital-clock {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+/* Metrics bar */
+.metrics-bar {
+    background: #0f172a;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 11px;
+    color: #94a3b8;
+    padding: 5px;
+    border-bottom: 1px solid rgba(2,132,199,0.3);
+}
+
+.metric span {
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:0.3; }
+}
+
+@keyframes warnFlash {
+    0%,100% { background:#7f1d1d; }
+    50% { background:#b91c1c; }
+}
+
+#content-frame {
+    width: 100%;
+    height: calc(100vh - 120px);
+    border: none;
+}
+</style>
 </head>
+
 <body>
 
-   <nav class="nav-bar">
-    <button class="nav-btn active" onclick="loadPage('co-admin.html', this)">
-        Portal Updates
+<div class="warning-strip">Secure Connection Established • Encryption AES-256 Active</div>
+
+<header class="header-bar">
+
+<div class="brand-section">
+    <div class="brand">
+        <span class="material-icons" style="color:#38bdf8">security</span>
+        ELWOIC COMMAND
+    </div>
+    <div style="font-size:9px;color:#64748b;letter-spacing:2px;">GLOBAL CONTROL NODE v2.05</div>
+    <div class="clearance">CLEARANCE LEVEL: ALPHA-3</div>
+</div>
+
+<nav class="nav-group">
+    <button class="nav-btn active" onclick="loadPage('administration.html', this)">
+        <span class="material-icons">terminal</span> Portal Updates
     </button>
-    
-    <button class="nav-btn" onclick="loadPage('admin.html', this)">
-        Site Status Control
+    <button class="nav-btn" onclick="loadPage('contact-status.html', this)">
+        <span class="material-icons">radar</span> Site Status
+    </button>
+    <button class="nav-btn" onclick="triggerAlert(this)">
+        <span class="material-icons">warning</span> Alert Mode
     </button>
 </nav>
 
-<iframe id="content-frame" src="co-admin.html"></iframe>
+<div class="status-panel">
+    <div class="led-row">
+        <div class="led-box"><div class="led led-active"></div> SYS</div>
+        <div class="led-box"><div class="led led-active"></div> LINK</div>
+        <div class="led-box"><div class="led led-red"></div> SEC</div>
+        <div id="digital-clock">00:00:00</div>
+    </div>
+    <div id="system-log" style="font-family:monospace;font-size:10px;color:#22c55e;">
+        INITIALIZING...
+    </div>
+</div>
 
-    <script>
-        function loadPage(fileName, btn) {
-            // 1. Change the iframe source to the new file
-            document.getElementById('content-frame').src = fileName;
+</header>
 
-            // 2. Update button styles
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-    </script>
+<div class="metrics-bar">
+    <div class="metric">CPU <span id="cpu-load">12%</span></div>
+    <div class="metric">NET <span id="net-load">98%</span></div>
+    <div class="metric">DB <span>ONLINE</span></div>
+</div>
+
+<iframe id="content-frame" src="administration.html"></iframe>
+
+<script>
+
+/* Clock */
+function updateClock() {
+    const now = new Date();
+    document.getElementById('digital-clock').innerText =
+        now.toLocaleTimeString('en-GB');
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* Navigation */
+function loadPage(fileName, btn) {
+    document.getElementById('content-frame').src = fileName;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById("system-log").innerText =
+        "NAVIGATING TO: " + fileName.toUpperCase();
+}
+
+/* Random System Logs */
+const logs = [
+    "NODE SYNCED",
+    "SAT LINK ACTIVE",
+    "AQI SENSOR ONLINE",
+    "SERVER RESPONSE OK",
+    "ELAMKULAM NODE LOCKED"
+];
+
+setInterval(() => {
+    document.getElementById("system-log").innerText =
+        logs[Math.floor(Math.random()*logs.length)]
+        + " • " + new Date().toLocaleTimeString();
+}, 4000);
+
+/* Fake Metrics Simulation */
+setInterval(() => {
+    document.getElementById("cpu-load").innerText =
+        Math.floor(Math.random()*40+10) + "%";
+    document.getElementById("net-load").innerText =
+        Math.floor(Math.random()*20+80) + "%";
+}, 3000);
+
+/* Alert Mode */
+function triggerAlert(btn){
+    document.querySelector(".header-bar").style.borderBottom =
+        "2px solid red";
+    document.querySelector(".warning-strip").innerText =
+        "EMERGENCY MODE ACTIVE";
+    btn.classList.add("active");
+}
+
+</script>
 
 </body>
 </html>
