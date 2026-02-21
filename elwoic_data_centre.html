@@ -250,9 +250,9 @@ function renderWeather(){
           <div class="entry-head"
             onclick="this.nextElementSibling.classList.toggle('open')">
             🕒 ${(w.timestamp_ist||"").split(",")[1]}
-            <span class="badge" style="background:${aqiColor(w.aqi)}">
-              ${w.aqi_status}
-            </span>
+           <span class="badge" style="background:${aqiColor(w.aqi)}">
+            AQI ${w.aqi} – ${w.aqi_status}
+          </span>
           </div>
           <div class="entry-details">
             🌡 ${w.temp_c}°C (Feels ${w.feels_like_c}°C)<br>
