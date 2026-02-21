@@ -331,10 +331,25 @@ const auth = getAuth(app);
 
 /* Protect Page */
 onAuthStateChanged(auth, (user) => {
+
     if (!user) {
         window.location.href = "glo-login.html";
+        return;
     }
+
+    const allowedEmails = [
+        "aswanthkrishnak822@gmail.com",
+        "elwoicelamkulam@gmail.com"
+    ];
+
+    if (!allowedEmails.includes(user.email)) {
+        alert("ACCESS DENIED: Unauthorized Account");
+        signOut(auth);
+        window.location.href = "glo-login.html";
+    }
+
 });
+
 
 /* Logout Function */
 window.logout = function() {
