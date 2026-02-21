@@ -212,14 +212,17 @@ body, html {
 
 <nav class="nav-group">
     <button class="nav-btn active" onclick="loadPage('administration.html', this)">
-        <span class="material-icons">terminal</span> Portal Updates
+        <span class="material-icons">terminal</span> Manual Updates
     </button>
     <button class="nav-btn" onclick="loadPage('contact-status.html', this)">
-        <span class="material-icons">radar</span> Site Status
+        <span class="material-icons">radar</span> contact Status
     </button>
     <button class="nav-btn" onclick="triggerAlert(this)">
         <span class="material-icons">warning</span> Alert Mode
     </button>
+    <button class="nav-btn" onclick="logout()">
+    <span class="material-icons">logout</span> Logout
+</button>
 </nav>
 
 <div class="status-panel">
@@ -300,8 +303,11 @@ function triggerAlert(btn){
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBgk0xke17yloKn7IyjBTCz1Sr-2FmDQFY",
@@ -323,6 +329,14 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+/* Logout Function */
+window.logout = function() {
+    signOut(auth).then(() => {
+        window.location.href = "glo-login.html";
+    });
+};
+
 </script>
+
 </body>
 </html>
