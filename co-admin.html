@@ -297,6 +297,32 @@ function triggerAlert(btn){
 }
 
 </script>
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgk0xke17yloKn7IyjBTCz1Sr-2FmDQFY",
+  authDomain: "admin-pass.firebaseapp.com",
+  databaseURL: "https://admin-pass-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "admin-pass",
+  storageBucket: "admin-pass.firebasestorage.app",
+  messagingSenderId: "177830174972",
+  appId: "1:177830174972:web:a8be21830ef1b872d63779"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* Protect Page */
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "glo-login.html";
+    }
+});
+
+</script>
 </body>
 </html>
