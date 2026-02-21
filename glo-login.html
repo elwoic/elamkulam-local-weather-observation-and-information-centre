@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELWOIC | Global Login</title>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+:root {
+    --bg-dark: #0b1220;
+    --accent-blue: #0284c7;
+    --danger-red: #ef4444;
+}
+
+body {
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#0b1220,#0f172a);
+    font-family:'Segoe UI',sans-serif;
+    color:#e2e8f0;
+}
+
+/* Login Box */
+.login-box {
+    background:#111827;
+    padding:40px;
+    border-radius:12px;
+    width:350px;
+    box-shadow:0 0 25px rgba(2,132,199,0.3);
+    border:1px solid rgba(2,132,199,0.4);
+    text-align:center;
+}
+
+.brand {
+    font-weight:800;
+    font-size:1.3rem;
+    margin-bottom:8px;
+    text-shadow:0 0 10px rgba(2,132,199,0.5);
+}
+
+.sub {
+    font-size:10px;
+    color:#64748b;
+    letter-spacing:2px;
+    margin-bottom:25px;
+}
+
+.input-group {
+    margin-bottom:18px;
+    text-align:left;
+}
+
+input {
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #1f2937;
+    background:#0f172a;
+    color:white;
+    outline:none;
+}
+
+input:focus {
+    border-color:var(--accent-blue);
+}
+
+button {
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    background:var(--accent-blue);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover {
+    box-shadow:0 0 12px rgba(2,132,199,0.6);
+}
+
+#error-msg {
+    color:var(--danger-red);
+    font-size:12px;
+    margin-top:10px;
+}
+
+.footer-note {
+    margin-top:20px;
+    font-size:9px;
+    color:#475569;
+}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="brand">
+        <span class="material-icons" style="vertical-align:middle;color:#38bdf8">security</span>
+        ELWOIC COMMAND
+    </div>
+    <div class="sub">GLOBAL ACCESS PORTAL</div>
+
+    <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" required>
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" required>
+    </div>
+
+    <button onclick="login()">Authorize Access</button>
+    <div id="error-msg"></div>
+
+    <div class="footer-note">
+        Secure Authentication • Firebase Auth
+    </div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyBgk0xke17yloKn7IyjBTCz1Sr-2FmDQFY",
+  authDomain: "admin-pass.firebaseapp.com",
+  databaseURL: "https://admin-pass-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "admin-pass",
+  storageBucket: "admin-pass.firebasestorage.app",
+  messagingSenderId: "177830174972",
+  appId: "1:177830174972:web:a8be21830ef1b872d63779"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* Auto redirect if already logged in */
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        window.location.href = "index.html"; // your main admin page
+    }
+});
+
+/* Login Function */
+window.login = function() {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        window.location.href = "index.html"; 
+    })
+    .catch((error) => {
+        document.getElementById("error-msg").innerText =
+            "ACCESS DENIED: " + error.message;
+    });
+};
+
+</script>
+
+</body>
+</html>
