@@ -243,7 +243,13 @@ function getStatus(aqi) {
 async function updateDashboard() {
     try {
         const res = await fetch(API_URL);
-        let data = await res.json();
+
+if (!res.ok) {
+    throw new Error("Network response not OK");
+}
+
+let data = await res.json();
+
 
         if (!data) throw new Error("No data");
 
@@ -251,19 +257,21 @@ async function updateDashboard() {
 
         /* ---------- AQI CALCULATION ---------- */
 
-        const pm = parseFloat(data?.pm02_corrected) || 0;
-        const aqi = pm25ToAQI(pm);
-        const st = getStatus(aqi);
+        const pm = parseFloat(data?.pm02_corrected ?? 0);
+const pm10 = parseFloat(data?.pm10_corrected) || 0;
+
+const aqi = pm25ToAQI(pm);
+const st = getStatus(aqi);
 
         document.getElementById("statusDot").style.background = st.color;
         document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
-       document.getElementById("healthAdvice").innerHTML =
-    `${st.advice_en}<br>${st.advice_ml}<br>
-    (PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³)`;
+        document.getElementById("healthAdvice").innerHTML =
+`${st.advice_en}<br>${st.advice_ml}<br>
+(PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³)`;
+
 
         /* ---------- PM10 ---------- */
 
-const pm10 = parseFloat(data?.pm10_corrected) || 0;
 document.getElementById("pm10").innerText = pm10;
 document.getElementById("pm10-ind").style.background =
     getColorByLevel(pm10, "pm10");
