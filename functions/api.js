@@ -2,42 +2,38 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Only respond if the path is /api or the root /
     if (url.pathname === "/api" || url.pathname === "/") {
       try {
-        // Use the token from environment variables or fallback to hardcoded
-        const token = env.AIRGRADIENT_TOKEN || "1cbd5f6c-1a7d-4c95-8c5f-5431bb412a8d";
+        // 🔒 SAFE: Now it pulls the token from the "env" object we set in the dashboard
+        const token = env.AIRGRADIENT_TOKEN; 
         
         const response = await fetch(
           `https://api.airgradient.com/public/api/v1/locations/measures/current?token=${token}`
         );
 
         let data = await response.json();
+        const item = Array.isArray(data) ? data[0] : data;
 
-        // AIRGRADIENT FIX: If data is an array, send back just the first object
-        if (Array.isArray(data)) {
-          data = data[0];
-        }
+        // 🛡️ SECURITY: Only send necessary data to the dashboard
+        const cleanData = {
+          pm02_corrected: item.pm02_corrected,
+          atmp_corrected: item.atmp_corrected,
+          rhum_corrected: item.rhum_corrected,
+          rco2_corrected: item.rco2_corrected,
+          timestamp: item.timestamp
+        };
 
-        return new Response(JSON.stringify(data), {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*" // This allows your HTML to read the data
-          }
+        return new Response(JSON.stringify(cleanData), {
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
 
       } catch (error) {
-        // Return error in JSON format so the browser doesn't complain about CORS
         return new Response(JSON.stringify({ error: "API connection failed" }), { 
           status: 500, 
-          headers: { 
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*" 
-          } 
+          headers: { "Access-Control-Allow-Origin": "*" } 
         });
       }
     }
-
-    return new Response("ELWOIC Worker is running! Visit /api for data.");
+    return new Response("ELWOIC Worker is running safely! 🚀");
   }
 };
