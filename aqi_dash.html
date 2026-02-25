@@ -44,7 +44,7 @@
 
         .sensor-footer { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
+            grid-template-columns: repeat(4, 1fr);
             border-top: 1px solid #eee; 
             padding-top: 15px;
             margin-top: 10px;
@@ -95,6 +95,17 @@ AQI എന്തെന്നും, എങ്ങനെയെന്നും ക�
 </a>
 
     <div class="sensor-footer">
+
+<div class="sensor-item">
+<div class="sensor-label">PM10 (µg/m³)</div>
+
+<div class="sensor-val">
+<span id="pm10">--</span>
+</div>
+
+<span id="pm10-ind" class="indicator-bar" style="background:#ccc"></span>
+</div>
+
 
 <div class="sensor-item">
 <div class="sensor-label">CO₂ (ppm)</div>
@@ -208,6 +219,12 @@ function getStatus(aqi) {
     if(value === null || value === undefined || isNaN(value))
         return "#cccccc";
 
+    if(type === "pm10"){
+    if(value <= 50) return "#4caf50";
+    if(value <= 100) return "#ffc107";
+    return "#f44336";
+}
+
     if(type === "co2"){
         if(value <= 800) return "#4caf50";
         if(value <= 1200) return "#ffc107";
@@ -242,7 +259,14 @@ async function updateDashboard() {
         document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
        document.getElementById("healthAdvice").innerHTML =
     `${st.advice_en}<br>${st.advice_ml}<br>
-    (PM2.5: ${pm} µg/m³)`;
+    (PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³)`;
+
+        /* ---------- PM10 ---------- */
+
+const pm10 = parseFloat(data?.pm10_corrected) || 0;
+document.getElementById("pm10").innerText = pm10;
+document.getElementById("pm10-ind").style.background =
+    getColorByLevel(pm10, "pm10");
 
         /* ---------- CO2 ---------- */
 
