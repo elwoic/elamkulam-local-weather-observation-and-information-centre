@@ -1,199 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ELWOIC Air Quality Bulletin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --aqi-good: #4caf50;
+            --aqi-satisfactory: #8bc34a;
+            --aqi-moderate: #ffc107;
+            --aqi-poor: #ff9800;
+            --aqi-very-poor: #f44336;
+        }
 
-<style>  
-body{
-    margin:0;
-    background:#e6e6e6;
-    font-family:"Segoe UI", Arial, sans-serif;
-}
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; background: transparent; display: flex; justify-content: center; }
 
-.page{
-    width:850px;
-    margin:40px auto;
-    background:white;
-    box-shadow:0 0 20px rgba(0,0,0,0.15);
-}
+        .bulletin-card {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+            padding: 20px;
+            text-align: center;
+        }
 
-.header{
-    background:#002b45;
-    color:white;
-    padding:25px;
-    text-align:center;
-}
+        .title-area { color: #002b45; font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-.header h1{
-    margin:0;
-    font-size:24px;
-    letter-spacing:1px;
-}
+        .status-hero { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
+        .status-dot { width: 40px; height: 40px; border-radius: 50%; background: #ddd; }
+        .status-text { font-size: 22px; font-weight: 700; color: #1a1a1a; }
 
-.sub{
-    font-size:13px;
-    margin-top:5px;
-    opacity:0.9;
-}
+        .legend-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .legend-item { padding: 6px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 600; min-width: 90px; }
+        .l-good { background: var(--aqi-good); }
+        .l-satisfactory { background: var(--aqi-satisfactory); }
+        .l-moderate { background: var(--aqi-moderate); }
+        .l-poor { background: var(--aqi-poor); }
+        .l-very-poor { background: var(--aqi-very-poor); }
 
-.aqi-section{
-    text-align:center;
-    padding:40px 20px;
-}
+        .health-advice { font-size: 14px; color: #333; margin-bottom: 8px; line-height: 1.4; padding: 0 10px; }
+        .malayalam-text { font-size: 18px; color: #002b45; font-weight: bold; margin-bottom: 8px; }
+        .more-info-link { font-size: 11px; color: #0056b3; text-decoration: none; display: block; margin-bottom: 15px; }
 
-.aqi-value{
-    font-size:85px;
-    font-weight:bold;
-}
+        .sensor-footer { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            border-top: 1px solid #eee; 
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+        .sensor-item { text-align: center; }
+        .sensor-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+        .sensor-val { font-size: 14px; font-weight: 600; color: #444; }
 
-.aqi-status{
-    font-size:20px;
-    margin-top:10px;
-    font-weight:500;
-}
-
-.divider{
-    height:3px;
-    background:#002b45;
-}
-
-.section{
-    padding:30px 50px;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
-    font-size:15px;
-}
-
-.footer{
-    padding:20px;
-    text-align:center;
-    font-size:13px;
-    color:#555;
-}
-</style>
+        .attribution { font-size: 10px; color: #aaa; margin-top: 15px; border-top: 1px dotted #eee; padding-top: 10px; }
+        .attribution a { color: #888; text-decoration: none; font-weight: bold; }
+    </style>
 </head>
-
 <body>
 
-<div class="page">
+<div class="bulletin-card">
+    <div class="title-area">
+        <img src="https://www.gstatic.com/images/icons/material/system_gm/1x/cloud_white_24dp.png" style="filter: invert(1); width:20px;" alt="">
+        Air Quality Index (AQI)
+    </div>
 
-<div class="header">
-<h1>ELWOIC AIR QUALITY BULLETIN</h1>
-<div class="sub">Elamkulam Monitoring Station</div>
-</div>
+    <div class="status-hero">
+        <div id="statusDot" class="status-dot"></div>
+        <div id="statusText" class="status-text">AQI --</div>
+    </div>
 
-<div class="aqi-section">
-<div class="aqi-value" id="aqiValue">--</div>
-<div class="aqi-status" id="aqiStatus">Loading...</div>
-</div>
+    <div class="legend-bar">
+        <div class="legend-item l-good">0–50 Good</div>
+        <div class="legend-item l-satisfactory">51–100 Satisfactory</div>
+        <div class="legend-item l-moderate">101–200 Moderate</div>
+        <div class="legend-item l-poor">201–300 Poor</div>
+        <div class="legend-item l-very-poor">301–500 Very Poor</div>
+    </div>
 
-<div class="divider"></div>
+    <div id="healthAdvice" class="health-advice">Loading air quality data...</div>
+    <div class="malayalam-text">ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</div>
+    <a href="AQI-advise.html" target="_self" class="more-info-link">AQI എന്തെന്നും, എങ്ങനെയെന്നും കൂടുതൽ അറിയാം.</a>
 
-<div class="section">
-<table>
-<tr><td>PM2.5 (µg/m³)</td><td id="pm25">--</td></tr>
-<tr><td>Temperature (°C)</td><td id="temp">--</td></tr>
-<tr><td>Humidity (%)</td><td id="humidity">--</td></tr>
-<tr><td>CO₂ (ppm)</td><td id="co2">--</td></tr>
-<tr><td>TVOC Index</td><td id="tvoc">--</td></tr>
-<tr><td>NOx Index</td><td id="nox">--</td></tr>
-</table>
-</div>
+    <div class="sensor-footer">
+        <div class="sensor-item"><div class="sensor-label">CO₂ (ppm)</div><div class="sensor-val" id="co2">--</div></div>
+        <div class="sensor-item"><div class="sensor-label">TVOC Index</div><div class="sensor-val" id="tvoc">--</div></div>
+        <div class="sensor-item"><div class="sensor-label">NOx Index</div><div class="sensor-val" id="nox">--</div></div>
+    </div>
 
-<div class="footer">
-Last Updated: <span id="timestamp">--</span>
-</div>
-
+    <div class="attribution">
+        Source: ELWOIC Station | Last Updated:<span id="time">--</span> | 
+        Powered by <a href="https://www.airgradient.com" target="_blank">AirGradient</a>
+    </div>
 </div>
 
 <script>
-
-// 🔐 Your Cloudflare Worker URL goes here
 const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
 
-function calculateAQI(pm){
-    const bp=[
-        {pmLow:0,pmHigh:12,aqiLow:0,aqiHigh:50},
-        {pmLow:12.1,pmHigh:35.4,aqiLow:51,aqiHigh:100},
-        {pmLow:35.5,pmHigh:55.4,aqiLow:101,aqiHigh:150},
-        {pmLow:55.5,pmHigh:150.4,aqiLow:151,aqiHigh:200},
-        {pmLow:150.5,pmHigh:250.4,aqiLow:201,aqiHigh:300}
+function pm25ToAQI(pm) {
+    const bp = [
+        { cL: 0, cH: 12, aL: 0, aH: 50 },
+        { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
+        { cL: 35.5, cH: 55.4, aL: 101, aH: 150 },
+        { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
+        { cL: 150.5, cH: 250.4, aL: 201, aH: 300 },
+        { cL: 250.5, cH: 500, aL: 301, aH: 500 }
     ];
-
-    for(let b of bp){
-        if(pm>=b.pmLow && pm<=b.pmHigh){
-            return Math.round(
-                ((b.aqiHigh-b.aqiLow)/(b.pmHigh-b.pmLow))*(pm-b.pmLow)+b.aqiLow
-            );
-        }
+    for (const r of bp) {
+        if (pm >= r.cL && pm <= r.cH) return Math.round(((r.aH - r.aL)/(r.cH - r.cL))*(pm - r.cL) + r.aL);
     }
-    return 0;
+    return Math.round(pm);
 }
 
-function getStatus(aqi){
-    if(aqi<=50) return "Good";
-    if(aqi<=100) return "Moderate";
-    if(aqi<=150) return "Unhealthy for Sensitive Groups";
-    if(aqi<=200) return "Unhealthy";
-    return "Very Unhealthy";
+function getStatus(aqi) {
+    if (aqi <= 50) return { text: "Good", color: "#4caf50", emoji: "😀", advice: "Air quality is good. Ideal for outdoor activities." };
+    if (aqi <= 100) return { text: "Satisfactory", color: "#8bc34a", emoji: "🙂", advice: "Air quality is satisfactory. Acceptable for most." };
+    if (aqi <= 200) return { text: "Moderate", color: "#ffc107", emoji: "😐", advice: "Moderate pollution. Sensitive groups should limit effort." };
+    if (aqi <= 300) return { text: "Poor", color: "#ff9800", emoji: "😷", advice: "Poor air quality. Avoid prolonged outdoor exposure." };
+    return { text: "Very Poor", color: "#f44336", emoji: "☹️", advice: "Health Alert: Everyone should avoid outdoor activities." };
 }
 
-function getAQIColor(aqi){
-    if(aqi<=50) return "#009966";
-    if(aqi<=100) return "#ffde33";
-    if(aqi<=150) return "#ff9933";
-    if(aqi<=200) return "#cc0033";
-    return "#660099";
-}
-
-async function fetchData(){
+async function updateDashboard() {
     try {
         const res = await fetch(API_URL);
         let data = await res.json();
+        if (Array.isArray(data)) data = data[0];
 
-        // 🟢 ADD THIS BLOCK: Unwraps the array if necessary
-        if (Array.isArray(data)) {
-            data = data[0];
-        }
-
-        // Now your existing code will work perfectly
         const pm = parseFloat(data.pm02_corrected);
-        const aqi = calculateAQI(pm);
+        const aqi = pm25ToAQI(pm);
+        const st = getStatus(aqi);
 
-        document.getElementById("aqiValue").innerText = aqi;
-        document.getElementById("aqiStatus").innerText = getStatus(aqi);
-        document.getElementById("aqiValue").style.color = getAQIColor(aqi);
-
-        document.getElementById("pm25").innerText = pm;
-        document.getElementById("temp").innerText = data.atmp_corrected;
-        document.getElementById("humidity").innerText = data.rhum_corrected;
-        document.getElementById("co2").innerText = data.rco2_corrected;
+        document.getElementById("statusDot").style.background = st.color;
+        document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
+        document.getElementById("healthAdvice").innerText = `${st.advice} (PM2.5: ${pm} µg/m³)`;
         
-        // Added '|| "--"' just in case these specific indexes are missing
+        document.getElementById("co2").innerText = data.rco2_corrected;
         document.getElementById("tvoc").innerText = data.tvocIndex || "--";
         document.getElementById("nox").innerText = data.noxIndex || "--";
-        
-        document.getElementById("timestamp").innerText =
-            new Date(data.timestamp).toLocaleString();
+        document.getElementById("time").innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-    } catch(error) {
-        document.getElementById("aqiStatus").innerText = "Unable to fetch data";
-        console.error("Dashboard Error:", error);
+    } catch (e) {
+        document.getElementById("statusText").innerText = "Offline";
     }
 }
 
-fetchData();
-setInterval(fetchData, 60000);
-
+updateDashboard();
+setInterval(updateDashboard, 300000);
 </script>
 
 </body>
