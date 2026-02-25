@@ -15,23 +15,26 @@
     /* 1. Fluid Base: background is transparent to avoid the "white board" look */
    /* Update your CSS to this */
 body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
     margin: 0; 
-    padding: 0; /* Remove top/bottom padding */
+    padding: 10px; /* Added padding so the card shadow isn't cut off */
     background: transparent; 
+    display: flex; 
+    justify-content: center; 
+    overflow: hidden; 
 }
 
 .bulletin-card {
-    margin: 0 auto; /* Center it but remove vertical margins */
-    padding: 15px 20px; /* Reduced vertical padding from 20px to 15px */
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 700px;
+    background: white; /* 🛡️ RESTORED WHITE BACKGROUND */
+    border-radius: 15px; /* 🛡️ RESTORED ROUNDED CORNERS */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 🛡️ RESTORED SHADOW */
+    padding: 20px; /* 🛡️ RESTORED PADDING FOR A CLEAN LOOK */
+    text-align: center;
+    box-sizing: border-box;
 }
 
-.attribution {
-    margin-top: 8px; /* Tighten the space above the source text */
-    padding-top: 5px;
-}
     /* 3. Responsive Text: Using 'vw' (viewport width) or media queries to shrink text */
     .title-area { 
         color: #002b45; 
