@@ -13,25 +13,27 @@
     }
 
     /* 1. Fluid Base: background is transparent to avoid the "white board" look */
-    body { 
-        font-family: 'Segoe UI', Arial, sans-serif; 
-        margin: 0; 
-        padding: 0; 
-        background: transparent; 
-        display: flex; 
-        justify-content: center; 
-        overflow: hidden; 
-    }
+   /* Update your CSS to this */
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 0; 
+    padding: 10px; /* Added padding so the card shadow isn't cut off */
+    background: transparent; 
+    display: flex; 
+    justify-content: center; 
+    overflow: hidden; 
+}
 
-    /* 2. Responsive Card: No fixed width, no background plate */
-    .bulletin-card {
-        width: 100%;
-        max-width: 700px;
-        background: transparent; /* Removed white background as requested */
-        padding: 10px;
-        text-align: center;
-        box-sizing: border-box;
-    }
+.bulletin-card {
+    width: 100%;
+    max-width: 700px;
+    background: white; /* 🛡️ RESTORED WHITE BACKGROUND */
+    border-radius: 15px; /* 🛡️ RESTORED ROUNDED CORNERS */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 🛡️ RESTORED SHADOW */
+    padding: 20px; /* 🛡️ RESTORED PADDING FOR A CLEAN LOOK */
+    text-align: center;
+    box-sizing: border-box;
+}
 
     /* 3. Responsive Text: Using 'vw' (viewport width) or media queries to shrink text */
     .title-area { 
