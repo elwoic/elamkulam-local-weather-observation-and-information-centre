@@ -53,6 +53,16 @@
         .sensor-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .sensor-val { font-size: 14px; font-weight: 600; color: #444; }
 
+
+        .indicator-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:6px;
+    vertical-align:middle;
+}
+
         .attribution { font-size: 10px; color: #aaa; margin-top: 15px; border-top: 1px dotted #eee; padding-top: 10px; }
         .attribution a { color: #888; text-decoration: none; font-weight: bold; }
     </style>
@@ -83,10 +93,33 @@
     <a href="https://www.airgradient.com" target="_blank" class="more-info-link">AQI എന്ത് എന്ന് കൂടുതൽ അറിയാം.</a>
 
     <div class="sensor-footer">
-        <div class="sensor-item"><div class="sensor-label">CO₂ (ppm)</div><div class="sensor-val" id="co2">--</div></div>
-        <div class="sensor-item"><div class="sensor-label">TVOC Index</div><div class="sensor-val" id="tvoc">--</div></div>
-        <div class="sensor-item"><div class="sensor-label">NOx Index</div><div class="sensor-val" id="nox">--</div></div>
-    </div>
+
+<div class="sensor-item">
+<div class="sensor-label">CO₂ (ppm)</div>
+<div class="sensor-val">
+<span id="co2-ind" class="indicator-dot" style="background:#ccc"></span>
+<span id="co2">--</span>
+</div>
+</div>
+
+<div class="sensor-item">
+<div class="sensor-label">TVOC Index</div>
+<div class="sensor-val">
+<span id="tvoc-ind" class="indicator-dot" style="background:#ccc"></span>
+<span id="tvoc">--</span>
+</div>
+</div>
+
+<div class="sensor-item">
+<div class="sensor-label">NOx Index</div>
+<div class="sensor-val">
+<span id="nox-ind" class="indicator-dot" style="background:#ccc"></span>
+<span id="nox">--</span>
+</div>
+</div>
+
+</div>
+
 
  <div class="attribution">
 Data Source: ELWOIC Station API |
@@ -126,27 +159,81 @@ function getStatus(aqi) {
     return { text: "Very Poor", color: "#f44336", emoji: "☹️", advice: "Health Alert: Everyone should avoid outdoor activities." };
 }
 
+    function getColorByLevel(value, type){
+
+    if(value === null || value === undefined || isNaN(value))
+        return "#cccccc";
+
+    if(type === "co2"){
+        if(value <= 800) return "#4caf50";
+        if(value <= 1200) return "#ffc107";
+        return "#f44336";
+    }
+
+    if(type === "tvoc" || type === "nox"){
+        if(value <= 100) return "#4caf50";
+        if(value <= 200) return "#ffc107";
+        return "#f44336";
+    }
+
+    return "#cccccc";
+}
+
 async function updateDashboard() {
     try {
         const res = await fetch(API_URL);
         let data = await res.json();
+
+        if (!data) throw new Error("No data");
+
         if (Array.isArray(data)) data = data[0];
 
-        const pm = parseFloat(data.pm02_corrected);
+        /* ---------- AQI CALCULATION ---------- */
+
+        const pm = parseFloat(data?.pm02_corrected) || 0;
         const aqi = pm25ToAQI(pm);
         const st = getStatus(aqi);
 
         document.getElementById("statusDot").style.background = st.color;
         document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
-        document.getElementById("healthAdvice").innerText = `${st.advice} (PM2.5: ${pm} µg/m³)`;
-        
-        document.getElementById("co2").innerText = data.rco2_corrected;
-        document.getElementById("tvoc").innerText = data.tvocIndex || "--";
-        document.getElementById("nox").innerText = data.noxIndex || "--";
-        document.getElementById("time").innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById("healthAdvice").innerText =
+            `${st.advice} (PM2.5: ${pm} µg/m³)`;
+
+        /* ---------- CO2 ---------- */
+
+        const co2 = parseFloat(data?.rco2_corrected) || 0;
+        document.getElementById("co2").innerText = co2;
+        document.getElementById("co2-ind").style.background =
+            getColorByLevel(co2, "co2");
+
+        /* ---------- TVOC ---------- */
+
+        const tvoc = parseFloat(data?.tvocIndex) || 0;
+        document.getElementById("tvoc").innerText = tvoc;
+        document.getElementById("tvoc-ind").style.background =
+            getColorByLevel(tvoc, "tvoc");
+
+        /* ---------- NOx ---------- */
+
+        const nox = parseFloat(data?.noxIndex) || 0;
+        document.getElementById("nox").innerText = nox;
+        document.getElementById("nox-ind").style.background =
+            getColorByLevel(nox, "nox");
+
+        /* ---------- TIME ---------- */
+
+        document.getElementById("time").innerText =
+            new Date().toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
     } catch (e) {
+        console.error(e);
+
         document.getElementById("statusText").innerText = "Offline";
+        document.getElementById("healthAdvice").innerText =
+            "Data connection error. Station may be temporarily unavailable.";
     }
 }
 
