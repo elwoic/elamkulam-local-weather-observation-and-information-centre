@@ -1,4 +1,4 @@
 name = "elamkulam-local-weather"
-main = "api.js"
+main = "aqi.js"
 compatibility_date = "2025-09-27"
 node_compat = true
