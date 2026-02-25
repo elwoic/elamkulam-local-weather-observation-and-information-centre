@@ -90,7 +90,9 @@
 
     <div id="healthAdvice" class="health-advice">Loading air quality data...</div>
     <div class="malayalam-text">ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</div>
-    <a href="https://www.airgradient.com" target=AQI-advise.html"_blank" class="more-info-link">AQI എന്ത് എന്ന് കൂടുതൽ അറിയാം.</a>
+    <a href="AQI-advise.html" target="_blank" class="more-info-link">
+AQI എന്തെന്നും, എങ്ങനെയെന്നും കൂടുതൽ അറിയാം.
+</a>
 
     <div class="sensor-footer">
 
@@ -160,11 +162,45 @@ function pm25ToAQI(pm) {
 }
 
 function getStatus(aqi) {
-    if (aqi <= 50) return { text: "Good", color: "#4caf50", emoji: "😀", advice: "Air quality is good. Ideal for outdoor activities." };
-    if (aqi <= 100) return { text: "Satisfactory", color: "#8bc34a", emoji: "🙂", advice: "Air quality is satisfactory. Acceptable for most." };
-    if (aqi <= 200) return { text: "Moderate", color: "#ffc107", emoji: "😐", advice: "Moderate pollution. Sensitive groups should limit effort." };
-    if (aqi <= 300) return { text: "Poor", color: "#ff9800", emoji: "😷", advice: "Poor air quality. Avoid prolonged outdoor exposure." };
-    return { text: "Very Poor", color: "#f44336", emoji: "☹️", advice: "Health Alert: Everyone should avoid outdoor activities." };
+    if (aqi <= 50) return {
+        text: "Good",
+        color: "#4caf50",
+        emoji: "😀",
+        advice_en: "Air quality is good. Ideal for outdoor activities.",
+        advice_ml: "വായു ഗുണനിലവാരം നല്ലതാണ്. പുറത്തുപോകാൻ അനുയോജ്യമാണ്."
+    };
+
+    if (aqi <= 100) return {
+        text: "Satisfactory",
+        color: "#8bc34a",
+        emoji: "🙂",
+        advice_en: "Air quality is satisfactory. Acceptable for most people.",
+        advice_ml: "വായു ഗുണനിലവാരം തൃപ്തികരമാണ്. ഭൂരിഭാഗം ആളുകൾക്ക് സുരക്ഷിതമാണ്."
+    };
+
+    if (aqi <= 200) return {
+        text: "Moderate",
+        color: "#ffc107",
+        emoji: "😐",
+        advice_en: "Moderate pollution. Sensitive groups should limit outdoor activity.",
+        advice_ml: "മിതമായ വായു മലിനീകരണം. കുട്ടികൾ, മുതിർന്നവർ ശ്രദ്ധിക്കണം."
+    };
+
+    if (aqi <= 300) return {
+        text: "Poor",
+        color: "#ff9800",
+        emoji: "😷",
+        advice_en: "Poor air quality. Avoid prolonged outdoor exposure.",
+        advice_ml: "വായു ഗുണനിലവാരം മോശമാണ്. ദീർഘനേരം പുറത്തുനിൽക്കുന്നത് ഒഴിവാക്കുക."
+    };
+
+    return {
+        text: "Very Poor",
+        color: "#f44336",
+        emoji: "☹️",
+        advice_en: "Health alert. Everyone should avoid outdoor activities.",
+        advice_ml: "ആരോഗ്യ അടിയന്തരാവസ്ഥ. എല്ലാവരും പുറത്തുപോകുന്നത് ഒഴിവാക്കുക."
+    };
 }
 
     function getColorByLevel(value, type){
@@ -204,8 +240,9 @@ async function updateDashboard() {
 
         document.getElementById("statusDot").style.background = st.color;
         document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
-        document.getElementById("healthAdvice").innerText =
-            `${st.advice} (PM2.5: ${pm} µg/m³)`;
+       document.getElementById("healthAdvice").innerHTML =
+    `${st.advice_en}<br>${st.advice_ml}<br>
+    (PM2.5: ${pm} µg/m³)`;
 
         /* ---------- CO2 ---------- */
 
