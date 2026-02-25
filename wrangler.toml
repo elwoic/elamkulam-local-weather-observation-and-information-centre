@@ -1,4 +1,4 @@
 name = "elamkulam-local-weather"
 main = "aqi.js"
-compatibility_date = "2025-09-27"
-node_compat = true
+compatibility_date = "2026-02-25" # Updated to today's date for latest features
+compatibility_flags = [ "nodejs_compat" ]
