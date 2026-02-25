@@ -797,76 +797,6 @@ tfoot td {
     background: #1d4ed8;
 }
 
-/* AQI Dashboard Section */
-.aqi-dashboard-section {
-    font-family: 'Poppins', sans-serif;
-    max-width: 950px;
-    margin: 15px auto;
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-    text-align: center;
-}
-.aqi-dashboard-section h2 {
-    color: #004080;
-    margin-bottom: 12px;
-    font-size: 1.3em;
-}
-.aqi-status-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-}
-.aqi-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: grey;
-    transition: background-color 0.3s ease;
-}
-.aqi-text {
-    font-size: 1.2em;
-    font-weight: 600;
-}
-/* AQI Colors */
-.aqi-good { background-color: #4caf50; }
-.aqi-fair { background-color: #8bc34a; }
-.aqi-moderate { background-color: #ffc107; }
-.aqi-poor { background-color: #ff9800; }
-.aqi-very-poor { background-color: #f44336; }
-
-/* Legend Styling */
-.aqi-legend {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
-}
-.legend-item {
-    padding: 5px 10px;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-.legend-item span {
-    margin-left: 5px;
-}
-/* Health Advice */
-.aqi-health-advice {
-    margin-top: 10px;
-    font-size: 0.95em;
-    color: #333;
-    text-align: center;
-}
-/* --- Imports & Global Reset --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 /* Apply Poppins and scope CSS variables only to elements within the dashboard scope */
 .weather-dashboard-scope {
     font-family: 'Poppins', sans-serif;
@@ -1615,43 +1545,16 @@ footer a:hover {
     </div>
 </section>
    <section class="aqi-dashboard-section">
-        <h2>🌫️ Air Quality Index (AQI)</h2>
-        <div class="aqi-status-container">
-            <div class="aqi-circle" id="aqiCircle"></div>
-            <div class="aqi-text" id="aqiValue">Loading AQI...</div>
-        </div>
-       <div class="aqi-legend">
-    <div class="legend-item aqi-good">
-        <span>0–50 • Good</span>
-    </div>
-    <div class="legend-item aqi-fair">
-        <span>51–100 • Satisfactory</span>
-    </div>
-    <div class="legend-item aqi-moderate">
-        <span>101–200 • Moderate</span>
-    </div>
-    <div class="legend-item aqi-poor">
-        <span>201–300 • Poor</span>
-    </div>
-    <div class="legend-item aqi-very-poor">
-        <span>301–500 • Very Poor</span>
-    </div>
+         <div style="width: 100%; display: flex; justify-content: center;">
+    <iframe 
+      src="https://elwoic.github.io/elamkulam-local-weather-observation-and-information-centre/aqi_dash.html?v=5" 
+      width="100%" 
+      height="420"
+      style="max-width: 700px; border: none; background: transparent;" 
+      title="ELWOIC Air Quality Bulletin"
+      scrolling="no">
+    </iframe>
 </div>
-<div style="font-size:11px; color:#666; margin-top:4px;">
-    Source: OpenAQ (Measured PM2.5)
-</div>
-
-        <div class="aqi-health-advice" id="aqiAdvice">
-            Loading health advice...
-        </div>
-        <center>
-        <p>ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</p>
-            <p>
-    <a href="aqi_dash.html" style="font-size:8px; color:#0000EE;">
-        AQI എന്തെന്ന് കൂടുതലറിയാം. 
-    </a>
-</p>
-        </center>
     </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
@@ -1795,7 +1698,6 @@ footer a:hover {
     <script type="module" src="elwoic-manual-update.js"></script>
     <script src="snapshot.js"></script>
     <script src="table.js"></script>
-    <script src="aqi.js"></script>
     <script src="weather-dashboard.js"></script>
     <script type="module" src="./notie-badge.js"></script>
     <script src="unique-disclaimer.js" defer></script>
