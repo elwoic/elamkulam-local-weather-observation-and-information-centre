@@ -3,156 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>വായു നിലവാര സൂചിക (AQI) - ആരോഗ്യവും ഉത്തരവാദിത്തവും</title>
+    <title>AQI Information & Sponsorship - ELWOIC</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
-            --text: #334155;
+            --accent: #ff4d4d;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --bg-light: #f8fafc;
             --border: #e2e8f0;
             --danger: #b91c1c;
         }
 
         body { 
             font-family: 'Inter', -apple-system, sans-serif; 
-            margin: 0; 
-            padding: 15px; 
-            background: #ffffff; 
-            color: var(--text); 
-            line-height: 1.6;
-            font-size: 14px;
+            margin: 0; padding: 0; 
+            color: var(--text-main); 
+            line-height: 1.7; 
+            background-color: #ffffff;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
 
-        h1 { font-size: 1.6rem; color: var(--primary); border-bottom: 3px solid #ff4d4d; padding-bottom: 10px; margin-bottom: 20px; letter-spacing: -0.5px; }
-        h2 { font-size: 1.2rem; color: var(--primary); margin-top: 30px; margin-bottom: 12px; font-weight: 700; border-left: 4px solid #ff4d4d; padding-left: 10px; }
-        h3 { font-size: 1.05rem; margin-top: 20px; color: #1e293b; font-weight: 600; }
+        /* --- 1. TOP HEADING & SPONSORSHIP HERO --- */
+        .main-header { text-align: center; padding: 40px 0 20px; }
+        .main-header h1 { font-size: 2.2rem; color: var(--primary); margin: 0; border: none; }
 
-        p { margin-bottom: 15px; text-align: justify; }
-
-        .table-container { overflow-x: auto; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; font-size: 13px; }
-        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
-        th { background-color: #f8fafc; color: var(--primary); font-weight: 600; }
-
-        .box { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 2px; }
-        .g { background: #4caf50; } .s { background: #8bc34a; } .m { background: #ffc107; } 
-        .p { background: #ff9800; } .vp { background: #f44336; }
-
-        .highlight-card { 
-            background-color: #f8fafc; 
-            padding: 20px; 
-            margin: 20px 0; 
+        .hero-sponsorship {
+            background: linear-gradient(to bottom, #ffffff, var(--bg-light));
+            padding: 40px 20px;
+            border-radius: 20px;
             border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        .critical-note { 
-            color: var(--danger); 
-            font-weight: 700; 
-            background: #fef2f2; 
-            padding: 15px; 
-            border-radius: 6px; 
-            border: 1px solid #fee2e2;
-            margin: 15px 0;
-        }
-
-        ul { padding-left: 20px; margin-bottom: 15px; }
-        li { margin-bottom: 8px; }
-
-        .motivation-box {
-            background: linear-gradient(135deg, #2c3e50, #4ca1af);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-top: 30px;
             text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
 
-        footer { 
-            margin-top: 50px; 
-            padding-top: 20px; 
-            border-top: 1px solid var(--border); 
-            text-align: center; 
-            color: #64748b; 
-            font-size: 12px; 
+        .hero-img {
+            width: 100%;
+            max-width: 600px;
+            min-height: 300px;
+            background: #ffffff;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            overflow: hidden;
         }
 
-        @media (max-width: 480px) {
-            body { padding: 12px; }
-            h1 { font-size: 1.4rem; }
+        .hero-statement { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin: 25px 0; line-height: 1.4; }
+        .hero-statement span { font-size: 1rem; color: var(--text-sub); display: block; margin-top: 10px; font-weight: 400; }
+
+        /* --- SECTION STYLING --- */
+        h2 { font-size: 1.6rem; border-left: 5px solid var(--accent); padding-left: 15px; margin-top: 60px; color: var(--primary); font-weight: 700; }
+        h3 { font-size: 1.2rem; color: var(--primary); margin-top: 30px; }
+        
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 15px; }
+        .ml { font-weight: 500; text-align: justify; }
+        .en { color: var(--text-sub); font-style: italic; text-align: justify; border-left: 1px solid var(--border); padding-left: 20px; }
+
+        /* --- AQI TABLE --- */
+        .table-container { overflow-x: auto; margin: 30px 0; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; background: white; }
+        th, td { padding: 15px; border: 1px solid var(--border); text-align: left; font-size: 14px; }
+        th { background: var(--bg-light); color: var(--primary); font-weight: 700; }
+        .box { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 10px; }
+
+        /* --- ADVISE CARDS --- */
+        .advise-section { background: var(--bg-light); padding: 30px; border-radius: 15px; margin-top: 40px; border: 1px solid var(--border); }
+        .critical-note { color: var(--danger); font-weight: 700; background: #fef2f2; padding: 20px; border-radius: 10px; border: 1px solid #fee2e2; margin: 20px 0; }
+        
+        /* --- SIDEWISE PHOTO GALLERY --- */
+        .photo-gallery {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px 5px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .gallery-item { flex: 0 0 280px; scroll-snap-align: start; }
+        .gallery-img {
+            width: 100%;
+            height: 180px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            object-fit: cover;
+        }
+        .gallery-cap { font-size: 13px; text-align: center; margin-top: 12px; font-weight: 600; color: var(--primary); }
+
+        footer { margin-top: 80px; padding: 50px 20px; background: var(--bg-light); text-align: center; border-top: 1px solid var(--border); }
+
+        @media (max-width: 768px) {
+            .lang-grid { grid-template-columns: 1fr; gap: 15px; }
+            .en { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 15px; }
+            .main-header h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>വായു നിലവാര സൂചിക (AQI): നമ്മൾ അറിയേണ്ട ഗൗരവകരമായ സത്യങ്ങൾ</h1>
 
-        <p>
-            ഭക്ഷണമോ വെള്ളമോ ഇല്ലാതെ നമുക്ക് കുറച്ചു സമയം നിലനിൽക്കാം, എന്നാൽ ശ്വസിക്കാതെ ഒരു നിമിഷം പോലും സാധ്യമല്ല. നാം ശ്വസിക്കുന്ന വായുവിന്റെ ഗുണനിലവാരം നമ്മുടെ ആയുസ്സിനെ നേരിട്ട് ബാധിക്കുന്നു. നിങ്ങളുടെ വെബ്സൈറ്റിൽ കാണുന്ന <strong>0–500 AQI സ്കെയിൽ</strong> വായു എത്രത്തോളം മലിനമാണെന്ന് നമ്മെ ബോധ്യപ്പെടുത്താനാണ്.
-        </p>
+<div class="container">
+    
+    <header class="main-header">
+        <h1>വായു നിലവാര നിരീക്ഷണം: ആരോഗ്യവും സാങ്കേതിക വിദ്യയും</h1>
+    </header>
 
-        <h2>എന്താണ് ഈ അക്കങ്ങൾ സൂചിപ്പിക്കുന്നത്?</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>AQI പരിധി</th>
-                        <th>നിലവാരം</th>
-                        <th>ആരോഗ്യ ആഘാതം</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><span class="box g"></span> 0–50</td><td>മികച്ചത്</td><td>വായു സുരക്ഷിതമാണ്. ഹൃദ്യമായി ശ്വസിക്കാം.</td></tr>
-                    <tr><td><span class="box s"></span> 51–100</td><td>തൃപ്തികരമായത്</td><td>സെൻസിറ്റീവ് ആയവർക്ക് (കുട്ടികൾ/രോഗികൾ) നേരിയ അസ്വസ്ഥതകൾ.</td></tr>
-                    <tr><td><span class="box m"></span> 101–200</td><td>മിതം (Moderate)</td><td>ശ്വാസകോശ രോഗങ്ങൾ ഉള്ളവർക്കും പ്രായമായവർക്കും ശ്വസന തടസ്സം അനുഭവപ്പെടാം.</td></tr>
-                    <tr><td><span class="box p"></span> 201–300</td><td>ദോഷകരമായത്</td><td>ആരോഗ്യമുള്ളവരിലും അസ്വസ്ഥതകൾ ഉണ്ടാകാം. പുറത്തെ ജോലി കുറയ്ക്കണം.</td></tr>
-                    <tr><td><span class="box vp"></span> 301–500</td><td>അതീവ ഗുരുതരം</td><td>ആരോഗ്യ അടിയന്തരാവസ്ഥ. മാസ്ക് ഇല്ലാതെ പുറത്തിറങ്ങുന്നത് അപകടം.</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h2>കാണാൻ കഴിയാത്ത കൊലയാളി: PM2.5</h2>
-        <p>
-            വായു മലിനീകരണത്തിൽ ഏറ്റവും അപകടകാരിയാണ് <strong>PM2.5</strong> എന്ന സൂക്ഷ്മ കണങ്ങൾ. നമ്മുടെ രോമകൂപങ്ങളേക്കാൾ 30 മടങ്ങ് ചെറുതായ ഇവ ശ്വസിക്കുമ്പോൾ നേരിട്ട് ശ്വാസകോശത്തിലേക്കും അവിടെ നിന്ന് രക്തത്തിലേക്കും പടരുന്നു. ഇത് ഹൃദയസ്തംഭനം, പക്ഷാഘാതം, ശ്വാസകോശ അർബുദം തുടങ്ങിയ മാരക രോഗങ്ങൾക്ക് കാരണമാകുന്നു.
-        </p>
-
-        <div class="critical-note">
-            ഓർക്കുക: വായു മലിനീകരണം ഒരു നിശബ്ദ കൊലയാളിയാണ്. നമ്മൾ ശ്രദ്ധിക്കാതെ പോകുന്ന ഓരോ ശ്വാസവും നമ്മുടെ ആരോഗ്യത്തെ തകർക്കുന്നുണ്ടാകാം.
-        </div>
-
-        <h2>നമുക്ക് എന്ത് ചെയ്യാൻ കഴിയും? (പരിഹാര മാർഗങ്ങൾ)</h2>
+    <section class="hero-sponsorship">
+        <h2 style="border:none; text-align:center; margin:0; font-size: 1.2rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px;">Partnership Spotlight</h2>
         
-        <h3>1. മാലിന്യം കത്തിക്കുന്നത് അടിയന്തരമായി നിർത്തുക</h3>
-        <p>പ്ലാസ്റ്റിക്, ടയർ, കരിയില എന്നിവ കത്തിക്കുന്നത് വായുവിലേക്ക് മാരകമായ വിഷവാതകങ്ങൾ പുറപ്പെടുവിക്കുന്നു. ഇത് നിങ്ങളുടെയും നിങ്ങളുടെ അയൽക്കാരുടെയും ആരോഗ്യത്തെ നശിപ്പിക്കുന്നു. മാലിന്യങ്ങൾ ശാസ്ത്രീയമായി സംസ്‌കരിക്കുക.</p>
-
-        <h3>2. ഹരിത കവചം തീർക്കുക</h3>
-        <p>മരങ്ങൾ പ്രകൃതിയുടെ വായു ശുദ്ധീകരണ സംവിധാനങ്ങളാണ്. നിങ്ങളുടെ വീട്ടുപരിസരത്ത് കൂടുതൽ ചെടികളും മരങ്ങളും നട്ടുപിടിപ്പിക്കുക. ഇവ അന്തരീക്ഷത്തിലെ പൊടിയും വിഷവാതകങ്ങളും വലിച്ചെടുത്ത് ഓക്സിജൻ നൽകുന്നു.</p>
-
-        <h3>3. വാഹനങ്ങളുടെ ഉപയോഗം ക്രമീകരിക്കുക</h3>
-        <p>അടുത്തുള്ള സ്ഥലങ്ങളിലേക്ക് നടന്നു പോകുകയോ സൈക്കിൾ ഉപയോഗിക്കുകയോ ചെയ്യുക. വാഹനങ്ങളുടെ കൃത്യമായ സർവീസിംഗ് പുക മലിനീകരണം കുറയ്ക്കാൻ സഹായിക്കും.</p>
-
-        <div class="highlight-card">
-            <strong>ആരോഗ്യ സംരക്ഷണത്തിനുള്ള ചില പ്രായോഗിക നിർദ്ദേശങ്ങൾ:</strong>
-            <ul>
-                <li>AQI മോശമാകുമ്പോൾ വീടിനുള്ളിൽ ഇരിക്കാൻ ശ്രമിക്കുക.</li>
-                <li>പുറത്തിറങ്ങുമ്പോൾ N95 മാസ്ക് ധരിക്കുക.</li>
-                <li>ശ്വസന സംബന്ധമായ വ്യായാമങ്ങൾ ശീലമാക്കുക.</li>
-                <li>ധാരാളം വെള്ളം കുടിക്കുന്നത് ശരീരത്തിലെ വിഷാംശങ്ങൾ പുറന്തള്ളാൻ സഹായിക്കും.</li>
-            </ul>
+        <div class="hero-img">
+            
+            <p style="padding: 10px; font-size: 12px; color: var(--text-sub);">The AirGradient ONE: Professional Grade Hardware</p>
         </div>
 
-        <div class="motivation-box">
-            <strong>"നമ്മുടെ കുട്ടികൾക്ക് നാം ബാക്കിവെക്കേണ്ടത് മലിനമായ വായുവല്ല, മറിച്ച് ശ്വസിക്കാൻ യോഗ്യമായ ഒരു ഭൂമിയാണ്."</strong>
-            <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">ഇന്ന് നിങ്ങൾ എടുക്കുന്ന ചെറിയ ഓരോ തീരുമാനവും നാളത്തെ തലമുറയുടെ ആരോഗ്യമാണ്. വായു ശുദ്ധമായി സൂക്ഷിക്കുക എന്നത് ഒരു അവകാശം മാത്രമല്ല, അതൊരു കടമ കൂടിയാണ്.</p>
+        <div class="hero-statement">
+            ഈ സ്റ്റേഷൻ സാധ്യമാക്കിയത് AirGradient നൽകിയ ഉദാരമായ ഹാർഡ്‌വെയർ സ്പോൺസർഷിപ്പിലൂടെയാണ്.
+            <span>"This station is made possible through the generous hardware sponsorship of AirGradient."</span>
         </div>
 
-        <footer>
-            <p>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം - വായു ഗുണനിലവാര സൂചിക വിഭാഗം.</p>
-            <p>ബോധവൽക്കരണ വിഭാഗം</p>
-            <p>ഡാറ്റാ ഉറവിടം: OpenAQ / Open-Meteo Air Quality API</p>
-        </footer>
+        <div class="lang-grid">
+            <div class="ml">
+                കൊച്ചി പോലുള്ള വൻനഗരങ്ങളിൽ മാത്രം ലഭ്യമായിരുന്ന ലോകോത്തര വായു നിലവാര നിരീക്ഷണ സംവിധാനം ഇപ്പോൾ ഏലംകുളത്തും ലഭ്യമാണ്. AirGradient-ന്റെ ഈ പിന്തുണ വഴി നമ്മുടെ ഗ്രാമത്തിലെ വായുവിന്റെ ഗുണനിലവാരം തത്സമയം അറിയാൻ സാധിക്കുന്നു. ഇതിനായി അവർ നൽകിയ സാങ്കേതിക സഹായത്തിന് ELWOIC നന്ദി അറിയിക്കുന്നു.
+            </div>
+            <div class="en">
+                Through AirGradient's generous contribution, Elamkulam now hosts professional-grade air monitoring that was once exclusive to major cities. We sincerely appreciate their commitment to local climate science and public health.
+            </div>
+        </div>
+    </section>
+
+    <h2>എന്താണ് AQI? (What is AQI?)</h2>
+    <div class="lang-grid">
+        <div class="ml">
+            നാം ശ്വസിക്കുന്ന വായു എത്രത്തോളം ശുദ്ധമാണെന്ന് ലളിതമായി മനസ്സിലാക്കാൻ ഉപയോഗിക്കുന്ന അളവുകോലാണ് AQI. പൂജ്യം മുതൽ 500 വരെയുള്ള സ്കെയിലിൽ ഇത് രേഖപ്പെടുത്തുന്നു.
+        </div>
+        <div class="en">
+            AQI is an indicator used to report daily air quality. It tells you how clean or polluted your air is, and what associated health effects might be a concern for you.
+        </div>
     </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>AQI Range</th>
+                    <th>Level (നിലവാരം)</th>
+                    <th>Health Impact (ആരോഗ്യ ആഘാതം)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><span class="box" style="background:#4caf50;"></span> 0–50</td><td>Good (മികച്ചത്)</td><td>വായു സുരക്ഷിതമാണ്. (Air is safe to breathe.)</td></tr>
+                <tr><td><span class="box" style="background:#8bc34a;"></span> 51–100</td><td>Satisfactory</td><td>സെൻസിറ്റീവ് ആയവർക്ക് നേരിയ ബുദ്ധിമുട്ട്. (Minor impact on sensitive people.)</td></tr>
+                <tr><td><span class="box" style="background:#ffc107;"></span> 101–200</td><td>Moderate (മിതം)</td><td>ശ്വാസകോശ രോഗികൾക്ക് ശ്വസന തടസ്സം. (Breathing discomfort to many.)</td></tr>
+                <tr><td><span class="box" style="background:#ff9800;"></span> 201–300</td><td>Poor (മോശം)</td><td>ദീർഘനേരം പുറത്ത് നിൽക്കുന്നത് ഒഴിവാക്കുക. (Avoid prolonged outdoor exposure.)</td></tr>
+                <tr><td><span class="box" style="background:#f44336;"></span> 301–500</td><td>Severe</td><td>ആരോഗ്യ അടിയന്തരാവസ്ഥ. (Health emergency alert.)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>ഗാലറി & സാങ്കേതിക വിദ്യ (Gallery & Technology)</h2>
+    <p>നമ്മുടെ സ്റ്റേഷന്റെ പ്രവർത്തനങ്ങളും ഉപകരണങ്ങളും താഴെ കാണാം (സ്ക്രോൾ ചെയ്യുക):</p>
+    
+    <div class="photo-gallery">
+        <div class="gallery-item">
+            <div class="gallery-img">[Photo 1: Inside Sensor]</div>
+            <div class="gallery-cap">Advanced Laser Sensor</div>
+        </div>
+        <div class="gallery-item">
+            <div class="gallery-img">[Photo 2: ELWOIC Station]</div>
+            <div class="gallery-cap">ELWOIC Installation</div>
+        </div>
+        <div class="gallery-item">
+            <div class="gallery-img">[Photo 3: PM2.5 Chart]</div>
+            <div class="gallery-cap">Particle Monitoring</div>
+        </div>
+        <div class="gallery-item">
+            <div class="gallery-img">[Photo 4: Data Board]</div>
+            <div class="gallery-cap">Real-time Dashboard</div>
+        </div>
+    </div>
+
+    <h2>പൊതുജനങ്ങളോടുള്ള നിർദ്ദേശങ്ങൾ (Advise to the People)</h2>
+    <div class="advise-section">
+        <div class="critical-note">
+            ഓർക്കുക: വായു മലിനീകരണം ഒരു നിശബ്ദ കൊലയാളിയാണ്. നാം ശ്വസിക്കുന്ന ഓരോ ശ്വാസവും നമ്മുടെ ജീവിതദൈർഘ്യത്തെ നിശ്ചയിക്കുന്നു.
+        </div>
+        
+        <h3>1. മാലിന്യം കത്തിക്കുന്നത് ഒഴിവാക്കുക (Stop Open Burning)</h3>
+        <div class="lang-grid">
+            <div class="ml">പ്ലാസ്റ്റിക്, ടയർ, കരിയില എന്നിവ കത്തിക്കുന്നത് വായുവിലേക്ക് മാരകമായ വിഷവാതകങ്ങൾ പുറപ്പെടുവിക്കുന്നു. ഇത് അടിയന്തരമായി നിർത്തേണ്ടതാണ്.</div>
+            <div class="en">Burning plastic and dry leaves releases toxic chemicals into the air. Please practice scientific waste management to protect our neighbors.</div>
+        </div>
+
+        <h3>2. ഹരിത കവചം തീർക്കുക (Plant More Trees)</h3>
+        <div class="lang-grid">
+            <div class="ml">മരങ്ങൾ വായുവിനെ ശുദ്ധീകരിക്കുന്നു. കൂടുതൽ ചെടികൾ നട്ടുപിടിപ്പിക്കുന്നത് പൊടിപടലങ്ങൾ കുറയ്ക്കാൻ സഹായിക്കും.</div>
+            <div class="en">Trees act as natural air filters. Planting more greenery around your home significantly reduces dust and pollutants.</div>
+        </div>
+
+        <h3>3. ആരോഗ്യ സംരക്ഷണം (Health Precautions)</h3>
+        <div class="lang-grid">
+            <div class="ml">AQI 100-ന് മുകളിൽ പോകുമ്പോൾ ശ്വാസകോശ രോഗമുള്ളവരും കുട്ടികളും പുറത്തിറങ്ങുന്നത് കുറയ്ക്കുക. ആവശ്യമെങ്കിൽ മാസ്ക് ധരിക്കുക.</div>
+            <div class="en">When AQI exceeds 100, individuals with respiratory issues and children should limit outdoor activities and use N95 masks if necessary.</div>
+        </div>
+        
+        
+    </div>
+
+    <h2>എങ്ങനെയാണ് വിവരങ്ങൾ ശേഖരിക്കുന്നത്?</h2>
+    <div class="lang-grid">
+        <div class="ml">
+            ELWOIC സ്റ്റേഷനിലെ AirGradient സെൻസർ ഓരോ സെക്കൻഡിലും വായുവിനെ നിരീക്ഷിക്കുന്നു. ഈ വിവരങ്ങൾ ക്ലൗഡ് സർവർ വഴി വിശകലനം ചെയ്ത് നിങ്ങളിലേക്ക് എത്തുന്നു. ഇത് പൂർണ്ണമായും ഓട്ടോമേറ്റഡ് ആയ ഒരു സംവിധാനമാണ്.
+        </div>
+        <div class="en">
+            The station automatically monitors air quality every second. This raw data is transmitted to cloud servers, processed using global standards, and updated on your screen instantly.
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം |Elamkula Local Weather Observation & Information Centre (ELWOIC)</strong></p>
+        <p>Data Source: Real-time Local Monitoring via ELWOIC AirGradient Station</p>
+        <p>Hardware Sponsorship & Technical Support: <a href="https://www.airgradient.com" target="_blank" style="color: var(--primary); text-decoration: underline;">AirGradient</a></p>
+        <p style="margin-top: 20px; opacity: 0.6;">&copy; 2026 ELWOIC Elamkulam. All Rights Reserved.</p>
+    </footer>
+
+</div>
+
 </body>
 </html>
