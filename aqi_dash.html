@@ -54,13 +54,13 @@
         .sensor-val { font-size: 14px; font-weight: 600; color: #444; }
 
 
-        .indicator-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    display:inline-block;
-    margin-right:6px;
-    vertical-align:middle;
+        .indicator-bar{
+    display:block;
+    height:4px;
+    width:60px;
+    margin:6px auto 0 auto;
+    border-radius:4px;
+    transition:0.3s ease;
 }
 
         .attribution { font-size: 10px; color: #aaa; margin-top: 15px; border-top: 1px dotted #eee; padding-top: 10px; }
@@ -90,37 +90,45 @@
 
     <div id="healthAdvice" class="health-advice">Loading air quality data...</div>
     <div class="malayalam-text">ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</div>
-    <a href="https://www.airgradient.com" target="_blank" class="more-info-link">AQI എന്ത് എന്ന് കൂടുതൽ അറിയാം.</a>
+    <a href="https://www.airgradient.com" target=AQI-advise.html"_blank" class="more-info-link">AQI എന്ത് എന്ന് കൂടുതൽ അറിയാം.</a>
 
     <div class="sensor-footer">
 
 <div class="sensor-item">
 <div class="sensor-label">CO₂ (ppm)</div>
+
 <div class="sensor-val">
-<span id="co2-ind" class="indicator-dot" style="background:#ccc"></span>
 <span id="co2">--</span>
 </div>
+
+<span id="co2-ind" class="indicator-bar" style="background:#ccc"></span>
 </div>
+
 
 <div class="sensor-item">
 <div class="sensor-label">TVOC Index</div>
+
 <div class="sensor-val">
-<span id="tvoc-ind" class="indicator-dot" style="background:#ccc"></span>
 <span id="tvoc">--</span>
 </div>
+
+<span id="tvoc-ind" class="indicator-bar" style="background:#ccc"></span>
 </div>
+
 
 <div class="sensor-item">
 <div class="sensor-label">NOx Index</div>
+
 <div class="sensor-val">
-<span id="nox-ind" class="indicator-dot" style="background:#ccc"></span>
 <span id="nox">--</span>
 </div>
+
+<span id="nox-ind" class="indicator-bar" style="background:#ccc"></span>
 </div>
 
 </div>
 
-
+    
  <div class="attribution">
 Data Source: ELWOIC Station API |
 Real-time monitoring powered by sponsored hardware from AirGradient |
