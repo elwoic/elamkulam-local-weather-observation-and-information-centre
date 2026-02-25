@@ -156,10 +156,16 @@ function getAQIColor(aqi){
 }
 
 async function fetchData(){
-    try{
+    try {
         const res = await fetch(API_URL);
-        const data = await res.json();
+        let data = await res.json();
 
+        // 🟢 ADD THIS BLOCK: Unwraps the array if necessary
+        if (Array.isArray(data)) {
+            data = data[0];
+        }
+
+        // Now your existing code will work perfectly
         const pm = parseFloat(data.pm02_corrected);
         const aqi = calculateAQI(pm);
 
@@ -171,14 +177,17 @@ async function fetchData(){
         document.getElementById("temp").innerText = data.atmp_corrected;
         document.getElementById("humidity").innerText = data.rhum_corrected;
         document.getElementById("co2").innerText = data.rco2_corrected;
-        document.getElementById("tvoc").innerText = data.tvocIndex;
-        document.getElementById("nox").innerText = data.noxIndex;
+        
+        // Added '|| "--"' just in case these specific indexes are missing
+        document.getElementById("tvoc").innerText = data.tvocIndex || "--";
+        document.getElementById("nox").innerText = data.noxIndex || "--";
+        
         document.getElementById("timestamp").innerText =
             new Date(data.timestamp).toLocaleString();
 
-    }catch(error){
+    } catch(error) {
         document.getElementById("aqiStatus").innerText = "Unable to fetch data";
-        console.log(error);
+        console.error("Dashboard Error:", error);
     }
 }
 
