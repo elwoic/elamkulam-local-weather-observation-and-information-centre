@@ -3,152 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style?
-  :root {
-    --aqi-good: #4caf50;
-    --aqi-satisfactory: #8bc34a;
-    --aqi-moderate: #ffc107;
-    --aqi-poor: #ff9800;
-    --aqi-very-poor: #f44336;
-}
+    <style>
+        :root {
+            --aqi-good: #4caf50;
+            --aqi-satisfactory: #8bc34a;
+            --aqi-moderate: #ffc107;
+            --aqi-poor: #ff9800;
+            --aqi-very-poor: #f44336;
+        }
 
-/* 1. Body: Transparent and no scrollbars */
-body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    margin: 0; 
-    padding: 0; 
-    background: transparent; 
-    overflow: hidden; 
-}
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; background: transparent; display: flex; justify-content: center; }
 
-/* 2. Card: Removed white background, border, and shadow */
-.bulletin-card {
-    width: 100%;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 5px; /* Tight padding to save space */
-    text-align: center;
-    box-sizing: border-box;
-}
+        .bulletin-card {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+            padding: 20px;
+            text-align: center;
+        }
 
-/* 3. Header Area */
-.title-area { 
-    color: #002b45; 
-    font-size: 18px; 
-    font-weight: 600; 
-    margin-bottom: 10px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 8px; 
-}
+        .title-area { color: #002b45; font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-/* 4. Status Hero (Dot and Text) */
-.status-hero { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 12px; 
-    margin-bottom: 10px; 
-}
-.status-dot { 
-    width: 35px; 
-    height: 35px; 
-    border-radius: 50%; 
-    background: #ddd; 
-    flex-shrink: 0;
-}
-.status-text { 
-    font-size: 20px; 
-    font-weight: 700; 
-    color: #1a1a1a; 
-}
+        .status-hero { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
+        .status-dot { width: 40px; height: 40px; border-radius: 50%; background: #ddd; }
+        .status-text { font-size: 22px; font-weight: 700; color: #1a1a1a; }
 
-/* 5. Legend Bar (Responsive buttons) */
-.legend-bar { 
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: center; 
-    gap: 4px; 
-    margin-bottom: 12px; 
-}
-.legend-item { 
-    padding: 5px 8px; 
-    border-radius: 6px; 
-    color: white; 
-    font-size: 10px; 
-    font-weight: 600; 
-    min-width: 85px; 
-}
-.l-good { background: var(--aqi-good); }
-.l-satisfactory { background: var(--aqi-satisfactory); }
-.l-moderate { background: var(--aqi-moderate); }
-.l-poor { background: var(--aqi-poor); }
-.l-very-poor { background: var(--aqi-very-poor); }
+        .legend-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .legend-item { padding: 6px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 600; min-width: 90px; }
+        .l-good { background: var(--aqi-good); }
+        .l-satisfactory { background: var(--aqi-satisfactory); }
+        .l-moderate { background: var(--aqi-moderate); }
+        .l-poor { background: var(--aqi-poor); }
+        .l-very-poor { background: var(--aqi-very-poor); }
 
-/* 6. Text Content */
-.health-advice { 
-    font-size: 13px; 
-    color: #333; 
-    margin-bottom: 5px; 
-    line-height: 1.3; 
-    padding: 0 5px; 
-}
-.malayalam-text { 
-    font-size: 17px; 
-    color: #002b45; 
-    font-weight: bold; 
-    margin-bottom: 5px; 
-}
-.more-info-link { 
-    font-size: 11px; 
-    color: #0056b3; 
-    text-decoration: none; 
-    display: inline-block; 
-    margin-bottom: 12px; 
-}
+        .health-advice { font-size: 14px; color: #333; margin-bottom: 8px; line-height: 1.4; padding: 0 10px; }
+        .malayalam-text { font-size: 18px; color: #002b45; font-weight: bold; margin-bottom: 8px; }
+        .more-info-link { font-size: 11px; color: #0056b3; text-decoration: none; display: block; margin-bottom: 15px; }
 
-/* 7. Sensor Footer: Compact Grid */
-.sensor-footer { 
-    display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    border-top: 1px solid rgba(0,0,0,0.1); 
-    padding-top: 12px;
-    margin-top: 5px;
-    gap: 5px;
-}
-.sensor-item { text-align: center; }
-.sensor-label { 
-    font-size: 9px; 
-    color: #777; 
-    text-transform: uppercase; 
-    margin-bottom: 2px; 
-}
-.sensor-val { 
-    font-size: 13px; 
-    font-weight: 600; 
-    color: #333; 
-}
+        .sensor-footer { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            border-top: 1px solid #eee; 
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+        .sensor-item { text-align: center; }
+        .sensor-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+        .sensor-val { font-size: 14px; font-weight: 600; color: #444; }
 
-/* 8. Bottom Attribution */
-.attribution { 
-    font-size: 9px; 
-    color: #999; 
-    margin-top: 12px; 
-    border-top: 1px dotted rgba(0,0,0,0.1); 
-    padding-top: 8px; 
-}
-.attribution a { color: #777; text-decoration: none; font-weight: bold; }
-
-/* 9. Mobile Responsiveness: Shrink text so it doesn't push elements down */
-@media (max-width: 450px) {
-    .status-text { font-size: 17px; }
-    .malayalam-text { font-size: 15px; }
-    .legend-item { min-width: 70px; font-size: 9px; padding: 4px 6px; }
-    .health-advice { font-size: 12px; }
-}
-</style>
+        .attribution { font-size: 10px; color: #aaa; margin-top: 15px; border-top: 1px dotted #eee; padding-top: 10px; }
+        .attribution a { color: #888; text-decoration: none; font-weight: bold; }
+    </style>
 </head>
 <body>
 
@@ -173,7 +80,7 @@ body {
 
     <div id="healthAdvice" class="health-advice">Loading air quality data...</div>
     <div class="malayalam-text">ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</div>
-    <a href="AQI-advise.html" target="_self" class="more-info-link">AQI എന്തെന്നും, എങ്ങനെയെന്നും കൂടുതൽ അറിയാം.</a>
+    <a href="https://www.airgradient.com" target="_blank" class="more-info-link">AQI എന്ത് എന്ന് കൂടുതൽ അറിയാം.</a>
 
     <div class="sensor-footer">
         <div class="sensor-item"><div class="sensor-label">CO₂ (ppm)</div><div class="sensor-val" id="co2">--</div></div>
