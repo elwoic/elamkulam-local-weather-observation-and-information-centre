@@ -195,26 +195,45 @@ function getStatus(aqi) {
 async function updateDashboard() {
     try {
         const res = await fetch(API_URL);
+
+        if (!res.ok) throw new Error("API response error");
+
         let data = await res.json();
+        if (!data) throw new Error("Empty response");
+
         if (Array.isArray(data)) data = data[0];
 
-        const pm = parseFloat(data.pm02_corrected);
+        const pm = parseFloat(data?.pm02_corrected || 0);
+
         const aqi = pm25ToAQI(pm);
         const st = getStatus(aqi);
 
-        document.getElementById("statusDot").style.background = st.color;
-        document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
-        document.getElementById("healthAdvice").innerText = `${st.advice} (PM2.5: ${pm} µg/m³)`;
-        
-        document.getElementById("co2").innerText = data.rco2_corrected;
-        document.getElementById("tvoc").innerText = data.tvocIndex || "--";
-        document.getElementById("nox").innerText = data.noxIndex || "--";
-        document.getElementById("time").innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const statusDot = document.getElementById("statusDot");
+        const statusText = document.getElementById("statusText");
+        const healthAdvice = document.getElementById("healthAdvice");
+
+        if (statusDot) statusDot.style.background = st.color;
+        if (statusText) statusText.innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
+        if (healthAdvice) healthAdvice.innerText =
+            `${st.advice} (PM2.5: ${pm} µg/m³)`;
+
+        document.getElementById("co2").innerText = data?.rco2_corrected ?? "--";
+        document.getElementById("tvoc").innerText = data?.tvocIndex ?? "--";
+        document.getElementById("nox").innerText = data?.noxIndex ?? "--";
+
+        document.getElementById("time").innerText =
+            new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     } catch (e) {
-        document.getElementById("statusText").innerText = "Offline";
+        console.log("Dashboard Error:", e);
+
+        const statusEl = document.getElementById("statusText");
+        if (statusEl) statusEl.innerText = "Offline";
+
+        setTimeout(updateDashboard, 10000);
     }
 }
+
 
 updateDashboard();
 setInterval(updateDashboard, 300000);
