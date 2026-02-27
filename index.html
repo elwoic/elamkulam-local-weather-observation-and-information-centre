@@ -510,91 +510,6 @@ body {
   font-weight: 700;
 }
 
-/* Weather Snapshot */
-.weather-mini-dashboard {
-    max-width: 900px;
-    margin: 5px auto;
-    padding: 10px;
-    background: rgba(255,255,255,0.9);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    font-family: 'Poppins', sans-serif;
-}
-.weather-mini-dashboard h2 {
-    text-align: center;
-    color: #004080;
-    font-weight: 600;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-}
- #log-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 3px 7px;          /* 👈 very small */
-  border-radius: 999px;      /* pill look */
-  font-weight: 500;
-  font-size: 0.55rem;        /* 👈 tiny text */
-  cursor: pointer;
-  line-height: 1;
-  transition: 0.15s ease;
-}
-
-#log-btn:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-#log-btn:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-#cooldown-timer {
-  font-weight: 600;
-  font-size: 0.55rem;
-  min-width: 42px;
-  text-align: center;
-}
-
-#cooldown-text {
-  font-size: 0.55rem;
-  color: #64748b;
-}      
-.info-boxes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-}
-.info-box {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    text-align: center;
-    padding: 8px 5px;
-    flex: 1 1 90px;
-    min-width: 90px;
-}
-.info-title {
-    font-size: 0.7em;
-    color: #004080;
-    margin-bottom: 2px;
-}
-.info-value {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: #333;
-}
-.info-unit {
-    font-size: 0.7em;
-    color: #777;
-}
-.last-update {
-    text-align: center;
-    color: #666;
-    font-size: 0.75em;
-    margin-top: 5px;
-}
-
 /* Kerala Weather Widgets Section */
 .weather-widgets-section {
     max-width: 1200px;
@@ -1361,50 +1276,13 @@ footer a:hover {
 </div>
 
 <section id="weather-snapshot-section">
-     <div class="weather-mini-dashboard">
-         <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം </h2>
-         <div class="info-boxes"> <div class="info-box">
-             <div class="info-title">താപനില</div>
-             <div class="info-value" id="temp">--</div><div class="info-unit">°C</div></div> 
-             <div class="info-box">
-                 <div class="info-title">അനുപവപ്പെടുന്ന താപനില</div>
-                 <div class="info-value" id="feels">--</div><div class="info-unit">°C</div>
-             </div> <div class="info-box">
-                 <div class="info-title">ആർദ്രത</div>
-                 <div class="info-value" id="humidity">--</div>
-                 <div class="info-unit">%</div></div> <div class="info-box">
-                     <div class="info-title">കാറ്റിന്റെ വേഗത</div>
-                     <div class="info-value" id="wind">--</div><div class="info-unit">km/h</div>
-                 </div> <div class="info-box"><div class="info-title">ദൃശ്യപരിതി</div>
-                     <div class="info-value" id="visibility">--</div><div class="info-unit">km</div>
-                 </div> <div class="info-box"><div class="info-title">നിലവിലെ സ്ഥിതി</div>
-                     <div class="info-value" id="condition">--</div><div class="info-unit"> ☁ </div>
-                 </div> <div class="info-box">
-                     <div class="info-title">OM Temp</div>
-                     <div class="info-value" id="om-temp">--</div>
-                     <div class="info-unit">°C</div></div> <div class="info-box">
-                         <div class="info-title">OM Wind</div><div class="info-value" id="om-wind">--</div>
-                         <div class="info-unit">km/h</div>
-                          </div> <p class="last-update">Last updated: <span id="updated">--</span></p> </div>
-    <div class="push-bar">
-  <button id="log-btn" disabled>
-  ⏳ Checking push availability…
-</button>
-
-<span id="cooldown-timer">--:--</span>
-<span id="cooldown-text">Checking last push status…</span>
-
-       <div style="margin-top: 1px; text-align: center;">
-  <a href="about-weather-push.html" style="font-size: 10px; color: #64748b; text-decoration: none; border-bottom: 1px solid #e2e8f0;">
-    weather data push എന്തെന്ന് അറിയാൻ.
-  </a>
+    <div style="max-width:520px; margin:auto;">
+    <iframe 
+        src="w-dashboard.html" 
+        style="width:100%; border:none; height:650px;" 
+        loading="lazy">
+    </iframe>
 </div>
-
-
-<p id="log-status"></p>
-                         </div> 
-        
-
  </section>
 
     <h3 style="max-width: 1200px; margin: 25px auto 10px; color: #333;">Average KERALA</h3>
