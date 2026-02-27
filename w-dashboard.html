@@ -77,7 +77,7 @@
 <body>
 
 <section class="weather-mini-dashboard">
-    <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - സ്മാർട്ട് വ്യൂ</h2>
+    <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം</h2>
 
     <div class="info-boxes">
         <div class="info-box primary">
@@ -89,7 +89,7 @@
             <div class="info-value"><span id="humidity">--</span><span class="info-unit">%</span></div>
         </div>
         <div class="info-box">
-            <span class="info-title">FEELS LIKE</span>
+            <span class="info-title">അനുഭവപ്പെടുന്നത്</span>
             <div class="info-value"><span id="feels">--</span><span class="info-unit">°C</span></div>
         </div>
         <div class="info-box">
@@ -111,7 +111,7 @@
             <div class="pressure-sub">P: <span id="pressure">--</span></div>
         </div>
         <div class="info-box" style="background: #f0fdf4; border-top: 3px solid #10b981;">
-            <span class="info-title">അവസ്ഥ</span>
+            <span class="info-title">അവസ്ഥ(Condition)</span>
             <div class="info-value" id="condition" style="font-size: 0.6rem; color: #065f46;">Loading...</div>
         </div>
     </div>
@@ -123,11 +123,9 @@
         <div class="timer-display">Next: <span id="cooldown-timer">--:--</span></div>
          
     <div class="about-link">
-        <a href="about-weather-push.html">What is "Push Data"?</a>
+        <a href="about-weather-push.html" target="_blank" rel="noopener noreferrer">What is "Push Data"?</a>
     </div>
     </div>
-   
-    
     <p id="log-status"></p>
 
     <div class="footer-legal">
@@ -253,7 +251,7 @@
             if (remain <= 0) { enableBtn(); clearInterval(timer); } 
             else {
                 document.getElementById("log-btn").disabled = true;
-                document.getElementById("log-btn").textContent = "Wait";
+                document.getElementById("log-btn").textContent = "Wait a little ↦";
                 document.getElementById("cooldown-timer").textContent = Math.floor(remain/60).toString().padStart(2,'0') + ":" + (remain%60).toString().padStart(2,'0');
             }
         }, 1000);
@@ -262,13 +260,13 @@
     function enableBtn() {
         document.getElementById("log-btn").disabled = false;
         document.getElementById("log-btn").textContent = "📤 Push Data";
-        document.getElementById("cooldown-timer").textContent = "Ready";
+        document.getElementById("cooldown-timer").textContent = "Ready to push";
     }
 
     document.getElementById("log-btn").onclick = async () => {
         try {
             await push(ref(db, "weather_logs"), currentLogData);
-            document.getElementById("log-status").textContent = "✅ Success!";
+            document.getElementById("log-status").textContent = "✅ Push Successfull!";
             setTimeout(() => { document.getElementById("log-status").textContent = ""; }, 3000);
         } catch (err) { document.getElementById("log-status").textContent = "❌ Failed"; }
     };
