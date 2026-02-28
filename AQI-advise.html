@@ -26,10 +26,11 @@
 
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
 
-        /* --- 1. TOP HEADING & SPONSORSHIP HERO --- */
+        /* --- TOP HEADING --- */
         .main-header { text-align: center; padding: 40px 0 20px; }
         .main-header h1 { font-size: 2.2rem; color: var(--primary); margin: 0; border: none; }
 
+        /* --- DUAL IMAGE HERO SECTION --- */
         .hero-sponsorship {
             background: linear-gradient(to bottom, #ffffff, var(--bg-light));
             padding: 40px 20px;
@@ -40,19 +41,34 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
 
-        .hero-img {
-            width: 100%;
-            max-width: 600px;
-            min-height: 300px;
+        .hero-image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 750px;
+            margin: 20px auto;
+        }
+
+        .hero-img-box {
             background: #ffffff;
             border-radius: 15px;
-            margin: 20px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             border: 1px solid var(--border);
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-img-box:hover { transform: translateY(-5px); }
+
+        .hero-img-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            padding: 10px;
         }
 
         .hero-statement { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin: 25px 0; line-height: 1.4; }
@@ -86,7 +102,7 @@
             scroll-snap-type: x mandatory;
             scrollbar-width: thin;
         }
-        .gallery-item { flex: 0 0 280px; scroll-snap-align: start; }
+        .gallery-item { flex: 0 0 280px; scroll-snap-align: start; cursor: pointer; }
         .gallery-img {
             width: 100%;
             height: 180px;
@@ -100,10 +116,43 @@
         }
         .gallery-cap { font-size: 13px; text-align: center; margin-top: 12px; font-weight: 600; color: var(--primary); }
 
+        /* --- MODAL / POPUP STYLING --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 50px;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: zoom-out;
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 10px;
+            animation: zoom 0.3s;
+        }
+        .close {
+            position: absolute;
+            top: 15px; right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        @keyframes zoom {
+            from {transform:scale(0)} 
+            to {transform:scale(1)}
+        }
+
         footer { margin-top: 80px; padding: 50px 20px; background: var(--bg-light); text-align: center; border-top: 1px solid var(--border); }
 
         @media (max-width: 768px) {
-            .lang-grid { grid-template-columns: 1fr; gap: 15px; }
+            .lang-grid, .hero-image-grid { grid-template-columns: 1fr; gap: 15px; }
             .en { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 15px; }
             .main-header h1 { font-size: 1.6rem; }
         }
@@ -120,15 +169,18 @@
     <section class="hero-sponsorship">
         <h2 style="border:none; text-align:center; margin:0; font-size: 1.2rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px;">Partnership Spotlight</h2>
         
-     <div class="hero-img">
-    <img src="pictures/AirGradient_device.jpg" 
-         alt="AirGradient ONE Device" 
-         style="max-width:100%; max-height:250px; object-fit:contain;">
-</div>
+        <div class="hero-image-grid">
+            <div class="hero-img-box">
+                <img src="pictures/ELWOIC_Station.jpg" alt="ELWOIC Station Location">
+            </div>
+            <div class="hero-img-box">
+                <img src="pictures/AirGradient_device.jpg" alt="AirGradient ONE Device">
+            </div>
+        </div>
 
-<p style="text-align:center; font-size:13px; color: var(--text-sub); margin-top:10px;">
-    The AirGradient ONE: Professional Grade Hardware
-</p>
+        <p style="text-align:center; font-size:13px; color: var(--text-sub); margin-top:10px;">
+            Professional Grade Monitoring: ELWOIC Site & AirGradient ONE Hardware
+        </p>
 
         <div class="hero-statement">
             ഈ സ്റ്റേഷൻ സാധ്യമാക്കിയത് AirGradient നൽകിയ ഉദാരമായ ഹാർഡ്‌വെയർ സ്പോൺസർഷിപ്പിലൂടെയാണ്.
@@ -186,35 +238,18 @@
             <img src="pictures/ELWOIC_Station.jpg" alt="ELWOIC station" class="gallery-img">
             <div class="gallery-cap">ELWOIC Installation</div>
         </div>
-       <div class="gallery-item">
-    <img src="pictures/pm25-chart.jpg" 
-         alt="ELWOIC PM2.5 Monitoring Chart"
-         class="gallery-img">
-    <div class="gallery-cap">
-        PM₂.₅ Monitoring (AirGradient Cloud Dashboard)
-    </div>
-</div>
         <div class="gallery-item">
-    <img src="pictures/data-board.jpg" 
-         alt="ELWOIC Outdoor Data Board"
-         class="gallery-img">
-    <div class="gallery-cap">
-        Outdoor Location Data Overview
-    </div>
-</div>
+            <img src="pictures/pm25-chart.jpg" alt="PM2.5 Chart" class="gallery-img">
+            <div class="gallery-cap">PM₂.₅ Monitoring Dashboard</div>
+        </div>
         <div class="gallery-item">
-    <img src="pictures/full-dashboard.jpg" 
-         alt="ELWOIC Full AirGradient Dashboard View"
-         class="gallery-img">
-    <div class="gallery-cap">
-        Full Real-Time Monitoring Interface
-    </div>
-</div>
-        <p style="font-size:12px; color:var(--text-sub); text-align:center; margin-top:15px;">
-Dashboard interface and visualization powered by the AirGradient Cloud Platform. 
-Screenshots are displayed for informational and transparency purposes only.
-</p>
-
+            <img src="pictures/data-board.jpg" alt="Data Board" class="gallery-img">
+            <div class="gallery-cap">Outdoor Data Overview</div>
+        </div>
+        <div class="gallery-item">
+            <img src="pictures/full-dashboard.jpg" alt="Full Dashboard" class="gallery-img">
+            <div class="gallery-cap">Real-Time Interface</div>
+        </div>
     </div>
 
     <h2>പൊതുജനങ്ങളോടുള്ള നിർദ്ദേശങ്ങൾ (Advise to the People)</h2>
@@ -240,28 +275,59 @@ Screenshots are displayed for informational and transparency purposes only.
             <div class="ml">AQI 100-ന് മുകളിൽ പോകുമ്പോൾ ശ്വാസകോശ രോഗമുള്ളവരും കുട്ടികളും പുറത്തിറങ്ങുന്നത് കുറയ്ക്കുക. ആവശ്യമെങ്കിൽ മാസ്ക് ധരിക്കുക.</div>
             <div class="en">When AQI exceeds 100, individuals with respiratory issues and children should limit outdoor activities and use N95 masks if necessary.</div>
         </div>
-        
-        
     </div>
 
     <h2>എങ്ങനെയാണ് വിവരങ്ങൾ ശേഖരിക്കുന്നത്?</h2>
     <div class="lang-grid">
         <div class="ml">
-            ELWOIC സ്റ്റേഷനിലെ AirGradient സെൻസർ ഓരോ സെക്കൻഡിലും വായുവിനെ നിരീക്ഷിക്കുന്നു. ഈ വിവരങ്ങൾ ക്ലൗഡ് സർവർ വഴി വിശകലനം ചെയ്ത് നിങ്ങളിലേക്ക് എത്തുന്നു. ഇത് പൂർണ്ണമായും ഓട്ടോമേറ്റഡ് ആയ ഒരു സംവിധാനമാണ്.
+            ELWOIC സ്റ്റേഷനിലെ AirGradient സെൻസർ ഓരോ സെക്കൻഡിലും വായുവിനെ നിരീക്ഷിക്കുന്നു. ഈ വിവരങ്ങൾ ക്ലൗഡ് സർവർ വഴി വിശകലനം ചെയ്ത് നിങ്ങളിലേക്ക് എത്തുന്നു.
         </div>
         <div class="en">
-            The station automatically monitors air quality every second. This raw data is transmitted to cloud servers, processed using global standards, and updated on your screen instantly.
+            The station automatically monitors air quality every second. This raw data is transmitted to cloud servers, processed using global standards, and updated instantly.
         </div>
     </div>
 
     <footer>
-        <p><strong>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം |Elamkula Local Weather Observation & Information Centre (ELWOIC)</strong></p>
-        <p>Data Source: Real-time Local Monitoring via ELWOIC AirGradient Station</p>
+        <p><strong>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം | ELWOIC</strong></p>
         <p>Hardware Sponsorship & Technical Support: <a href="https://www.airgradient.com" target="_blank" style="color: var(--primary); text-decoration: underline;">AirGradient</a></p>
         <p style="margin-top: 20px; opacity: 0.6;">&copy; 2026 ELWOIC Elamkulam. All Rights Reserved.</p>
     </footer>
 
 </div>
+
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var span = document.getElementsByClassName("close")[0];
+
+    // Select all images in the document
+    var images = document.querySelectorAll('img');
+    
+    images.forEach(function(img) {
+        img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+        }
+    });
+
+    // Close the modal when (x) is clicked
+    span.onclick = function() { 
+        modal.style.display = "none";
+    }
+
+    // Close the modal when background is clicked
+    modal.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 
 </body>
 </html>
