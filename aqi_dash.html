@@ -13,13 +13,13 @@
         }
 
         body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    margin: 0;
-    padding: 0px 5px;  /* top/bottom 1px | left/right 5px */
-    background: transparent;
-    display: flex;
-    justify-content: center;
-}
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0px 5px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+        }
 
         .bulletin-card {
             width: 100%;
@@ -31,12 +31,92 @@
             text-align: center;
         }
 
-        .title-area { color: #002b45; font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* --- Header Styling --- */
+        .title-area { 
+            color: #002b45; 
+            font-size: 18px; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+        }
 
-        .status-hero { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
-        .status-dot { width: 40px; height: 40px; border-radius: 50%; background: #ddd; }
-        .status-text { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+        .location-link {
+            color: inherit;
+            text-decoration: underline; /* Underline as requested */
+        }
 
+        /* --- Hero Area Layout --- */
+        .status-hero { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            margin-bottom: 15px;
+        }
+
+        .status-main-row {
+            display: flex;
+            flex-direction: row; 
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Wood Stove Alert */
+        #woodStoveAlert {
+            font-size: 10px;
+            font-weight: 800;
+            color: #d32f2f;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            height: 14px; 
+            margin-bottom: 8px;
+            animation: blinker 1.5s linear infinite;
+            display: none; 
+        }
+
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* Animated Pulsing Ring */
+        .status-dot-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .status-dot { 
+            position: absolute;
+            top: 5px; left: 5px;
+            width: 40px; height: 40px; 
+            border-radius: 50%; 
+            background: #ddd; 
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 0; left: 0;
+            width: 50px;
+            height: 50px;
+            background: #ddd;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: pulse 2s infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .status-text { font-size: 24px; font-weight: 800; color: #1a1a1a; }
+
+        /* --- Legend & Footer --- */
         .legend-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 15px; }
         .legend-item { padding: 6px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 600; min-width: 90px; }
         .l-good { background: var(--aqi-good); }
@@ -60,15 +140,14 @@
         .sensor-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .sensor-val { font-size: 14px; font-weight: 600; color: #444; }
 
-
-        .indicator-bar{
-    display:block;
-    height:4px;
-    width:60px;
-    margin:6px auto 0 auto;
-    border-radius:4px;
-    transition:0.3s ease;
-}
+        .indicator-bar {
+            display: block;
+            height: 4px;
+            width: 60px;
+            margin: 6px auto 0 auto;
+            border-radius: 4px;
+            transition: 0.3s ease;
+        }
 
         .attribution { font-size: 10px; color: #aaa; margin-top: 15px; border-top: 1px dotted #eee; padding-top: 10px; }
         .attribution a { color: #888; text-decoration: none; font-weight: bold; }
@@ -79,12 +158,19 @@
 <div class="bulletin-card">
     <div class="title-area">
         <img src="https://www.gstatic.com/images/icons/material/system_gm/1x/cloud_white_24dp.png" style="filter: invert(1); width:20px;" alt="">
-        Air Quality Index (AQI)
+        <a href="https://maps.app.goo.gl/cNz5SeVwk4t3PMvQ8" target="_blank" class="location-link">Elamkulam</a> Air Quality Index (AQI) | Residential Area
     </div>
 
     <div class="status-hero">
-        <div id="statusDot" class="status-dot"></div>
-        <div id="statusText" class="status-text">AQI --</div>
+        <div id="woodStoveAlert">⚠️ Residential Wood Stove Burning: AQI Increased</div>
+        
+        <div class="status-main-row">
+            <div class="status-dot-container">
+                <div id="pulseRing" class="pulse-ring"></div>
+                <div id="statusDot" class="status-dot"></div>
+            </div>
+            <div id="statusText" class="status-text">AQI --</div>
+        </div>
     </div>
 
     <div class="legend-bar">
@@ -98,58 +184,33 @@
     <div id="healthAdvice" class="health-advice">Loading air quality data...</div>
     <div class="malayalam-text">ഇന്നത്തെ ശുദ്ധവായു, നാളെയുടെ ആരോഗ്യം.</div>
     <a href="AQI-advise.html" target="_blank" class="more-info-link">
-AQI എന്തെന്നും, എങ്ങനെയെന്നും കൂടുതൽ അറിയാം.
-</a>
+        AQI എന്തെന്നും, എങ്ങനെയെന്നും കൂടുതൽ അറിയാം.
+    </a>
 
     <div class="sensor-footer">
+        <div class="sensor-item">
+            <div class="sensor-label">PM10 (µg/m³)</div>
+            <div class="sensor-val"><span id="pm10">--</span></div>
+            <span id="pm10-ind" class="indicator-bar" style="background:#ccc"></span>
+        </div>
+        <div class="sensor-item">
+            <div class="sensor-label">CO₂ (ppm)</div>
+            <div class="sensor-val"><span id="co2">--</span></div>
+            <span id="co2-ind" class="indicator-bar" style="background:#ccc"></span>
+        </div>
+        <div class="sensor-item">
+            <div class="sensor-label">TVOC Index</div>
+            <div class="sensor-val"><span id="tvoc">--</span></div>
+            <span id="tvoc-ind" class="indicator-bar" style="background:#ccc"></span>
+        </div>
+        <div class="sensor-item">
+            <div class="sensor-label">NOx Index</div>
+            <div class="sensor-val"><span id="nox">--</span></div>
+            <span id="nox-ind" class="indicator-bar" style="background:#ccc"></span>
+        </div>
+    </div>
 
-<div class="sensor-item">
-<div class="sensor-label">PM10 (µg/m³)</div>
-
-<div class="sensor-val">
-<span id="pm10">--</span>
-</div>
-
-<span id="pm10-ind" class="indicator-bar" style="background:#ccc"></span>
-</div>
-
-
-<div class="sensor-item">
-<div class="sensor-label">CO₂ (ppm)</div>
-
-<div class="sensor-val">
-<span id="co2">--</span>
-</div>
-
-<span id="co2-ind" class="indicator-bar" style="background:#ccc"></span>
-</div>
-
-
-<div class="sensor-item">
-<div class="sensor-label">TVOC Index</div>
-
-<div class="sensor-val">
-<span id="tvoc">--</span>
-</div>
-
-<span id="tvoc-ind" class="indicator-bar" style="background:#ccc"></span>
-</div>
-
-
-<div class="sensor-item">
-<div class="sensor-label">NOx Index</div>
-
-<div class="sensor-val">
-<span id="nox">--</span>
-</div>
-
-<span id="nox-ind" class="indicator-bar" style="background:#ccc"></span>
-</div>
-
-</div>
-
-    
- <div class="attribution">
+    <div class="attribution">
 Data Source: ELWOIC Station API |
 Real-time monitoring powered by sponsored hardware from AirGradient |
 Last Updated: <span id="time">--</span> |
@@ -180,149 +241,75 @@ function pm25ToAQI(pm) {
 }
 
 function getStatus(aqi) {
-    if (aqi <= 50) return {
-        text: "Good",
-        color: "#4caf50",
-        emoji: "😀",
-        advice_en: "Air quality is good. Ideal for outdoor activities.",
-        advice_ml: "വായു ഗുണനിലവാരം നല്ലതാണ്. പുറത്തുപോകാൻ അനുയോജ്യമാണ്."
-    };
-
-    if (aqi <= 100) return {
-        text: "Satisfactory",
-        color: "#8bc34a",
-        emoji: "🙂",
-        advice_en: "Air quality is satisfactory. Acceptable for most people.",
-        advice_ml: "വായു ഗുണനിലവാരം തൃപ്തികരമാണ്. ഭൂരിഭാഗം ആളുകൾക്ക് സുരക്ഷിതമാണ്."
-    };
-
-    if (aqi <= 200) return {
-        text: "Moderate",
-        color: "#ffc107",
-        emoji: "😐",
-        advice_en: "Moderate pollution. Sensitive groups should limit outdoor activity.",
-        advice_ml: "മിതമായ വായു മലിനീകരണം. കുട്ടികൾ, മുതിർന്നവർ ശ്രദ്ധിക്കണം."
-    };
-
-    if (aqi <= 300) return {
-        text: "Poor",
-        color: "#ff9800",
-        emoji: "😷",
-        advice_en: "Poor air quality. Avoid prolonged outdoor exposure.",
-        advice_ml: "വായു ഗുണനിലവാരം മോശമാണ്. ദീർഘനേരം പുറത്തുനിൽക്കുന്നത് ഒഴിവാക്കുക."
-    };
-
-    return {
-        text: "Very Poor",
-        color: "#f44336",
-        emoji: "☹️",
-        advice_en: "Health alert. Everyone should avoid outdoor activities.",
-        advice_ml: "ആരോഗ്യ അടിയന്തരാവസ്ഥ. എല്ലാവരും പുറത്തുപോകുന്നത് ഒഴിവാക്കുക."
-    };
+    if (aqi <= 50) return { text: "Good", color: "#4caf50", emoji: "😀", advice_en: "Air quality is good.", advice_ml: "വായു ഗുണനിലവാരം നല്ലതാണ്." };
+    if (aqi <= 100) return { text: "Satisfactory", color: "#8bc34a", emoji: "🙂", advice_en: "Air quality is satisfactory.", advice_ml: "വായു ഗുണനിലവാരം തൃപ്തികരമാണ്." };
+    if (aqi <= 200) return { text: "Moderate", color: "#ffc107", emoji: "😐", advice_en: "Moderate pollution.", advice_ml: "മിതമായ വായു മലിനീകരണം." };
+    if (aqi <= 300) return { text: "Poor", color: "#ff9800", emoji: "😷", advice_en: "Poor air quality.", advice_ml: "വായു ഗുണനിലവാരം മോശമാണ്." };
+    return { text: "Very Poor", color: "#f44336", emoji: "☹️", advice_en: "Health alert.", advice_ml: "ആരോഗ്യ അടിയന്തരാവസ്ഥ." };
 }
 
-    function getColorByLevel(value, type){
-
-    if(value === null || value === undefined || isNaN(value))
-        return "#cccccc";
-
-    if(type === "pm10"){
-    if(value <= 50) return "#4caf50";
-    if(value <= 100) return "#ffc107";
-    return "#f44336";
-}
-
-    if(type === "co2"){
-        if(value <= 800) return "#4caf50";
-        if(value <= 1200) return "#ffc107";
-        return "#f44336";
-    }
-
-    if(type === "tvoc" || type === "nox"){
-        if(value <= 100) return "#4caf50";
-        if(value <= 200) return "#ffc107";
-        return "#f44336";
-    }
-
+function getColorByLevel(value, type){
+    if(value === null || value === undefined || isNaN(value)) return "#cccccc";
+    if(type === "pm10") return value <= 50 ? "#4caf50" : value <= 100 ? "#ffc107" : "#f44336";
+    if(type === "co2") return value <= 800 ? "#4caf50" : value <= 1200 ? "#ffc107" : "#f44336";
+    if(type === "tvoc" || type === "nox") return value <= 100 ? "#4caf50" : value <= 200 ? "#ffc107" : "#f44336";
     return "#cccccc";
 }
 
 async function updateDashboard() {
     try {
         const res = await fetch(API_URL);
-
-if (!res.ok) {
-    throw new Error("Network response not OK");
-}
-
-let data = await res.json();
-
-
-        if (!data) throw new Error("No data");
-
+        if (!res.ok) throw new Error("Network response not OK");
+        let data = await res.json();
         if (Array.isArray(data)) data = data[0];
 
-        /* ---------- AQI CALCULATION ---------- */
-
         const pm = parseFloat(data?.pm02_corrected ?? 0);
-const pm10 = parseFloat(data?.pm10_corrected) || 0;
-
-const aqi = pm25ToAQI(pm);
-const st = getStatus(aqi);
+        const pm10 = parseFloat(data?.pm10_corrected) || 0;
+        const aqi = pm25ToAQI(pm);
+        const st = getStatus(aqi);
 
         document.getElementById("statusDot").style.background = st.color;
+        document.getElementById("pulseRing").style.background = st.color;
         document.getElementById("statusText").innerText = `AQI ${aqi} — ${st.text} ${st.emoji}`;
-        document.getElementById("healthAdvice").innerHTML =
-`${st.advice_en}<br>${st.advice_ml}<br>
-(PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³)`;
+        
+        const now = new Date();
+        const hour = now.getHours();
+        const alertDiv = document.getElementById("woodStoveAlert");
+        
+        if (hour >= 5 && hour < 9 && pm > 45) {
+            alertDiv.style.display = "block";
+        } else {
+            alertDiv.style.display = "none";
+        }
 
+        document.getElementById("healthAdvice").innerHTML = `${st.advice_en}<br>${st.advice_ml}<br>(PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³)`;
 
-        /* ---------- PM10 ---------- */
-
-document.getElementById("pm10").innerText = pm10;
-document.getElementById("pm10-ind").style.background =
-    getColorByLevel(pm10, "pm10");
-
-        /* ---------- CO2 ---------- */
-
+        document.getElementById("pm10").innerText = pm10;
+        document.getElementById("pm10-ind").style.background = getColorByLevel(pm10, "pm10");
+        
         const co2 = parseFloat(data?.rco2_corrected) || 0;
         document.getElementById("co2").innerText = co2;
-        document.getElementById("co2-ind").style.background =
-            getColorByLevel(co2, "co2");
-
-        /* ---------- TVOC ---------- */
+        document.getElementById("co2-ind").style.background = getColorByLevel(co2, "co2");
 
         const tvoc = parseFloat(data?.tvocIndex) || 0;
         document.getElementById("tvoc").innerText = tvoc;
-        document.getElementById("tvoc-ind").style.background =
-            getColorByLevel(tvoc, "tvoc");
-
-        /* ---------- NOx ---------- */
+        document.getElementById("tvoc-ind").style.background = getColorByLevel(tvoc, "tvoc");
 
         const nox = parseFloat(data?.noxIndex) || 0;
         document.getElementById("nox").innerText = nox;
-        document.getElementById("nox-ind").style.background =
-            getColorByLevel(nox, "nox");
+        document.getElementById("nox-ind").style.background = getColorByLevel(nox, "nox");
 
-        /* ---------- TIME ---------- */
-
-        document.getElementById("time").innerText =
-            new Date().toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        document.getElementById("time").innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     } catch (e) {
         console.error(e);
-
         document.getElementById("statusText").innerText = "Offline";
-        document.getElementById("healthAdvice").innerText =
-            "Data connection error. Station may be temporarily unavailable.";
     }
 }
 
 updateDashboard();
-setInterval(updateDashboard, 300000);
+// Set to 180,000ms = 3 Minutes
+setInterval(updateDashboard, 180000); 
 </script>
 
 </body>
