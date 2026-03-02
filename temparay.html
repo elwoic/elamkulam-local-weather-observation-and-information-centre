@@ -1,335 +1,549 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Site Status Control</title>
+    <title>Elamkulam Weather Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --gray-100: #f3f4f6;
-            --gray-300: #d1d5db;
-            --text: #1f2937;
-            --temp-bg: #eff6ff;
+        :root { --primary: #2563eb; --secondary: #f59e0b; --bg: #f8fafc; }
+        body { 
+    background: transparent;   /* remove grey */
+    font-family: 'Poppins', sans-serif; 
+    margin: 0; 
+    padding: 10px; 
+}
+
+        
+        .weather-mini-dashboard { 
+            max-width: 550px; margin: 5px auto; padding: 15px; 
+            background: #fff; border-radius: 14px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
         }
+        
+        .weather-mini-dashboard h2 { text-align: center; color: #004080; font-size: 1.1em; margin-bottom: 15px; }
 
-        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: var(--text); padding: 40px 20px; margin: 0; }
-        .admin-panel { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; border: 1px solid var(--gray-300); }
+        /* Forced 4-column layout for all devices */
+        .info-boxes { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
+        }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100); padding-bottom: 20px; margin-bottom: 30px; }
-        .live-preview { padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; border: 1px solid var(--gray-300); }
-        .preview-on { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
-        .preview-off { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .info-box { 
+            background: var(--bg); border-radius: 8px; border: 1px solid #f1f5f9; 
+            text-align: center; padding: 8px 4px; position: relative;
+            min-height: 65px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .info-box.primary { border-top: 3px solid var(--primary); }
+        .info-box.secondary { border-top: 3px solid var(--secondary); }
+        
+        .info-title { font-size: 0.5rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .info-value { font-size: 0.9rem; font-weight: 700; color: #1e293b; line-height: 1.1; }
+        .info-unit { font-size: 0.55rem; color: #94a3b8; }
 
-        .section { margin-bottom: 20px; border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; }
-        .section-header { background: #fff; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-100); }
-        .section-content { padding: 20px; display: none; }
-        .section.active .section-content { display: block; }
-        
-        h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 0; }
-        
-        .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 4px; border: 1px solid var(--gray-300); cursor: pointer; background: white; transition: all 0.2s; color: var(--text); }
-        .btn-sm:hover { border-color: var(--primary); }
-        .btn-sm:disabled { cursor: not-allowed; opacity: 0.5; background: var(--gray-100); }
-        
-        .active-online { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-        .active-offline { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
-        .active-auto { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
-        .pending-offline-btn { border: 2px dashed var(--danger) !important; color: var(--danger) !important; font-weight: bold; }
-        .btn-blue { background: var(--primary); color: white; border-color: var(--primary); }
+        .pressure-sub { font-size: 0.45rem; color: #64748b; margin-top: 2px; font-weight: 500; }
 
-        .status-pill { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
-        
-        .temp-session-box { background: var(--temp-bg); border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; display: flex; gap: 15px; align-items: center; font-size: 13px; }
+        .update-tag { font-size:0.55rem; color:#64748b; text-align:center; margin-top:10px; }
 
-        .schedule-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .schedule-grid td { padding: 12px 8px; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
-        .day-label { font-weight: 600; width: 140px; }
+        /* Single Row Push Action Area */
+        .push-section { 
+            margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; 
+            display: flex; align-items: center; justify-content: space-between; gap: 5px;
+        }
         
-        input[type="time"], input[type="text"], input[type="date"] { border: 1px solid var(--gray-300); padding: 6px; border-radius: 4px; font-size: 13px; }
+        #log-btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; 
+            cursor: pointer; transition: 0.3s; white-space: nowrap;
+        }
+        #log-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .timer-display { font-size: 0.6rem; color: #64748b; text-align: right; }
+        #cooldown-timer { font-weight: 700; color: #ef4444; }
+
+        .about-link { text-align: center; margin-top: 5px; }
+        .about-link a { font-size: 0.55rem; color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        #log-status { font-size: 0.6rem; text-align: center; color: #059669; font-weight: 600; margin-top: 4px; }
         
-        .update-box { background: var(--gray-100); padding: 15px; border-radius: 8px; text-align: right; margin-top: 10px; }
-        .info-note { font-size: 12px; color: #64748b; margin-bottom: 10px; padding: 10px; background: #fef9c3; border-radius: 6px; border: 1px solid #fde047; }
+        .footer-legal { 
+            margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9;
+            font-size: 0.5rem; color: #94a3b8; line-height: 1.3; text-align: justify;
+        }
+        .footer-legal a { color: var(--primary); text-decoration: underline; }
+        /* ===== Modal Styling ===== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-box {
+    background: white;
+    width: 90%;
+    max-width: 380px;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-box h3 {
+    margin-bottom: 10px;
+    color: #065f46;
+    font-size: 1rem;
+}
+
+.modal-box p {
+    font-size: 0.8rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.modal-box button {
+    margin-top: 12px;
+    background: #10b981;
+    border: none;
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
     </style>
 </head>
 <body>
 
-<div class="admin-panel">
-    <div class="header">
-        <div>
-            <h1 style="margin:0; font-size: 22px;">Site Management</h1>
-            <p style="color: #64748b; margin: 5px 0 0 0;">Control your contact availability in real-time.</p>
-        </div>
-        <div id="status-display" class="live-preview">● LOADING...</div>
-    </div>
+<section class="weather-mini-dashboard">
+    <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം</h2>
 
-    <div style="margin-bottom: 35px;">
-        <div class="flex-between" style="margin-bottom: 15px;">
-            <h3>1. Manual Status & Temporary Session</h3>
-            <button class="btn-sm" style="color: var(--danger);" onclick="resetAll()">Reset to Default Schedule</button>
+    <div class="info-boxes">
+        <div class="info-box primary">
+            <span class="info-title">താപനില</span>
+            <div class="info-value"><span id="temp">--</span><span class="info-unit">°C</span></div>
+        </div>
+        <div class="info-box primary">
+            <span class="info-title">ആർദ്രത</span>
+            <div class="info-value"><span id="humidity">--</span><span class="info-unit">%</span></div>
+        </div>
+        <div class="info-box">
+            <span class="info-title">അനുഭവപ്പെടുന്നത്</span>
+            <div class="info-value"><span id="feels">--</span><span class="info-unit">°C</span></div>
+        </div>
+        <div class="info-box">
+            <span class="info-title">ദൃശ്യപരിധി</span>
+            <div class="info-value"><span id="visibility">--</span><span class="info-unit">km</span></div>
         </div>
         
-        <div class="status-pill">
-            <button id="btn-force-online" class="btn-sm" onclick="setManual('available')">Force Online</button>
-            <button id="btn-force-offline" class="btn-sm" onclick="setManual('away')">Force Offline</button>
-            <button id="btn-auto-schedule" class="btn-sm" onclick="setManual('auto')">Switch to Auto-Schedule</button>
-
-            <div class="temp-session-box">
-                <strong>Temp Online:</strong>
-                <input type="time" id="temp-start">
-                <span>to</span>
-                <input type="time" id="temp-end">
-                <div style="font-size:11px; display:flex; flex-direction:column; gap:2px;">
-                    <label><input type="radio" name="temp-after" value="auto" checked> Then Auto</label>
-                    <label><input type="radio" name="temp-after" value="away"> Then Offline</label>
-                </div>
-                <button class="btn-sm btn-blue" onclick="setTempSession()">Set Session</button>
-            </div>
+        <div class="info-box">
+            <span class="info-title">കാറ്റ് (Avg)</span>
+            <div class="info-value"><span id="wind">--</span><span class="info-unit">km/h</span></div>
         </div>
-        
-        <div style="margin-top: 20px;">
-            <label id="note-label" style="font-size: 13px; display: block; margin-bottom: 5px;">Reason for being away (Force Offline mode):</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="away-note" placeholder="Write reason..." style="width:100%" disabled>
-                <button id="btn-update-note" class="btn-sm" onclick="updateNoteAndOffline()" disabled>Update Note</button>
-            </div>
-            <p id="pending-msg" style="font-size: 11px; color: var(--danger); margin-top: 5px; display: none;">* Click "Update Note" to apply the Offline status to the site.</p>
+        <div class="info-box secondary">
+            <span class="info-title">Consensus T</span>
+            <div class="info-value"><span id="om-temp">--</span><span class="info-unit">°C</span></div>
+        </div>
+        <div class="info-box secondary">
+            <span class="info-title">Consensus H</span>
+            <div class="info-value"><span id="om-humidity">--</span><span class="info-unit">%</span></div>
+            <div class="pressure-sub">P: <span id="pressure">--</span></div>
+        </div>
+        <div class="info-box" id="condition-box"
+     style="background: #f0fdf4; border-top: 3px solid #10b981; cursor:pointer;">
+            <span class="info-title">അവസ്ഥ(Condition)</span>
+            <div class="info-value" id="condition" style="font-size: 0.6rem; color: #065f46;">Loading...</div>
+            <span class="info-title">Click</span>
         </div>
     </div>
 
-    <div class="section" id="sec-weekly">
-        <div class="section-header" onclick="toggleSection('sec-weekly')">
-            <h3>2. Weekly Schedule Settings</h3>
-            <span id="weekly-arrow">▼</span>
-        </div>
-        <div class="section-content">
-            <div class="info-note">
-                <strong>💡 Tip:</strong> For overnight (e.g., 18:00 to 08:00), just enter the times normally. For 24h (Sat/Sun), use 00:00 to 23:59.
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="font-size: 14px;"><input type="checkbox" id="master-switch"> Master: Follow Schedules</label>
-            </div>
-            <table class="schedule-grid" id="days-table"></table>
-            <div class="update-box">
-                <button class="btn-sm btn-blue" onclick="saveWeeklySchedule()">Update Weekly Hours</button>
-            </div>
-        </div>
+   
+<p class="update-tag" id="secret-trigger" style="cursor: default; user-select: none;">
+    Last Updated: <span id="last-updated">--</span>
+</p>
+    <div class="push-section">
+        <button id="log-btn" disabled>Syncing...</button>
+        <div class="timer-display">Next: <span id="cooldown-timer">--:--</span></div>
+         
+    <div class="about-link">
+        <a href="about-weather-push.html" target="_blank" rel="noopener noreferrer">What is "Push Data"?</a>
     </div>
+    </div>
+    <p id="log-status"></p>
 
-    <div class="section" id="sec-dated">
-        <div class="section-header" onclick="toggleSection('sec-dated')">
-            <h3>3. Dated Overrides (Next 7 Days)</h3>
-            <span id="dated-arrow">▼</span>
-        </div>
-        <div class="section-content">
-            <p style="font-size:12px; color:#64748b; margin-top:0;">Overrides Auto-Schedule for specific dates.</p>
-            <table class="schedule-grid" id="dated-table"></table>
-            <div class="update-box">
-                <button class="btn-sm btn-blue" onclick="saveDatedSchedule()">Update Dated Overrides</button>
-            </div>
+    <div class="footer-legal">
+        Data from an <b>AirGradient</b> monitor (CC BY-SA 4.0). 
+        <a href="#" onclick="toggleLegal(); return false;">Read legal notice</a>
+       
+        <div id="legal-more" style="display:none; margin-top:5px;">
+            Air quality, Temperature and Humidity data is sourced via the AirGradient Cloud API and is available under the 
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a> license. 
+            ELWOIC independently processes and presents this data.
+            <br><br>
+            <b>Disclaimer:</b> Data is provided "as-is" without warranty. 
+            Do not rely on it for medical, regulatory, or emergency decisions.
         </div>
     </div>
-</div>
+</section>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCTdb7oM8hayioOOkyNycm10Pnb8sAOVm4",
-    authDomain: "contact-controll.firebaseapp.com",
-    databaseURL: "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "contact-controll",
-    storageBucket: "contact-controll.firebasestorage.app",
-    messagingSenderId: "357811399820",
-    appId: "1:357811399820:web:6674904d6e18e68d7cdfa9"
+    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
+    authDomain: "report-20d26.firebaseapp.com",
+    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-20d26"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const dbRef = ref(db, "site_config");
 
-const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-let latestData = null;
+const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
+const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
+const LAT = 10.9081;
+const LON = 76.2296;
 
-// Initialize Tables UI once
-const wTable = document.getElementById('days-table');
-days.forEach(day => {
-    wTable.innerHTML += `<tr><td class="day-label">${day}</td><td><input type="checkbox" id="check-${day}"> Active</td><td><input type="time" id="start-${day}"></td><td>to</td><td><input type="time" id="end-${day}"></td></tr>`;
+let currentLogData = {};
+let lastPushTimeUTC = null;
+let timer = null;
+
+/* ---------------- AQI ---------------- */
+
+function getAQIStatus(aqi) {
+    if (aqi <= 50) return "Excellent";
+    if (aqi <= 100) return "Good";
+    if (aqi <= 150) return "Moderate";
+    if (aqi <= 200) return "Unhealthy";
+    if (aqi <= 300) return "Very Unhealthy";
+    return "Hazardous";
+}
+
+function pm25ToAQI(pm) {
+    const bp = [
+        {cL:0,cH:12,aL:0,aH:50},
+        {cL:12.1,cH:35.4,aL:51,aH:100},
+        {cL:35.5,cH:55.4,aL:101,aH:150},
+        {cL:55.5,cH:150.4,aL:151,aH:200},
+        {cL:150.5,cH:250.4,aL:201,aH:300},
+        {cL:250.5,cH:500,aL:301,aH:500}
+    ];
+    const r = bp.find(range => pm >= range.cL && pm <= range.cH) || bp[0];
+    return Math.round(((r.aH-r.aL)/(r.cH-r.cL))*(pm-r.cL)+r.aL);
+}
+
+/* ---------------- FEELS LIKE ---------------- */
+
+function getRealisticFeelsLike(t, rh, apiFeels) {
+    if (t < 26) return t.toFixed(1);
+    const T = (t * 9/5) + 32;
+    let hi = -42.379 + 2.04901523*T + 10.14333127*rh
+        - 0.22475541*T*rh - 0.00683783*T*T
+        - 0.05481717*rh*rh + 0.00122874*T*T*rh
+        + 0.00085282*T*rh*rh - 0.00000199*T*T*rh*rh;
+
+    return (((hi-32)*5/9) * 0.3 + apiFeels * 0.7).toFixed(1);
+}
+
+/* ---------------- SMART CONDITION ENGINE ---------------- */
+function calculateSmartCondition(owRes, localT, localH, visibilityKm) {
+    const cloud = owRes.clouds?.all ?? 0;
+    // Get IST Hour (Ensuring we use India Time)
+    const hour = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"})).getHours();
+    const hasRain = (owRes.rain && Object.keys(owRes.rain).length > 0) || (owRes.weather[0].main === "Rain");
+
+    let condition = "";
+
+    // 1. RAIN (Highest Priority)
+    if (hasRain) {
+        return "മഴ (Rain)";
+    }
+
+    // 2. MARCH TRANSITION LOGIC (Morning/Evening)
+    // 6 AM to 9 AM (Morning Haze/Mist)
+    if (hour >= 6 && hour <= 9) {
+        if (localH > 88 || visibilityKm < 4) {
+            condition = "മഞ്ഞ് / മൂടൽ (Hazy/Misty)";
+        } else if (cloud > 40) {
+            condition = "മങ്ങിയ വെളിച്ചം (Dull Morning)";
+        } else {
+            condition = "പുലർകാലം (Clear Morning)";
+        }
+    } 
+    // 10 AM to 4 PM (Peak March Sun)
+    else if (hour > 9 && hour < 17) {
+        if (cloud < 25) {
+            condition = "കഠിനമായ വെയിൽ (Strong Sun)";
+        } else if (cloud < 60) {
+            condition = "തെളിഞ്ഞ ആകാശം (Mostly Sunny)";
+        } else {
+            condition = "ഭാഗികമായി മേഘാവൃതം (Partly Cloudy)";
+        }
+    }
+    // 5 PM to 7 PM (Golden Hour / Evening Dust)
+    else if (hour >= 17 && hour <= 19) {
+        condition = (cloud > 30) ? "മേഘാവൃതമായ സന്ധ്യ (Cloudy Evening)" : "സായംകാലം (Clear Evening)";
+    }
+    // NIGHT
+    else {
+        condition = (cloud > 50) ? "മേഘാവൃതമായ രാത്രി (Cloudy Night)" : "തെളിഞ്ഞ രാത്രി (Clear Night)";
+    }
+
+    // 3. COMFORT TAGS (Based on Heat Index)
+    let comfort = "";
+    if (localT >= 36) comfort = " [അത്യുഷ്ണം ⚠️]";
+    else if (localT >= 32 && localH > 65) comfort = " [ഉഷ്ണവും ഈർപ്പവും]";
+    else if (localT < 27) comfort = " [സുഖകരമായ കാലാവസ്ഥ]";
+
+    return condition + comfort;
+}
+/* ---------------- MAIN SNAPSHOT ---------------- */
+
+async function loadWeatherSnapshot() {
+    try {
+
+        const [workerRes, owRes, omRes] = await Promise.all([
+            fetch(API_URL).then(r => r.json()),
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r => r.json()),
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r => r.json())
+        ]);
+
+        const localT = workerRes.atmp_corrected;
+        const localH = workerRes.rhum_corrected;
+        const pm25Val = workerRes.pm02_corrected;
+
+        const aqiVal = pm25ToAQI(pm25Val);
+        const aqiStat = getAQIStatus(aqiVal);
+
+        const visibilityKm = parseFloat((owRes.visibility / 1000).toFixed(1));
+        const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
+        const avgWind = ((owRes.wind.speed * 3.6 + omRes.current_weather.windspeed) / 2).toFixed(1);
+        const omH = omRes.hourly.relativehumidity_2m[new Date().getHours()];
+
+        // 🔥 NEW SMART CONDITION
+      // ... inside loadWeatherSnapshot ...
+const smartCondition = calculateSmartCondition(owRes, localT, localH, visibilityKm);
+
+// ✅ SAVE DATA FOR THE MODAL
+window.lastWeatherMeta = {
+    cloudPercent: owRes.clouds?.all ?? 0,
+    visibilityKm: visibilityKm,
+    humidity: localH,
+    temperature: localT,
+    hasRain: (owRes.rain && Object.keys(owRes.rain).length > 0) || (owRes.weather[0].main === "Rain"),
+    hour: new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"})).getHours()
+};
+// ... rest of the UI updates ...
+
+        /* ---- UI UPDATE ---- */
+
+        document.getElementById("temp").textContent = localT.toFixed(1);
+        document.getElementById("humidity").textContent = localH;
+        document.getElementById("feels").textContent = realFeels;
+        document.getElementById("visibility").textContent = visibilityKm;
+        document.getElementById("om-temp").textContent = ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1);
+        document.getElementById("om-humidity").textContent = Math.round((owRes.main.humidity + omH)/2);
+        document.getElementById("pressure").textContent = owRes.main.pressure;
+        document.getElementById("condition").textContent = smartCondition;
+        document.getElementById("wind").textContent = avgWind;
+
+        document.getElementById("last-updated").textContent =
+            new Date().toLocaleTimeString("en-IN", {
+                timeZone: "Asia/Kolkata",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+        currentLogData = {
+    temp_c: localT,
+    humidity: localH,
+    pm25: pm25Val, // ✅ Fix: changed from pm25 to pm25Val
+    feels_like_c: parseFloat(realFeels),
+    aqi: aqiVal,
+    aqi_status: aqiStat,
+    pressure_hpa: owRes.main.pressure,
+    wind_kmh: parseFloat(avgWind),
+    visibility_km: visibilityKm,
+    condition: smartCondition,
+    timestamp_utc: new Date().toISOString(),
+    timestamp_ist: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+};
+
+    } catch (err) {
+        console.error("Update Error", err);
+    }
+}
+
+/* ---------------- PUSH SYSTEM ---------------- */
+
+onValue(query(ref(db, "weather_logs"), limitToLast(1)), (snapshot) => {
+    if (!snapshot.exists()) { enableBtn(); return; }
+    lastPushTimeUTC = new Date(Object.values(snapshot.val())[0].timestamp_utc).getTime();
+    startTimer();
 });
 
-const dTable = document.getElementById('dated-table');
-for (let i = 0; i < 7; i++) {
-    let date = new Date();
-    date.setDate(date.getDate() + i);
-    let dateStr = date.toISOString().split('T')[0];
-    let displayStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    dTable.innerHTML += `<tr data-date="${dateStr}"><td class="day-label">${displayStr}</td><td><input type="checkbox" id="date-active-${dateStr}"> Override</td><td><input type="checkbox" id="date-24h-${dateStr}"> 24h</td><td><input type="time" id="date-start-${dateStr}"> to <input type="time" id="date-end-${dateStr}"></td></tr>`;
-}
-
-// Logic Utils
-function timeToNumber(t){ return t ? parseInt(t.replace(":","")) : 0; }
-function isInsideRange(start,end,current){
-    return (start <= end) ? (current >= start && current <= end) : (current >= start || current <= end);
-}
-
-function computeLiveStatus(data){
-    const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
-    const currentTime = now.getHours()*100 + now.getMinutes();
-    const currentDay = days[(now.getDay()+6)%7];
-
-    if(data.tempSession){
-        const start = timeToNumber(data.tempSession.start);
-        const end = timeToNumber(data.tempSession.end);
-        if(isInsideRange(start,end,currentTime)) return "available";
-        
-        const revTo = data.tempSession.revertTo;
-        update(dbRef, { tempSession: null, useSchedule: (revTo === 'auto'), currentStatus: (revTo === 'away' ? 'away' : 'scheduled') });
-    }
-
-    if(!data.useSchedule) return data.currentStatus === "available" ? "available" : "away";
-
-    if(data.datedOverrides && data.datedOverrides[todayStr]?.active){
-        const o = data.datedOverrides[todayStr];
-        if(o.is24h) return "available";
-        return isInsideRange(timeToNumber(o.start), timeToNumber(o.end), currentTime) ? "available" : "away";
-    }
-
-    if(data.schedule && data.schedule[currentDay]?.active){
-        const s = data.schedule[currentDay];
-        return isInsideRange(timeToNumber(s.start), timeToNumber(s.end), currentTime) ? "available" : "away";
-    }
-    return "away";
-}
-
-function renderUI(data){
-    const liveStatus = computeLiveStatus(data);
-    if(data.liveStatus !== liveStatus) update(dbRef, { liveStatus });
-
-    const display = document.getElementById("status-display");
-    display.innerText = "● LIVE: " + liveStatus.toUpperCase();
-    display.className = "live-preview " + (liveStatus === "available" ? "preview-on" : "preview-off");
-
-    const mode = data.useSchedule ? "auto" : (data.currentStatus === "available" ? "available" : "away");
-    
-    // Status Buttons
-    document.getElementById('btn-force-online').className = "btn-sm " + (mode === "available" ? "active-online" : "");
-    document.getElementById('btn-force-offline').className = "btn-sm " + (mode === "away" ? "active-offline" : "");
-    document.getElementById('btn-auto-schedule').className = "btn-sm " + (mode === "auto" ? "active-auto" : "");
-
-    // Note Section Logic
-    const noteInput = document.getElementById("away-note");
-    const noteBtn = document.getElementById("btn-update-note");
-    const pendingMsg = document.getElementById("pending-msg");
-
-    // Only enable the note fields if we are in 'away' mode OR if the offline button was clicked
-    if (mode === 'away' || document.getElementById('btn-force-offline').classList.contains('pending-offline-btn')) {
-        noteInput.disabled = false;
-        noteBtn.disabled = false;
-        noteBtn.classList.add('btn-blue');
-    } else {
-        noteInput.disabled = true;
-        noteBtn.disabled = true;
-        noteBtn.classList.remove('btn-blue');
-        pendingMsg.style.display = 'none';
-    }
-
-    document.getElementById("master-switch").checked = data.useSchedule || false;
-    document.getElementById("away-note").value = data.awayNote || "";
-
-    // Sync Weekly inputs
-    if(data.schedule) days.forEach(d => {
-        if(data.schedule[d]) {
-            document.getElementById(`check-${d}`).checked = data.schedule[d].active;
-            document.getElementById(`start-${d}`).value = data.schedule[d].start || "";
-            document.getElementById(`end-${d}`).value = data.schedule[d].end || "";
+function startTimer() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => {
+        const remain = (30 * 60) - Math.floor((Date.now() - lastPushTimeUTC) / 1000);
+        if (remain <= 0) { enableBtn(); clearInterval(timer); }
+        else {
+            document.getElementById("log-btn").disabled = true;
+            document.getElementById("log-btn").textContent = "Wait a little ↦";
+            document.getElementById("cooldown-timer").textContent =
+                Math.floor(remain/60).toString().padStart(2,'0') +
+                ":" +
+                (remain%60).toString().padStart(2,'0');
         }
-    });
-
-    // Sync Dated inputs
-    if(data.datedOverrides) Object.keys(data.datedOverrides).forEach(date => {
-        const el = document.getElementById(`date-active-${date}`);
-        if(el) {
-            el.checked = data.datedOverrides[date].active;
-            document.getElementById(`date-24h-${date}`).checked = data.datedOverrides[date].is24h;
-            document.getElementById(`date-start-${date}`).value = data.datedOverrides[date].start || "";
-            document.getElementById(`date-end-${date}`).value = data.datedOverrides[date].end || "";
-        }
-    });
+    }, 1000);
 }
 
-onValue(dbRef, (snap) => { latestData = snap.val() || {}; renderUI(latestData); });
-setInterval(() => { if(latestData) renderUI(latestData); }, 30000);
+function enableBtn() {
+    document.getElementById("log-btn").disabled = false;
+    document.getElementById("log-btn").textContent = "📤 Push Data";
+    document.getElementById("cooldown-timer").textContent = "Ready to push";
+}
 
-// Actions
-window.setManual = (m) => {
-    if (m === 'away') {
-        // Unlock UI first so user can type the reason
-        document.getElementById('btn-force-offline').classList.add('pending-offline-btn');
-        document.getElementById('away-note').disabled = false;
-        document.getElementById('btn-update-note').disabled = false;
-        document.getElementById('btn-update-note').classList.add('btn-blue');
-        document.getElementById('pending-msg').style.display = 'block';
-        document.getElementById('away-note').focus();
-    } else {
-        document.getElementById('btn-force-offline').classList.remove('pending-offline-btn');
-        update(dbRef, { 
-            useSchedule: (m==='auto'), 
-            currentStatus: (m==='auto'?'scheduled':m), 
-            tempSession: null, 
-            awayNote: "" 
-        });
+// Expose push function to window so the secret password script can call it
+window.executeManualPush = async () => {
+    try {
+        const { push, ref } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
+        await push(ref(db, "weather_logs"), currentLogData);
+        document.getElementById("log-status").textContent = "✅ Bypass Successful!";
+        setTimeout(() => { document.getElementById("log-status").textContent = ""; }, 3000);
+    } catch (err) {
+        document.getElementById("log-status").textContent = "❌ Failed";
+        console.error(err);
     }
 };
 
-window.updateNoteAndOffline = () => {
-    const note = document.getElementById("away-note").value;
-    update(dbRef, { 
-        currentStatus: "away", 
-        useSchedule: false, 
-        tempSession: null,
-        awayNote: note 
-    }).then(() => {
-        document.getElementById('btn-force-offline').classList.remove('pending-offline-btn');
-        document.getElementById('pending-msg').style.display = 'none';
-        alert("Status Updated to Offline with Note.");
-    });
-};
+document.getElementById("log-btn").onclick = window.executeManualPush;
 
-window.resetAll = () => { if(confirm("Reset?")) window.setManual('auto'); };
-
-window.setTempSession = () => {
-    const s = document.getElementById("temp-start").value, e = document.getElementById("temp-end").value;
-    const r = document.querySelector('input[name="temp-after"]:checked').value;
-    if(!s || !e) return alert("Select times.");
-    update(dbRef, { useSchedule: false, currentStatus: "available", tempSession: {start:s, end:e, revertTo:r}, awayNote: "" });
-};
-
-window.saveWeeklySchedule = () => {
-    const schedule = {};
-    days.forEach(d => { schedule[d] = { active: document.getElementById(`check-${d}`).checked, start: document.getElementById(`start-${d}`).value, end: document.getElementById(`end-${d}`).value }; });
-    update(dbRef, { schedule, useSchedule: document.getElementById('master-switch').checked });
-    alert("Saved.");
-};
-
-window.saveDatedSchedule = () => {
-    const dated = {};
-    document.querySelectorAll('#dated-table tr').forEach(row => {
-        const d = row.getAttribute('data-date');
-        dated[d] = { active: document.getElementById(`date-active-${d}`).checked, is24h: document.getElementById(`date-24h-${d}`).checked, start: document.getElementById(`date-start-${d}`).value, end: document.getElementById(`date-end-${d}`).value };
-    });
-    update(dbRef, { datedOverrides: dated });
-    alert("Saved.");
-};
+loadWeatherSnapshot();
+setInterval(loadWeatherSnapshot, 10 * 60 * 1000);
 </script>
 
 <script>
-function toggleSection(id) {
-    const sec = document.getElementById(id);
-    sec.classList.toggle("active");
-    sec.querySelector("span").textContent = sec.classList.contains("active") ? "▲" : "▼";
+document.getElementById("condition-box").addEventListener("click", function () {
+    if (!window.lastWeatherMeta) return;
+
+    const data = window.lastWeatherMeta;
+    let message = "";
+
+    // 1. Rain
+    if (data.hasRain) {
+        message = "നിലവിൽ മഴ രേഖപ്പെടുത്തിയിട്ടുണ്ട് (Rain detected).";
+    } 
+    // 2. Morning logic
+    else if (data.hour >= 6 && data.hour <= 9) {
+        if (data.humidity > 88 || data.visibilityKm < 4) {
+            message = `പുലർച്ചെ അന്തരീക്ഷത്തിൽ ഈർപ്പം (${data.humidity}%) കൂടുതലായതിനാലും ദൃശ്യപരിധി കുറവായതിനാലും മഞ്ഞ് അനുഭവപ്പെടുന്നു.`;
+        } else {
+            message = "പുലർകാലത്തെ തെളിഞ്ഞ കാലാവസ്ഥയാണ് ഇപ്പോൾ ഉള്ളത്.";
+        }
+    } 
+    // 3. Midday logic
+    else if (data.hour > 9 && data.hour < 17) {
+        if (data.cloudPercent < 25) {
+            message = `ആകാശത്ത് മേഘങ്ങൾ വളരെ കുറവാണ് (${data.cloudPercent}%). മാർച്ച് മാസത്തെ കഠിനമായ വെയിൽ നേരിട്ട് അനുഭവപ്പെടുന്ന സമയമാണിത്.`;
+        } else {
+            message = `ആകാശത്ത് ഭാഗികമായി മേഘങ്ങൾ ഉള്ളതിനാൽ വെയിലിന് നേരിയ കുറവുണ്ടാകാം.`;
+        }
+    } 
+    // 4. Evening/Night
+    else {
+        if (data.cloudPercent > 40) {
+            message = `ആകാശം ഏകദേശം ${data.cloudPercent}% മേഘാവൃതമാണ്.`;
+        } else {
+            message = "ആകാശം നിലവിൽ തെളിഞ്ഞ നിലയിലാണ് കാണപ്പെടുന്നത്.";
+        }
+    }
+
+    // 5. Comfort Explanation
+    if (data.temperature >= 36) {
+        message += " പുറത്ത് കഠിനമായ ചൂട് ഉള്ളതിനാൽ ജാഗ്രത പാലിക്കുക.";
+    } else if (data.temperature >= 32 && data.humidity > 65) {
+        message += " ഉയർന്ന ഈർപ്പം കാരണം വിയർപ്പും അസ്വസ്ഥതയും അനുഭവപ്പെടാം.";
+    } else if (data.temperature < 27) {
+        message += " നിലവിൽ കാലാവസ്ഥ വളരെ സുഖകരമാണ്.";
+    }
+
+    document.getElementById("modal-message").textContent = message;
+    document.getElementById("condition-modal").style.display = "flex";
+});
+</script>
+<!-- 🌤 Condition Explanation Modal -->
+<div id="condition-modal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>🌦 കാലാവസ്ഥ വിശദീകരണം</h3>
+        <p id="modal-message"></p>
+        <button id="close-modal">ശരി</button>
+    </div>
+</div>
+<script>
+document.getElementById("close-modal").addEventListener("click", function() {
+    document.getElementById("condition-modal").style.display = "none";
+});
+
+document.getElementById("condition-modal").addEventListener("click", function(e) {
+    if (e.target === this) {
+        this.style.display = "none";
+    }
+});
+</script>
+
+<script>
+function toggleLegal() {
+    const el = document.getElementById("legal-more");
+    el.style.display = el.style.display === "none" ? "block" : "none";
+}
+</script>
+<script>
+document.getElementById("secret-trigger").addEventListener("dblclick", function() {
+    const pass = prompt("Enter Admin Password to Bypass Cooldown:");
+    if (pass === "5252") {
+        forceAdminPush();
+    } else if (pass !== null) {
+        alert("Incorrect Password.");
+    }
+});
+
+async function forceAdminPush() {
+    // We use a custom event or reach into the module if possible, 
+    // but the simplest way is to trigger the logic manually.
+    const logStatus = document.getElementById("log-status");
+    logStatus.textContent = "⏳ Admin Pushing...";
+    
+    try {
+        // We use the global currentLogData that the module updates every minute
+        // Since the module is 'type=module', we need to make sure currentLogData is accessible
+        // or just trigger the click on the button even if it's disabled via code.
+        
+        // Dispatching a click doesn't work on disabled buttons, 
+        // so we will move the Push Logic to a window-scoped function in the module.
+        window.executeManualPush(); 
+    } catch (err) {
+        logStatus.textContent = "❌ Bypass Failed";
+    }
 }
 </script>
 </body>
