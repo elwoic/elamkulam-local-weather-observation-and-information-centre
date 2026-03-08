@@ -176,8 +176,10 @@
         </div>
     </div>
 
-    <p class="update-tag">Last Updated: <span id="last-updated">--</span></p>
-
+   
+<p class="update-tag" id="secret-trigger" style="cursor: default; user-select: none;">
+    Last Updated: <span id="last-updated">--</span>
+</p>
     <div class="push-section">
         <button id="log-btn" disabled>Syncing...</button>
         <div class="timer-display">Next: <span id="cooldown-timer">--:--</span></div>
@@ -253,7 +255,9 @@ function pm25ToAQI(pm) {
 
 function getRealisticFeelsLike(t, rh, apiFeels) {
     if (t < 26) return t.toFixed(1);
+
     const T = (t * 9/5) + 32;
+
     let hi = -42.379 + 2.04901523*T + 10.14333127*rh
         - 0.22475541*T*rh - 0.00683783*T*T
         - 0.05481717*rh*rh + 0.00122874*T*T*rh
@@ -267,57 +271,64 @@ function getRealisticFeelsLike(t, rh, apiFeels) {
 function calculateSmartCondition(owRes, localT, localH, visibilityKm) {
 
     const cloud = owRes.clouds?.all ?? 0;
-    window.lastWeatherMeta = {
-    cloudPercent: cloud,
-    visibilityKm: visibilityKm,
-    humidity: localH,
-    temperature: localT,
-    hasRain: owRes.rain && Object.keys(owRes.rain).length > 0
-};
 
-    const hasRain = owRes.rain && Object.keys(owRes.rain).length > 0;
+    const hour = new Date(
+        new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"})
+    ).getHours();
 
-    let condition;
+    const hasRain =
+        (owRes.rain && Object.keys(owRes.rain).length > 0) ||
+        (owRes.weather[0].main === "Rain");
 
-    // 1️⃣ Rain highest priority
-    if (hasRain) {
-        condition = "മഴ";
+    let condition = "";
+
+    if (hasRain) return "മഴ (Rain)";
+
+    if (hour >= 6 && hour <= 9) {
+
+        if (localH > 88 || visibilityKm < 4)
+            condition = "മഞ്ഞ് / മൂടൽ (Hazy/Misty)";
+
+        else if (cloud > 40)
+            condition = "മങ്ങിയ വെളിച്ചം (Dull Morning)";
+
+        else
+            condition = "പുലർകാലം (Clear Morning)";
+
+    } else if (hour > 9 && hour < 17) {
+
+        if (cloud < 25)
+            condition = "കഠിനമായ വെയിൽ (Strong Sun)";
+
+        else if (cloud < 60)
+            condition = "തെളിഞ്ഞ ആകാശം (Mostly Sunny)";
+
+        else
+            condition = "ഭാഗികമായി മേഘാവൃതം (Partly Cloudy)";
+
+    } else if (hour >= 17 && hour <= 19) {
+
+        condition = (cloud > 30)
+            ? "മേഘാവൃതമായ സന്ധ്യ (Cloudy Evening)"
+            : "സായംകാലം (Clear Evening)";
+
+    } else {
+
+        condition = (cloud > 50)
+            ? "മേഘാവൃതമായ രാത്രി (Cloudy Night)"
+            : "തെളിഞ്ഞ രാത്രി (Clear Night)";
     }
 
-    // 2️⃣ Mist / Fog detection
-    else if (visibilityKm <= 2 && localH >= 85) {
-        condition = "മഞ്ഞ് / മൂടൽ";
-    }
-
-    // 3️⃣ Heavy Cloud
-    else if (cloud >= 75) {
-        condition = "മേഘാവൃതം";
-    }
-
-    // 4️⃣ Partly Cloudy
-    else if (cloud >= 30) {
-        condition = "ഭാഗിക മേഘാവൃതം";
-    }
-
-    // 5️⃣ Clear
-    else {
-        condition = "തെളിഞ്ഞ ആകാശം";
-    }
-
-    // Comfort tagging
     let comfort = "";
-    if (localT >= 33 && localH > 70) {
-        comfort = " (ഉഷ്ണവും ഈർപ്പവും)";
-    } 
-    else if (localT >= 32) {
-        comfort = " (ചൂട്)";
-    } 
-    else if (localH > 85) {
-        comfort = " (ഈർപ്പം)";
-    } 
-    else {
-        comfort = " (സുഖകരം)";
-    }
+
+    if (localT >= 36)
+        comfort = " [അത്യുഷ്ണം ⚠️]";
+
+    else if (localT >= 32 && localH > 65)
+        comfort = " [ഉഷ്ണവും ഈർപ്പവും]";
+
+    else if (localT < 27)
+        comfort = " [സുഖകരമായ കാലാവസ്ഥ]";
 
     return condition + comfort;
 }
@@ -325,116 +336,225 @@ function calculateSmartCondition(owRes, localT, localH, visibilityKm) {
 /* ---------------- MAIN SNAPSHOT ---------------- */
 
 async function loadWeatherSnapshot() {
+
     try {
 
         const [workerRes, owRes, omRes] = await Promise.all([
-            fetch(API_URL).then(r => r.json()),
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r => r.json()),
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r => r.json())
+
+            fetch(API_URL).then(r=>r.json()),
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`)
+                .then(r=>r.json()),
+
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`)
+                .then(r=>r.json())
+
         ]);
 
-        const localT = workerRes.atmp_corrected;
-        const localH = workerRes.rhum_corrected;
+        /* --------- DATA SOURCES --------- */
+
+        const localT = owRes.main.temp;
+        const localH = owRes.main.humidity;
+
         const pm25Val = workerRes.pm02_corrected;
 
         const aqiVal = pm25ToAQI(pm25Val);
         const aqiStat = getAQIStatus(aqiVal);
 
-        const visibilityKm = parseFloat((owRes.visibility / 1000).toFixed(1));
-        const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
-        const avgWind = ((owRes.wind.speed * 3.6 + omRes.current_weather.windspeed) / 2).toFixed(1);
-        const omH = omRes.hourly.relativehumidity_2m[new Date().getHours()];
+        const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
 
-        // 🔥 NEW SMART CONDITION
-        const smartCondition = calculateSmartCondition(
-            owRes,
-            localT,
-            localH,
-            visibilityKm
-        );
+        const realFeels =
+            getRealisticFeelsLike(localT,localH,owRes.main.feels_like);
 
-        /* ---- UI UPDATE ---- */
+        const avgWind =
+            ((owRes.wind.speed*3.6 + omRes.current_weather.windspeed)/2).toFixed(1);
 
-        document.getElementById("temp").textContent = localT.toFixed(1);
-        document.getElementById("humidity").textContent = localH;
-        document.getElementById("feels").textContent = realFeels;
-        document.getElementById("visibility").textContent = visibilityKm;
-        document.getElementById("om-temp").textContent = ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1);
-        document.getElementById("om-humidity").textContent = Math.round((owRes.main.humidity + omH)/2);
-        document.getElementById("pressure").textContent = owRes.main.pressure;
-        document.getElementById("condition").textContent = smartCondition;
-        document.getElementById("wind").textContent = avgWind;
+        const omH =
+            omRes.hourly.relativehumidity_2m[new Date().getHours()];
 
-        document.getElementById("last-updated").textContent =
-            new Date().toLocaleTimeString("en-IN", {
-                timeZone: "Asia/Kolkata",
-                hour: "2-digit",
-                minute: "2-digit"
-            });
+        const smartCondition =
+            calculateSmartCondition(owRes,localT,localH,visibilityKm);
 
-        currentLogData = {
-            temp_c: localT,
+        /* -------- MODAL DATA -------- */
+
+        window.lastWeatherMeta = {
+
+            cloudPercent: owRes.clouds?.all ?? 0,
+
+            visibilityKm: visibilityKm,
+
             humidity: localH,
-            feels_like_c: parseFloat(realFeels),
-            aqi: aqiVal,
-            aqi_status: aqiStat,
-            pressure_hpa: owRes.main.pressure,
-            wind_kmh: parseFloat(avgWind),
-            visibility_km: visibilityKm,
-            condition: smartCondition,
-            timestamp_utc: new Date().toISOString(),
-            timestamp_ist: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+
+            temperature: localT,
+
+            hasRain:
+                (owRes.rain && Object.keys(owRes.rain).length > 0) ||
+                (owRes.weather[0].main === "Rain"),
+
+            hour: new Date(
+                new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"})
+            ).getHours()
         };
 
-    } catch (err) {
-        console.error("Update Error", err);
+        /* -------- UI UPDATE -------- */
+
+        document.getElementById("temp").textContent =
+            localT.toFixed(1);
+
+        document.getElementById("humidity").textContent =
+            localH;
+
+        document.getElementById("feels").textContent =
+            realFeels;
+
+        document.getElementById("visibility").textContent =
+            visibilityKm;
+
+        document.getElementById("om-temp").textContent =
+            ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1);
+
+        document.getElementById("om-humidity").textContent =
+            Math.round((owRes.main.humidity + omH)/2);
+
+        document.getElementById("pressure").textContent =
+            owRes.main.pressure;
+
+        document.getElementById("condition").textContent =
+            smartCondition;
+
+        document.getElementById("wind").textContent =
+            avgWind;
+
+        document.getElementById("last-updated").textContent =
+            new Date().toLocaleTimeString("en-IN",{
+                timeZone:"Asia/Kolkata",
+                hour:"2-digit",
+                minute:"2-digit"
+            });
+
+        /* -------- PUSH DATA -------- */
+
+        currentLogData = {
+
+            temp_c: localT,
+
+            humidity: localH,
+
+            pm25: pm25Val,
+
+            feels_like_c: parseFloat(realFeels),
+
+            aqi: aqiVal,
+
+            aqi_status: aqiStat,
+
+            pressure_hpa: owRes.main.pressure,
+
+            wind_kmh: parseFloat(avgWind),
+
+            visibility_km: visibilityKm,
+
+            condition: smartCondition,
+
+            timestamp_utc: new Date().toISOString(),
+
+            timestamp_ist:
+                new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})
+        };
+
     }
+
+    catch(err){
+        console.error("Update Error",err);
+    }
+
 }
 
 /* ---------------- PUSH SYSTEM ---------------- */
 
-onValue(query(ref(db, "weather_logs"), limitToLast(1)), (snapshot) => {
-    if (!snapshot.exists()) { enableBtn(); return; }
-    lastPushTimeUTC = new Date(Object.values(snapshot.val())[0].timestamp_utc).getTime();
+onValue(query(ref(db,"weather_logs"),limitToLast(1)),(snapshot)=>{
+
+    if(!snapshot.exists()){enableBtn();return;}
+
+    lastPushTimeUTC =
+        new Date(Object.values(snapshot.val())[0].timestamp_utc).getTime();
+
     startTimer();
 });
 
-function startTimer() {
-    if (timer) clearInterval(timer);
-    timer = setInterval(() => {
-        const remain = (30 * 60) - Math.floor((Date.now() - lastPushTimeUTC) / 1000);
-        if (remain <= 0) { enableBtn(); clearInterval(timer); }
-        else {
-            document.getElementById("log-btn").disabled = true;
-            document.getElementById("log-btn").textContent = "Wait a little ↦";
-            document.getElementById("cooldown-timer").textContent =
-                Math.floor(remain/60).toString().padStart(2,'0') +
-                ":" +
+function startTimer(){
+
+    if(timer) clearInterval(timer);
+
+    timer=setInterval(()=>{
+
+        const remain =
+            (30*60)-Math.floor((Date.now()-lastPushTimeUTC)/1000);
+
+        if(remain<=0){
+            enableBtn();
+            clearInterval(timer);
+        }
+
+        else{
+
+            document.getElementById("log-btn").disabled=true;
+
+            document.getElementById("log-btn").textContent=
+                "Wait a little ↦";
+
+            document.getElementById("cooldown-timer").textContent=
+                Math.floor(remain/60).toString().padStart(2,'0')
+                +":"+
                 (remain%60).toString().padStart(2,'0');
         }
-    }, 1000);
+
+    },1000);
 }
 
-function enableBtn() {
-    document.getElementById("log-btn").disabled = false;
-    document.getElementById("log-btn").textContent = "📤 Push Data";
-    document.getElementById("cooldown-timer").textContent = "Ready to push";
+function enableBtn(){
+
+    document.getElementById("log-btn").disabled=false;
+
+    document.getElementById("log-btn").textContent="📤 Push Data";
+
+    document.getElementById("cooldown-timer").textContent="Ready to push";
 }
 
-document.getElementById("log-btn").onclick = async () => {
-    try {
-        await push(ref(db, "weather_logs"), currentLogData);
-        document.getElementById("log-status").textContent = "✅ Push Successful!";
-        setTimeout(() => { document.getElementById("log-status").textContent = ""; }, 3000);
-    } catch (err) {
-        document.getElementById("log-status").textContent = "❌ Failed";
+window.executeManualPush = async () => {
+
+    try{
+
+        const {push,ref}=await import(
+        "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
+
+        await push(ref(db,"weather_logs"),currentLogData);
+
+        document.getElementById("log-status").textContent=
+            "✅ Bypass Successful!";
+
+        setTimeout(()=>{
+            document.getElementById("log-status").textContent="";
+        },3000);
+
+    }
+
+    catch(err){
+
+        document.getElementById("log-status").textContent="❌ Failed";
+
+        console.error(err);
     }
 };
 
-loadWeatherSnapshot();
-setInterval(loadWeatherSnapshot, 10 * 60 * 1000);
-</script>
+document.getElementById("log-btn").onclick =
+    window.executeManualPush;
 
+loadWeatherSnapshot();
+
+setInterval(loadWeatherSnapshot,10*60*1000);
+
+</script>
 <script>
 document.getElementById("condition-box").addEventListener("click", function () {
 
@@ -444,44 +564,50 @@ document.getElementById("condition-box").addEventListener("click", function () {
     let message = "";
 
     if (data.hasRain) {
-        message = "മഴ രേഖപ്പെടുത്തിയിട്ടുണ്ട്. നിലവിൽ മഴ പെയ്യുന്ന സാഹചര്യമാണെന്ന് സിസ്റ്റം കണ്ടെത്തിയിരിക്കുന്നു.";
-    }
+        message = "നിലവിൽ മഴ രേഖപ്പെടുത്തിയിട്ടുണ്ട് (Rain detected).";
+    } 
+    else if (data.hour >= 6 && data.hour <= 9) {
 
-    else if (data.visibilityKm <= 2 && data.humidity >= 85) {
-        message = `ദൃശ്യപരിധി ${data.visibilityKm} km മാത്രമാണ്, ആർദ്രത ${data.humidity}% ആണ്. അതിനാൽ മഞ്ഞ് / മൂടൽ നിലവിലുണ്ട്.`;
-    }
+        if (data.humidity > 88 || data.visibilityKm < 4) {
+            message = `പുലർച്ചെ അന്തരീക്ഷത്തിൽ ഈർപ്പം (${data.humidity}%) കൂടുതലായതിനാലും ദൃശ്യപരിധി കുറവായതിനാലും മഞ്ഞ് അനുഭവപ്പെടുന്നു.`;
+        } else {
+            message = "പുലർകാലത്തെ തെളിഞ്ഞ കാലാവസ്ഥയാണ് ഇപ്പോൾ ഉള്ളത്.";
+        }
 
-    else if (data.cloudPercent >= 75) {
-        message = `മേഘം ആകാശത്തിൽ ഏകദേശം ${data.cloudPercent}% കാണപ്പെടുന്നു. അതിനാൽ ആകാശം കൂടുതലായി മേഘാവൃതമാണ്.`;
-    }
+    } 
+    else if (data.hour > 9 && data.hour < 17) {
 
-    else if (data.cloudPercent >= 30) {
-        message = `മേഘം ആകാശത്തിൽ ഏകദേശം ${data.cloudPercent}% കാണപ്പെടുന്നു. അതിനാൽ ആകാശത്തിൽ ഇടക്കിടെ മേഘം വന്നു പോവുകയും, തെളിഞ്ഞതായി തീരുകയും ചെയ്യുന്നു.`;
-    }
+        if (data.cloudPercent < 25) {
+            message = `ആകാശത്ത് മേഘങ്ങൾ വളരെ കുറവാണ് (${data.cloudPercent}%). മാർച്ച് മാസത്തെ കഠിനമായ വെയിൽ നേരിട്ട് അനുഭവപ്പെടുന്ന സമയമാണിത്.`;
+        } else {
+            message = `ആകാശത്ത് ഭാഗികമായി മേഘങ്ങൾ ഉള്ളതിനാൽ വെയിലിന് നേരിയ കുറവുണ്ടാകാം.`;
+        }
 
+    } 
     else {
-        message = `മേഘം വളരെ കുറവാണ് (${data.cloudPercent}%). ആകാശം പൊതുവേ തെളിഞ്ഞതോ ഇടക്കിടെ നിഴൽ വീഴുന്നതായും കാണപ്പെടാം.`;
+
+        if (data.cloudPercent > 40) {
+            message = `ആകാശം ഏകദേശം ${data.cloudPercent}% മേഘാവൃതമാണ്.`;
+        } else {
+            message = "ആകാശം നിലവിൽ തെളിഞ്ഞ നിലയിലാണ് കാണപ്പെടുന്നത്.";
+        }
+
     }
 
-    // Comfort explanation
-    if (data.temperature >= 33 && data.humidity > 70) {
-        message += " ഉയർന്ന ചൂടും ഈർപ്പവും അനുഭവപ്പെടാം.";
-    }
-    else if (data.temperature >= 32) {
-        message += " ചൂട് കൂടുതലയി അനുഭവപ്പെടാം.";
-    }
-    else if (data.humidity > 85) {
-        message += " അന്തരീക്ഷത്തിലെ ഈർപ്പം കൂടുതലാണ്.";
-    }
-    else {
-        message += " കാലാവസ്ഥ സുഖകരമാണ്.";
+    if (data.temperature >= 36) {
+        message += " പുറത്ത് കഠിനമായ ചൂട് ഉള്ളതിനാൽ ജാഗ്രത പാലിക്കുക.";
+    } 
+    else if (data.temperature >= 32 && data.humidity > 65) {
+        message += " ഉയർന്ന ഈർപ്പം കാരണം വിയർപ്പും അസ്വസ്ഥതയും അനുഭവപ്പെടാം.";
+    } 
+    else if (data.temperature < 27) {
+        message += " നിലവിൽ കാലാവസ്ഥ വളരെ സുഖകരമാണ്.";
     }
 
     document.getElementById("modal-message").textContent = message;
-document.getElementById("condition-modal").style.display = "flex";
+    document.getElementById("condition-modal").style.display = "flex";
 });
 </script>
-<!-- 🌤 Condition Explanation Modal -->
 <div id="condition-modal" class="modal-overlay">
     <div class="modal-box">
         <h3>🌦 കാലാവസ്ഥ വിശദീകരണം</h3>
@@ -490,22 +616,15 @@ document.getElementById("condition-modal").style.display = "flex";
     </div>
 </div>
 <script>
-document.getElementById("close-modal").addEventListener("click", function() {
+document.getElementById("close-modal").onclick = function(){
     document.getElementById("condition-modal").style.display = "none";
-});
+};
 
-document.getElementById("condition-modal").addEventListener("click", function(e) {
-    if (e.target === this) {
+document.getElementById("condition-modal").addEventListener("click", function(e){
+    if(e.target === this){
         this.style.display = "none";
     }
 });
-</script>
-
-<script>
-function toggleLegal() {
-    const el = document.getElementById("legal-more");
-    el.style.display = el.style.display === "none" ? "block" : "none";
-}
 </script>
 
 </body>
