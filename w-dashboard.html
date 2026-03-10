@@ -7,129 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2563eb; --secondary: #f59e0b; --bg: #f8fafc; }
-        body { 
-    background: transparent;   /* remove grey */
-    font-family: 'Poppins', sans-serif; 
-    margin: 0; 
-    padding: 10px; 
-}
-
-        
-        .weather-mini-dashboard { 
-            max-width: 550px; margin: 5px auto; padding: 15px; 
-            background: #fff; border-radius: 14px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-        }
-        
+        body { background: transparent; font-family: 'Poppins', sans-serif; margin: 0; padding: 10px; }
+        .weather-mini-dashboard { max-width: 550px; margin: 5px auto; padding: 15px; background: #fff; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .weather-mini-dashboard h2 { text-align: center; color: #004080; font-size: 1.1em; margin-bottom: 15px; }
-
-        /* Forced 4-column layout for all devices */
-        .info-boxes { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 8px; 
-        }
-        
-        .info-box { 
-            background: var(--bg); border-radius: 8px; border: 1px solid #f1f5f9; 
-            text-align: center; padding: 8px 4px; position: relative;
-            min-height: 65px; display: flex; flex-direction: column; justify-content: center;
-        }
+        .info-boxes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .info-box { background: var(--bg); border-radius: 8px; border: 1px solid #f1f5f9; text-align: center; padding: 8px 4px; position: relative; min-height: 65px; display: flex; flex-direction: column; justify-content: center; }
         .info-box.primary { border-top: 3px solid var(--primary); }
         .info-box.secondary { border-top: 3px solid var(--secondary); }
-        
         .info-title { font-size: 0.5rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 2px; }
         .info-value { font-size: 0.9rem; font-weight: 700; color: #1e293b; line-height: 1.1; }
         .info-unit { font-size: 0.55rem; color: #94a3b8; }
-
         .pressure-sub { font-size: 0.45rem; color: #64748b; margin-top: 2px; font-weight: 500; }
-
         .update-tag { font-size:0.55rem; color:#64748b; text-align:center; margin-top:10px; }
-
-        /* Single Row Push Action Area */
-        .push-section { 
-            margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; 
-            display: flex; align-items: center; justify-content: space-between; gap: 5px;
-        }
         
-        #log-btn { 
-            background: var(--primary); color: white; border: none; 
-            padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; 
-            cursor: pointer; transition: 0.3s; white-space: nowrap;
-        }
+        /* UPDATED PUSH SECTION */
+        .push-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 5px; }
+        #log-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         #log-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-
-        .timer-display { font-size: 0.6rem; color: #64748b; text-align: right; }
-        #cooldown-timer { font-weight: 700; color: #ef4444; }
-
-        .about-link { text-align: center; margin-top: 5px; }
-        .about-link a { font-size: 0.55rem; color: var(--primary); text-decoration: none; font-weight: 600; }
-
-        #log-status { font-size: 0.6rem; text-align: center; color: #059669; font-weight: 600; margin-top: 4px; }
         
-        .footer-legal { 
-            margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9;
-            font-size: 0.5rem; color: #94a3b8; line-height: 1.3; text-align: justify;
-        }
-        .footer-legal a { color: var(--primary); text-decoration: underline; }
-        /* ===== Modal Styling ===== */
-
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    animation: fadeIn 0.3s ease;
-}
-
-.modal-box {
-    background: white;
-    width: 90%;
-    max-width: 380px;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    text-align: center;
-    animation: slideUp 0.3s ease;
-}
-
-.modal-box h3 {
-    margin-bottom: 10px;
-    color: #065f46;
-    font-size: 1rem;
-}
-
-.modal-box p {
-    font-size: 0.8rem;
-    color: #334155;
-    line-height: 1.5;
-}
-
-.modal-box button {
-    margin-top: 12px;
-    background: #10b981;
-    border: none;
-    color: white;
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
+        /* CENTERED TIMER */
+        .timer-display { font-size: 0.6rem; color: #64748b; text-align: center; flex-grow: 1; }
+        #cooldown-timer { font-weight: 700; color: #ef4444; display: block; }
+        
+        /* DATA PUSH LINK */
+        .push-link { font-size: 0.55rem; color: var(--primary); text-decoration: underline; cursor: pointer; white-space: nowrap; }
+        
+        #log-status { font-size: 0.6rem; text-align: center; color: #059669; font-weight: 600; margin-top: 4px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 999; }
+        .modal-box { background: white; width: 90%; max-width: 380px; border-radius: 16px; padding: 18px; text-align: center; }
+        .modal-box button { margin-top: 12px; background: #10b981; border: none; color: white; padding: 6px 18px; border-radius: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -138,72 +44,41 @@
     <h2>🌦 ഏലംകുളം കാലാവസ്ഥ - ക്ഷണം</h2>
 
     <div class="info-boxes">
-        <div class="info-box primary">
-            <span class="info-title">താപനില</span>
-            <div class="info-value"><span id="temp">--</span><span class="info-unit">°C</span></div>
-        </div>
-        <div class="info-box primary">
-            <span class="info-title">ആർദ്രത</span>
-            <div class="info-value"><span id="humidity">--</span><span class="info-unit">%</span></div>
-        </div>
-        <div class="info-box">
-            <span class="info-title">അനുഭവപ്പെടുന്നത്</span>
-            <div class="info-value"><span id="feels">--</span><span class="info-unit">°C</span></div>
-        </div>
-        <div class="info-box">
-            <span class="info-title">ദൃശ്യപരിധി</span>
-            <div class="info-value"><span id="visibility">--</span><span class="info-unit">km</span></div>
-        </div>
-        
-        <div class="info-box">
-            <span class="info-title">കാറ്റ് (Avg)</span>
-            <div class="info-value"><span id="wind">--</span><span class="info-unit">km/h</span></div>
-        </div>
-        <div class="info-box secondary">
-            <span class="info-title">Consensus T</span>
-            <div class="info-value"><span id="om-temp">--</span><span class="info-unit">°C</span></div>
-        </div>
+        <div class="info-box primary"><span class="info-title">താപനില</span><div class="info-value"><span id="temp">--</span><span class="info-unit">°C</span></div></div>
+        <div class="info-box primary"><span class="info-title">ആർദ്രത</span><div class="info-value"><span id="humidity">--</span><span class="info-unit">%</span></div></div>
+        <div class="info-box"><span class="info-title">അനുഭവപ്പെടുന്നത്</span><div class="info-value"><span id="feels">--</span><span class="info-unit">°C</span></div></div>
+        <div class="info-box"><span class="info-title">ദൃശ്യപരിധി</span><div class="info-value"><span id="visibility">--</span><span class="info-unit">km</span></div></div>
+        <div class="info-box"><span class="info-title">കാറ്റ് (Avg)</span><div class="info-value"><span id="wind">--</span><span class="info-unit">km/h</span></div></div>
+        <div class="info-box secondary"><span class="info-title">Consensus T</span><div class="info-value"><span id="om-temp">--</span><span class="info-unit">°C</span></div></div>
         <div class="info-box secondary">
             <span class="info-title">Consensus H</span>
             <div class="info-value"><span id="om-humidity">--</span><span class="info-unit">%</span></div>
             <div class="pressure-sub">P: <span id="pressure">--</span></div>
         </div>
-        <div class="info-box" id="condition-box"
-     style="background: #f0fdf4; border-top: 3px solid #10b981; cursor:pointer;">
+        <div class="info-box" id="condition-box" style="background: #f0fdf4; border-top: 3px solid #10b981; cursor:pointer;">
             <span class="info-title">അവസ്ഥ(Condition)</span>
             <div class="info-value" id="condition" style="font-size: 0.6rem; color: #065f46;">Loading...</div>
             <span class="info-title">Click</span>
         </div>
     </div>
 
-   
-<p class="update-tag" id="secret-trigger" style="cursor: default; user-select: none;">
-    Last Updated: <span id="last-updated">--</span>
-</p>
+    <p class="update-tag" id="secret-trigger">Last Updated: <span id="last-updated">--</span></p>
+
     <div class="push-section">
         <button id="log-btn" disabled>Syncing...</button>
-        <div class="timer-display">Next: <span id="cooldown-timer">--:--</span></div>
-         
-    <div class="about-link">
-        <a href="about-weather-push.html" target="_blank" rel="noopener noreferrer">What is "Push Data"?</a>
-    </div>
+        <div class="timer-display">
+            Next Push
+            <span id="cooldown-timer">--:--</span>
+        </div>
+        <span class="push-link" id="what-is-push">What is data push?</span>
     </div>
     <p id="log-status"></p>
-
-    <div class="footer-legal">
-        Data from an <b>AirGradient</b> monitor (CC BY-SA 4.0). 
-        <a href="#" onclick="toggleLegal(); return false;">Read legal notice</a>
-       
-        <div id="legal-more" style="display:none; margin-top:5px;">
-            Air quality, Temperature and Humidity data is sourced via the AirGradient Cloud API and is available under the 
-            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a> license. 
-            ELWOIC independently processes and presents this data.
-            <br><br>
-            <b>Disclaimer:</b> Data is provided "as-is" without warranty. 
-            Do not rely on it for medical, regulatory, or emergency decisions.
-        </div>
-    </div>
 </section>
+
+<div id="condition-modal" class="modal-overlay">
+    <div class="modal-box"><h3>🌦 വിവരം</h3><p id="modal-message"></p><button id="close-modal">ശരി</button></div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -220,412 +95,159 @@ const db = getDatabase(app);
 
 const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
 const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
-const LAT = 10.9081;
+const LAT = 10.9081; 
 const LON = 76.2296;
 
 let currentLogData = {};
-let lastPushTimeUTC = null;
 let timer = null;
 
-/* ---------------- AQI ---------------- */
-
-function getAQIStatus(aqi) {
-    if (aqi <= 50) return "Excellent";
-    if (aqi <= 100) return "Good";
-    if (aqi <= 150) return "Moderate";
-    if (aqi <= 200) return "Unhealthy";
-    if (aqi <= 300) return "Very Unhealthy";
-    return "Hazardous";
-}
-
-function pm25ToAQI(pm) {
-    const bp = [
-        {cL:0,cH:12,aL:0,aH:50},
-        {cL:12.1,cH:35.4,aL:51,aH:100},
-        {cL:35.5,cH:55.4,aL:101,aH:150},
-        {cL:55.5,cH:150.4,aL:151,aH:200},
-        {cL:150.5,cH:250.4,aL:201,aH:300},
-        {cL:250.5,cH:500,aL:301,aH:500}
-    ];
+// Utility functions (AQI, Feels Like) - Kept from your original
+const pm25ToAQI = (pm) => {
+    const bp = [{cL:0,cH:12,aL:0,aH:50},{cL:12.1,cH:35.4,aL:51,aH:100},{cL:35.5,cH:55.4,aL:101,aH:150},{cL:55.5,cH:150.4,aL:151,aH:200},{cL:150.5,cH:250.4,aL:201,aH:300},{cL:250.5,cH:500,aL:301,aH:500}];
     const r = bp.find(range => pm >= range.cL && pm <= range.cH) || bp[0];
     return Math.round(((r.aH-r.aL)/(r.cH-r.cL))*(pm-r.cL)+r.aL);
-}
+};
 
-/* ---------------- FEELS LIKE ---------------- */
+const getAQIStatus = (aqi) => {
+    if (aqi <= 50) return "Excellent"; if (aqi <= 100) return "Good"; if (aqi <= 150) return "Moderate";
+    if (aqi <= 200) return "Unhealthy"; if (aqi <= 300) return "Very Unhealthy"; return "Hazardous";
+};
 
-function getRealisticFeelsLike(t, rh, apiFeels) {
+const getRealisticFeelsLike = (t, rh, apiFeels) => {
     if (t < 26) return t.toFixed(1);
-
     const T = (t * 9/5) + 32;
-
-    let hi = -42.379 + 2.04901523*T + 10.14333127*rh
-        - 0.22475541*T*rh - 0.00683783*T*T
-        - 0.05481717*rh*rh + 0.00122874*T*T*rh
-        + 0.00085282*T*rh*rh - 0.00000199*T*T*rh*rh;
-
+    let hi = -42.379 + 2.04901523*T + 10.14333127*rh - 0.22475541*T*rh - 0.00683783*T*T - 0.05481717*rh*rh + 0.00122874*T*T*rh + 0.00085282*T*rh*rh - 0.00000199*T*T*rh*rh;
     return (((hi-32)*5/9) * 0.3 + apiFeels * 0.7).toFixed(1);
-}
-
-/* ---------------- SMART CONDITION ENGINE ---------------- */
-
-function calculateSmartCondition(owRes, localT, localH, visibilityKm) {
-
-    const cloud = owRes.clouds?.all ?? 0;
-
-    const hour = new Date(
-        new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"})
-    ).getHours();
-
-    const hasRain =
-        (owRes.rain && Object.keys(owRes.rain).length > 0) ||
-        (owRes.weather[0].main === "Rain");
-
-    let condition = "";
-
-    if (hasRain) return "മഴ (Rain)";
-
-    if (hour >= 6 && hour <= 9) {
-
-        if (localH > 88 || visibilityKm < 4)
-            condition = "മഞ്ഞ് / മൂടൽ (Hazy/Misty)";
-
-        else if (cloud > 40)
-            condition = "മങ്ങിയ വെളിച്ചം (Dull Morning)";
-
-        else
-            condition = "പുലർകാലം (Clear Morning)";
-
-    } else if (hour > 9 && hour < 17) {
-
-        if (cloud < 25)
-            condition = "കഠിനമായ വെയിൽ (Strong Sun)";
-
-        else if (cloud < 60)
-            condition = "തെളിഞ്ഞതോ മേഘവൃതമായതോ ആയ ആകാശം (Mostly Sunny)";
-
-        else
-            condition = "ഭാഗികമായി മേഘാവൃതം (Partly Cloudy)";
-
-    } else if (hour >= 17 && hour <= 19) {
-
-        condition = (cloud > 30)
-            ? "മേഘാവൃതമായ സന്ധ്യ (Cloudy Evening)"
-            : "സായംകാലം (Clear Evening)";
-
-    } else {
-
-        condition = (cloud > 50)
-            ? "മേഘാവൃതമായ രാത്രി (Cloudy Night)"
-            : "തെളിഞ്ഞ രാത്രി (Clear Night)";
-    }
-
-    let comfort = "";
-
-    if (localT >= 36)
-        comfort = " [അത്യുഷ്ണം ⚠️]";
-
-    else if (localT >= 32 && localH > 65)
-        comfort = " [ഉഷ്ണവും ഈർപ്പവും]";
-
-    else if (localT < 27)
-        comfort = " [സുഖകരമായ കാലാവസ്ഥ]";
-
-    return condition + comfort;
-}
-
-/* ---------------- MAIN SNAPSHOT ---------------- */
+};
 
 async function loadWeatherSnapshot() {
-
     try {
-
         const [workerRes, owRes, omRes] = await Promise.all([
-
             fetch(API_URL).then(r=>r.json()),
-
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`)
-                .then(r=>r.json()),
-
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`)
-                .then(r=>r.json())
-
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()),
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json())
         ]);
 
-        /* --------- DATA SOURCES --------- */
-
         const localT = owRes.main.temp;
-        const localH = owRes.main.humidity;
-
+        const localH = workerRes.rhum_corrected;
         const pm25Val = workerRes.pm02_corrected;
-
         const aqiVal = pm25ToAQI(pm25Val);
-        const aqiStat = getAQIStatus(aqiVal);
-
         const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
+        const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
+        const avgWind = ((owRes.wind.speed*3.6 + omRes.current_weather.windspeed)/2).toFixed(1);
+        const omH = omRes.hourly.relativehumidity_2m[new Date().getHours()];
 
-        const realFeels =
-            getRealisticFeelsLike(localT,localH,owRes.main.feels_like);
-
-        const avgWind =
-            ((owRes.wind.speed*3.6 + omRes.current_weather.windspeed)/2).toFixed(1);
-
-        const omH =
-            omRes.hourly.relativehumidity_2m[new Date().getHours()];
-
-        const smartCondition =
-            calculateSmartCondition(owRes,localT,localH,visibilityKm);
-
-        /* -------- MODAL DATA -------- */
-
-        window.lastWeatherMeta = {
-
-            cloudPercent: owRes.clouds?.all ?? 0,
-
-            visibilityKm: visibilityKm,
-
-            humidity: localH,
-
-            temperature: localT,
-
-            hasRain:
-                (owRes.rain && Object.keys(owRes.rain).length > 0) ||
-                (owRes.weather[0].main === "Rain"),
-
-            hour: new Date(
-                new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"})
-            ).getHours()
-        };
-
-        /* -------- UI UPDATE -------- */
-
-        document.getElementById("temp").textContent =
-            localT.toFixed(1);
-
-        document.getElementById("humidity").textContent =
-            localH;
-
-        document.getElementById("feels").textContent =
-            realFeels;
-
-        document.getElementById("visibility").textContent =
-            visibilityKm;
-
-        document.getElementById("om-temp").textContent =
-            ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1);
-
-        document.getElementById("om-humidity").textContent =
-            Math.round((owRes.main.humidity + omH)/2);
-
-        document.getElementById("pressure").textContent =
-            owRes.main.pressure;
-
-        document.getElementById("condition").textContent =
-            smartCondition;
-
-        document.getElementById("wind").textContent =
-            avgWind;
-
-        document.getElementById("last-updated").textContent =
-            new Date().toLocaleTimeString("en-IN",{
-                timeZone:"Asia/Kolkata",
-                hour:"2-digit",
-                minute:"2-digit"
-            });
-
-        /* -------- PUSH DATA -------- */
+        document.getElementById("temp").textContent = localT.toFixed(1);
+        document.getElementById("humidity").textContent = localH;
+        document.getElementById("feels").textContent = realFeels;
+        document.getElementById("visibility").textContent = visibilityKm;
+        document.getElementById("wind").textContent = avgWind;
+        document.getElementById("om-temp").textContent = ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1);
+        document.getElementById("om-humidity").textContent = Math.round((owRes.main.humidity + omH)/2);
+        document.getElementById("pressure").textContent = owRes.main.pressure;
+        document.getElementById("condition").textContent = owRes.weather[0].main;
+        document.getElementById("last-updated").textContent = new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit"});
 
         currentLogData = {
-
             temp_c: localT,
-
             humidity: localH,
-
             pm25: pm25Val,
-
             feels_like_c: parseFloat(realFeels),
-
             aqi: aqiVal,
-
-            aqi_status: aqiStat,
-
+            aqi_status: getAQIStatus(aqiVal),
             pressure_hpa: owRes.main.pressure,
-
             wind_kmh: parseFloat(avgWind),
-
             visibility_km: visibilityKm,
-
-            condition: smartCondition,
-
+            condition: owRes.weather[0].main,
             timestamp_utc: new Date().toISOString(),
-
-            timestamp_ist:
-                new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})
+            timestamp_ist: new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})
         };
 
-    }
-
-    catch(err){
-        console.error("Update Error",err);
-    }
-
+        window.lastWeatherMeta = { cloudPercent: owRes.clouds?.all || 0, visibilityKm, humidity: localH, temperature: localT, hour: new Date().getHours() };
+    } catch(err){ console.error(err); }
 }
 
-/* ---------------- PUSH SYSTEM ---------------- */
-
-onValue(query(ref(db,"weather_logs"),limitToLast(1)),(snapshot)=>{
-
-    if(!snapshot.exists()){enableBtn();return;}
-
-    lastPushTimeUTC =
-        new Date(Object.values(snapshot.val())[0].timestamp_utc).getTime();
-
-    startTimer();
-});
-
-function startTimer(){
+onValue(query(ref(db,"weather_logs"), limitToLast(1)), (snapshot) => {
+    if(!snapshot.exists()) { enableBtn(); return; }
+    const lastData = Object.values(snapshot.val())[0];
+    const lastTime = new Date(lastData.timestamp_utc).getTime();
 
     if(timer) clearInterval(timer);
-
-    timer=setInterval(()=>{
-
-        const remain =
-            (30*60)-Math.floor((Date.now()-lastPushTimeUTC)/1000);
-
-        if(remain<=0){
+    timer = setInterval(() => {
+        const remain = (30*60) - Math.floor((Date.now() - lastTime)/1000);
+        if(remain <= 0) {
             enableBtn();
             clearInterval(timer);
+        } else {
+            document.getElementById("log-btn").disabled = true;
+            document.getElementById("log-btn").textContent = "Wait a little →";
+            document.getElementById("cooldown-timer").textContent = Math.floor(remain/60).toString().padStart(2,'0') + ":" + (remain%60).toString().padStart(2,'0');
         }
+    }, 1000);
+});
 
-        else{
-
-            document.getElementById("log-btn").disabled=true;
-
-            document.getElementById("log-btn").textContent=
-                "Wait a little ↦";
-
-            document.getElementById("cooldown-timer").textContent=
-                Math.floor(remain/60).toString().padStart(2,'0')
-                +":"+
-                (remain%60).toString().padStart(2,'0');
-        }
-
-    },1000);
+function enableBtn() {
+    document.getElementById("log-btn").disabled = false;
+    document.getElementById("log-btn").textContent = "📤 Push Data";
+    document.getElementById("cooldown-timer").textContent = "Ready";
 }
 
-function enableBtn(){
-
-    document.getElementById("log-btn").disabled=false;
-
-    document.getElementById("log-btn").textContent="📤 Push Data";
-
-    document.getElementById("cooldown-timer").textContent="Ready to push";
-}
-
-window.executeManualPush = async () => {
-
-    try{
-
-        const {push,ref}=await import(
-        "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
-
-        await push(ref(db,"weather_logs"),currentLogData);
-
-        document.getElementById("log-status").textContent=
-            "✅ Bypass Successful!";
-
-        setTimeout(()=>{
-            document.getElementById("log-status").textContent="";
-        },3000);
-
-    }
-
-    catch(err){
-
-        document.getElementById("log-status").textContent="❌ Failed";
-
-        console.error(err);
-    }
+document.getElementById("log-btn").onclick = async () => {
+    try {
+        await push(ref(db, "weather_logs"), currentLogData);
+        document.getElementById("log-status").textContent = "✅ Push Successfull!";
+        setTimeout(() => document.getElementById("log-status").textContent = "", 3000);
+    } catch(e) { document.getElementById("log-status").textContent = "❌ Push Failed"; }
 };
 
-document.getElementById("log-btn").onclick =
-    window.executeManualPush;
+// MODAL HANDLING
+const showModal = (msg) => {
+    document.getElementById("modal-message").textContent = msg;
+    document.getElementById("condition-modal").style.display = "flex";
+};
+
+document.getElementById("what-is-push").onclick = () => {
+    window.open("about-weather-push.html", "_blank");
+};
+
+document.getElementById("condition-box").onclick = () => {
+    if(!window.lastWeatherMeta) return;
+
+    const d = window.lastWeatherMeta;
+
+    let message = `ഇപ്പോൾ ഏലംകുളത്തിലെ കാലാവസ്ഥ: താപനില ${d.temperature}°C, ആർദ്രത ${d.humidity}% ആണ്.`;
+
+    if(d.cloudPercent > 70){
+        message += " ആകാശം മേഘാവൃതമാണ്.";
+    } else if(d.cloudPercent > 40){
+        message += " ഭാഗികമായി മേഘാവൃതമായ ആകാശം.";
+    } else {
+        message += " ആകാശം കൂടുതലും തെളിഞ്ഞതാണ്. ഇടക്കിടെ നിഴൽ വീഴുകയും ചെയ്യാം.";
+    }
+
+    if(d.visibilityKm < 5){
+        message += " ദൃശ്യപരിധി കുറവാണ്.";
+    } else {
+        message += " ദൃശ്യപരിധി നല്ലതാണ്.";
+    }
+
+    showModal(message);
+};
+
+document.getElementById("close-modal").onclick = () => document.getElementById("condition-modal").style.display = "none";
+
+// Secret Bypass
+document.getElementById("secret-trigger").ondblclick = async () => {
+    const pass = prompt("Enter admin code:");
+    if(pass === "5252") {
+        const bypassData = {...currentLogData, timestamp_utc: new Date(Date.now() - 31*60*1000).toISOString()};
+        await push(ref(db, "weather_logs"), bypassData);
+        document.getElementById("log-status").textContent = "🔓 Global Bypass Active!";
+    }
+};
 
 loadWeatherSnapshot();
-
-setInterval(loadWeatherSnapshot,10*60*1000);
-
+setInterval(loadWeatherSnapshot, 10*60*1000);
 </script>
-<script>
-document.getElementById("condition-box").addEventListener("click", function () {
-
-    if (!window.lastWeatherMeta) return;
-
-    const data = window.lastWeatherMeta;
-    let message = "";
-
-    if (data.hasRain) {
-        message = "നിലവിൽ മഴ രേഖപ്പെടുത്തിയിട്ടുണ്ട് (Rain detected).";
-    } 
-    else if (data.hour >= 6 && data.hour <= 9) {
-
-        if (data.humidity > 88 || data.visibilityKm < 4) {
-            message = `പുലർച്ചെ അന്തരീക്ഷത്തിൽ ഈർപ്പം (${data.humidity}%) കൂടുതലായതിനാലും ദൃശ്യപരിധി കുറവായതിനാലും മഞ്ഞ് അനുഭവപ്പെടുന്നു.`;
-        } else {
-            message = "പുലർകാലത്തെ തെളിഞ്ഞ കാലാവസ്ഥയാണ് ഇപ്പോൾ ഉള്ളത്.";
-        }
-
-    } 
-    else if (data.hour > 9 && data.hour < 17) {
-
-        if (data.cloudPercent < 25) {
-            message = `ആകാശത്ത് മേഘങ്ങൾ വളരെ കുറവാണ് (${data.cloudPercent}%). മാർച്ച് മാസത്തെ കഠിനമായ വെയിൽ നേരിട്ട് അനുഭവപ്പെടുന്ന സമയമാണിത്.`;
-        } else {
-            message = `ആകാശത്ത് ഭാഗികമായി മേഘങ്ങൾ ഉള്ളതിനാൽ വെയിലിന് നേരിയ കുറവുണ്ടാകാം.`;
-        }
-
-    } 
-    else {
-
-        if (data.cloudPercent > 40) {
-            message = `ആകാശം ഏകദേശം ${data.cloudPercent}% മേഘാവൃതമാണ്.`;
-        } else {
-            message = "ആകാശം നിലവിൽ തെളിഞ്ഞ നിലയിലാണ് കാണപ്പെടുന്നത്.";
-        }
-
-    }
-
-    if (data.temperature >= 36) {
-        message += " പുറത്ത് കഠിനമായ ചൂട് ഉള്ളതിനാൽ ജാഗ്രത പാലിക്കുക.";
-    } 
-    else if (data.temperature >= 32 && data.humidity > 65) {
-        message += " ഉയർന്ന ഈർപ്പം കാരണം വിയർപ്പും അസ്വസ്ഥതയും അനുഭവപ്പെടാം.";
-    } 
-    else if (data.temperature < 27) {
-        message += " നിലവിൽ കാലാവസ്ഥ വളരെ സുഖകരമാണ്.";
-    }
-
-    document.getElementById("modal-message").textContent = message;
-    document.getElementById("condition-modal").style.display = "flex";
-});
-</script>
-<div id="condition-modal" class="modal-overlay">
-    <div class="modal-box">
-        <h3>🌦 കാലാവസ്ഥ വിശദീകരണം</h3>
-        <p id="modal-message"></p>
-        <button id="close-modal">ശരി</button>
-    </div>
-</div>
-<script>
-document.getElementById("close-modal").onclick = function(){
-    document.getElementById("condition-modal").style.display = "none";
-};
-
-document.getElementById("condition-modal").addEventListener("click", function(e){
-    if(e.target === this){
-        this.style.display = "none";
-    }
-});
-</script>
-
 </body>
 </html>
