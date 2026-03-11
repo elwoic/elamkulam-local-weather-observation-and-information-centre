@@ -1,145 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Weather Assistant | ELWOIC</title>
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4faff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-        .topbar { background: #00457C; padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; }
-        .topbar h1 { font-size: 1.2rem; margin: 0; }
-        .topbar a { color: white; text-decoration: none; font-size: 0.9rem; border: 1px solid white; padding: 5px 10px; border-radius: 4px; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; line-height: 1.4; font-size: 0.95rem; word-wrap: break-word; }
-        .ai { background: #e0f0ff; color: #00315c; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .user { background: #0073e6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .input-area { background: white; padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; }
-        input { flex: 1; border: 1px solid #ccc; border-radius: 25px; padding: 12px 20px; outline: none; font-size: 1rem; }
-        button { background: #0073e6; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; }
-        .success-overlay { position: fixed; inset: 0; background: rgba(0,74,128,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .success-card { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Weather Report | ELWOIC</title>
+
+<style>
+/* all your original css — unchanged */
+BODY{font-family:Arial,sans-serif;background:#f4faff;margin:0;padding:0}
+.topbar{background:#00457C;padding:15px;color:white;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.topbar h1{font-size:1.5rem;margin:0}
+.topbar a{background:#fff;color:#00457C;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;transition:.2s}
+.topbar a:hover{background:#cfe6ff}
+.report-box{margin:25px auto;padding:25px;max-width:720px;background:#eaf5ff;border-radius:10px;border-left:6px solid #0073e6;box-shadow:0 0 6px rgba(0,0,0,.18)}
+.report-title{font-size:1.6rem;margin-bottom:12px;color:#00315c;border-bottom:3px solid #0073e6;display:inline-block;padding-bottom:4px}
+.report-box label{display:block;margin-top:13px;font-weight:600;color:#00315c}
+.report-box input,.report-box textarea,.report-box select{width:100%;padding:10px;margin-top:5px;border:1px solid #80b6db;border-radius:6px;font-size:1rem}
+.report-box textarea{height:130px;resize:vertical}
+.report-box button[type=submit]{margin-top:20px;width:100%;background:#0073e6;color:#fff;border:none;padding:13px;font-size:1rem;border-radius:6px;cursor:pointer;transition:.25s}
+.report-box button[type=submit]:hover{background:#005bb7}
+#form-success{display:none;color:green;font-weight:700;margin-top:15px;text-align:center;font-size:1.1rem}
+.admin-toggle{display:flex;align-items:center;justify-content:flex-end;cursor:pointer;margin-top:25px;color:#00457C;font-size:.9rem;font-weight:600;padding-bottom:10px}
+.admin-toggle span{margin-left:5px;transition:.3s}
+.admin-toggle.open span{transform:rotate(180deg)}
+.admin-panel{max-height:0;overflow:hidden;transition:max-height .4s ease-out;padding:0 10px;background:#fff;border-radius:6px;margin-top:5px;border:1px solid #ddd}
+.admin-panel.active{max-height:200px;padding:15px 10px}
+.admin-panel p{margin-top:0;color:#00315c;font-weight:700}
+.admin-panel button{background:#dc3545;color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;width:100%;transition:.2s}
+.admin-panel button:hover{background:#c82333}
+#admin-error{color:#dc3545;font-size:.9rem;margin-top:5px;display:none}
+  /* Success Modal Overlay */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,74,128,0.9), rgba(0,150,136,0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-overlay.hidden {
+  display: none;
+}
+
+/* Card */
+.success-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px 28px;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  animation: popIn 0.4s ease;
+}
+
+/* Icon */
+.success-icon {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+}
+
+/* Text */
+.success-card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #004a80;
+  margin-bottom: 6px;
+}
+
+.success-card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 18px;
+}
+
+/* Reference */
+.success-ref {
+  background: linear-gradient(135deg, #004a80, #00a8a8);
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.success-ref span {
+  display: block;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Button */
+.success-card button {
+  background: #004a80;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.success-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,74,128,0.4);
+}
+
+/* Animations */
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="topbar">
-    <h1>ELWOIC AI Assistant</h1>
-    <a href="index.html">Exit</a>
+  <h1>Submit Weather Report</h1>
+  <a href="index.html">← Back to Home</a>
 </div>
 
-<div id="chat-box">
-    <div class="msg ai">Hello! I am the ELWOIC Weather Assistant. <br><br>What is your <b>Name</b> and <b>Location</b>?</div>
+<section class="report-box">
+  <h2 class="report-title">Share Your Weather Observation</h2>
+<p>നിങ്ങൾ കാണുന്ന കാലാവസ്ഥ സ്ഥിതി ഞങ്ങളുമായി പങ്കുവയ്ക്കുന്നതിലൂടെ ഈ വിവരങ്ങൾ മറ്റുള്ളവരിലേക്കും പങ്കുവയ്ക്കാനുള്ള വഴി ഞങ്ങൾ ഒരുക്കുന്നു.
+നിങ്ങൾ അനുമതി നൽകുകയാണെങ്കിൽ നിങ്ങളുടെ പേരും പരമാർഷിക്കുന്നു.</p><p class="mt-3 text-sm text-blue-700 hover:underline">
+  <a href="report-rule.html">റിപോർട്ട് സമർപ്പിക്കേണ്ടതിനെ കുറിച്ച് കൂടുതൽ അറിയുവാൻ ഇവിടെ തൊടുക.</a>
+</p>
+
+  <form id="weather-report-form">
+     <input type="hidden" name="priority" id="priority" value="normal">
+    <label>Your Name </label>
+    <input type="text" name="name" required>
+
+    <label>Location/Ward No:/Place *</label>
+<input type="text" name="location" placeholder="Eg:-Elamkulam/Ward No:1/Kunnakkavu/etc" required>
+
+    <label>Report Type *</label>
+    <select name="report_type" required>
+      <option value="">--Select Type--</option>
+      <option>Rainfall</option>
+      <option>Flood / Water Level</option>
+      <option>Storm / Wind</option>
+      <option>Lightning</option>
+      <option>Road Block / Tree Fall</option>
+      <option>General Information</option>
+      <option>Other</option>
+    </select>
+
+    <label>Weather Observation *</label>
+    <textarea name="observation" required></textarea>
+
+    <label>Time of Event </label>
+<input type="text" name="time" placeholder="Morning/17:00">
+
+    <label>Your Email *</label>
+<input type="email" name="email" 
+       placeholder="example@gmail.com" 
+       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+       title="Please enter a valid email address (e.g. name@gmail.com)" 
+       required>
+<label>Do you want to show your report on our site? *</label>
+<div style="margin-top:6px; font-size:0.97rem;">
+  <label><input type="radio" name="show_on_site" value="yes" required> Yes</label><br>
+  <label><input type="radio" name="show_on_site" value="no" required> No</label>
 </div>
 
-<div class="input-area">
-    <input type="text" id="userInput" placeholder="Type here..." onkeypress="if(event.key==='Enter') sendMessage()">
-    <button onclick="sendMessage()">➔</button>
+<label>Do you want to show your report with your name? *</label>
+<div style="margin-top:6px; font-size:0.97rem;">
+  <label><input type="radio" name="show_name" value="yes" required> Yes</label><br>
+  <label><input type="radio" name="show_name" value="no" required> No</label>
 </div>
+    <button type="button" id="urgentBtn"
+  style="margin-top:15px;width:100%;background:#fff3f3;color:#b91c1c;
+  border:1px solid #fecaca;padding:12px;border-radius:6px;
+  font-weight:700;cursor:pointer;">
+  ⚠ Mark as URGENT (This will make the observer noties you report as much fast)
+</button>
+    
+    <button type="submit">Submit Weather Report</button>
+  </form>
 
-<div id="successModal" class="success-overlay hidden">
-    <div class="success-card">
-        <div style="font-size: 3rem;">✅</div>
-        <h3>Report Filed!</h3>
-        <p id="refDisplay"></p>
-        <button onclick="location.reload()" style="width: auto; border-radius: 5px; padding: 10px 20px; cursor:pointer;">Send Another</button>
-    </div>
-</div>
+  <p id="form-success">✔ Submitted successfully — Thank You!</p>
 
+  <hr style="margin-top:30px;border-top:1px solid #ccc">
+ 
+
+</section>
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // 1. FIREBASE CONFIG
-    const firebaseConfig = {
-        apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
-        databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "report-5d8c0",
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+const FORMSPREE_URL = "https://formspree.io/f/xpqqzknw";
+const allowedDomains = ["@gmail.com", "@gmail.in", "@yahoo.com", "@outlook.com", "@hotmail.com"];
 
-    // 2. CHAT HISTORY & WORKER URL
-    const WORKER_URL = "https://orange-river-4a09.elwoicelamkulam.workers.dev";
-    let chatHistory = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  authDomain: "report-5d8c0.firebaseapp.com",
+  databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "report-5d8c0",
+  storageBucket: "report-5d8c0.firebasestorage.app",
+  messagingSenderId: "831456060916",
+  appId: "1:831456060916:web:1e06b9d3897dd9637305a1"
+};
 
-   window.sendMessage = async () => {
-    const input = document.getElementById('userInput');
-    const text = input.value.trim();
-    if (!text) return;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    addMessage(text, 'user');
-    input.value = "";
+const form = document.getElementById("weather-report-form");
+const urgentBtn = document.getElementById("urgentBtn");
+const priorityField = document.getElementById("priority");
+const successMsg = document.getElementById("form-success");
 
-    try {
-        const response = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            // Ensure we send an empty array if history is new
-            body: JSON.stringify({ message: text, history: chatHistory || [] }) 
-        });
+let isUrgent = false;
 
-        const result = await response.json();
-        
-        // Error handling: if worker sends an error, show it in console
-        if (result.error) {
-            console.error("Gemini Error:", result.error);
-            addMessage("AI Error: " + result.error, 'ai');
-            return;
-        }
-
-        const aiResponse = result.candidates[0].content.parts[0].text;
-
-        // Update local history
-        chatHistory.push({ role: "user", parts: [{ text: text }] });
-        chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
-
-        if (aiResponse.includes('"complete": true')) {
-            const jsonMatch = aiResponse.match(/\{.*\}/s);
-            if (jsonMatch) {
-                const finalData = JSON.parse(jsonMatch[0]);
-                submitToFirebase(finalData.data);
-            }
-        } else {
-            addMessage(aiResponse, 'ai');
-        }
-    } catch (err) {
-        console.error("Fetch Error:", err);
-        addMessage("Connection failed. Check your browser console for details.", 'ai');
+// --- URGENT TOGGLE LOGIC ---
+urgentBtn.addEventListener("click", () => {
+  if (isUrgent) {
+    resetUrgentButton();
+  } else {
+    if (confirm("⚠ Mark this report as URGENT? \n\n“Our observer will receive the message directly and respond as quickly as possible.”")) {
+      isUrgent = true;
+      priorityField.value = "urgent";
+      urgentBtn.textContent = "⚠ Marked as URGENT (Click to cancel)";
+      urgentBtn.style.background = "#b91c1c";
+      urgentBtn.style.color = "#fff";
     }
+  }
+});
+
+function resetUrgentButton() {
+  isUrgent = false;
+  priorityField.value = "normal";
+  urgentBtn.textContent = "⚠ Mark as URGENT (Notifies observer immediately)";
+  urgentBtn.style.background = "#fff3f3";
+  urgentBtn.style.color = "#b91c1c";
 }
 
-    function addMessage(text, sender) {
-        const div = document.createElement('div');
-        div.className = `msg ${sender}`;
-        div.innerText = text;
-        const box = document.getElementById('chat-box');
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
+// --- FORM SUBMIT ---
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Email Domain Validation
+  const email = form.email.value.toLowerCase();
+  if (!allowedDomains.some(domain => email.endsWith(domain))) {
+    alert("Please use a valid email (e.g., gmail.com, yahoo.com)");
+    return;
+  }
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  data.timestamp = Date.now();
+  data.priority = priorityField.value; // Ensure priority is captured
+  data.photo_url = "N/A"; // Explicitly set to N/A since photos are removed
+
+  try {
+    
+// 1️⃣ Get today's date
+const now = new Date();
+const year = String(now.getFullYear()).slice(-2);
+const month = String(now.getMonth() + 1).padStart(2, "0");
+const day = String(now.getDate()).padStart(2, "0");
+
+const datePart = `${year}${month}${day}`; // 260215
+
+// 2️⃣ Global counter (NEVER resets)
+const counterRef = ref(db, "report_counter");
+const result = await runTransaction(counterRef, v => (v || 0) + 1);
+const globalCount = String(result.snapshot.val()).padStart(3, "0");
+
+// 3️⃣ Final ID
+const humanId = `ELW-${datePart}${globalCount}`;
+
+
+    // 2. Save to Firebase
+    await push(ref(db, "weather_reports"), {
+      ...data,
+      humanId: humanId,
+      granted_site1: "no",
+      granted_site2: "no"
+    });
+
+    // 3. Formspree (Only for Urgent)
+    if (isUrgent) {
+      fetch(FORMSPREE_URL, { 
+        method: "POST", 
+        body: JSON.stringify({...data, humanId}), 
+        headers: { "Content-Type": "application/json", "Accept": "application/json" } 
+      });
     }
 
-    async function submitToFirebase(data) {
-        const now = new Date();
-        const datePart = now.toISOString().slice(2,10).replace(/-/g, "");
-        
-        try {
-            const counterRef = ref(db, "report_counter");
-            const result = await runTransaction(counterRef, v => (v || 0) + 1);
-            const humanId = `ELW-${datePart}${String(result.snapshot.val()).padStart(3, "0")}`;
+    // 4. UI Reset
+    form.reset();
+    resetUrgentButton();
+    showSuccessModal(humanId);
+    setTimeout(() => successMsg.style.display = "none", 5000);
+    
 
-            await push(ref(db, "weather_reports"), {
-                ...data,
-                humanId: humanId,
-                timestamp: Date.now()
-            });
-
-            document.getElementById('refDisplay').innerText = "Reference ID: " + humanId;
-            document.getElementById('successModal').classList.remove('hidden');
-        } catch (e) {
-            console.error("Firebase Error", e);
-            addMessage("Data saved locally, but failed to reach the database.", "ai");
-        }
-    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Submission failed. Please check your internet connection.");
+  }
+});
 </script>
+  <!-- Success Modal -->
+<div id="successModal" class="success-overlay hidden">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <h3>Report Submitted Successfully!</h3>
+    <p>Your report has been received.</p>
+<p>Please note or screenshot this reference number for future follow-up if needed.</p>
+    <div class="success-ref">
+      Reference ID
+      <span id="successRef">#---</span>
+    </div>
+
+    <button onclick="closeSuccessModal()">Done</button>
+  </div>
+</div>
+<script>
+function showSuccessModal(refId) {
+  document.getElementById("successRef").innerText = `#${refId}`;
+  document.getElementById("successModal").classList.remove("hidden");
+}
+
+function closeSuccessModal() {
+  document.getElementById("successModal").classList.add("hidden");
+}
+</script>
+
 </body>
 </html>
