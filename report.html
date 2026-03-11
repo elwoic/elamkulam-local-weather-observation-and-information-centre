@@ -63,48 +63,51 @@
     const WORKER_URL = "https://orange-river-4a09.elwoicelamkulam.workers.dev";
     let chatHistory = [];
 
-    window.sendMessage = async () => {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text) return;
+   window.sendMessage = async () => {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text) return;
 
-        addMessage(text, 'user');
-        input.value = "";
+    addMessage(text, 'user');
+    input.value = "";
 
-        try {
-            // CALL CLOUDFLARE WORKER
-            const response = await fetch(WORKER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text, history: chatHistory })
-            });
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            // Ensure we send an empty array if history is new
+            body: JSON.stringify({ message: text, history: chatHistory || [] }) 
+        });
 
-            if (!response.ok) throw new Error("Worker Error");
-
-            const result = await response.json();
-            
-            // Extract text from Gemini structure
-            const aiResponse = result.candidates[0].content.parts[0].text;
-
-            // Save to local history
-            chatHistory.push({ role: "user", parts: [{ text: text }] });
-            chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
-
-            // Check if AI completed the form
-            if (aiResponse.includes('"complete": true')) {
-                const jsonMatch = aiResponse.match(/\{.*\}/s);
-                if (jsonMatch) {
-                    const finalData = JSON.parse(jsonMatch[0]);
-                    submitToFirebase(finalData.data);
-                }
-            } else {
-                addMessage(aiResponse, 'ai');
-            }
-        } catch (err) {
-            console.error(err);
-            addMessage("Sorry, I'm having trouble connecting to my brain. Please try again.", 'ai');
+        const result = await response.json();
+        
+        // Error handling: if worker sends an error, show it in console
+        if (result.error) {
+            console.error("Gemini Error:", result.error);
+            addMessage("AI Error: " + result.error, 'ai');
+            return;
         }
+
+        const aiResponse = result.candidates[0].content.parts[0].text;
+
+        // Update local history
+        chatHistory.push({ role: "user", parts: [{ text: text }] });
+        chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+
+        if (aiResponse.includes('"complete": true')) {
+            const jsonMatch = aiResponse.match(/\{.*\}/s);
+            if (jsonMatch) {
+                const finalData = JSON.parse(jsonMatch[0]);
+                submitToFirebase(finalData.data);
+            }
+        } else {
+            addMessage(aiResponse, 'ai');
+        }
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        addMessage("Connection failed. Check your browser console for details.", 'ai');
     }
+}
 
     function addMessage(text, sender) {
         const div = document.createElement('div');
