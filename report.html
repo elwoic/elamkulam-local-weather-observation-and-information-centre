@@ -109,8 +109,8 @@ type:"text"
 
 {
 q:{
-en:"Please provide your Email ID:",
-ml:"നിങ്ങളുടെ ഇമെയിൽ ഐഡി നൽകുക:"
+en:"Please provide your Email ID. We will only use it to contact you in the future if needed.",
+ml:"ദയവായി നിങ്ങളുടെ ഇമെയിൽ ഐഡി നൽകുക. ഇത് ആവശ്യമായാൽ ഭാവിയിൽ നിങ്ങളെ ബന്ധപ്പെടാൻ മാത്രമാണ് ഉപയോഗിക്കുന്നത്."
 },
 field:"email",
 type:"text"
@@ -118,8 +118,8 @@ type:"text"
 
 {
 q:{
-en:"What is the Location or Ward No?",
-ml:"സ്ഥലം അല്ലെങ്കിൽ വാർഡ് നമ്പർ എന്താണ്?"
+en:"Which location or ward did you observe this weather condition?(Ward No:/Name)",
+ml:"നിങ്ങൾ കണ്ട കാലാവസ്ഥ സ്ഥിതി ഏത് സ്ഥലത്താണ് അല്ലെങ്കിൽ ഏത് വാർഡിലാണ് ഉണ്ടായത്?(Ward no:/Name)"
 },
 field:"location",
 type:"text"
@@ -190,70 +190,57 @@ callback();
 }
 
 window.handleInput = async function(val){
+    if(!val || val.trim()==="") return;
 
-if(!val || val.trim()==="") return;
+    addMessage(val,"user");
 
-addMessage(val,"user");
+    if(!isAIPhase){
+        const step = steps[currentStep];
+        reportData[step.field] = val;
+        if(step.field==="show_on_site" && val==="yes"){
+            steps.splice(currentStep+1,0,{
+                q:{ en:"Mark as URGENT?", ml:"റിപ്പോർട്ട് അടിയന്തരമാണോ?(നിങ്ങളുടെ റിപ്പോർട്ടിന്റെ സാധുതാപരിശോധന ഉടൻതന്നെ നടത്തുന്നു." },
+                type:"buttons", options:["urgent","normal"], field:"priority"
+            });
+        }
+        currentStep++;
+        if(currentStep < steps.length) showStep(); else startAIPhase();
 
-if(!isAIPhase){
+    } else {
+        // AI PHASE - NO MORE SILENCE
+        aiThinking(async () => {
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        text: val, 
+                        collectedData: reportData 
+                    })
+                });
 
-const step = steps[currentStep];
-reportData[step.field] = val;
+                const data = await res.json();
+                let aiResult = data.result;
 
-if(step.field==="show_on_site" && val==="yes"){
-steps.splice(currentStep+1,0,{
-q:{
-en:"Mark this report as URGENT?",
-ml:"ഈ റിപ്പോർട്ട് അടിയന്തരമാണോ?"
-},
-type:"buttons",
-options:["urgent","normal"],
-field:"priority"
-});
+                // CLEANER: Remove markdown backticks if AI sent them
+                const cleanJsonMatch = aiResult.match(/\{.*\}/s);
+                
+                if (cleanJsonMatch && aiResult.includes('"complete": true')) {
+                    const parsed = JSON.parse(cleanJsonMatch[0]);
+                    reportData.observation = parsed.corrected;
+                    showReview();
+                } else {
+                    // AI Rejection or plain text feedback
+                    addMessage(aiResult, "ai");
+                    renderInput({type: "text"}); 
+                }
+            } catch (e) {
+    console.error("Full Error Info:", e); // This prints the REAL error to the browser console
+    addMessage("Connection error: " + e.message, "ai");
+    renderInput({type: "text"});
 }
-
-
-currentStep++;
-
-if(currentStep < steps.length){
-showStep();
-}else{
-startAIPhase();
-}
-
-}else{
-
-reportData.observation = val;
-
-aiThinking(()=>{
-addMessage("Checking description...", "ai");
-},500);
-
-
-try{
-
-const res = await fetch(WORKER_URL,{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({ text:val })
-});
-
-const data = await res.json();
-
-reportData.observation = data.corrected;
-
-
-showReview();
-
-
-}catch(e){
-
-addMessage("AI connection error.","ai");
-
-}
-
-}
-
+        }, 1200);
+    }
 };
 function showReview(){
 
