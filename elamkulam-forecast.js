@@ -216,14 +216,21 @@ function getHealthAdviceMalayalam(aqi) {
 
 async function fetchEstimatedAQI() {
   try {
-    const url =
-      `https://air-quality-api.open-meteo.com/v1/air-quality` +
-      `?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
+    const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
 
-    const res = await fetch(url);
+    // Optional: add your secret key if Worker requires it
+    const headers = {
+      "x-api-key": "elwoic-secret-2026-xyz"  // match your Worker secret
+    };
+
+    const res = await fetch(API_URL, { headers });
+    if (!res.ok) return null;
+
     const data = await res.json();
 
-    const pm25 = data?.current?.pm2_5;
+    // Assume your Worker returns this structure:
+    // { pm02_corrected, pm10_corrected, atmp_corrected, rhum_corrected, rco2_corrected, tvocIndex, noxIndex, timestamp }
+    const pm25 = data.pm02_corrected ?? null; // you can choose which PM to use
     if (pm25 == null) return null;
 
     const aqi = pm25ToAQI(pm25);
@@ -234,13 +241,13 @@ async function fetchEstimatedAQI() {
       pm25,
       status: getAQIStatus(aqi),
       advice: getHealthAdviceMalayalam(aqi),
-      source: "Estimated (Open-Meteo)"
+      source: "ELWOIC Worker API"
     };
   } catch (e) {
+    console.warn("fetchEstimatedAQI error", e);
     return null;
   }
 }
-
 
 function computeFromMeteo(m){
   try{
