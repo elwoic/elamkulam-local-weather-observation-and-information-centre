@@ -64,15 +64,6 @@
 
     <p class="update-tag" id="secret-trigger">Last Updated: <span id="last-updated">--</span></p>
 
-    <div class="push-section">
-        <button id="log-btn" disabled>Syncing...</button>
-        <div class="timer-display">
-            Next Push
-            <span id="cooldown-timer">--:--</span>
-        </div>
-        <span class="push-link" id="what-is-push">What is data push?</span>
-    </div>
-    <p id="log-status"></p>
     <!-- Add this before </body> -->
 <footer style="text-align:center; font-size:0.6rem; color:#64748b; margin-top:15px;">
     Data powered by <a href="https://www.airgradient.com/" target="_blank" style="color:#2563eb; text-decoration:underline;">AirGradient</a> &copy; 2026, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color:#2563eb; text-decoration:underline;">CC BY-SA 4.0</a> license.
@@ -103,7 +94,7 @@ const LAT = 10.9081;
 const LON = 76.2296;
 
 let currentLogData = {};
-let timer = null;
+
 
 // Utility functions (AQI, Feels Like) - Kept from your original
 const pm25ToAQI = (pm) => {
@@ -171,47 +162,10 @@ async function loadWeatherSnapshot() {
     } catch(err){ console.error(err); }
 }
 
-onValue(query(ref(db,"weather_logs"), limitToLast(1)), (snapshot) => {
-    if(!snapshot.exists()) { enableBtn(); return; }
-    const lastData = Object.values(snapshot.val())[0];
-    const lastTime = new Date(lastData.timestamp_utc).getTime();
-
-    if(timer) clearInterval(timer);
-    timer = setInterval(() => {
-        const remain = (30*60) - Math.floor((Date.now() - lastTime)/1000);
-        if(remain <= 0) {
-            enableBtn();
-            clearInterval(timer);
-        } else {
-            document.getElementById("log-btn").disabled = true;
-            document.getElementById("log-btn").textContent = "Wait a little →";
-            document.getElementById("cooldown-timer").textContent = Math.floor(remain/60).toString().padStart(2,'0') + ":" + (remain%60).toString().padStart(2,'0');
-        }
-    }, 1000);
-});
-
-function enableBtn() {
-    document.getElementById("log-btn").disabled = false;
-    document.getElementById("log-btn").textContent = "📤 Push Data";
-    document.getElementById("cooldown-timer").textContent = "Ready";
-}
-
-document.getElementById("log-btn").onclick = async () => {
-    try {
-        await push(ref(db, "weather_logs"), currentLogData);
-        document.getElementById("log-status").textContent = "✅ Push Successfull!";
-        setTimeout(() => document.getElementById("log-status").textContent = "", 3000);
-    } catch(e) { document.getElementById("log-status").textContent = "❌ Push Failed"; }
-};
-
 // MODAL HANDLING
 const showModal = (msg) => {
     document.getElementById("modal-message").textContent = msg;
     document.getElementById("condition-modal").style.display = "flex";
-};
-
-document.getElementById("what-is-push").onclick = () => {
-    window.open("about-weather-push.html", "_blank");
 };
 
 document.getElementById("condition-box").onclick = () => {
@@ -246,7 +200,6 @@ document.getElementById("secret-trigger").ondblclick = async () => {
     if(pass === "5252") {
         const bypassData = {...currentLogData, timestamp_utc: new Date(Date.now() - 31*60*1000).toISOString()};
         await push(ref(db, "weather_logs"), bypassData);
-        document.getElementById("log-status").textContent = "🔓 Global Bypass Active!";
     }
 };
 
