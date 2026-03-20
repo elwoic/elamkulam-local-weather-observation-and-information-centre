@@ -172,102 +172,123 @@ searchBox.oninput = filterStatus.onchange = sortSelect.onchange = render;
 
 // VIEW
 function view(key){
- let d = allData.find(x=>x.key===key);
+    let d = allData.find(x => x.key === key);
+    let isDone = d.status === "approved" || d.status === "rejected";
 
- let isDone = d.status === "approved" || d.status === "rejected";
+    let html = `
+    <div style="border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px;">
+        <h2 style="margin:0;">Request Details</h2>
+        <small>ID: ${d.requestId}</small>
+    </div>
+    <p><b>Name:</b> ${d.name}</p>
+    <p><b>Email:</b> ${d.email}</p>
+    <p><b>Phone:</b> ${d.phone || "Not Provided"}</p>
+    <p><b>Purpose:</b> ${d.purpose}</p>
+    <p><b>Parameters:</b> ${d.parameters}</p>
+    <p><b>Request Type:</b> ${d.type}</p>
+    <hr>
+    <p><b>Specific Date/Time:</b> ${d.date || "-"} | ${d.time || "-"}</p>
+    <p><b>Range:</b> From ${d.from_date || "-"} To ${d.to_date || "-"}</p>
+    <p><b>Status:</b> <span style="text-transform:uppercase; font-weight:bold;">${d.status}</span></p>
+    <br>
+    <div style="display:flex; gap:10px;">
+        <button class="approve" ${isDone?"disabled":""} onclick="openReply('${d.key}','approved')">Approve & Send Data</button>
+        <button class="reject" ${isDone?"disabled":""} onclick="openReply('${d.key}','rejected')">Reject Request</button>
+        <button class="cancel" onclick="closeModal('viewModal')">Close</button>
+    </div>`;
 
- let html = `<h3>${d.requestId}</h3>
- <p><b>Name:</b> ${d.name}</p>
- <p><b>Email:</b> ${d.email}</p>
- <p><b>Parameters:</b> ${d.parameters}</p>
- <p><b>Type:</b> ${d.type}</p>
- <p><b>Status:</b> ${d.status}</p>
- <br>
- <button class="approve" ${isDone?"disabled":""}
-   onclick="openReply('${d.key}','approved')">Approve</button>
- <button class="reject" ${isDone?"disabled":""}
-   onclick="openReply('${d.key}','rejected')">Reject</button>
- <button onclick="closeModal('viewModal')">Close</button>`;
-
- viewContent.innerHTML = html;
- viewModal.style.display="flex";
+    document.getElementById("viewContent").innerHTML = html;
+    document.getElementById("viewModal").style.display = "flex";
 }
-
 // DELETE
 function del(key){
  if(confirm("Delete?")) db.ref("requests/"+key).remove();
 }
 
 // OPEN REPLY + AUTO DATA
-function openReply(key,status){
- let d = allData.find(x=>x.key===key);
+function openReply(key, status) {
+    let d = allData.find(x => x.key === key);
+    currentKey = key;
+    currentEmail = d.email;
+    currentName = d.name;
+    currentRequestId = d.requestId;
+    currentParameters = (d.parameters || "").toLowerCase();
+    
+    document.getElementById("replyTitle").innerText = status.toUpperCase();
 
- currentKey = key;
- currentEmail = d.email;
- currentName = d.name;
- currentRequestId = d.requestId;
- currentParameters = d.parameters.toLowerCase();
- currentType = d.type;
- currentDate = d.date;
- currentTime = d.time;
- currentFrom = d.from_date;
- currentTo = d.to_date;
+    let messageBody = "";
 
- document.getElementById("replyTitle").innerText = status.toUpperCase();
+    if (status === "approved") {
+        let matchedData = null;
+        let searchDate = "";
 
- let filtered=[];
+        // --- STEP 1: CONVERT DATE FORMAT ---
+        // Converts "2026-03-20" to "20/03/2026" to match Weather DB
+        if (d.date) {
+            let parts = d.date.split("-");
+            searchDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
 
- // 🔹 SPECIFIC DATE
- if(currentType.includes("Specific")){
-   filtered = weatherData.filter(w =>
-     (w.timestamp_ist||"").includes(currentDate)
-   );
- }
+        // --- STEP 2: ROUND TIME (30-min intervals) ---
+        let roundedTime = "";
+        if (d.time) {
+            let [hrs, mins] = d.time.split(":").map(Number);
+            if (mins < 15) mins = "00";
+            else if (mins < 45) mins = "30";
+            else {
+                mins = "00";
+                hrs = (hrs + 1) % 24;
+            }
+            roundedTime = String(hrs).padStart(2, '0') + ":" + mins;
+        }
 
- // 🔹 DATE RANGE
- if(currentType.includes("Range")){
-   filtered = weatherData.filter(w=>{
-     let dStr=(w.timestamp_ist||"").split(",")[0];
-     return dStr>=currentFrom && dStr<=currentTo;
-   });
- }
+        // --- STEP 3: SEARCH DATABASE ---
+        matchedData = weatherData.find(w => {
+            let ts = w.timestamp_ist || ""; // e.g. "20/03/2026, 13:30:05"
+            return ts.includes(searchDate) && ts.includes(roundedTime);
+        });
 
- // LIMIT
- filtered = filtered.slice(0,20);
+        // --- STEP 4: FORMAT MESSAGE ---
+        if (matchedData) {
+            messageBody = `As requested, here is the weather data for ${searchDate} at approximately ${roundedTime}:\n\n`;
+            
+            if (currentParameters.includes("temp")) 
+                messageBody += `🌡 Temperature: ${matchedData.consensus_temp || matchedData.temp_c}°C\n`;
+            
+            if (currentParameters.includes("humidity")) 
+                messageBody += `💧 Humidity: ${matchedData.consensus_humidity || matchedData.humidity}%\n`;
+            
+            if (currentParameters.includes("aqi") || currentParameters.includes("pm")) {
+                messageBody += `😷 AQI: ${matchedData.aqi} (${matchedData.aqi_status})\n`;
+                messageBody += `🌫 PM2.5: ${matchedData.pm25} µg/m³\n`;
+            }
 
- // 🔥 PARAMETER FILTER
- let preview = filtered.map(w=>{
-   let line = "";
+            if (currentParameters.includes("pressure"))
+                messageBody += `📊 Pressure: ${matchedData.pressure_hpa} hPa\n`;
 
-   if(currentParameters.includes("temp"))
-     line += `🌡 Temp: ${w.consensus_temp || w.temp_c || "-"}°C | `;
+            if (currentParameters.includes("condition"))
+                messageBody += `☁ Condition: ${matchedData.condition}\n`;
 
-   if(currentParameters.includes("humidity"))
-     line += `💧 Humidity: ${w.humidity || "-"}% | `;
+        } else {
+            messageBody = "The requested data for " + searchDate + " at " + roundedTime + " was not found in our logs. Please contact us if you believe this is an error.";
+        }
+    } else {
+        messageBody = "Your request for weather data has been reviewed and unfortunately cannot be approved at this time.";
+    }
 
-   if(currentParameters.includes("pressure"))
-     line += `📊 Pressure: ${w.pressure_hpa || "-"} hPa | `;
+    // Populate textarea
+    document.getElementById("replyText").value = 
+`Dear ${currentName},
 
-   if(currentParameters.includes("pm") || currentParameters.includes("aqi"))
-     line += `AQI: ${w.aqi} (${w.aqi_status}) | PM2.5: ${w.pm25}`;
+${messageBody}
 
-   return line || JSON.stringify(w);
- }).join("\n");
+Thank you for contacting ELWOIC.
+Best Regards,
+Admin Team, ELWOIC`;
 
- if(!preview) preview = "No data found for this request.";
-
- document.getElementById("replyText").value =
-`Data Preview:
-${preview}
-
----------------------
-
-`;
-
- window.currentStatus = status;
- replyModal.style.display="flex";
+    window.currentStatus = status;
+    document.getElementById("replyModal").style.display = "flex";
 }
-
 // SEND
 function sendReply(){
  let msg = replyText.value;
