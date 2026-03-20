@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login - ELWOIC</title>
+</head>
+
+<body style="font-family:Arial; text-align:center; margin-top:100px;">
+
+<h2>ELWOIC Admin Login</h2>
+
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<p id="msg" style="color:red;"></p>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  authDomain: "administration-protal.firebaseapp.com"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+function login(){
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      window.location.href = "admin.html"; // your admin panel file
+    })
+    .catch(err => {
+      document.getElementById("msg").innerText = err.message;
+    });
+}
+</script>
+
+</body>
+</html>
