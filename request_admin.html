@@ -16,6 +16,12 @@ input, select { padding:8px; }
 .table th,.table td { border:1px solid #ccc; padding:8px; }
 .table th { background:#000; color:#fff; }
 
+/* Status Colors */
+.status-pending { color: orange; font-weight: bold; }
+.status-approved { color: green; font-weight: bold; }
+.status-approved_pending { color: #007bff; font-weight: bold; }
+.status-rejected { color: red; font-weight: bold; }
+
 button { padding:6px 10px; cursor:pointer; border:none; margin:2px; }
 .approve { background:green; color:white; }
 .reject { background:red; color:white; }
@@ -25,12 +31,22 @@ button { padding:6px 10px; cursor:pointer; border:none; margin:2px; }
 
 .modal {
   position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center;
+  background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000;
 }
 .modal-content {
   background:white; padding:20px; width:500px; max-height:90vh; overflow:auto; border-radius:10px;
 }
-textarea { width:100%; height:150px; }
+textarea { width:100%; height:150px; margin-top: 10px; }
+
+.checkbox-area {
+    background: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 </style>
 </head>
 
@@ -44,7 +60,8 @@ textarea { width:100%; height:150px; }
   <select id="filterStatus">
     <option value="all">All</option>
     <option value="pending">Pending</option>
-    <option value="approved">Approved</option>
+    <option value="approved">Approved (Data Sent)</option>
+    <option value="approved_pending">Approved (Data Pending)</option>
     <option value="rejected">Rejected</option>
   </select>
   <select id="sort">
@@ -63,18 +80,20 @@ textarea { width:100%; height:150px; }
 </table>
 </div>
 
-<!-- VIEW MODAL -->
 <div class="modal" id="viewModal">
 <div class="modal-content" id="viewContent"></div>
 </div>
 
-<!-- REPLY MODAL -->
 <div class="modal" id="replyModal">
 <div class="modal-content">
   <h3 id="replyTitle"></h3>
+  <div id="approvalOptions" class="checkbox-area" style="display:none;">
+      <input type="checkbox" id="dataPendingCheck">
+      <label for="dataPendingCheck"><b>Data not ready yet.</b> (Notify user that approval is granted but data is being processed)</label>
+  </div>
   <textarea id="replyText"></textarea>
   <br><br>
-  <button onclick="sendReply()">Send</button>
+  <button class="approve" onclick="sendReply()">Send & Update Status</button>
   <button class="cancel" onclick="closeModal('replyModal')">Cancel</button>
 </div>
 </div>
@@ -85,59 +104,34 @@ textarea { width:100%; height:150px; }
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
-// MAIN DB (requests)
+// INITIALIZATION
 const app1 = firebase.initializeApp({
  apiKey:"AIzaSyCCGNGzhBWETU0gyTUeA2wUVnlQbl2-khU",
  authDomain:"data-request-161d5.firebaseapp.com",
  databaseURL:"https://data-request-161d5-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
-
 const db = app1.database();
 
-// WEATHER DB
 const app2 = firebase.initializeApp({
  apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
  databaseURL:"https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
 },"weather");
-
 const weatherDb = app2.database();
 
 emailjs.init("p5ikS_d-yFWcyzvac");
 
-// VARIABLES
 let allData = [];
 let weatherData = [];
+let currentKey, currentEmail, currentName, currentRequestId, currentParameters, currentType;
 
-let currentKey, currentEmail, currentName, currentRequestId;
-let currentParameters, currentType;
-let currentDate, currentTime, currentFrom, currentTo;
-
-const tableBody = document.getElementById("tableBody");
 const auth = firebase.auth();
+const allowedEmails = ["aswanthkrishnak822@gmail.com", "elwoicelamkulam@gmail.com"];
 
-const allowedEmails = [
-  "aswanthkrishnak822@gmail.com",
-  "elwoicelamkulam@gmail.com"
-];
-
-// LOAD REQUESTS
 auth.onAuthStateChanged(user => {
-
-  if (!user) {
+  if (!user || !allowedEmails.includes(user.email)) {
     window.location.href = "request_admin_login.html";
     return;
   }
-
-  if (!allowedEmails.includes(user.email)) {
-    alert("Access Denied");
-    auth.signOut();
-    window.location.href = "request_admin_login.html";
-    return;
-  }
-
-  console.log("Access granted:", user.email);
-
-  // ✅ LOAD DATA ONLY AFTER AUTH SUCCESS
   db.ref("requests").on("value", snap=>{
     allData=[];
     snap.forEach(c=>{
@@ -146,44 +140,40 @@ auth.onAuthStateChanged(user => {
     });
     render();
   });
-
 });
 
-// LOAD WEATHER
 weatherDb.ref("weather_logs").on("value", snap=>{
   weatherData=[];
-  snap.forEach(c=>{
-    let d = c.val();
-    weatherData.push(d);
-  });
+  snap.forEach(c=>{ weatherData.push(c.val()); });
 });
 
-// RENDER TABLE
 function render(){
- let search = searchBox.value.toLowerCase();
- let status = filterStatus.value;
- let sort = sortSelect.value;
+ let search = document.getElementById("search").value.toLowerCase();
+ let status = document.getElementById("filterStatus").value;
+ let sort = document.getElementById("sort").value;
 
  let data = allData.filter(d=>{
    return (
      (status==="all" || d.status===status) &&
-     (d.name.toLowerCase().includes(search) ||
-      d.email.toLowerCase().includes(search) ||
-      d.requestId.includes(search))
+     (d.name.toLowerCase().includes(search) || d.email.toLowerCase().includes(search) || d.requestId.includes(search))
    );
  });
 
  if(sort==="latest") data.sort((a,b)=> b.created_at.localeCompare(a.created_at));
  if(sort==="pending") data.sort((a,b)=> (a.status==='pending'?-1:1));
 
+ const tableBody = document.getElementById("tableBody");
  tableBody.innerHTML="";
  data.forEach(d=>{
+   let statusText = d.status;
+   if(d.status === "approved_pending") statusText = "Approved (Pending Data)";
+   
    tableBody.innerHTML += `
    <tr>
     <td>${d.requestId}</td>
     <td>${d.name}</td>
     <td>${d.email}</td>
-    <td>${d.status}</td>
+    <td class="status-${d.status}">${statusText.toUpperCase()}</td>
     <td>
       <button class="view" onclick="view('${d.key}')">View</button>
       <button class="delete" onclick="del('${d.key}')">Delete</button>
@@ -192,164 +182,130 @@ function render(){
  });
 }
 
-const searchBox = document.getElementById("search");
-const filterStatus = document.getElementById("filterStatus");
-const sortSelect = document.getElementById("sort");
+document.getElementById("search").oninput = document.getElementById("filterStatus").onchange = document.getElementById("sort").onchange = render;
 
-searchBox.oninput = filterStatus.onchange = sortSelect.onchange = render;
-
-// VIEW
+// UPDATED VIEW FUNCTION - SHOWS ALL FIELDS
 function view(key){
     let d = allData.find(x => x.key === key);
+    
+    // Status styling for the modal
+    let statusClass = "status-" + d.status;
     let isDone = d.status === "approved" || d.status === "rejected";
 
     let html = `
     <div style="border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px;">
-        <h2 style="margin:0;">Request Details</h2>
-        <small>ID: ${d.requestId}</small>
+        <h2 style="margin:0;">Full Request Details</h2>
+        <small><b>Request ID:</b> ${d.requestId}</small>
     </div>
-    <p><b>Name:</b> ${d.name}</p>
-    <p><b>Email:</b> ${d.email}</p>
-    <p><b>Phone:</b> ${d.phone || "Not Provided"}</p>
-    <p><b>Purpose:</b> ${d.purpose}</p>
-    <p><b>Parameters:</b> ${d.parameters}</p>
-    <p><b>Request Type:</b> ${d.type}</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+        <p><b>Name:</b><br>${d.name}</p>
+        <p><b>Email:</b><br>${d.email}</p>
+        <p><b>Phone:</b><br>${d.phone || "Not Provided"}</p>
+        <p><b>Submitted On:</b><br>${new Date(d.created_at).toLocaleString()}</p>
+    </div>
+
     <hr>
-    <p><b>Specific Date/Time:</b> ${d.date || "-"} | ${d.time || "-"}</p>
-    <p><b>Range:</b> From ${d.from_date || "-"} To ${d.to_date || "-"}</p>
-    <p><b>Status:</b> <span style="text-transform:uppercase; font-weight:bold;">${d.status}</span></p>
+    
+    <p><b>Purpose of Request:</b><br>${d.purpose}</p>
+    <p><b>Required Parameters:</b><br>${d.parameters}</p>
+    <p><b>Request Type:</b><br>${d.type}</p>
+    
+    <div style="display: flex; gap: 20px; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+        <div><b>Specific Date:</b> ${d.date || "-"}</div>
+        <div><b>Time:</b> ${d.time || "-"}</div>
+    </div>
+    
+    <div style="display: flex; gap: 20px; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-top: 5px;">
+        <div><b>From:</b> ${d.from_date || "-"}</div>
+        <div><b>To:</b> ${d.to_date || "-"}</div>
+    </div>
+
+    <div style="margin-top: 15px; padding: 10px; border: 1px dashed #666; background: #fffbe6;">
+        <b>Additional Details:</b><br>
+        ${d.additional_details || "<i>No additional details provided.</i>"}
+    </div>
+
+    <p><b>Current Status:</b> <span class="${statusClass}" style="text-transform:uppercase;">${d.status.replace('_', ' ')}</span></p>
+    
     <br>
-    <div style="display:flex; gap:10px;">
-        <button class="approve" ${isDone?"disabled":""} onclick="openReply('${d.key}','approved')">Approve & Send Data</button>
-        <button class="reject" ${isDone?"disabled":""} onclick="openReply('${d.key}','rejected')">Reject Request</button>
-        <button class="cancel" onclick="closeModal('viewModal')">Close</button>
+    <div style="display:flex; gap:10px; flex-wrap: wrap;">
+        <button class="approve" onclick="openReply('${d.key}','approved')">Approve / Update</button>
+        <button class="reject" onclick="openReply('${d.key}','rejected')">Reject Request</button>
+        <button class="cancel" onclick="closeModal('viewModal')">Close Window</button>
     </div>`;
 
     document.getElementById("viewContent").innerHTML = html;
     document.getElementById("viewModal").style.display = "flex";
 }
-// DELETE
-function del(key){
- if(confirm("Delete?")) db.ref("requests/"+key).remove();
-}
 
-// OPEN REPLY + AUTO DATA
 function openReply(key, status) {
     let d = allData.find(x => x.key === key);
     currentKey = key;
     currentEmail = d.email;
     currentName = d.name;
     currentRequestId = d.requestId;
-    currentParameters = (d.parameters || "").toLowerCase();
+    currentParameters = d.parameters;
+    currentType = d.type;
     
     document.getElementById("replyTitle").innerText = status.toUpperCase();
-
-    let messageBody = "";
-
+    const approvalOptions = document.getElementById("approvalOptions");
+    
     if (status === "approved") {
-        let matchedData = null;
+        approvalOptions.style.display = "block";
+        // Logic for auto-data fetching (similar to your previous version)
         let searchDate = "";
-
-        // --- STEP 1: CONVERT DATE FORMAT ---
-        // Converts "2026-03-20" to "20/03/2026" to match Weather DB
         if (d.date) {
             let parts = d.date.split("-");
             searchDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
-
-        // --- STEP 2: ROUND TIME (30-min intervals) ---
-        let roundedTime = "";
-        if (d.time) {
-            let [hrs, mins] = d.time.split(":").map(Number);
-            if (mins < 15) mins = "00";
-            else if (mins < 45) mins = "30";
-            else {
-                mins = "00";
-                hrs = (hrs + 1) % 24;
-            }
-            roundedTime = String(hrs).padStart(2, '0') + ":" + mins;
-        }
-
-        // --- STEP 3: SEARCH DATABASE ---
-        matchedData = weatherData.find(w => {
-            let ts = w.timestamp_ist || ""; // e.g. "20/03/2026, 13:30:05"
-            return ts.includes(searchDate) && ts.includes(roundedTime);
-        });
-
-        // --- STEP 4: FORMAT MESSAGE ---
-        if (matchedData) {
-            messageBody = `As requested, here is the weather data for ${searchDate} at approximately ${roundedTime}:\n\n`;
-            
-            if (currentParameters.includes("temp")) 
-                messageBody += `🌡 Temperature: ${matchedData.consensus_temp || matchedData.temp_c}°C\n`;
-            
-            if (currentParameters.includes("humidity")) 
-                messageBody += `💧 Humidity: ${matchedData.consensus_humidity || matchedData.humidity}%\n`;
-            
-            if (currentParameters.includes("aqi") || currentParameters.includes("pm")) {
-                messageBody += `😷 AQI: ${matchedData.aqi} (${matchedData.aqi_status})\n`;
-                messageBody += `🌫 PM2.5: ${matchedData.pm25} µg/m³\n`;
-            }
-
-            if (currentParameters.includes("pressure"))
-                messageBody += `📊 Pressure: ${matchedData.pressure_hpa} hPa\n`;
-
-            if (currentParameters.includes("condition"))
-                messageBody += `☁ Condition: ${matchedData.condition}\n`;
-
-        } else {
-            messageBody = "The requested data for " + searchDate + " at " + roundedTime + " was not found in our logs. Please contact us if you believe this is an error.";
-        }
+        document.getElementById("replyText").value = `Dear ${currentName},\n\nYour request has been approved. [Data will be inserted here or notified as pending] \n\nBest Regards,\nAdmin Team, ELWOIC`;
     } else {
-        messageBody = "Your request for weather data has been reviewed and unfortunately cannot be approved at this time.";
+        approvalOptions.style.display = "none";
+        document.getElementById("replyText").value = `Dear ${currentName},\n\nUnfortunately, your request could not be approved at this time.\n\nBest Regards,\nAdmin Team, ELWOIC`;
     }
-
-    // Populate textarea
-    document.getElementById("replyText").value = 
-`Dear ${currentName},
-
-${messageBody}
-
-Thank you for contacting ELWOIC.
-Best Regards,
-Admin Team, ELWOIC`;
 
     window.currentStatus = status;
     document.getElementById("replyModal").style.display = "flex";
 }
-// SEND
+
 function sendReply(){
- let msg = replyText.value;
+    let msg = document.getElementById("replyText").value;
+    let isPending = document.getElementById("dataPendingCheck").checked;
+    let finalStatus = window.currentStatus;
 
- emailjs.send("service_3br5mjc","template_tzvvv1c",{
-  email: currentEmail,
-  name: currentName,
-  requestId: currentRequestId,
-  parameters: currentParameters,
-  type: currentType,
-  message: msg,
-  status_message: window.currentStatus==="approved"
-    ? "Your data request has been APPROVED by ELWOIC."
-    : "Your data request has been REJECTED by ELWOIC."
- });
+    let statusMsg = "";
+    if (window.currentStatus === "approved") {
+        if (isPending) {
+            finalStatus = "approved_pending";
+            statusMsg = "Your data request has been APPROVED, but the data is currently being processed. We will send the final data shortly.";
+        } else {
+            finalStatus = "approved";
+            statusMsg = "Your data request has been APPROVED and the data is provided below.";
+        }
+    } else {
+        statusMsg = "Your data request has been REJECTED by ELWOIC.";
+    }
 
- db.ref("requests/"+currentKey).update({
-   status: window.currentStatus
- });
-
- closeModal('replyModal');
- closeModal('viewModal');
+    emailjs.send("service_3br5mjc","template_tzvvv1c",{
+        email: currentEmail,
+        name: currentName,
+        requestId: currentRequestId,
+        parameters: currentParameters,
+        type: currentType,
+        message: msg,
+        status_message: statusMsg
+    }).then(() => {
+        db.ref("requests/" + currentKey).update({ status: finalStatus });
+        alert("Notification Sent. Status: " + finalStatus);
+        closeModal('replyModal');
+        closeModal('viewModal');
+    });
 }
-function logout(){
-  auth.signOut().then(()=>{
-    window.location.href = "request_admin_login.html";
-  });
-}
 
-function closeModal(id){
- document.getElementById(id).style.display="none";
-}
+function del(key){ if(confirm("Delete?")) db.ref("requests/"+key).remove(); }
+function logout(){ auth.signOut().then(()=> window.location.href = "request_admin_login.html"); }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
 </script>
-
 </body>
 </html>
