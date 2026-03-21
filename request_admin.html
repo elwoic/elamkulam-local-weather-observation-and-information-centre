@@ -113,6 +113,12 @@ let currentParameters, currentType;
 let currentDate, currentTime, currentFrom, currentTo;
 
 const tableBody = document.getElementById("tableBody");
+const auth = firebase.auth();
+
+const allowedEmails = [
+  "aswanthkrishnak822@gmail.com",
+  "elwoicelamkulam@gmail.com"
+];
 
 // LOAD REQUESTS
 auth.onAuthStateChanged(user => {
