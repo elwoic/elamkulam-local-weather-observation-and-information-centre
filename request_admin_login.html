@@ -33,7 +33,7 @@ function login(){
 
   auth.signInWithEmailAndPassword(email, pass)
     .then(() => {
-      window.location.href = "admin.html"; // your admin panel file
+      window.location.href = "request_admin.html"; // your admin panel file
     })
     .catch(err => {
       document.getElementById("msg").innerText = err.message;
