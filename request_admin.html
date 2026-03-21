@@ -115,21 +115,6 @@ let currentDate, currentTime, currentFrom, currentTo;
 const tableBody = document.getElementById("tableBody");
 
 // LOAD REQUESTS
-db.ref("requests").on("value", snap=>{
-  allData=[];
-  snap.forEach(c=>{
-    let d=c.val(); d.key=c.key;
-    allData.push(d);
-  });
-  render();
-});
-const auth = firebase.auth();
-
-const allowedEmails = [
-  "aswanthkrishnak822@gmail.com",
-  "elwoicelamkulam@gmail.com"
-];
-
 auth.onAuthStateChanged(user => {
 
   if (!user) {
@@ -145,6 +130,16 @@ auth.onAuthStateChanged(user => {
   }
 
   console.log("Access granted:", user.email);
+
+  // ✅ LOAD DATA ONLY AFTER AUTH SUCCESS
+  db.ref("requests").on("value", snap=>{
+    allData=[];
+    snap.forEach(c=>{
+      let d=c.val(); d.key=c.key;
+      allData.push(d);
+    });
+    render();
+  });
 
 });
 
