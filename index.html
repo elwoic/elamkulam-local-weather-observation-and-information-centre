@@ -213,7 +213,41 @@ body {
     color: #87CEEB;
     border-bottom: 2px solid #87CEEB;
 }
+/* ---------------------------------------------------- */
+/* NEW: DATA REQUEST LINK INTEGRATION */
+/* ---------------------------------------------------- */
+.request-link-wrapper {
+    display: flex;
+    justify-content: flex-end; /* Keeps it right aligned */
+    padding: 2px 15px;
+    background: transparent; /* No background color as requested */
+    margin-bottom: -18px;    /* Pulls the marquee up to close the gap */
+    position: relative;      /* Ensures it stays on top */
+    z-index: 10;
+}
 
+.request-link-wrapper a {
+    color: #FFD700;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.request-link-wrapper a:hover {
+    color: #0073e6;
+    text-decoration: underline;
+}
+
+/* Mobile Adjustment */
+@media (max-width: 600px) {
+    .request-link-wrapper {
+        margin-bottom: -15px;
+        padding-right: 10px;
+    }
+}
 /* ---------------------------------------------------- */
 /* 3. MARQUEE SECTIONS & ANIMATIONS (Unified) */
 /* Keyframe names are unique to prevent conflicts */
@@ -1162,6 +1196,9 @@ footer a:hover {
             <a href="about.html">ABOUT US</a>
             <a href="contact.html">CONTACT</a>
         </nav>
+      <div class="request-link-wrapper">
+             <a href="https://request.elwoic.in/" target="_blank">Data Request Form →</a>
+        </div>
         <div class="marquee-container top-info-marquee">
         <div class="scroll-text" id="info-marquee">
             ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span>
