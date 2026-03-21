@@ -175,6 +175,23 @@ body, html {
     color: #38bdf8;
     font-weight: bold;
 }
+.admin-link {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 4px;
+}
+/* Data request entry */
+.admin-link a {
+    color: #38bdf8;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.admin-link a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
 
 /* Animations */
 @keyframes pulse {
@@ -250,6 +267,9 @@ body, html {
     <div class="metric">CPU <span id="cpu-load">12%</span></div>
     <div class="metric">NET <span id="net-load">98%</span></div>
     <div class="metric">DB <span>ONLINE</span></div>
+</div>
+<div class="admin-link">
+    <a href="request_admin_login.html">Request Admin Access</a>
 </div>
 
 <iframe id="content-frame" src="administration.html"></iframe>
