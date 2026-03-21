@@ -37,6 +37,7 @@ textarea { width:100%; height:150px; }
 <body>
 <div class="container">
 <h2>ELWOIC Admin Panel</h2>
+<button onclick="logout()">Logout</button>
 
 <div class="controls">
   <input type="text" id="search" placeholder="Search name/email/requestId">
@@ -81,11 +82,13 @@ textarea { width:100%; height:150px; }
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
 // MAIN DB (requests)
 const app1 = firebase.initializeApp({
  apiKey:"AIzaSyCCGNGzhBWETU0gyTUeA2wUVnlQbl2-khU",
+ authDomain:"data-request-161d5.firebaseapp.com",
  databaseURL:"https://data-request-161d5-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
 
@@ -119,6 +122,33 @@ db.ref("requests").on("value", snap=>{
     allData.push(d);
   });
   render();
+});
+const auth = firebase.auth();
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    // Not logged in → go to login page
+    window.location.href = "request_admin_login.html";
+  } else {
+    console.log("Logged in as:", user.email);
+  }
+});
+const allowedEmails = [
+  "your@email.com",
+  "another@email.com"
+];
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "request_admin_login.html";
+    return;
+  }
+
+  if (!allowedEmails.includes(user.email)) {
+    alert("Access Denied");
+    auth.signOut();
+    window.location.href = "request_admin_login.html";
+  }
 });
 
 // LOAD WEATHER
@@ -311,6 +341,11 @@ function sendReply(){
 
  closeModal('replyModal');
  closeModal('viewModal');
+}
+function logout(){
+  auth.signOut().then(()=>{
+    window.location.href = "request_admin_login.html";
+  });
 }
 
 function closeModal(id){
