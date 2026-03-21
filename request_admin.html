@@ -125,20 +125,13 @@ db.ref("requests").on("value", snap=>{
 });
 const auth = firebase.auth();
 
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    // Not logged in → go to login page
-    window.location.href = "request_admin_login.html";
-  } else {
-    console.log("Logged in as:", user.email);
-  }
-});
 const allowedEmails = [
-  "your@email.com",
-  "another@email.com"
+  "aswanthkrishnak822@gmail.com",
+  "elwoicelamkulam@gmail.com"
 ];
 
 auth.onAuthStateChanged(user => {
+
   if (!user) {
     window.location.href = "request_admin_login.html";
     return;
@@ -148,7 +141,11 @@ auth.onAuthStateChanged(user => {
     alert("Access Denied");
     auth.signOut();
     window.location.href = "request_admin_login.html";
+    return;
   }
+
+  console.log("Access granted:", user.email);
+
 });
 
 // LOAD WEATHER
