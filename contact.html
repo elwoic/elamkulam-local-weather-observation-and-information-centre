@@ -115,7 +115,38 @@
     height: 100%;
     border: 0;
 }
+.data-request-mini-link {
+    text-align: right;
+    padding: 10px 0;
+    margin-bottom: 5px;
+}
 
+.data-request-mini-link a {
+    color: #b38f00; /* Deep Gold/Yellow for visibility on white */
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border: 1px dashed #b38f00; /* Subtle dashed border to make it look like a "form" link */
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.data-request-mini-link a:hover {
+    background: #fff9e6; /* Very light yellow tint on hover */
+    color: #e6ac00;
+    border-style: solid;
+}
+
+/* Mobile Center-Align */
+@media (max-width: 600px) {
+    .data-request-mini-link {
+        text-align: center;
+    }
+}
     </style>
 
     <script>
@@ -242,6 +273,9 @@
         </div>
     </div>
     </section>
+    <div class="data-request-mini-link">
+        <a href="https://request.elwoic.in/" target="_blank">Looking for weather data? Data Request Form →</a>
+    </div>
     <!-- Main Contact Grid -->
 <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         <!-- Contact Form Card (Takes 2/3 width on large screens) -->
