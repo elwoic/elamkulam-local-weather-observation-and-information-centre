@@ -238,30 +238,6 @@ card.querySelector(".sendReplyBtn").onclick = () => {
   };
 
   emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
-    .then(async () => {
-      setStatus("Reply sent successfully!", "success");
-      card.querySelector(".replyBox").value = "";
-
-      // 🔥 Auto mark as replied
-      await update(ref(db, "messages/" + item.key), {
-        status: "replied"
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      setStatus("Failed to send reply.", "error");
-    });
-};
-
-  const templateParams = {
-    to_name: item.name,
-    to_email: item.email,
-    message: replyText,
-    subject: item.subject,
-    refNumber: item.refNumber || "N/A"
-  };
-
-  emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
     .then(() => {
       setStatus("Reply sent successfully!", "success");
       card.querySelector(".replyBox").value = "";
