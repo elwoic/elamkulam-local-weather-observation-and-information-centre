@@ -51,7 +51,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
 //---------------------------- Firebase Config ----------------------------
 const firebaseConfig = {
@@ -168,6 +168,9 @@ function render(list) {
         <strong>${escape(item.name)}</strong> —
         <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>
       </p>
+<p class="text-xs mt-1">
+  Status: <span class="statusBadge font-semibold">${getStatusLabel(item.status)}</span>
+</p>
 
       <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escape(item.message)}</p>
 
@@ -177,6 +180,16 @@ function render(list) {
       <button class="sendReplyBtn mt-2 px-3 py-2 bg-green-600 text-white rounded text-sm">
         Send Reply
       </button>
+      <div class="mt-3 flex gap-2">
+  <button class="markSeenBtn px-3 py-1 bg-yellow-500 text-white rounded text-xs">
+    Mark Seen
+  </button>
+
+  <button class="markRepliedBtn px-3 py-1 bg-blue-600 text-white rounded text-xs">
+    Mark Replied
+  </button>
+</div>
+
     </div>
 
     <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
@@ -196,6 +209,21 @@ card.querySelector(".sendReplyBtn").onclick = () => {
     alert("Reply cannot be empty.");
     return;
   }
+// Mark Seen
+card.querySelector(".markSeenBtn").onclick = async () => {
+  await update(ref(db, "messages/" + item.key), {
+    status: "seen"
+  });
+  setStatus("Marked as seen.", "success");
+};
+
+// Mark Replied
+card.querySelector(".markRepliedBtn").onclick = async () => {
+  await update(ref(db, "messages/" + item.key), {
+    status: "replied"
+  });
+  setStatus("Marked as replied.", "success");
+};
 
   const templateParams = {
     to_name: item.name,
@@ -251,6 +279,11 @@ const rows = currentData.map(x =>
   a.download = "elwoic_messages.csv";
   a.click();
   URL.revokeObjectURL(url);
+}
+function getStatusLabel(status) {
+  if (status === "seen") return "👁 Seen";
+  if (status === "replied") return "✅ Replied";
+  return "🆕 Pending";
 }
 
 //---------------------------- Escape HTML ----------------------------
