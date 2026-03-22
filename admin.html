@@ -196,20 +196,15 @@ function render(list) {
   </div>
 `;
 
-    card.querySelector(".deleteBtn").onclick = async () => {
-      if (confirm("Delete this message?")) {
-        await remove(ref(db, "messages/" + item.key));
-        setStatus("Message deleted.", "success");
-      }
-    };
-card.querySelector(".sendReplyBtn").onclick = () => {
-  const replyText = card.querySelector(".replyBox").value.trim();
-
-  if (!replyText) {
-    alert("Reply cannot be empty.");
-    return;
+    // DELETE
+card.querySelector(".deleteBtn").onclick = async () => {
+  if (confirm("Delete this message?")) {
+    await remove(ref(db, "messages/" + item.key));
+    setStatus("Message deleted.", "success");
   }
-// Mark Seen
+};
+
+// ✅ Mark Seen
 card.querySelector(".markSeenBtn").onclick = async () => {
   await update(ref(db, "messages/" + item.key), {
     status: "seen"
@@ -217,12 +212,45 @@ card.querySelector(".markSeenBtn").onclick = async () => {
   setStatus("Marked as seen.", "success");
 };
 
-// Mark Replied
+// ✅ Mark Replied
 card.querySelector(".markRepliedBtn").onclick = async () => {
   await update(ref(db, "messages/" + item.key), {
     status: "replied"
   });
   setStatus("Marked as replied.", "success");
+};
+
+// ✅ Send Reply
+card.querySelector(".sendReplyBtn").onclick = () => {
+  const replyText = card.querySelector(".replyBox").value.trim();
+
+  if (!replyText) {
+    alert("Reply cannot be empty.");
+    return;
+  }
+
+  const templateParams = {
+    to_name: item.name,
+    to_email: item.email,
+    message: replyText,
+    subject: item.subject,
+    refNumber: item.refNumber || "N/A"
+  };
+
+  emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
+    .then(async () => {
+      setStatus("Reply sent successfully!", "success");
+      card.querySelector(".replyBox").value = "";
+
+      // 🔥 Auto mark as replied
+      await update(ref(db, "messages/" + item.key), {
+        status: "replied"
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      setStatus("Failed to send reply.", "error");
+    });
 };
 
   const templateParams = {
