@@ -51,6 +51,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.js';
 
 //---------------------------- Firebase Config ----------------------------
 const firebaseConfig = {
@@ -64,10 +65,11 @@ const firebaseConfig = {
   measurementId: "G-0KZS7RPGKK"
 };
 
-// Initialize Firebase
+// Initialize
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+emailjs.init("YOUR_PUBLIC_KEY"); // <-- ADD YOUR PUBLIC KEY HERE
 
 // DOM elements
 const statusEl = document.getElementById('status');
@@ -79,23 +81,22 @@ const controls = document.getElementById('controls');
 const filterInput = document.getElementById('filterInput');
 
 let currentData = [];
+let activeMessage = null;
 
 //---------------------------- Auth Check ----------------------------
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    location.href = "login.html"; // redirect if not logged in
+    location.href = "login.html";
   } else {
     controls.classList.remove("hidden");
     startListening();
   }
 });
 
-//---------------------------- Logout ----------------------------
 window.logout = () => {
   signOut(auth).then(() => location.href="login.html");
 };
 
-//---------------------------- Status Helper ----------------------------
 function setStatus(text, type = "info") {
   statusEl.textContent = text;
   statusEl.className = "mb-4 p-3 rounded text-sm";
@@ -148,29 +149,25 @@ function render(list) {
     card.innerHTML = `
       <div class="flex justify-between items-start gap-4">
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-slate-800">
-            ${escape(item.subject)}
-          </h3>
-
-          <p class="text-xs mt-1 text-blue-700 font-medium">
-            Topic: ${escape(item.questionType || "Not specified")}
-          </p>
-
-          <p class="text-xs mt-1 text-gray-500">
-            Reference #: <strong>${escape(item.refNumber || "N/A")}</strong>
-          </p>
-
+          <h3 class="text-lg font-semibold text-slate-800">${escape(item.subject)}</h3>
+          <p class="text-xs mt-1 text-blue-700 font-medium">Topic: ${escape(item.questionType || "Not specified")}</p>
+          <p class="text-xs mt-1 text-gray-500">Ref #: <strong>${escape(item.refNumber || "N/A")}</strong></p>
           <span class="text-xs text-slate-500">${d}</span>
           <p class="text-sm text-slate-600 mt-1">
-            <strong>${escape(item.name)}</strong> —
+            <strong>${escape(item.name)}</strong> — 
             <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>
           </p>
           <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escape(item.message)}</p>
         </div>
-        <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
+        <div class="flex flex-col gap-2">
+           <button class="replyBtn px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Reply</button>
+           <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700">Delete</button>
+        </div>
       </div>
     `;
 
+    card.querySelector(".replyBtn").onclick = () => openReplyModal(item);
+    
     card.querySelector(".deleteBtn").onclick = async () => {
       if (confirm("Delete this message?")) {
         await remove(ref(db, "messages/" + item.key));
@@ -182,7 +179,51 @@ function render(list) {
   });
 }
 
-//---------------------------- Filter ----------------------------
+//---------------------------- Reply Logic ----------------------------
+function openReplyModal(item) {
+  activeMessage = item;
+  document.getElementById('replyToEmail').textContent = item.email;
+  document.getElementById('replySubject').textContent = "Re: " + item.subject;
+  document.getElementById('replyBody').value = "";
+  document.getElementById('replyModal').classList.remove('hidden');
+}
+
+window.closeReplyModal = () => {
+  document.getElementById('replyModal').classList.add('hidden');
+  activeMessage = null;
+};
+
+document.getElementById('sendReplyBtn').onclick = async () => {
+  const replyText = document.getElementById('replyBody').value;
+  if (!replyText) return alert("Please enter a message.");
+
+  const btn = document.getElementById('sendReplyBtn');
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
+  const templateParams = {
+    to_email: activeMessage.email,
+    to_name: activeMessage.name,
+    original_subject: activeMessage.subject,
+    original_message: activeMessage.message,
+    reply_message: replyText,
+    ref_number: activeMessage.refNumber || "N/A"
+  };
+
+  try {
+    await emailjs.send("service_qpz7vpz", "YOUR_TEMPLATE_ID", templateParams); // <-- ADD YOUR TEMPLATE ID HERE
+    setStatus("Reply sent successfully to " + activeMessage.email, "success");
+    closeReplyModal();
+  } catch (err) {
+    console.error("EmailJS Error:", err);
+    alert("Failed to send email. Check console.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send Email";
+  }
+};
+
+//---------------------------- Filter & Export ----------------------------
 filterInput.addEventListener("input", () => {
   const q = filterInput.value.toLowerCase();
   const filtered = currentData.filter(m =>
@@ -191,36 +232,54 @@ filterInput.addEventListener("input", () => {
     (m.subject||"").toLowerCase().includes(q) ||
     (m.message||"").toLowerCase().includes(q) ||
     (m.questionType||"").toLowerCase().includes(q) ||
-    (m.refNumber||"").toLowerCase().includes(q) // <-- added refNumber search
+    (m.refNumber||"").toLowerCase().includes(q)
   );
   render(filtered);
 });
 
-//---------------------------- CSV Export ----------------------------
 exportBtn.onclick = () => {
-  if (currentData.length === 0) {
-    alert("No messages to export.");
-    return;
-  }
-  const header = "key,timestamp,name,email,topic,subject,message\n";
-const rows = currentData.map(x => 
-  `"${x.key}","${x.timestamp}","${x.refNumber || ""}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
-).join("\n");
+  if (currentData.length === 0) return alert("No messages to export.");
+  const header = "key,timestamp,ref,name,email,topic,subject,message\n";
+  const rows = currentData.map(x => 
+    `"${x.key}","${x.timestamp}","${x.refNumber || ""}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
+  ).join("\n");
   const blob = new Blob([header + rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = "elwoic_messages.csv";
   a.click();
-  URL.revokeObjectURL(url);
-}
+};
 
-//---------------------------- Escape HTML ----------------------------
 function escape(s) {
   if (!s) return "";
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 </script>
-
+  <div id="replyModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
+    <div class="bg-blue-900 text-white p-4 flex justify-between">
+      <h2 class="font-bold">Reply to Message</h2>
+      <button onclick="closeReplyModal()" class="text-white hover:text-gray-300">✕</button>
+    </div>
+    <div class="p-4 space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase">To</label>
+        <p id="replyToEmail" class="text-sm font-medium text-slate-800"></p>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase">Original Subject</label>
+        <p id="replySubject" class="text-sm text-slate-600 italic"></p>
+      </div>
+      <textarea id="replyBody" rows="6" class="w-full border p-3 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Write your reply here..."></textarea>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeReplyModal()" class="px-4 py-2 text-gray-600 text-sm">Cancel</button>
+        <button id="sendReplyBtn" class="px-6 py-2 bg-blue-700 text-white rounded text-sm font-bold shadow-md hover:bg-blue-800">
+          Send Email
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
