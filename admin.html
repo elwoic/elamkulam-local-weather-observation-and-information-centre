@@ -47,6 +47,7 @@
     Admin panel — protected by Firebase Auth.
   </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
@@ -68,6 +69,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+emailjs.init("Bd-no1cWjcYLmCKIW");
 
 // DOM elements
 const statusEl = document.getElementById('status');
@@ -146,30 +148,40 @@ function render(list) {
     card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-blue-600";
 
     card.innerHTML = `
-      <div class="flex justify-between items-start gap-4">
-        <div class="flex-1">
-          <h3 class="text-lg font-semibold text-slate-800">
-            ${escape(item.subject)}
-          </h3>
+  <div class="flex justify-between items-start gap-4">
+    <div class="flex-1">
+      <h3 class="text-lg font-semibold text-slate-800">
+        ${escape(item.subject)}
+      </h3>
 
-          <p class="text-xs mt-1 text-blue-700 font-medium">
-            Topic: ${escape(item.questionType || "Not specified")}
-          </p>
+      <p class="text-xs mt-1 text-blue-700 font-medium">
+        Topic: ${escape(item.questionType || "Not specified")}
+      </p>
 
-          <p class="text-xs mt-1 text-gray-500">
-            Reference #: <strong>${escape(item.refNumber || "N/A")}</strong>
-          </p>
+      <p class="text-xs mt-1 text-gray-500">
+        Reference #: <strong>${escape(item.refNumber || "N/A")}</strong>
+      </p>
 
-          <span class="text-xs text-slate-500">${d}</span>
-          <p class="text-sm text-slate-600 mt-1">
-            <strong>${escape(item.name)}</strong> —
-            <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>
-          </p>
-          <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escape(item.message)}</p>
-        </div>
-        <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
-      </div>
-    `;
+      <span class="text-xs text-slate-500">${d}</span>
+
+      <p class="text-sm text-slate-600 mt-1">
+        <strong>${escape(item.name)}</strong> —
+        <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>
+      </p>
+
+      <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escape(item.message)}</p>
+
+      <!-- ✅ Reply Box -->
+      <textarea class="replyBox mt-4 w-full border p-2 rounded" placeholder="Type your reply..."></textarea>
+
+      <button class="sendReplyBtn mt-2 px-3 py-2 bg-green-600 text-white rounded text-sm">
+        Send Reply
+      </button>
+    </div>
+
+    <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
+  </div>
+`;
 
     card.querySelector(".deleteBtn").onclick = async () => {
       if (confirm("Delete this message?")) {
@@ -177,6 +189,32 @@ function render(list) {
         setStatus("Message deleted.", "success");
       }
     };
+card.querySelector(".sendReplyBtn").onclick = () => {
+  const replyText = card.querySelector(".replyBox").value.trim();
+
+  if (!replyText) {
+    alert("Reply cannot be empty.");
+    return;
+  }
+
+  const templateParams = {
+    to_name: item.name,
+    to_email: item.email,
+    message: replyText,
+    subject: item.subject,
+    refNumber: item.refNumber || "N/A"
+  };
+
+  emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
+    .then(() => {
+      setStatus("Reply sent successfully!", "success");
+      card.querySelector(".replyBox").value = "";
+    })
+    .catch((err) => {
+      console.error(err);
+      setStatus("Failed to send reply.", "error");
+    });
+};
 
     messagesList.appendChild(card);
   });
