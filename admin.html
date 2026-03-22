@@ -254,9 +254,14 @@ card.querySelector(".sendReplyBtn").onclick = () => {
 
   emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
     .then(async () => {
-      setStatus("Reply sent successfully!", "success");
-      card.querySelector(".replyBox").value = "";
-    })
+  setStatus("Reply sent successfully!", "success");
+  card.querySelector(".replyBox").value = "";
+
+  await update(ref(db, "messages/" + item.key), {
+    status: "replied"
+  });
+})
+
     .catch((err) => {
       console.error(err);
       setStatus("Failed to send reply.", "error");
@@ -266,9 +271,6 @@ card.querySelector(".sendReplyBtn").onclick = () => {
     messagesList.appendChild(card);
   });
 }
-await update(ref(db, "messages/" + item.key), {
-  status: "replied"
-});
 
 //---------------------------- Filter ----------------------------
 filterInput.addEventListener("input", () => {
