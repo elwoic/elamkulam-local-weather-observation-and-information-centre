@@ -6,45 +6,34 @@
   <title>Elamkulam Local Weather Observation And Information Centre</title>
 
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <meta name="google-site-verification" content="zLZZ0vwaWtltQlXxYT91Apt-7MA6nQHqa2ISOClgQeM">
-  <meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Centre">
-  <meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayat, Kerala, India.">
-  <meta name="description" content="ELWOIC is a student-led community weather station providing real-time weather, air quality (AQI), and environmental observations for Elamkulam and surrounding areas in Kerala.">
-  <meta property="og:image" content="https://elwoic.in/favicon.png">
-  <meta property="og:url" content="https://elwoic.in/">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================================
        VARIABLES & RESET
     ============================================================ */
     :root {
-      /* Pulled directly from logo color palette */
-      --blue-deep:    #1a4f8a;   /* dark navy-blue — outlines, nav bg  */
-      --blue-mid:     #2e6aad;   /* mid blue — hover states            */
-      --blue-soft:    #7fa8cc;   /* steel-blue fill — accents          */
-      --blue-pale:    #dce9f5;   /* very light blue — utility bar bg   */
-      --blue-border:  #b8d0e8;   /* border lines                       */
-      --yellow:       #f5c842;   /* sun yellow — active/accent only    */
-      --yellow-dim:   #e8b820;   /* hover on yellow                    */
-      --white:        #ffffff;
-      --text-dark:    #0f2d4a;   /* near-black navy for headings       */
-      --text-mid:     #3d5a72;   /* body text                          */
-      --text-light:   #7a9ab5;   /* labels, muted                      */
-      --font-serif:   'EB Garamond', Georgia, 'Times New Roman', serif;
-      --font-sans:    'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+      --navy:        #0d3d6e;
+      --navy-mid:    #1a5490;
+      --gold:        #c9a227;
+      --gold-dim:    #b08f1e;
+      --white:       #ffffff;
+      --bg-page:     #eef3f8;
+      --bg-util:     #f5f8fc;
+      --bg-header:   #ffffff;
+      --border:      #d5e2ef;
+      --text-dark:   #0d3d6e;
+      --text-mid:    #4a6a84;
+      --text-muted:  #7a9ab5;
+      --font-serif:  'Playfair Display', 'EB Garamond', Georgia, serif;
+      --font-sans:   'DM Sans', 'Segoe UI', Arial, sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-sans);
-      background: #eaf1f8;
+      background: var(--bg-page);
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
@@ -52,107 +41,107 @@
     }
 
     /* ============================================================
-       TOP ACCENT LINE  — single blue stripe, no flag reference
+       TOP ACCENT STRIPE
     ============================================================ */
-    .top-accent {
-      height: 4px;
-      background: linear-gradient(90deg, var(--blue-deep) 0%, var(--blue-soft) 60%, var(--yellow) 100%);
+    .top-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy) 70%, var(--gold) 100%);
       flex-shrink: 0;
     }
 
     /* ============================================================
-       1. UTILITY BAR
+       UTILITY BAR
     ============================================================ */
-    .utility-bar {
-      background: var(--blue-pale);
-      border-bottom: 1px solid var(--blue-border);
-      padding: 0 22px;
-      height: 31px;
+    .util-bar {
+      background: var(--bg-util);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .utility-left {
+    .util-left {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     #dateTime {
-      font-size: 11px;
-      color: var(--text-mid);
-      letter-spacing: 0.15px;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
       white-space: nowrap;
     }
 
     .util-sep {
       width: 1px;
-      height: 11px;
-      background: var(--blue-border);
+      height: 10px;
+      background: var(--border);
     }
 
-    .data-request-link {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: var(--blue-deep);
+    .util-link {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--navy);
       text-decoration: none;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
       transition: color 0.15s;
     }
-    .data-request-link:hover { color: var(--blue-mid); }
+    .util-link:hover { color: var(--navy-mid); }
 
-    /* Social icons */
-    .social-row {
+    .util-social {
       display: flex;
       align-items: center;
-      gap: 1px;
+      gap: 2px;
     }
-    .social-row a {
+    .util-social a {
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 26px;
-      height: 26px;
-      color: var(--text-light);
-      text-decoration: none;
-      border-radius: 2px;
+      color: var(--text-muted);
+      border-radius: 3px;
       transition: color 0.15s, background 0.15s;
+      text-decoration: none;
     }
-    .social-row a:hover {
-      color: var(--blue-deep);
-      background: var(--blue-border);
+    .util-social a:hover {
+      color: var(--navy);
+      background: #dce9f5;
     }
-    .social-row svg {
-      width: 13px;
-      height: 13px;
+    .util-social svg {
+      width: 12px;
+      height: 12px;
       fill: currentColor;
       display: block;
     }
 
     /* ============================================================
-       2. MAIN HEADER BAND
+       MAIN HEADER
     ============================================================ */
     .main-header {
-      background: var(--white);
-      border-bottom: 1px solid var(--blue-border);
-      padding: 14px 22px;
-      display: flex;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
     }
 
+    /* Left logo box */
     .h-logo {
-      flex-shrink: 0;
-      width: 70px;
-      height: 70px;
-      border: 1px solid var(--blue-border);
-      padding: 4px;
-      background: var(--white);
+      width: 72px;
+      height: 72px;
+      border: 1px solid var(--border);
+      background: #f9fbfd;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .h-logo img {
       width: 100%;
@@ -161,73 +150,78 @@
       display: block;
     }
 
-    .h-title {
-      flex: 1;
+    /* Centre title block */
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
     }
-    .h-title__name {
+    .station-name {
       font-family: var(--font-serif);
-      font-size: 23px;
-      font-weight: 600;
-      color: var(--blue-deep);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
       line-height: 1.2;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.1px;
     }
-    .h-title__rule {
-      width: 44px;
+    .gold-rule {
+      width: 48px;
       height: 2px;
-      background: var(--yellow);
-      margin: 7px auto;
+      background: var(--gold);
+      margin: 8px auto 7px;
     }
-    .h-title__sub {
-      font-size: 10.5px;
-      font-weight: 400;
-      color: var(--text-light);
-      letter-spacing: 1.8px;
+    .station-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 2px;
       text-transform: uppercase;
     }
 
+    /* Right cluster */
     .h-right {
-      flex-shrink: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
-    /* Tiny audio button — SVG icon only, no border/circle */
     .audio-btn {
+      width: 24px;
+      height: 24px;
       background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      color: var(--text-light);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
       border-radius: 3px;
-      transition: color 0.15s, background 0.15s;
+      transition: all 0.15s;
     }
     .audio-btn:hover {
-      color: var(--blue-deep);
-      background: var(--blue-pale);
+      border-color: var(--navy);
+      color: var(--navy);
+      background: #f0f5fb;
     }
     .audio-btn svg {
-      width: 17px;
-      height: 17px;
+      width: 11px;
+      height: 11px;
       fill: currentColor;
       display: block;
     }
 
+    /* Right logo box */
     .h-logo-right {
-      flex-shrink: 0;
-      width: 70px;
-      height: 70px;
-      border: 1px solid var(--blue-border);
-      padding: 4px;
-      background: var(--white);
+      width: 72px;
+      height: 72px;
+      border: 1px solid var(--border);
+      background: #f9fbfd;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .h-logo-right img {
       width: 100%;
@@ -237,15 +231,15 @@
     }
 
     /* ============================================================
-       3. NAVIGATION BAR
+       NAVIGATION BAR
     ============================================================ */
     .nav-bar {
-      background: var(--blue-deep);
+      background: var(--navy);
+      border-bottom: 3px solid var(--gold);
       display: flex;
       align-items: stretch;
-      padding: 0 22px;
+      padding: 0 24px;
       min-height: 38px;
-      border-bottom: 3px solid var(--yellow);
     }
 
     .nav-links {
@@ -259,44 +253,43 @@
     .nav-links li a {
       display: flex;
       align-items: center;
-      padding: 0 17px;
+      padding: 0 16px;
       height: 38px;
       font-family: var(--font-sans);
       font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 1.3px;
+      font-weight: 600;
+      letter-spacing: 1.4px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.70);
+      color: rgba(255,255,255,0.65);
       text-decoration: none;
-      border-right: 1px solid rgba(255,255,255,0.10);
-      cursor: pointer;
+      border-right: 1px solid rgba(255,255,255,0.08);
       transition: background 0.15s, color 0.15s;
       white-space: nowrap;
+      cursor: pointer;
     }
     .nav-links li:first-child a {
-      border-left: 1px solid rgba(255,255,255,0.10);
+      border-left: 1px solid rgba(255,255,255,0.08);
     }
     .nav-links li a:hover {
-      background: rgba(255,255,255,0.09);
       color: #fff;
+      background: rgba(255,255,255,0.08);
     }
     .nav-links li a.active-nav {
-      color: var(--text-dark);
-      background: var(--yellow);
+      color: var(--navy);
+      background: var(--gold);
       border-color: transparent;
       font-weight: 700;
     }
 
     /* ============================================================
-       4. LIVE TICKER
-       Hidden when a non-home page is loaded
+       LIVE TICKER
     ============================================================ */
     .ticker-wrap {
-      background: var(--blue-pale);
-      border-bottom: 1px solid var(--blue-border);
+      background: #f0f5fb;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: stretch;
-      height: 33px;
+      height: 30px;
       overflow: hidden;
       transition: height 0.3s ease, opacity 0.3s ease;
     }
@@ -308,27 +301,27 @@
     }
 
     .ticker-badge {
-      flex-shrink: 0;
-      background: var(--blue-deep);
+      background: var(--navy);
       color: var(--white);
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1.8px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 0 13px;
+      padding: 0 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .ticker-dot {
       width: 5px;
       height: 5px;
-      background: var(--yellow);
       border-radius: 50%;
+      background: var(--gold);
       flex-shrink: 0;
-      animation: blink-dot 1.3s ease-in-out infinite;
+      animation: blink-dot 1.4s ease-in-out infinite;
     }
     @keyframes blink-dot {
       0%, 100% { opacity: 1; }
@@ -348,29 +341,29 @@
       position: absolute;
       top: 0;
       height: 100%;
-      width: 22px;
+      width: 20px;
       z-index: 2;
       pointer-events: none;
     }
     .ticker-track::before {
       left: 0;
-      background: linear-gradient(to right, var(--blue-pale), transparent);
+      background: linear-gradient(to right, #f0f5fb, transparent);
     }
     .ticker-track::after {
       right: 0;
-      background: linear-gradient(to left, var(--blue-pale), transparent);
+      background: linear-gradient(to left, #f0f5fb, transparent);
     }
 
     .ticker-text {
       display: inline-block;
       white-space: nowrap;
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-mid);
       animation: ticker-scroll 55s linear infinite;
       padding-left: 100%;
     }
     .ticker-text .hl {
-      color: var(--blue-deep);
+      color: var(--navy);
       font-weight: 600;
     }
     .ticker-wrap:hover .ticker-text {
@@ -379,6 +372,15 @@
     @keyframes ticker-scroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-100%); }
+    }
+
+    /* ============================================================
+       STICKY NAV + TICKER
+    ============================================================ */
+    .sticky-shell {
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     /* ============================================================
@@ -393,136 +395,45 @@
     }
 
     /* ============================================================
-       WEATHER BADGE
-    ============================================================ */
-    #weather-badge {
-      position: fixed;
-      top: 90px;
-      right: 18px;
-      z-index: 1000;
-      cursor: pointer;
-      display: none;
-    }
-    #weather-badge > div {
-      background: var(--blue-deep);
-      color: white;
-      padding: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-      position: relative;
-    }
-
-    /* ============================================================
-       FIRST-VISIT POPUP
-    ============================================================ */
-    #fv-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 30, 60, 0.52);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      animation: fv-fade 0.3s ease forwards;
-    }
-    #fv-popup {
-      background: var(--white);
-      width: 90%;
-      max-width: 400px;
-      border-top: 4px solid var(--yellow);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-      padding: 28px 26px 24px;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: fv-up 0.4s ease 0.1s forwards;
-    }
-    #fv-popup h2 {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      color: var(--blue-deep);
-      margin-bottom: 10px;
-    }
-    #fv-popup p {
-      font-size: 13.5px;
-      color: var(--text-mid);
-      line-height: 1.65;
-    }
-    #fv-close {
-      margin-top: 18px;
-      background: var(--blue-deep);
-      color: var(--white);
-      border: none;
-      padding: 9px 20px;
-      font-family: var(--font-sans);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    #fv-close:hover { background: var(--blue-mid); }
-
-    @keyframes fv-fade { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fv-up {
-      from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-
-    /* ============================================================
        RESPONSIVE
     ============================================================ */
     @media (max-width: 768px) {
-      .h-title__name  { font-size: 16px; }
-      .h-title__sub   { font-size: 9px; letter-spacing: 1px; }
-      .h-logo, .h-logo-right { width: 50px; height: 50px; }
-      .main-header    { padding: 10px 12px; gap: 10px; }
-      .nav-bar        { padding: 0 6px; overflow-x: auto; scrollbar-width: none; }
+      .main-header {
+        grid-template-columns: 52px 1fr auto;
+        padding: 12px 16px;
+        gap: 12px;
+      }
+      .h-logo, .h-logo-right { width: 52px; height: 52px; }
+      .station-name { font-size: 18px; }
+      .station-sub  { font-size: 9px; letter-spacing: 1.2px; }
+      .nav-bar      { padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
       .nav-bar::-webkit-scrollbar { display: none; }
       .nav-links li a { padding: 0 11px; font-size: 9.5px; }
-      .utility-bar    { padding: 0 12px; }
-      .data-request-link { display: none; }
+      .util-bar     { padding: 0 14px; }
+      .util-link    { display: none; }
     }
+
     @media (max-width: 480px) {
-      .h-title__name  { font-size: 13.5px; }
-      .h-logo, .h-logo-right { width: 38px; height: 38px; }
-      .audio-btn      { display: none; }
+      .main-header { grid-template-columns: 42px 1fr; }
+      .h-right     { display: none; }
+      .station-name { font-size: 13.5px; }
+      .h-logo      { width: 42px; height: 42px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- First-Visit Popup -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (!sessionStorage.getItem("fvShown")) {
-        const ov = document.createElement("div");
-        ov.id = "fv-overlay";
-        ov.innerHTML = `
-          <div id="fv-popup">
-            <h2>Welcome to ELWOIC</h2>
-            <p>ELWOIC is a local initiative providing hyperlocal weather and environmental information for the Elamkulam community. If you experience any issues, please feel free to contact us.</p>
-            <button id="fv-close">Continue to Site</button>
-          </div>`;
-        document.body.appendChild(ov);
-        document.getElementById("fv-close").onclick = () => {
-          ov.remove();
-          sessionStorage.setItem("fvShown", "yes");
-        };
-      }
-    });
-  </script>
-
-  <!-- ① TOP ACCENT LINE -->
-  <div class="top-accent" aria-hidden="true"></div>
+  <!-- ① TOP ACCENT STRIPE -->
+  <div class="top-stripe" aria-hidden="true"></div>
 
   <!-- ② UTILITY BAR -->
-  <div class="utility-bar">
-    <div class="utility-left">
+  <div class="util-bar">
+    <div class="util-left">
       <span id="dateTime"></span>
       <div class="util-sep"></div>
-      <a href="https://info.elwoic.in/" target="_blank" class="data-request-link">Data Request →</a>
+      <a href="https://info.elwoic.in/" target="_blank" class="util-link">Data Request →</a>
     </div>
-    <div class="social-row">
+    <div class="util-social">
       <!-- Instagram -->
       <a href="https://instagram.com/YOUR_HANDLE" target="_blank" rel="noopener" title="Instagram">
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
@@ -538,24 +449,28 @@
     </div>
   </div>
 
-  <!-- ③ MAIN HEADER BAND -->
+  <!-- ③ MAIN HEADER -->
   <div class="main-header">
+    <!-- Left logo — replace src with your actual logo file -->
     <div class="h-logo">
       <img src="ELWOIC.png" alt="ELWOIC Logo">
     </div>
 
-    <div class="h-title">
-      <div class="h-title__name">Elamkulam Local Weather Observation &amp; Information Centre</div>
-      <div class="h-title__rule"></div>
-      <div class="h-title__sub">Community Weather Monitoring Initiative &nbsp;·&nbsp; Elamkulam, Kerala, India</div>
+    <!-- Centre title -->
+    <div class="title-block">
+      <div class="station-name">Elamkulam Local Weather Observation &amp; Information Centre</div>
+      <div class="gold-rule"></div>
+      <div class="station-sub">Community Weather Monitoring Initiative &nbsp;·&nbsp; Elamkulam, Kerala, India</div>
     </div>
 
+    <!-- Right: audio button + right logo -->
     <div class="h-right">
       <button id="audioBtn" class="audio-btn" title="Play intro sound">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
         </svg>
       </button>
+      <!-- Right logo — replace src with your actual logo file -->
       <div class="h-logo-right">
         <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
       </div>
@@ -564,78 +479,49 @@
 
   <audio id="siteAudio" src="audio/elwoic-intro.mp3"></audio>
 
-  <!-- ④ NAVIGATION BAR -->
-  <nav class="nav-bar" id="main-nav">
-    <ul class="nav-links">
-      <li><a href="#" data-page="home.html"        class="active-nav">Home</a></li>
-      <li><a href="#" data-page="Forecast.html"               >Forecast</a></li>
-      <li><a href="#" data-page="information.html"            >Information</a></li>
-      <li><a href="#" data-page="about.html"                  >About Us</a></li>
-      <li><a href="#" data-page="contact.html"                >Contact</a></li>
-    </ul>
-  </nav>
+  <!-- ④ STICKY SHELL: nav + ticker stay fixed to top while header scrolls away -->
+  <div class="sticky-shell">
 
-  <!-- ⑤ LIVE TICKER (hidden on non-home pages) -->
-  <div class="ticker-wrap" id="tickerWrap">
-    <div class="ticker-badge">
-      <span class="ticker-dot"></span>
-      Live
-    </div>
-    <div class="ticker-track">
-      <div class="ticker-text">
-        ELWOIC — <span class="hl">Elamkulam Local Weather Observation And Information Centre</span>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        In coordination with <span class="hl">House Public Board Department (HPBD)</span>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span class="hl">Real-Time Weather Monitoring</span> · Data refreshes every <span id="refresh-time">30</span> minutes
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        Location: 10.908°N, 76.229°E &nbsp;&nbsp;|&nbsp;&nbsp; Contact: 04933 316 750
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        ⚠️ ELWOIC &amp; HPBD are student-led initiatives — not official government entities ⚠️
+    <!-- NAVIGATION BAR -->
+    <nav class="nav-bar" id="main-nav">
+      <ul class="nav-links">
+        <li><a href="#" data-page="home.html"        class="active-nav">Home</a></li>
+        <li><a href="#" data-page="Forecast.html"               >Forecast</a></li>
+        <li><a href="#" data-page="information.html"            >Information</a></li>
+        <li><a href="#" data-page="about.html"                  >About Us</a></li>
+        <li><a href="#" data-page="contact.html"                >Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- LIVE TICKER (hidden on non-home pages) -->
+    <div class="ticker-wrap" id="tickerWrap">
+      <div class="ticker-badge">
+        <span class="ticker-dot"></span>
+        Live
+      </div>
+      <div class="ticker-track">
+        <span class="ticker-text">
+          ELWOIC — <span class="hl">Elamkulam Local Weather Observation And Information Centre</span>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          In coordination with <span class="hl">House Public Board Department (HPBD)</span>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <span class="hl">Real-Time Weather Monitoring</span> · Data refreshes every <span id="refresh-time">30</span> minutes
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          Location: 10.908°N, 76.229°E &nbsp;&nbsp;|&nbsp;&nbsp; Contact: 04933 316 750
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          ⚠️ ELWOIC &amp; HPBD are student-led initiatives — not official government entities ⚠️
+        </span>
       </div>
     </div>
-  </div>
 
-  <!-- Weather Badge -->
-  <div id="weather-badge">
-    <div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-      </svg>
-      <span id="badge-count"
-        style="position:absolute;top:-4px;right:-4px;background:var(--yellow);color:var(--text-dark);font-size:10px;font-weight:bold;padding:1px 5px;border-radius:8px;">0</span>
-    </div>
-  </div>
+  </div><!-- end .sticky-shell -->
 
-  <div id="panel-overlay"
-    style="position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1100;display:none;opacity:0;transition:opacity 0.3s;"></div>
-
-  <div id="weather-panel"
-    style="position:fixed;top:0;right:0;height:100%;width:320px;background:#fff;z-index:1200;
-           box-shadow:-4px 0 20px rgba(0,0,0,0.10);transform:translateX(100%);
-           transition:transform 0.3s ease-in-out;display:flex;flex-direction:column;">
-    <div style="background:var(--blue-deep);color:white;padding:14px 16px;
-                display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="margin:0;font-size:15px;font-family:'EB Garamond',serif;font-weight:500;">Community Weather Reports</h3>
-      <button id="close-panel"
-        style="background:none;border:none;color:white;font-size:22px;cursor:pointer;line-height:1;">&times;</button>
-    </div>
-    <div style="padding:10px 14px;background:#f5f8fc;border-bottom:1px solid #dbeafe;text-align:center;">
-      <a href="report.html"
-        style="color:var(--blue-deep);font-size:12px;text-decoration:underline;font-weight:600;line-height:1.5;display:inline-block;">
-        ഇതുപോലെ നിങ്ങളുടെ അഭിപ്രായങ്ങളും കാലാവസ്ഥ നിരീക്ഷണങ്ങളും പങ്കുവയ്ക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക.
-      </a>
-    </div>
-    <div id="panel-content" style="flex:1;overflow-y:auto;padding:14px;background:#f8fafc;"></div>
-  </div>
-
-  <!-- ⑥ IFRAME -->
+  <!-- ⑥ IFRAME — your page content loads here -->
   <iframe id="content-frame" src="home.html" title="Page Content"></iframe>
 
   <!-- ============================================================ SCRIPTS -->
   <script>
-    // Date & Time
+    // Live date & time
     function updateDateTime() {
       const now  = new Date();
       const date = now.toLocaleDateString("en-IN", {
@@ -651,11 +537,10 @@
     }
     setInterval(updateDateTime, 1000);
     updateDateTime();
-    document.getElementById("refresh-time").textContent = 30;
   </script>
 
   <script>
-    // Audio
+    // Audio button
     document.addEventListener("DOMContentLoaded", () => {
       const btn   = document.getElementById("audioBtn");
       const audio = document.getElementById("siteAudio");
@@ -671,11 +556,9 @@
   <script>
     // Nav — load pages into iframe, set active, show/hide ticker
     document.addEventListener("DOMContentLoaded", () => {
-      const frame   = document.getElementById("content-frame");
-      const links   = document.querySelectorAll("#main-nav a[data-page]");
-      const ticker  = document.getElementById("tickerWrap");
-
-      // Pages that should show the ticker (home only)
+      const frame  = document.getElementById("content-frame");
+      const links  = document.querySelectorAll("#main-nav a[data-page]");
+      const ticker = document.getElementById("tickerWrap");
       const HOME_PAGE = "home.html";
 
       function setActive(el) {
@@ -684,11 +567,7 @@
       }
 
       function updateTicker(page) {
-        if (page === HOME_PAGE) {
-          ticker.classList.remove("hidden");
-        } else {
-          ticker.classList.add("hidden");
-        }
+        ticker.classList.toggle("hidden", page !== HOME_PAGE);
       }
 
       links.forEach(link => {
@@ -711,6 +590,7 @@
     });
   </script>
 
+  <!-- Your existing notification badge module -->
   <script type="module" src="./notie-badge.js"></script>
 
 </body>
