@@ -1,25 +1,3 @@
-const openPoster  = document.getElementById('openPoster');
-  const closePoster = document.getElementById('closePoster');
-  const posterModal = document.getElementById('posterModal');
-  openPoster.addEventListener('click',  ()=>{ posterModal.style.display='flex'; resetZoom(); });
-  closePoster.addEventListener('click', ()=>{ posterModal.style.display='none'; resetZoom(); });
-  posterModal.addEventListener('click', e=>{ if(e.target===posterModal){ posterModal.style.display='none'; resetZoom(); }});
-  document.addEventListener('DOMContentLoaded',()=>{
-    const img=document.getElementById('posterImg');
-    if(!img) return;
-    let scale=1,drag=false,sx=0,sy=0,tx=0,ty=0;
-    img.addEventListener('wheel',e=>{ e.preventDefault(); scale=Math.min(Math.max(scale+(e.deltaY<0?0.1:-0.1),1),4); apply(); },{passive:false});
-    img.addEventListener('click',()=>{ scale=scale===1?2:1; if(scale===1){tx=0;ty=0;} apply(); });
-    img.addEventListener('mousedown',e=>{ if(scale<=1)return; drag=true; sx=e.clientX-tx; sy=e.clientY-ty; img.style.cursor='grabbing'; });
-    window.addEventListener('mousemove',e=>{ if(!drag)return; tx=e.clientX-sx; ty=e.clientY-sy; apply(); });
-    window.addEventListener('mouseup',()=>{ drag=false; img.style.cursor='grab'; });
-    function apply(){ img.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; }
-    window.resetZoom=()=>{ scale=1;tx=0;ty=0; apply(); };
-  });
-</script>
-
-<!-- ══ AQI DASHBOARD (inlined from aqi_dash.html) ══ -->
-<script>
   const AQI_API = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
 
   function pm25ToAQI_aqi(pm){
