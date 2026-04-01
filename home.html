@@ -19,7 +19,7 @@
       --blue-pale:  #e8f2fb;
       --gold:       #c9a227;
       --white:      #ffffff;
-      --page-bg:    #eef3f8;
+      --page-bg:    #ffffff;
       --card-bg:    #ffffff;
       --border:     #d5e2ef;
       --text:       #1a2e3d;
@@ -39,11 +39,25 @@
 
     body {
       font-family: var(--font-sans);
-      background: var(--page-bg);
+      background-color: #ffffff;
       color: var(--text);
       font-size: 15px;
       overflow-x: hidden;
+      position: relative;
     }
+    /* Watermark logo repeating grid across full page */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('Elamkulam Weather Logo Design.1.png');
+      background-repeat: space;
+      background-size: 120px 120px;
+      opacity: 0.045;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .wrap, footer.site-footer { position: relative; z-index: 1; }
 
     /* ============================================================
        LAYOUT
@@ -330,38 +344,6 @@
       color: var(--text-muted);
       margin-top: 12px;
     }
-    /* push section */
-    .wd-push {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-    #log-btn {
-      background: var(--navy);
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 11px;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    #log-btn:disabled { background: #b0c0d0; cursor: not-allowed; }
-    #log-btn:not(:disabled):hover { background: var(--navy-mid); }
-    .wd-timer {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    #cooldown-timer { font-weight: 700; color: var(--red); display: block; font-size: 13px; }
-    #cooldown-text  { font-size: 10px; }
     #log-status { font-size: 11px; text-align: center; color: var(--green); font-weight: 600; margin-top: 6px; }
     /* condition modal */
     .cond-modal-overlay {
@@ -591,31 +573,38 @@
     .widget-pad { padding: 12px 14px; }
 
     /* ============================================================
-       QUICK LINKS / COMMUNITY
+       FOOTER COMMUNITY SECTION
     ============================================================ */
-    .community-box {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      padding: 22px 24px;
+    .footer-community {
+      border-top: 1px solid rgba(255,255,255,0.12);
+      margin-top: 28px;
+      padding: 22px 24px 0;
       text-align: center;
-      margin: 32px 0 0;
     }
-    .community-box p {
+    .footer-community p {
       font-family: 'Noto Sans Malayalam', var(--font-sans);
-      color: var(--text-mid); font-size: 15px; line-height: 1.7;
-      margin-bottom: 10px;
+      color: rgba(255,255,255,0.7);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 8px;
     }
-    .community-box a.support-link {
-      font-size: 13px; color: var(--text-muted);
-      text-decoration: underline; font-family: var(--font-sans);
+    .footer-community a.support-link {
+      font-size: 13px;
+      color: var(--gold);
+      text-decoration: underline;
+      font-family: var(--font-sans);
+      transition: color 0.15s;
     }
-    .community-icons {
-      display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
-      margin-top: 16px;
+    .footer-community a.support-link:hover { color: #fff; }
+    .footer-community .community-icons {
+      display: flex; justify-content: center; gap: 14px;
+      flex-wrap: wrap; margin-top: 14px;
     }
-    .community-icons img { width: 28px; height: 28px; }
+    .footer-community .community-icons img {
+      width: 28px; height: 28px; opacity: 0.7;
+      transition: opacity 0.15s;
+    }
+    .footer-community .community-icons img:hover { opacity: 1; }
 
     /* ============================================================
        POSTER BUTTON
@@ -827,16 +816,8 @@
           </div>
         </div>
         <p class="wd-updated" id="secret-trigger">Last updated: <span id="wd-last-updated">--</span></p>
-        <div class="wd-push">
-          <button id="log-btn" disabled>📤 Push to Cloud</button>
-          <div class="wd-timer">
-            <span id="cooldown-timer">--:--</span>
-            <span id="cooldown-text">Checking...</span>
-          </div>
-        </div>
-        <p id="log-status"></p>
         <p style="font-size:10.5px;color:var(--text-muted);margin-top:6px;text-align:center;">
-          Data powered by <a href="https://www.airgradient.com/" target="_blank" style="color:var(--blue);">AirGradient</a> © 2026, 
+          Data powered by <a href="https://www.airgradient.com/" target="_blank" style="color:var(--blue);">AirGradient</a> © 2026,
           <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color:var(--blue);">CC BY-SA 4.0</a>
         </p>
       </div>
@@ -870,7 +851,7 @@
             <tr><td class="ow-label">⏲ Pressure</td>  <td id="owPress0">--</td><td id="owPress1">--</td><td id="owPress2">--</td></tr>
             <tr><td class="ow-label">💨 Wind</td>      <td id="owWind0">--</td><td id="owWind1">--</td><td id="owWind2">--</td></tr>
             <tr><td class="ow-label">👁 Visibility</td><td id="owVis0">--</td><td id="owVis1">--</td><td id="owVis2">--</td></tr>
-            <tr><td class="ow-label">🌧 Rain</td>      <td id="owRain0">…</td><td id="owRain1">…</td><td id="owRain2">…</td></tr>
+            <tr><td class="ow-label">🌧 Rain</td>      <td id="owRainBox0">…</td><td id="owRainBox1">…</td><td id="owRainBox2">…</td></tr>
           </tbody>
           <tfoot><tr><td colspan="4">Data powered by OpenWeatherMap API.</td></tr></tfoot>
         </table>
@@ -995,17 +976,11 @@
       </div>
       <div class="widget-sub">Expected in Kerala — Next 7 Days</div>
       <div class="widget-pad">
-        <div id="ww_7d443210e054f" v='1.3' loc='id'
-          a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
-          <a href="https://weatherwidget.org/" target="_blank">Free weather widget</a>
-        </div>
+        <div id="ww_7d443210e054f" v='1.3' loc='id' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Free weather widget for website</a></div>
       </div>
       <div class="widget-sub">Kerala — Today</div>
       <div class="widget-pad">
-        <div id="ww_306f1b351ac5d" v='1.3' loc='id'
-          a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
-          <a href="https://weatherwidget.org/" target="_blank">Free weather widget</a>
-        </div>
+        <div id="ww_306f1b351ac5d" v='1.3' loc='id' a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_306f1b351ac5d_u" target="_blank">Free weather widget for website</a></div>
       </div>
     </div>
 
@@ -1025,8 +1000,8 @@
       </div>
       <div class="card-body">
         <div class="cond-marquees">
-          <div class="cond-mq"><div class="cond-mq-text" id="cond-mq1">Loading current weather…</div></div>
-          <div class="cond-mq"><div class="cond-mq-text" id="cond-mq2">Loading forecast…</div></div>
+          <div class="cond-mq"><div class="cond-mq-text" id="weather-marquee-1">Loading current weather…</div></div>
+          <div class="cond-mq"><div class="cond-mq-text" id="weather-marquee-2">Loading forecast…</div></div>
         </div>
         <div style="overflow-x:auto;">
           <table class="cond-table">
@@ -1039,7 +1014,7 @@
                 <th>Condition</th>
               </tr>
             </thead>
-            <tbody id="cond-table-body">
+            <tbody id="weather-table-body">
               <tr><td colspan="5" style="padding:16px;color:var(--text-muted);font-size:13px;">Loading data…</td></tr>
             </tbody>
           </table>
@@ -1065,7 +1040,7 @@
               data-icons="Climacons Animated" data-theme="pure">ELAMKULAM WEATHER</a>
           </div>
           <p class="chart-label">Additional Details (Current)</p>
-          <div id="extra-weather">
+          <div id="extraWeather">
             <div class="detail-row"><span>Loading…</span><span>—</span></div>
           </div>
         </div>
@@ -1084,18 +1059,6 @@
   </div>
 
   <div id="weather-report"></div>
-
-  <!-- ── COMMUNITY BOX ── -->
-  <div class="community-box">
-    <p>ഏലംകുളം സമൂഹത്തിന് — ഒരു വിദ്യാർത്ഥിയുടെ സമർപ്പണം.</p>
-    <p><a href="about.html#support-project" class="support-link">If you find this useful, support this non-commercial project →</a></p>
-    <div class="community-icons">
-      <img src="ELWOIC.png" alt="ELWOIC">
-      <img src="HPBD seal transparent.png" alt="HPBD">
-      <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
-      <img src="signature.png" alt="Signature">
-    </div>
-  </div>
 
 </div><!-- /wrap -->
 
@@ -1144,6 +1107,18 @@
       <a href="contact.html">Send a Message</a>
     </div>
   </div>
+  <!-- Community dedication inside footer -->
+  <div class="footer-community">
+    <p>ഏലംകുളം സമൂഹത്തിന് — ഒരു വിദ്യാർത്ഥിയുടെ സമർപ്പണം.</p>
+    <p><a href="about.html#support-project" class="support-link">If you find this useful, support this non-commercial project →</a></p>
+    <div class="community-icons">
+      <img src="ELWOIC.png" alt="ELWOIC">
+      <img src="HPBD seal transparent.png" alt="HPBD">
+      <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
+      <img src="signature.png" alt="Signature">
+    </div>
+  </div>
+
   <div class="footer-bottom">
     <span>© 2025–2026 ELWOIC. All rights reserved. Student project for educational &amp; informational purposes.</span>
     <span>Designed &amp; managed by ELWOIC Team</span>
@@ -1173,6 +1148,25 @@
 <script src="snapshot.js"></script>
 <script src="table.js"></script>
 <script type="module" src="weather-dashboard.js"></script>
+
+<!-- Condition box modal — reads window.lastWeatherMeta set by snapshot.js -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const box = document.getElementById('condition-box');
+    const modal = document.getElementById('cond-modal');
+    const closeBtn = document.getElementById('cond-modal-close');
+    if(box) box.onclick = () => {
+      const d = window.lastWeatherMeta;
+      if(!d) return;
+      let msg = `Current weather in Elamkulam: Temperature ${d.temperature}°C, Humidity ${d.humidity}%.`;
+      msg += d.cloudPercent > 70 ? ' Sky is overcast.' : d.cloudPercent > 40 ? ' Partly cloudy sky.' : ' Mostly clear sky.';
+      msg += d.visibilityKm < 5 ? ' Visibility is low.' : ' Visibility is good.';
+      document.getElementById('cond-modal-msg').textContent = msg;
+      if(modal) modal.style.display = 'flex';
+    };
+    if(closeBtn) closeBtn.onclick = () => { if(modal) modal.style.display = 'none'; };
+  });
+</script>
 
 <!-- Disclaimer toggle -->
 <script>
@@ -1216,186 +1210,6 @@
     function apply(){ img.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; }
     window.resetZoom=()=>{ scale=1;tx=0;ty=0; apply(); };
   });
-</script>
-
-<!-- ══ WEATHER DASHBOARD + FIREBASE (inlined from w-dashboard.html) ══ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, query, limitToLast }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
-    authDomain: "report-20d26.firebaseapp.com",
-    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "report-20d26"
-  };
-  const fbApp = initializeApp(firebaseConfig);
-  const db    = getDatabase(fbApp);
-
-  const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
-  const OW_KEY  = "ca13a2cbdc07e7613b6af82cff262295";
-  const LAT = 10.9081, LON = 76.2296;
-  const COOLDOWN_MIN = 30;
-
-  let currentLogData = {};
-  let lastPushTimeUTC = null;
-  let cooldownTimer = null;
-
-  // ── helpers ──
-  const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-
-  const pm25ToAQI = pm => {
-    const bp=[{cL:0,cH:12,aL:0,aH:50},{cL:12.1,cH:35.4,aL:51,aH:100},{cL:35.5,cH:55.4,aL:101,aH:150},{cL:55.5,cH:150.4,aL:151,aH:200},{cL:150.5,cH:250.4,aL:201,aH:300},{cL:250.5,cH:500,aL:301,aH:500}];
-    const r=bp.find(x=>pm>=x.cL&&pm<=x.cH)||bp[0];
-    return Math.round(((r.aH-r.aL)/(r.cH-r.cL))*(pm-r.cL)+r.aL);
-  };
-  const aqiStatus = a=>a<=50?"Good":a<=100?"Moderate":a<=150?"Unhealthy (Sensitive)":a<=200?"Unhealthy":a<=300?"Very Unhealthy":"Hazardous";
-  const feelsLike = (t,rh,api)=>{
-    if(t<26) return t.toFixed(1);
-    const T=(t*9/5)+32;
-    let hi=-42.379+2.04901523*T+10.14333127*rh-0.22475541*T*rh-0.00683783*T*T-0.05481717*rh*rh+0.00122874*T*T*rh+0.00085282*T*rh*rh-0.00000199*T*T*rh*rh;
-    return (((hi-32)*5/9)*0.3+api*0.7).toFixed(1);
-  };
-
-  // ── cooldown timer ──
-  function startCooldown(){
-    if(cooldownTimer) clearInterval(cooldownTimer);
-    cooldownTimer = setInterval(()=>{
-      const rem = COOLDOWN_MIN*60 - Math.floor((Date.now()-lastPushTimeUTC)/1000);
-      const btn = document.getElementById('log-btn');
-      const timerEl = document.getElementById('cooldown-timer');
-      const textEl  = document.getElementById('cooldown-text');
-      if(rem<=0){
-        if(btn){ btn.disabled=false; btn.textContent='📤 Push to Cloud'; }
-        if(timerEl){ timerEl.textContent='30:00'; timerEl.style.color='#28a745'; }
-        if(textEl) textEl.textContent='Ready to push';
-        clearInterval(cooldownTimer);
-      } else {
-        if(btn) btn.disabled=true;
-        if(timerEl){ timerEl.textContent=fmt(rem); timerEl.style.color='var(--red)'; }
-        if(textEl) textEl.textContent='Cooldown — wait for next push';
-      }
-    },1000);
-  }
-
-  // ── listen to last push ──
-  onValue(query(ref(db,'weather_logs'),limitToLast(1)), snap=>{
-    const btn=document.getElementById('log-btn');
-    const timerEl=document.getElementById('cooldown-timer');
-    const textEl=document.getElementById('cooldown-text');
-    if(!snap.exists()){
-      if(btn){ btn.disabled=false; btn.textContent='📤 Push to Cloud'; }
-      if(timerEl){ timerEl.textContent='30:00'; timerEl.style.color='#28a745'; }
-      if(textEl) textEl.textContent='Ready to push';
-      return;
-    }
-    lastPushTimeUTC = new Date(Object.values(snap.val())[0].timestamp_utc).getTime();
-    startCooldown();
-  });
-
-  // ── push button ──
-  const logBtn = document.getElementById('log-btn');
-  if(logBtn) logBtn.addEventListener('click', async()=>{
-    if(logBtn.disabled) return;
-    try{
-      const [wRes,aRes]=await Promise.all([
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`),
-        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`)
-      ]);
-      const w=await wRes.json(), a=await aRes.json();
-      const pm25=a.current.pm2_5, aqiVal=pm25ToAQI(pm25);
-      await push(ref(db,'weather_logs'),{
-        city:'Elamkulam', temp_c:w.main.temp, feels_like_c:w.main.feels_like,
-        humidity:w.main.humidity, pressure_hpa:w.main.pressure,
-        visibility_km:w.visibility?+(w.visibility/1000).toFixed(1):null,
-        wind_mps:w.wind.speed, wind_kmh:+(w.wind.speed*3.6).toFixed(1),
-        wind_mph:+(w.wind.speed*2.237).toFixed(1),
-        condition:w.weather[0].description, pm25, aqi:aqiVal, aqi_status:aqiStatus(aqiVal),
-        timestamp_utc:new Date().toISOString(),
-        timestamp_ist:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata',hour12:false})
-      });
-      const st=document.getElementById('log-status');
-      if(st) st.textContent='✅ Data pushed. Thank you!';
-    } catch(err){
-      const st=document.getElementById('log-status');
-      if(st) st.textContent='❌ Push failed. Check connection.';
-    }
-  });
-
-  // ── secret bypass ──
-  const trigger=document.getElementById('secret-trigger');
-  if(trigger) trigger.ondblclick=async()=>{
-    const pass=prompt('Admin code:');
-    if(pass==='5252'){
-      const bypassData={...currentLogData,timestamp_utc:new Date(Date.now()-31*60*1000).toISOString()};
-      await push(ref(db,'weather_logs'),bypassData);
-    }
-  };
-
-  // ── load weather snapshot ──
-  async function loadSnapshot(){
-    try{
-      const [workerRes,owRes,omRes]=await Promise.all([
-        fetch(API_URL).then(r=>r.json()),
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()),
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json())
-      ]);
-
-      const localT   = owRes.main.temp;
-      const localH   = workerRes.rhum_corrected;
-      const pm25Val  = workerRes.pm02_corrected;
-      const aqiVal   = pm25ToAQI(pm25Val);
-      const visKm    = parseFloat((owRes.visibility/1000).toFixed(1));
-      const realFeel = feelsLike(localT, localH, owRes.main.feels_like);
-      const avgWind  = ((owRes.wind.speed*3.6+omRes.current_weather.windspeed)/2).toFixed(1);
-      const omH      = omRes.hourly.relativehumidity_2m[new Date().getHours()];
-      const consT    = ((owRes.main.temp+omRes.current_weather.temperature)/2).toFixed(1);
-      const consH    = Math.round((owRes.main.humidity+omH)/2);
-
-      const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-      set('wd-temp',      localT.toFixed(1));
-      set('wd-humidity',  localH);
-      set('wd-feels',     realFeel);
-      set('wd-vis',       visKm);
-      set('wd-wind',      avgWind);
-      set('wd-cons-t',    consT);
-      set('wd-cons-h',    consH);
-      set('wd-pressure',  owRes.main.pressure);
-      set('wd-condition', owRes.weather[0].main);
-      set('wd-last-updated', new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'}));
-
-      currentLogData = {
-        temp_c:localT, humidity:localH, pm25:pm25Val,
-        feels_like_c:parseFloat(realFeel), aqi:aqiVal, aqi_status:aqiStatus(aqiVal),
-        pressure_hpa:owRes.main.pressure, wind_kmh:parseFloat(avgWind),
-        visibility_km:visKm, condition:owRes.weather[0].main,
-        timestamp_utc:new Date().toISOString(),
-        timestamp_ist:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})
-      };
-
-      window.lastWeatherMeta = {
-        cloudPercent: owRes.clouds?.all||0,
-        visibilityKm: visKm, humidity: localH, temperature: localT,
-        hour: new Date().getHours()
-      };
-    } catch(err){ console.error('Snapshot error:',err); }
-  }
-
-  // ── condition modal ──
-  document.getElementById('condition-box').onclick=()=>{
-    const d=window.lastWeatherMeta;
-    if(!d) return;
-    let msg=`Current weather in Elamkulam: Temperature ${d.temperature}°C, Humidity ${d.humidity}%.`;
-    msg += d.cloudPercent>70 ? ' Sky is overcast.' : d.cloudPercent>40 ? ' Partly cloudy sky.' : ' Mostly clear sky.';
-    msg += d.visibilityKm<5 ? ' Visibility is low.' : ' Visibility is good.';
-    document.getElementById('cond-modal-msg').textContent=msg;
-    document.getElementById('cond-modal').style.display='flex';
-  };
-  document.getElementById('cond-modal-close').onclick=()=>document.getElementById('cond-modal').style.display='none';
-
-  loadSnapshot();
-  setInterval(loadSnapshot, 10*60*1000);
 </script>
 
 <!-- ══ AQI DASHBOARD (inlined from aqi_dash.html) ══ -->
@@ -1463,32 +1277,6 @@
 
   updateAQI();
   setInterval(updateAQI, 180000);
-</script>
-
-<!-- ══ OPENWEATHER FORECAST TABLE ══ -->
-<script>
-  (async function loadOWForecast(){
-    const KEY='ca13a2cbdc07e7613b6af82cff262295';
-    const LAT=10.9077, LON=76.2315;
-    try{
-      const res=await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${KEY}&units=metric&cnt=3`);
-      const data=await res.json();
-      const items=data.list;
-      items.forEach((item,i)=>{
-        const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-        const rain=item.rain?.['3h']>0||item.snow?.['3h']>0;
-        set(`owTemp${i}`,   `${item.main.temp.toFixed(1)}°C`);
-        set(`owFeels${i}`,  `${item.main.feels_like.toFixed(1)}°C`);
-        set(`owCond${i}`,   item.weather[0].description);
-        set(`owHum${i}`,    `${item.main.humidity}%`);
-        set(`owPress${i}`,  `${item.main.pressure} hPa`);
-        set(`owWind${i}`,   `${(item.wind.speed*3.6).toFixed(1)} km/h`);
-        set(`owVis${i}`,    item.visibility ? `${(item.visibility/1000).toFixed(1)} km` : '--');
-        const rainEl=document.getElementById(`owRain${i}`);
-        if(rainEl) rainEl.innerHTML=`<span class="rain-pill ${rain?'rain-yes':'rain-no'}">${rain?'Yes':'No'}</span>`;
-      });
-    } catch(e){ console.error('OW forecast error:',e); }
-  })();
 </script>
 
 <!-- ══ UNIQUE DISCLAIMER JS ══ -->
