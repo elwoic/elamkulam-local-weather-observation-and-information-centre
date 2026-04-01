@@ -1,74 +1,85 @@
-const LAT = 10.9081;
-const LON = 76.2296;
+const openPoster  = document.getElementById('openPoster');
+  const closePoster = document.getElementById('closePoster');
+  const posterModal = document.getElementById('posterModal');
+  openPoster.addEventListener('click',  ()=>{ posterModal.style.display='flex'; resetZoom(); });
+  closePoster.addEventListener('click', ()=>{ posterModal.style.display='none'; resetZoom(); });
+  posterModal.addEventListener('click', e=>{ if(e.target===posterModal){ posterModal.style.display='none'; resetZoom(); }});
+  document.addEventListener('DOMContentLoaded',()=>{
+    const img=document.getElementById('posterImg');
+    if(!img) return;
+    let scale=1,drag=false,sx=0,sy=0,tx=0,ty=0;
+    img.addEventListener('wheel',e=>{ e.preventDefault(); scale=Math.min(Math.max(scale+(e.deltaY<0?0.1:-0.1),1),4); apply(); },{passive:false});
+    img.addEventListener('click',()=>{ scale=scale===1?2:1; if(scale===1){tx=0;ty=0;} apply(); });
+    img.addEventListener('mousedown',e=>{ if(scale<=1)return; drag=true; sx=e.clientX-tx; sy=e.clientY-ty; img.style.cursor='grabbing'; });
+    window.addEventListener('mousemove',e=>{ if(!drag)return; tx=e.clientX-sx; ty=e.clientY-sy; apply(); });
+    window.addEventListener('mouseup',()=>{ drag=false; img.style.cursor='grab'; });
+    function apply(){ img.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; }
+    window.resetZoom=()=>{ scale=1;tx=0;ty=0; apply(); };
+  });
+</script>
 
-/* AQI status */
-function getAQIStatus(aqi) {
-  if (aqi <= 50) return { text: "Good", class: "aqi-good", emoji: "😀" };
-  if (aqi <= 100) return { text: "Satisfactory", class: "aqi-fair", emoji: "🙂" };
-  if (aqi <= 200) return { text: "Moderate", class: "aqi-moderate", emoji: "😐" };
-  if (aqi <= 300) return { text: "Poor", class: "aqi-poor", emoji: "😷" };
-  return { text: "Very Poor", class: "aqi-very-poor", emoji: "☹️" };
-}
+<!-- ══ AQI DASHBOARD (inlined from aqi_dash.html) ══ -->
+<script>
+  const AQI_API = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
 
-/* Health advice */
-function getHealthAdvice(aqi) {
-  if (aqi <= 50) return "Air quality is good. Ideal for outdoor activities.";
-  if (aqi <= 100) return "Air quality is acceptable. Sensitive people should be cautious.";
-  if (aqi <= 200) return "Moderate pollution. Reduce prolonged outdoor exertion.";
-  if (aqi <= 300) return "Poor air quality. Limit outdoor activities.";
-  return "Very poor air quality. Avoid outdoor activities.";
-}
+  function pm25ToAQI_aqi(pm){
+    const bp=[{cL:0,cH:12,aL:0,aH:50},{cL:12.1,cH:35.4,aL:51,aH:100},{cL:35.5,cH:55.4,aL:101,aH:150},{cL:55.5,cH:150.4,aL:151,aH:200},{cL:150.5,cH:250.4,aL:201,aH:300},{cL:250.5,cH:500,aL:301,aH:500}];
+    for(const r of bp) if(pm>=r.cL&&pm<=r.cH) return Math.round(((r.aH-r.aL)/(r.cH-r.cL))*(pm-r.cL)+r.aL);
+    return Math.round(pm);
+  }
 
-/* PM2.5 → AQI */
-function pm25ToAQI(pm) {
-  const bp = [
-    { cL: 0, cH: 12, aL: 0, aH: 50 },
-    { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
-    { cL: 35.5, cH: 55.4, aL: 101, aH: 150 },
-    { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
-    { cL: 150.5, cH: 250.4, aL: 201, aH: 300 },
-    { cL: 250.5, cH: 500, aL: 301, aH: 500 }
-  ];
-  for (const r of bp) {
-    if (pm >= r.cL && pm <= r.cH) {
-      return Math.round(((r.aH - r.aL)/(r.cH - r.cL))*(pm - r.cL) + r.aL);
+  function getAQIStatus(aqi){
+    if(aqi<=50)  return {text:'Good',        color:'#4caf50', emoji:'😀', en:'Air quality is good.',         ml:'വായു ഗുണനിലവാരം നല്ലതാണ്.'};
+    if(aqi<=100) return {text:'Satisfactory', color:'#8bc34a', emoji:'🙂', en:'Air quality is satisfactory.', ml:'വായു ഗുണനിലവാരം തൃപ്തികരമാണ്.'};
+    if(aqi<=200) return {text:'Moderate',     color:'#ffc107', emoji:'😐', en:'Moderate pollution levels.',   ml:'മിതമായ വായു മലിനീകരണം.'};
+    if(aqi<=300) return {text:'Poor',         color:'#ff9800', emoji:'😷', en:'Poor air quality.',            ml:'വായു ഗുണനിലവാരം മോശമാണ്.'};
+    return           {text:'Very Poor',       color:'#f44336', emoji:'☹️', en:'Health alert.',                ml:'ആരോഗ്യ അടിയന്തരാവസ്ഥ.'};
+  }
+
+  function sensorColor(value, type){
+    if(!value || isNaN(value)) return '#ccc';
+    if(type==='pm10')            return value<=50?'#4caf50':value<=100?'#ffc107':'#f44336';
+    if(type==='co2')             return value<=800?'#4caf50':value<=1200?'#ffc107':'#f44336';
+    if(type==='tvoc'||type==='nox') return value<=100?'#4caf50':value<=200?'#ffc107':'#f44336';
+    return '#ccc';
+  }
+
+  async function updateAQI(){
+    try{
+      const res=await fetch(AQI_API);
+      if(!res.ok) throw new Error('AQI fetch failed');
+      let data=await res.json();
+      if(Array.isArray(data)) data=data[0];
+
+      const pm    = parseFloat(data?.pm02_corrected??0);
+      const pm10  = parseFloat(data?.pm10_corrected)||0;
+      const aqi   = pm25ToAQI_aqi(pm);
+      const st    = getAQIStatus(aqi);
+
+      document.getElementById('aqi-dot').style.background   = st.color;
+      document.getElementById('aqi-pulse').style.background = st.color;
+      document.getElementById('aqi-status-text').textContent = `AQI ${aqi} — ${st.text} ${st.emoji}`;
+
+      const hour=new Date().getHours();
+      const alertEl=document.getElementById('wood-stove-alert');
+      alertEl.style.display=(hour>=5&&hour<9&&pm>45)?'block':'none';
+
+      document.getElementById('aqi-advice').innerHTML=`${st.en}<br><span style="font-family:'Noto Sans Malayalam',sans-serif;">${st.ml}</span><br><small style="color:var(--text-muted);">PM2.5: ${pm} µg/m³ | PM10: ${pm10} µg/m³</small>`;
+
+      const s=(id,v,type)=>{
+        const el=document.getElementById(id); if(el) el.textContent=v;
+        const bar=document.getElementById(id+'-bar'); if(bar) bar.style.background=sensorColor(v,type);
+      };
+      s('aqi-pm10', pm10,  'pm10');
+      s('aqi-co2',  parseFloat(data?.rco2_corrected)||0, 'co2');
+      s('aqi-tvoc', parseFloat(data?.tvocIndex)||0, 'tvoc');
+      s('aqi-nox',  parseFloat(data?.noxIndex)||0,  'nox');
+      document.getElementById('aqi-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } catch(e){
+      console.error(e);
+      document.getElementById('aqi-status-text').textContent='Offline';
     }
   }
-  return null;
-}
 
-async function loadAQIBox() {
-  const aqiDiv = document.getElementById("aqiValue");
-  const aqiCircle = document.getElementById("aqiCircle");
-  const aqiAdviceDiv = document.getElementById("aqiAdvice");
-
-  aqiDiv.textContent = "Fetching AQI...";
-  aqiAdviceDiv.textContent = "";
-  aqiCircle.className = "aqi-circle";
-
-  try {
-    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const pm25 = data?.current?.pm2_5;
-    if (pm25 == null) throw new Error("No data");
-
-    const aqi = pm25ToAQI(pm25);
-    const status = getAQIStatus(aqi);
-
-    aqiDiv.textContent = `AQI ${aqi} — ${status.text} ${status.emoji}`;
-    aqiAdviceDiv.textContent =
-      `${getHealthAdvice(aqi)} (PM2.5: ${pm25} µg/m³ • Estimated)`;
-
-    aqiCircle.classList.add(status.class);
-
-  } catch (e) {
-    aqiDiv.textContent = "AQI unavailable";
-    aqiAdviceDiv.textContent = "Unable to retrieve air quality data.";
-    aqiCircle.classList.add("aqi-moderate");
-  }
-}
-
-loadAQIBox();
-setInterval(loadAQIBox, 600000);
+  updateAQI();
+  setInterval(updateAQI, 180000);
