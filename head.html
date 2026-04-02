@@ -668,11 +668,25 @@ Elamkulam, Malappuram, Kerala
       });
 
       // Auto-resize iframe to content height
-      frame.addEventListener("load", () => {
-        try {
-          frame.style.height = frame.contentDocument.body.scrollHeight + "px";
-        } catch(e) { /* cross-origin */ }
-      });
+      // Auto-resize iframe to content height
+frame.addEventListener("load", () => {
+  try {
+    frame.style.height = frame.contentDocument.body.scrollHeight + "px";
+  } catch(e) { /* cross-origin */ }
+});
+
+// Listen for postMessage from iframe pages so they can
+// tell the shell which page is active (e.g. direct URL entry)
+window.addEventListener("message", (e) => {
+  const page = e.data && e.data.activePage;
+  if (!page) return;
+  const match = document.querySelector(`#main-nav a[data-page="${page}"]`);
+  if (!match) return;
+  setActive(match);
+  updateTicker(page);
+  const label = match.getAttribute("data-label") || "";
+  updatePageLabel(page, label);
+});
     });
   </script>
 
