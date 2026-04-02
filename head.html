@@ -121,11 +121,19 @@
 
     /* ============================================================
        MAIN HEADER
+       — inner wrapper caps width and centres logos on wide screens
     ============================================================ */
     .main-header {
       background: var(--bg-header);
       border-bottom: 1px solid var(--border);
       padding: 18px 28px;
+    }
+
+    /* This wrapper keeps everything centred and prevents logos
+       from flying to the very edges on ultra-wide screens */
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
       display: grid;
       grid-template-columns: 72px 1fr auto;
       align-items: center;
@@ -157,6 +165,7 @@
       align-items: center;
       text-align: center;
     }
+
     .station-name {
       font-family: var(--font-serif);
       font-size: 26px;
@@ -165,18 +174,36 @@
       line-height: 1.2;
       letter-spacing: 0.1px;
     }
+
     .gold-rule {
       width: 48px;
       height: 2px;
       background: var(--gold);
       margin: 8px auto 7px;
+      display: block;
     }
+
+    /* FIX 1 — subtitle: readable size, professional slate-gray colour,
+       never shrinks to invisibility */
     .station-sub {
-      font-size: 10px;
+      font-size: 11px;           /* was 10px / overridden to tiny sizes */
       font-weight: 500;
-      color: var(--text-muted);
+      color: #6b7f92;            /* warm slate-gray — clear, professional */
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      line-height: 1.5;
+      white-space: normal;
+    }
+
+    /* FIX 2 — page-subtitle shown below the main sub on non-home pages */
+    .page-label {
+      display: none;             /* hidden by default; JS shows it */
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gold-dim);
       letter-spacing: 2px;
       text-transform: uppercase;
+      margin-top: 4px;
     }
 
     /* Right cluster */
@@ -187,18 +214,20 @@
       flex-shrink: 0;
     }
 
+    /* FIX 3 — audio button: always visible, never hidden */
     .audio-btn {
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
       background: none;
       border: 1px solid var(--border);
       color: var(--text-muted);
-      display: flex;
+      display: flex !important;   /* override any media-query hiding */
       align-items: center;
       justify-content: center;
       cursor: pointer;
       border-radius: 3px;
       transition: all 0.15s;
+      flex-shrink: 0;
     }
     .audio-btn:hover {
       border-color: var(--navy);
@@ -206,8 +235,8 @@
       background: #f0f5fb;
     }
     .audio-btn svg {
-      width: 11px;
-      height: 11px;
+      width: 8px;
+      height: 8px;
       fill: currentColor;
       display: block;
     }
@@ -391,16 +420,15 @@
       flex: 1;
       border: none;
       display: block;
-      min-height: 80vh;
+      min-height: 100vh;
     }
 
     /* ============================================================
        RESPONSIVE
     ============================================================ */
     @media (max-width: 900px) {
-      .main-header {
+      .header-inner {
         grid-template-columns: 60px 1fr auto;
-        padding: 14px 20px;
         gap: 14px;
       }
       .h-logo, .h-logo-right { width: 60px; height: 60px; }
@@ -408,14 +436,14 @@
     }
 
     @media (max-width: 700px) {
-      .main-header {
+      .main-header { padding: 10px 14px; }
+      .header-inner {
         grid-template-columns: 50px 1fr auto;
-        padding: 10px 14px;
         gap: 10px;
       }
       .h-logo, .h-logo-right { width: 50px; height: 50px; }
       .station-name { font-size: 16px; }
-      .station-sub  { font-size: 9px; letter-spacing: 1px; }
+      /* subtitle stays at 11px — no further shrink */
       .gold-rule    { margin: 5px auto; }
       .nav-bar      { padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
       .nav-bar::-webkit-scrollbar { display: none; }
@@ -426,29 +454,30 @@
     }
 
     @media (max-width: 520px) {
-      .main-header {
+      .main-header { padding: 8px 10px; }
+      .header-inner {
         grid-template-columns: 40px 1fr auto;
-        padding: 8px 10px;
         gap: 8px;
       }
       .h-logo, .h-logo-right { width: 40px; height: 40px; }
       .station-name { font-size: 13px; }
-      .station-sub  { font-size: 8px; letter-spacing: 0.8px; }
-      .audio-btn    { display: none; }
+      .station-sub  { font-size: 10px; letter-spacing: 0.8px; }
+      /* audio-btn intentionally NOT hidden here — FIX 3 */
       .nav-links li a { padding: 0 8px; font-size: 9px; }
     }
 
     @media (max-width: 400px) {
-      .main-header {
-        grid-template-columns: 36px 1fr;
-        padding: 7px 9px;
+      .main-header { padding: 7px 9px; }
+      .header-inner {
+        grid-template-columns: 36px 1fr auto;
         gap: 7px;
       }
-      .h-right      { display: none; }
+      /* h-right kept visible so audio button always shows */
       .h-logo       { width: 36px; height: 36px; }
+      .h-logo-right { width: 36px; height: 36px; }
       .station-name { font-size: 12px; }
-      .station-sub  { font-size: 7.5px; letter-spacing: 0.5px; }
-      .util-social  { display: none; }
+      .station-sub  { font-size: 10px; letter-spacing: 0.5px; }
+      
     }
   </style>
 </head>
@@ -482,30 +511,36 @@
 
   <!-- ③ MAIN HEADER -->
   <div class="main-header">
-    <!-- Left logo — replace src with your actual logo file -->
-    <div class="h-logo">
-      <img src="ELWOIC.png" alt="ELWOIC Logo">
-    </div>
+    <div class="header-inner">
 
-    <!-- Centre title -->
-    <div class="title-block">
-      <div class="station-name">Elamkulam Local Weather Observation &amp; Information Centre</div>
-      <div class="gold-rule"></div>
-      <div class="station-sub">Community Weather Monitoring Initiative &nbsp;·&nbsp; Elamkulam, Kerala, India</div>
-    </div>
-
-    <!-- Right: audio button + right logo -->
-    <div class="h-right">
-      <button id="audioBtn" class="audio-btn" title="Play intro sound">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-        </svg>
-      </button>
-      <!-- Right logo — replace src with your actual logo file -->
-      <div class="h-logo-right">
-        <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
+      <!-- Left logo -->
+      <div class="h-logo">
+        <img src="ELWOIC.png" alt="ELWOIC Logo">
       </div>
-    </div>
+
+      <!-- Centre title -->
+      <div class="title-block">
+        <div class="station-name">Elamkulam Local Weather Observation &amp; Information Centre</div>
+        <div class="gold-rule"></div>
+        <div class="station-sub">Community Weather Monitoring Initiative &nbsp;·&nbsp; Elamkulam, Kerala, India</div>
+        <!-- FIX 2 — page indicator, shown/updated by JS on nav click -->
+        <div class="page-label" id="page-label"></div>
+      </div>
+
+      <!-- Right: audio button + right logo -->
+      <div class="h-right">
+        <!-- FIX 3 — audio button always visible -->
+        <button id="audioBtn" class="audio-btn" title="Play intro sound">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        </button>
+        <div class="h-logo-right">
+          <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
+        </div>
+      </div>
+
+    </div><!-- end .header-inner -->
   </div>
 
   <audio id="siteAudio" src="audio/elwoic-intro.mp3"></audio>
@@ -516,11 +551,11 @@
     <!-- NAVIGATION BAR -->
     <nav class="nav-bar" id="main-nav">
       <ul class="nav-links">
-        <li><a href="#" data-page="home.html"        class="active-nav">Home</a></li>
-        <li><a href="#" data-page="Forecast.html"               >Forecast</a></li>
-        <li><a href="#" data-page="information.html"            >Information</a></li>
-        <li><a href="#" data-page="about.html"                  >About Us</a></li>
-        <li><a href="#" data-page="contact.html"                >Contact</a></li>
+        <li><a href="#" data-page="home.html"        data-label="Home"        class="active-nav">Home</a></li>
+        <li><a href="#" data-page="Forecast.html"    data-label="Forecast"                      >Forecast</a></li>
+        <li><a href="#" data-page="information.html" data-label="Information"                   >Information</a></li>
+        <li><a href="#" data-page="about.html"       data-label="About Us"                      >About Us</a></li>
+        <li><a href="#" data-page="contact.html"     data-label="Contact"                       >Contact</a></li>
       </ul>
     </nav>
 
@@ -547,7 +582,7 @@
 
   </div><!-- end .sticky-shell -->
 
-  <!-- ⑥ IFRAME — your page content loads here -->
+  <!-- ⑤ IFRAME — page content loads here -->
   <iframe id="content-frame" src="home.html" title="Page Content"></iframe>
 
   <!-- ============================================================ SCRIPTS -->
@@ -585,11 +620,13 @@
   </script>
 
   <script>
-    // Nav — load pages into iframe, set active, show/hide ticker
+    // Nav — load pages into iframe, set active, show/hide ticker,
+    // and FIX 2: update the page-label in the header
     document.addEventListener("DOMContentLoaded", () => {
-      const frame  = document.getElementById("content-frame");
-      const links  = document.querySelectorAll("#main-nav a[data-page]");
-      const ticker = document.getElementById("tickerWrap");
+      const frame     = document.getElementById("content-frame");
+      const links     = document.querySelectorAll("#main-nav a[data-page]");
+      const ticker    = document.getElementById("tickerWrap");
+      const pageLabel = document.getElementById("page-label");
       const HOME_PAGE = "home.html";
 
       function setActive(el) {
@@ -601,13 +638,26 @@
         ticker.classList.toggle("hidden", page !== HOME_PAGE);
       }
 
+      // FIX 2: show/hide page label based on current page
+      function updatePageLabel(page, label) {
+        if (page === HOME_PAGE) {
+          pageLabel.style.display = "none";
+          pageLabel.textContent   = "";
+        } else {
+          pageLabel.style.display = "block";
+          pageLabel.textContent   = "— " + label + " —";
+        }
+      }
+
       links.forEach(link => {
         link.addEventListener("click", e => {
           e.preventDefault();
-          const page = link.getAttribute("data-page");
-          frame.src  = page;
+          const page  = link.getAttribute("data-page");
+          const label = link.getAttribute("data-label");
+          frame.src   = page;
           setActive(link);
           updateTicker(page);
+          updatePageLabel(page, label);
           frame.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       });
@@ -621,7 +671,7 @@
     });
   </script>
 
-  <!-- Your existing notification badge module -->
+  <!-- Notification badge module -->
   <script type="module" src="./notie-badge.js"></script>
 
   <!-- ── COMMUNITY WEATHER REPORTS BADGE ── -->
@@ -651,5 +701,6 @@
     <div id="panel-content" style="flex:1;overflow-y:auto;padding:15px;background:#f8fafc;"></div>
   </div>
 
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"e9220bd56c334ef2b9294f00b8f95788","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
