@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELWOIC — Forecast</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       TOKENS
+    ============================================================ */
+    :root {
+      --navy:       #0d3d6e;
+      --navy-mid:   #1a5490;
+      --blue:       #2563eb;
+      --blue-pale:  #e8f2fb;
+      --gold:       #c9a227;
+      --gold-dim:   #b08f1e;
+      --white:      #ffffff;
+      --page-bg:    #eef3f8;
+      --card-bg:    #ffffff;
+      --border:     #d5e2ef;
+      --text:       #1a2e3d;
+      --text-mid:   #4a6a84;
+      --text-muted: #7a9ab5;
+      --red:        #dc3545;
+      --green:      #28a745;
+      --amber:      #f59e0b;
+      --shadow-sm:  0 1px 4px rgba(13,61,110,0.07);
+      --shadow:     0 2px 12px rgba(13,61,110,0.09);
+      --radius:     8px;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', 'Segoe UI', Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--page-bg);
+      color: var(--text);
+      font-size: 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('Elamkulam Weather Logo Design.1.png');
+      background-repeat: space;
+      background-size: 120px 120px;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-6040 { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+
+    @media (max-width: 860px) {
+      .grid-2, .grid-6040 { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       SECTION HEADING
+    ============================================================ */
+    .sec-head {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--navy);
+      border-left: 4px solid var(--gold);
+      padding-left: 13px;
+      margin: 36px 0 16px;
+      line-height: 1.3;
+    }
+    .sec-head:first-child { margin-top: 4px; }
+
+    /* ============================================================
+       CARD
+    ============================================================ */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .card-head {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #f7fafd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-head svg { width: 15px; height: 15px; fill: var(--gold); flex-shrink: 0; }
+    .card-body { padding: 18px; }
+
+    /* ============================================================
+       PAGE BANNER
+    ============================================================ */
+    .page-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+    .page-banner-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .page-banner-sub {
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 4px;
+    }
+    .page-banner-badge {
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       MODERN CURRENT CONDITIONS WIDGET
+    ============================================================ */
+    .cw-shell {
+      background: linear-gradient(145deg, #0d3d6e 0%, #1a5490 60%, #1e6eb5 100%);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+    .cw-shell::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+    .cw-shell::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(201,162,39,0.09);
+      pointer-events: none;
+    }
+    .cw-hero {
+      padding: 24px 24px 18px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+    .cw-location {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+    .cw-big-temp {
+      font-family: var(--font-serif);
+      font-size: 68px;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+    }
+    .cw-big-temp sup {
+      font-size: 26px;
+      font-weight: 400;
+      vertical-align: super;
+      color: rgba(255,255,255,0.65);
+    }
+    .cw-condition-text {
+      font-size: 15px;
+      color: rgba(255,255,255,0.75);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .cw-hero-right { text-align: right; }
+    .cw-feels-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+    .cw-feels-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .cw-time-badge {
+      display: inline-block;
+      margin-top: 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+    }
+    /* Gold divider */
+    .cw-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.45), transparent);
+      margin: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+    /* Stats row */
+    .cw-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      position: relative;
+      z-index: 1;
+    }
+    .cw-stat {
+      padding: 16px 20px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+    .cw-stat:last-child { border-right: none; }
+    .cw-stat-icon  { font-size: 20px; margin-bottom: 4px; opacity: 0.8; }
+    .cw-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+    .cw-stat-val   { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.1; }
+    .cw-stat-unit  { font-size: 11px; color: rgba(255,255,255,0.4); }
+    /* Footer */
+    .cw-footer {
+      background: rgba(0,0,0,0.18);
+      padding: 8px 24px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    .cw-footer a { color: rgba(255,255,255,0.45); text-decoration: none; }
+    .cw-footer a:hover { color: #fff; }
+
+    @media (max-width: 500px) {
+      .cw-big-temp { font-size: 50px; }
+      .cw-stats    { grid-template-columns: repeat(2, 1fr); }
+      .cw-stat:nth-child(2) { border-right: none; }
+      .cw-stat:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.07); grid-column: 1 / -1; }
+    }
+
+    /* ============================================================
+       IMD BOX
+    ============================================================ */
+    .imd-box {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+    .imd-box-left h3 {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .imd-box-left p  { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+    .imd-box-time    { font-size: 10.5px; color: rgba(255,255,255,0.38); margin-top: 6px; }
+    .btn-imd {
+      display: inline-block;
+      padding: 10px 18px;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-imd:hover { background: var(--gold-dim); color: #fff; }
+
+    /* Kerala widget card */
+    .kerala-widget-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .kerala-widget-head {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #f7fafd;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .kerala-widget-head svg { width: 13px; height: 13px; fill: var(--gold); }
+    .kerala-widget-body { padding: 10px 12px; }
+
+    /* ============================================================
+       OPEN-METEO
+    ============================================================ */
+    .om-current {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .om-temp {
+      font-family: var(--font-serif);
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .om-meta { font-size: 13.5px; color: var(--text-mid); }
+    .om-meta span { display: block; margin-bottom: 3px; }
+    .om-meta strong { color: var(--text); }
+    .om-strip-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .hourly-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .hour-card {
+      min-width: 70px;
+      flex-shrink: 0;
+      background: #f7fafd;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .hour-card:hover { background: var(--blue-pale); border-color: #b0cceb; }
+    .hc-time { font-size: 11px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+    .hc-temp { font-size: 15px; font-weight: 700; color: var(--text); }
+    .hc-rain { font-size: 11px; color: var(--blue); margin-top: 5px; }
+    .hc-mm   { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .day-list { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; }
+    .day-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 7px;
+      background: #f7fafd;
+      border: 1px solid var(--border);
+      transition: background 0.15s;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .day-item:hover { background: var(--blue-pale); }
+    .day-name    { font-weight: 700; color: var(--navy); min-width: 90px; font-size: 13.5px; }
+    .day-sunrise { font-size: 12px; color: var(--text-muted); }
+    .day-temps   { font-weight: 700; color: var(--text); font-size: 13.5px; }
+    .day-rain    { font-size: 11.5px; color: #065f46; font-weight: 600; background: #ecfdf5; padding: 3px 9px; border-radius: 20px; border: 1px solid #6ee7b7; }
+    .day-wind    { font-size: 12px; color: var(--text-muted); }
+    .om-footer {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+    }
+    .om-footer a { color: var(--blue); text-decoration: none; }
+    .om-footer a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       HISTORY TABLE
+    ============================================================ */
+    .hist-btns { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .hist-btn {
+      padding: 8px 18px;
+      border: 2px solid var(--navy);
+      background: transparent;
+      color: var(--navy);
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .hist-btn:hover, .hist-btn.active { background: var(--navy); color: #fff; }
+    .hist-loading { text-align: center; font-size: 13px; color: var(--text-muted); padding: 20px 0; display: none; }
+    .hist-wrap  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .hist-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 13.5px; }
+    .hist-table th {
+      background: var(--blue-pale);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    .hist-table td { padding: 9px 14px; border: 1px solid #e8eef5; color: var(--text-mid); }
+    .hist-table tr:hover td { background: var(--blue-pale); }
+    .hist-table tbody tr:nth-child(even) td { background: #f7fafd; }
+    .hist-table tbody tr:nth-child(even):hover td { background: var(--blue-pale); }
+
+    /* ============================================================
+       ACTIVITY RECOMMENDATIONS
+    ============================================================ */
+    .act-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 780px) { .act-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .act-grid { grid-template-columns: 1fr; } }
+
+    .act-card {
+      border-radius: 8px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: #f7fafd;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .act-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .act-card.s-good     { border-left: 5px solid var(--green); background: #f0fdf4; }
+    .act-card.s-moderate { border-left: 5px solid var(--amber); background: #fffbeb; }
+    .act-card.s-avoid    { border-left: 5px solid var(--red);   background: #fff5f5; }
+    .act-title  { font-family: 'Noto Sans Malayalam', var(--font-sans); font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+    .act-status { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .act-card.s-good     .act-status { color: var(--green); }
+    .act-card.s-moderate .act-status { color: #92400e; }
+    .act-card.s-avoid    .act-status { color: var(--red); }
+    .act-advice { font-family: 'Noto Sans Malayalam', var(--font-sans); font-size: 12.5px; color: var(--text-mid); line-height: 1.5; }
+    .act-updated { font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border); }
+
+    /* ============================================================
+       COMMUNITY REPORTS
+    ============================================================ */
+    .report-item {
+      padding: 14px 16px;
+      background: var(--white);
+      border-left: 4px solid var(--navy-mid);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+    .report-item strong { color: var(--navy); }
+    .report-meta { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .btn-submit {
+      display: inline-block;
+      padding: 10px 22px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.15s;
+      margin-top: 16px;
+    }
+    .btn-submit:hover { background: var(--navy-mid); }
+
+    /* ============================================================
+       RESPONSIVE MISC
+    ============================================================ */
+    @media (max-width: 600px) {
+      .page-banner { flex-direction: column; align-items: flex-start; }
+      .imd-box     { flex-direction: column; align-items: flex-start; }
+      .om-temp     { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Notify parent shell: highlight Forecast in nav -->
+<script>
+  if (window.parent !== window) {
+    window.parent.postMessage({ activePage: "Forecast.html" }, "*");
+  }
+</script>
+
+<div class="wrap">
+
+  <!-- ══════════════════════════════════════
+       PAGE BANNER
+  ══════════════════════════════════════ -->
+  <div class="page-banner">
+    <div>
+      <div class="page-banner-title">📡 Weather Forecast — Elamkulam</div>
+      <div class="page-banner-sub">Real-time conditions · Hourly &amp; 7-day outlook · Historical data · Activity guidance</div>
+    </div>
+    <div class="page-banner-badge">10.908°N &nbsp;76.229°E</div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       ROW 1 — Modern Current Conditions
+  ══════════════════════════════════════ -->
+  <h2 class="sec-head">Current Conditions</h2>
+
+  <div class="grid-6040">
+
+    <!-- Modern weather card -->
+    <div class="cw-shell">
+      <div class="cw-hero">
+        <div>
+          <div class="cw-location">📍 Elamkulam, Kerala, India</div>
+          <div class="cw-big-temp"><span id="cw-temp">--</span><sup>°C</sup></div>
+          <div class="cw-condition-text" id="cw-condition">Loading weather…</div>
+        </div>
+        <div class="cw-hero-right">
+          <div class="cw-feels-label">Feels Like</div>
+          <div class="cw-feels-val" id="cw-feels">--°C</div>
+          <div class="cw-time-badge" id="cw-updated">Updating…</div>
+        </div>
+      </div>
+
+      <div class="cw-divider"></div>
+
+      <div class="cw-stats">
+        <div class="cw-stat">
+          <div class="cw-stat-icon">💧</div>
+          <div class="cw-stat-label">Humidity</div>
+          <div class="cw-stat-val"><span id="cw-humidity">--</span><span class="cw-stat-unit"> %</span></div>
+        </div>
+        <div class="cw-stat">
+          <div class="cw-stat-icon">💨</div>
+          <div class="cw-stat-label">Wind Speed</div>
+          <div class="cw-stat-val"><span id="cw-wind">--</span><span class="cw-stat-unit"> km/h</span></div>
+        </div>
+        <div class="cw-stat">
+          <div class="cw-stat-icon">👁</div>
+          <div class="cw-stat-label">Visibility</div>
+          <div class="cw-stat-val"><span id="cw-visibility">--</span><span class="cw-stat-unit"> km</span></div>
+        </div>
+      </div>
+
+      <div class="cw-footer">
+        <span>Powered by <a href="https://openweathermap.org/" target="_blank" rel="noopener">OpenWeatherMap</a></span>
+        <span>Updates every 10 min</span>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- IMD Alert -->
+      <div class="imd-box">
+        <div class="imd-box-left">
+          <h3>🇮🇳 IMD Kerala Alert</h3>
+          <p>Met Centre Thiruvananthapuram<br>Official District-wise Warnings</p>
+          <p class="imd-box-time" id="imd-time">Checking…</p>
+        </div>
+        <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
+           target="_blank" rel="noopener" class="btn-imd">Open Alert ↗</a>
+      </div>
+
+      <!-- Kerala 7-day weatherwidget.io -->
+      <div class="kerala-widget-card">
+        <div class="kerala-widget-head">
+          <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+          Kerala — 7-Day Overview
+        </div>
+        <div class="kerala-widget-body">
+          <div id="ww_7d443210e054f" v='1.3' loc='id'
+            a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
+            <a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Weather widget for website</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right col -->
+
+  </div><!-- /grid-6040 -->
+
+
+  <!-- ══════════════════════════════════════
+       ELAMKULAM FORECAST REPORT
+       Target div for elamkulam-forecast.js
+       Keep exactly as it was in original code
+  ══════════════════════════════════════ -->
+  <div id="elamkulam-forecast-report"></div>
+
+
+  <!-- ══════════════════════════════════════
+       ROW 2 — Open-Meteo Detailed Forecast
+  ══════════════════════════════════════ -->
+  <h2 class="sec-head">Detailed Forecast — Open-Meteo</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+      Hourly &amp; 7-Day Outlook &nbsp;·&nbsp; Elamkulam
+    </div>
+    <div class="card-body">
+
+      <div class="om-current">
+        <div>
+          <div class="om-temp" id="om-temp">--°C</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-top:4px;" id="om-cond">Loading…</div>
+        </div>
+        <div class="om-meta">
+          <span>Feels like: <strong id="om-feels">--</strong></span>
+          <span>Humidity: <strong id="om-hum">--</strong></span>
+          <span>Wind: <strong id="om-wind">--</strong></span>
+          <span>Pressure: <strong id="om-press">--</strong></span>
+        </div>
+        <div style="margin-left:auto; text-align:right;">
+          <div style="background:var(--blue-pale); color:var(--navy); font-size:11px; font-weight:700;
+                      padding:6px 12px; border-radius:4px; display:inline-block;" id="om-updated">
+            Updating…
+          </div>
+        </div>
+      </div>
+
+      <div class="om-strip-label">Next 24 Hours</div>
+      <div class="hourly-strip" id="om-hourly">
+        <div style="padding:10px; color:var(--text-muted); font-size:13px;">Loading hourly data…</div>
+      </div>
+
+      <div class="om-strip-label" style="margin-top:22px;">7-Day Forecast</div>
+      <div class="day-list" id="om-7day">
+        <div style="padding:10px; color:var(--text-muted); font-size:13px;">Loading daily data…</div>
+      </div>
+
+      <div class="om-footer">
+        Data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> — free &amp; open-source weather API.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       ROW 3 — Historical Weather
+  ══════════════════════════════════════ -->
+  <h2 class="sec-head">Past Weather Records</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+      Historical Data — Elamkulam
+    </div>
+    <div class="card-body">
+      <div class="hist-btns">
+        <button class="hist-btn active" onclick="loadHistory(7, this)">Last 7 Days</button>
+        <button class="hist-btn"        onclick="loadHistory(30, this)">Last 30 Days</button>
+      </div>
+      <div class="hist-loading" id="hist-loading">⏳ Loading data, please wait…</div>
+      <div class="hist-wrap">
+        <table class="hist-table" id="hist-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Avg Temp (°C)</th>
+              <th>Max Wind (km/h)</th>
+              <th>Pressure (hPa)</th>
+              <th>Rainfall (mm)</th>
+            </tr>
+          </thead>
+          <tbody id="hist-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       ROW 4 — Activity Recommendations
+  ══════════════════════════════════════ -->
+  <h2 class="sec-head">Activity Recommendations</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+      Auto-updated · <span style="font-family:'Noto Sans Malayalam',sans-serif; font-weight:400; letter-spacing:0; text-transform:none;">ഇന്നത്തെ കാലാവസ്ഥ അനുസരിച്ചുള്ള നിർദ്ദേശങ്ങൾ</span>
+    </div>
+    <div class="card-body">
+      <div class="act-grid" id="act-grid">
+        <div style="padding:12px; color:var(--text-muted); font-size:13px; grid-column:1/-1;">Loading recommendations…</div>
+      </div>
+      <div class="act-updated" id="act-updated">Last updated: --</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       ROW 5 — Community Reports
+  ══════════════════════════════════════ -->
+  <h2 class="sec-head">Community Weather Reports</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Reports from Elamkulam Residents
+    </div>
+    <div class="card-body">
+      <div id="community-reports">
+        <div style="color:var(--text-muted); font-size:13px;">Loading community reports…</div>
+      </div>
+      <a href="report.html" class="btn-submit">📤 Submit Your Weather Report</a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+
+<!-- ══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+
+<!-- weatherwidget.io — loaded after its div -->
+<script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
+
+<!-- Existing module scripts — untouched -->
+<script src="imd-marquee.js"></script>
+<script type="module" src="elamkulam-forecast.js"></script>
+
+
+<!-- ── 1. OpenWeatherMap — Modern Current Conditions ── -->
+<script>
+(function(){
+  const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
+  const LAT = 10.9081, LON = 76.2296;
+
+  async function loadWeather() {
+    try {
+      const res  = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`);
+      const data = await res.json();
+      const desc = data.weather[0].description;
+
+      document.getElementById("cw-temp").textContent       = data.main.temp.toFixed(1);
+      document.getElementById("cw-feels").textContent      = data.main.feels_like.toFixed(1) + "°C";
+      document.getElementById("cw-condition").textContent  = desc.charAt(0).toUpperCase() + desc.slice(1);
+      document.getElementById("cw-humidity").textContent   = data.main.humidity;
+      document.getElementById("cw-wind").textContent       = (data.wind.speed * 3.6).toFixed(1);
+      document.getElementById("cw-visibility").textContent = (data.visibility / 1000).toFixed(1);
+      document.getElementById("cw-updated").textContent    = "Updated " + new Date().toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
+      });
+    } catch(e) {
+      document.getElementById("cw-condition").textContent = "Data unavailable";
+      document.getElementById("cw-updated").textContent   = "Update error";
+    }
+  }
+  loadWeather();
+  setInterval(loadWeather, 600000);
+
+  // IMD timestamp
+  const imdEl = document.getElementById("imd-time");
+  if (imdEl) {
+    imdEl.textContent = "Loaded: " + new Date().toLocaleString("en-IN", {
+      timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit",
+      hour12:true, day:"numeric", month:"short", year:"numeric"
+    });
+  }
+})();
+</script>
+
+
+<!-- ── 2. Open-Meteo — Hourly & 7-day ── -->
+<script>
+(function(){
+  const LAT = 10.908, LON = 76.229, TZ = "Asia/Kolkata";
+  const hVars = ["temperature_2m","relativehumidity_2m","precipitation","precipitation_probability","wind_speed_10m","pressure_msl"].join(",");
+  const dVars = ["temperature_2m_max","temperature_2m_min","precipitation_sum","windspeed_10m_max","sunrise","sunset"].join(",");
+  const URL   = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=${encodeURIComponent(hVars)}&daily=${encodeURIComponent(dVars)}&current_weather=true&timezone=${encodeURIComponent(TZ)}`;
+
+  const codeMap = {0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Foggy",51:"Light drizzle",53:"Drizzle",55:"Dense drizzle",61:"Light rain",63:"Moderate rain",65:"Heavy rain",80:"Rain showers",95:"Thunderstorm",99:"Severe thunderstorm"};
+  const fmtT = s => new Date(s).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true,timeZone:TZ});
+  const fmtD = s => new Date(s).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",timeZone:TZ});
+
+  async function load() {
+    try {
+      const data = await fetch(URL).then(r => r.json());
+      const cur  = data.current_weather || {};
+
+      document.getElementById("om-temp").textContent = (cur.temperature ?? "--") + "°C";
+      document.getElementById("om-cond").textContent = codeMap[cur.weathercode] || "Weather";
+      document.getElementById("om-wind").textContent = cur.windspeed ? cur.windspeed.toFixed(1) + " km/h" : "--";
+
+      let idx = -1;
+      if (data.hourly && data.hourly.time) {
+        idx = data.hourly.time.indexOf(cur.time || "");
+        if (idx === -1) {
+          const nowH = new Date().toISOString().slice(0,13);
+          idx = data.hourly.time.findIndex(t => t.slice(0,13) === nowH);
+        }
+      }
+
+      if (idx >= 0) {
+        const H = data.hourly;
+        document.getElementById("om-feels").textContent = H.temperature_2m[idx] !== undefined ? H.temperature_2m[idx].toFixed(1) + "°C" : "--";
+        document.getElementById("om-hum").textContent   = H.relativehumidity_2m[idx] !== undefined ? Math.round(H.relativehumidity_2m[idx]) + "%" : "--";
+        document.getElementById("om-press").textContent = H.pressure_msl[idx] !== undefined ? Math.round(H.pressure_msl[idx]) + " hPa" : "--";
+      }
+      document.getElementById("om-updated").textContent = "Updated: " + new Date().toLocaleTimeString("en-IN",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:true});
+
+      // Hourly strip
+      const strip = document.getElementById("om-hourly");
+      strip.innerHTML = "";
+      if (data.hourly && idx >= 0) {
+        const H = data.hourly;
+        for (let i = idx; i < Math.min(H.time.length, idx + 24); i++) {
+          const card = document.createElement("div");
+          card.className = "hour-card";
+          const pop  = H.precipitation_probability ? Math.round(H.precipitation_probability[i]) : 0;
+          const rain = H.precipitation ? H.precipitation[i].toFixed(1) : "0.0";
+          card.innerHTML = `<div class="hc-time">${fmtT(H.time[i])}</div>
+                            <div class="hc-temp">${H.temperature_2m ? H.temperature_2m[i].toFixed(1) : "--"}°</div>
+                            <div class="hc-rain">${pop}%</div>
+                            <div class="hc-mm">${rain} mm</div>`;
+          strip.appendChild(card);
+        }
+      }
+
+      // 7-day
+      const dayList = document.getElementById("om-7day");
+      dayList.innerHTML = "";
+      if (data.daily && data.daily.time) {
+        const D = data.daily;
+        D.time.forEach((t, i) => {
+          const item = document.createElement("div");
+          item.className = "day-item";
+          item.innerHTML = `
+            <div>
+              <div class="day-name">${fmtD(t)}</div>
+              <div class="day-sunrise">🌅 ${D.sunrise ? fmtT(D.sunrise[i]) : "--"}</div>
+            </div>
+            <div class="day-temps">${D.temperature_2m_max[i].toFixed(1)}° / ${D.temperature_2m_min[i].toFixed(1)}°</div>
+            <div class="day-rain">${D.precipitation_sum ? D.precipitation_sum[i].toFixed(1) : "0.0"} mm</div>
+            <div class="day-wind">${D.windspeed_10m_max ? D.windspeed_10m_max[i].toFixed(1) + " km/h" : "--"}</div>`;
+          dayList.appendChild(item);
+        });
+      }
+    } catch(e) {
+      document.getElementById("om-cond").textContent = "Data unavailable";
+    }
+  }
+  load();
+  setInterval(load, 30 * 60 * 1000);
+})();
+</script>
+
+
+<!-- ── 3. Historical Weather ── -->
+<script>
+const HIST_LAT = 10.908, HIST_LON = 76.229;
+
+async function loadHistory(days, btn) {
+  document.querySelectorAll(".hist-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+
+  const loadEl  = document.getElementById("hist-loading");
+  const tableEl = document.getElementById("hist-table");
+  loadEl.style.display  = "block";
+  tableEl.style.display = "none";
+
+  const end = new Date(), start = new Date();
+  start.setDate(end.getDate() - (days - 1));
+
+  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${HIST_LAT}&longitude=${HIST_LON}`
+            + `&start_date=${start.toISOString().split("T")[0]}&end_date=${end.toISOString().split("T")[0]}`
+            + `&daily=temperature_2m_mean,pressure_msl_mean,precipitation_sum,windspeed_10m_max`
+            + `&timezone=Asia/Kolkata`;
+  try {
+    const D    = (await fetch(url).then(r => r.json())).daily;
+    const body = document.getElementById("hist-body");
+    body.innerHTML = "";
+    D.time.forEach((t, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${t}</td>
+        <td>${D.temperature_2m_mean[i] ?? "—"}°C</td>
+        <td>${D.windspeed_10m_max[i] ?? "—"} km/h</td>
+        <td>${D.pressure_msl_mean ? (D.pressure_msl_mean[i] ?? "—") : "—"} hPa</td>
+        <td>${D.precipitation_sum[i] ?? "—"} mm</td>`;
+      body.appendChild(row);
+    });
+    loadEl.style.display  = "none";
+    tableEl.style.display = "table";
+  } catch(e) {
+    loadEl.textContent = "Failed to load historical data.";
+  }
+}
+loadHistory(7, document.querySelector(".hist-btn.active"));
+</script>
+
+
+<!-- ── 4. Activity Recommendations ── -->
+<script>
+(function(){
+  const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
+  const LAT = 10.9081, LON = 76.2296;
+  const activities = [
+    { key:"swimming",     label:"നീന്തൽ" },
+    { key:"walking",      label:"നടത്തം / ഓട്ടം" },
+    { key:"cycling",      label:"സൈക്കിൾ / ബൈക്ക്" },
+    { key:"climbing",     label:"ട്രക്കിംഗ് / മലകയറ്റം" },
+    { key:"fishing",      label:"മീൻപിടിത്തം" },
+    { key:"drying",       label:"വസ്ത്രം ഉണക്കൽ" },
+    { key:"construction", label:"നിർമ്മാണ ജോലികൾ" },
+    { key:"farming",      label:"കൃഷിപ്പണികൾ" },
+    { key:"outing",       label:"യാത്രകൾ / ഔട്ടിംഗ്" }
+  ];
+  const adviceML = {
+    swimming:     { good:"അനുകൂലമാണ്.", moderate:"ശ്രദ്ധ വേണം.", avoid:"അപകടം, ഒഴിവാക്കുക." },
+    walking:      { good:"നല്ല സമയം.", moderate:"ചൂട്/മഴ ശ്രദ്ധിക്കുക.", avoid:"അനുകൂലമല്ല." },
+    cycling:      { good:"യാത്രയ്ക്ക് ഉചിതം.", moderate:"കാറ്റ്/മഴ ശ്രദ്ധിക്കുക.", avoid:"അപകടസാധ്യത." },
+    climbing:     { good:"ട്രക്കിംഗിന് പോകാം.", moderate:"ജാഗ്രത പാലിക്കുക.", avoid:"മഴ/മിന്നൽ ഭീഷണി." },
+    fishing:      { good:"അനുകൂല സമയം.", moderate:"കാലാവസ്ഥ ശ്രദ്ധിക്കുക.", avoid:"മിന്നൽ/കാറ്റ് ഭീഷണി." },
+    drying:       { good:"വേഗത്തിൽ ഉണങ്ങും.", moderate:"സമയം എടുക്കും.", avoid:"സാധ്യമല്ല." },
+    construction: { good:"ജോലികൾക്ക് ഉചിതം.", moderate:"ചൂട് ശ്രദ്ധിക്കുക.", avoid:"അപകടം, നിർത്തുക." },
+    farming:      { good:"കൃഷിപ്പണിക്ക് നല്ലത്.", moderate:"മഴ/ചൂട് ശ്രദ്ധിക്കുക.", avoid:"മിന്നൽ ഭീഷണി." },
+    outing:       { good:"യാത്രയ്ക്ക് അനുയോജ്യം.", moderate:"കുട കരുതുക.", avoid:"യാത്ര ഒഴിവാക്കുക." }
+  };
+  const statusLabel = { good:"✔ Good", moderate:"⚠ Caution", avoid:"✕ Avoid" };
+
+  function recommend(key, temp, humidity, wind, condition) {
+    const now = new Date(), month = now.getMonth(), hour = now.getHours();
+    const isRainy   = /rain|drizzle|shower/i.test(condition);
+    const isThunder = /thunder|storm/i.test(condition);
+    const isDry     = (month >= 11 || month <= 2);
+    if (isThunder) return "avoid";
+    switch(key) {
+      case "swimming":     return isDry ? (isRainy && wind > 30 ? "moderate" : "good") : (isRainy || wind > 25 ? "avoid" : "good");
+      case "drying":       return isRainy ? (isDry ? "moderate" : "avoid") : humidity > 80 ? "moderate" : (hour >= 18 || hour <= 6 ? "moderate" : "good");
+      case "climbing":
+      case "walking":      return isRainy ? (isDry ? "moderate" : "avoid") : temp > 35 ? "moderate" : "good";
+      case "construction":
+      case "farming":      return (isRainy && !isDry) ? "avoid" : temp > 37 ? "moderate" : "good";
+      default:             return isRainy ? "moderate" : "good";
+    }
+  }
+
+  async function update() {
+    const grid = document.getElementById("act-grid");
+    const upd  = document.getElementById("act-updated");
+    try {
+      const data      = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r => r.json());
+      const temp      = data.main.temp;
+      const humidity  = data.main.humidity;
+      const wind      = data.wind.speed * 3.6;
+      const condition = data.weather[0].main.toLowerCase();
+      grid.innerHTML  = "";
+      activities.forEach(a => {
+        const status = recommend(a.key, temp, humidity, wind, condition);
+        const card   = document.createElement("div");
+        card.className = "act-card s-" + status;
+        card.innerHTML = `<div class="act-title">${a.label}</div>
+                          <div class="act-status">${statusLabel[status]}</div>
+                          <div class="act-advice">${adviceML[a.key][status]}</div>`;
+        grid.appendChild(card);
+      });
+      upd.textContent = "അവസാനം പുതുക്കിയത്: " + new Date().toLocaleTimeString("ml-IN");
+    } catch(e) {
+      grid.innerHTML = `<div class="act-card s-avoid" style="grid-column:1/-1;">വിവരങ്ങൾ ലഭ്യമായില്ല. ദയവായി അല്പം കഴിഞ്ഞ് ശ്രമിക്കുക.</div>`;
+    }
+  }
+  update();
+  setInterval(update, 15 * 60 * 1000);
+})();
+</script>
+
+
+<!-- ── 5. Community Reports (Firebase) ── -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const bridgeConfig = {
+  apiKey: "AIzaSyD1aZw3jvnMAzt6enCG6_DGkxaSQqg2NlA",
+  authDomain: "weather-report-66bdf.firebaseapp.com",
+  databaseURL: "https://weather-report-66bdf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "weather-report-66bdf",
+  storageBucket: "weather-report-66bdf.firebasestorage.app",
+  messagingSenderId: "599939260562",
+  appId: "1:599939260562:web:a0fbf532279a191559864b"
+};
+
+const app       = initializeApp(bridgeConfig, "site2App");
+const db        = getDatabase(app);
+const container = document.getElementById("community-reports");
+const q         = query(ref(db, "weather_reports"), orderByChild("granted_site2"), equalTo("yes"));
+
+onValue(q, (snapshot) => {
+  const data = snapshot.val();
+  container.innerHTML = "";
+  if (!data) {
+    container.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No community reports available at this time.</div>`;
+    return;
+  }
+  const now     = Date.now();
+  const reports = Object.values(data)
+    .filter(r => r.granted_site2 === "yes" && (!r.expiration_site2 || r.expiration_site2 > now))
+    .sort((a, b) => (b.submitted_at || 0) - (a.submitted_at || 0));
+
+  if (!reports.length) {
+    container.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No approved reports to display right now.</div>`;
+    return;
+  }
+  reports.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "report-item";
+    div.innerHTML = `ഈ സമയത്ത് നാട്ടുകാരുടെ നിരീക്ഷണങ്ങൾ:
+      <strong>"${r.event_time || 'N/A'}"</strong> സമയത്ത്
+      <strong>"${r.location || 'Unknown'}"</strong> നിന്നും —
+      <strong>"${r.report_content || 'വിവരങ്ങൾ ലഭ്യമല്ല'}"</strong>
+      <div class="report-meta">Reporter: ${r.display_name || 'Anonymous'}</div>`;
+    container.appendChild(div);
+  });
+});
+</script>
+
+</body>
+</html>
