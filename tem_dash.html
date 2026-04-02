@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELWOIC – Home</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --navy: #1a2a6c;
+    --blue: #0073e6;
+    --gold: #f1c40f;
+    --green: #27ae60;
+    --bg: #f4f7f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border: #e1e8ed;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    font-family: var(--font-sans);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .sec-head {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    color: var(--navy);
+    margin-bottom: 20px;
+    border-left: 5px solid var(--blue);
+    padding-left: 15px;
+  }
+
+  /* Layout Grid */
+  .grid-6040 {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .grid-6040 { grid-template-columns: 1fr; }
+  }
+
+  /* Card Styling */
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+
+  .card-head {
+    background: #fff;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--navy);
+  }
+
+  .card-head svg { width: 20px; fill: var(--blue); }
+
+  .card-body { padding: 20px; }
+
+  /* Weather Dashboard Specifics */
+  .wd-title {
+    text-align: center;
+    font-family: 'Noto Sans Malayalam', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .wd-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .wd-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .wd-box {
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+  }
+
+  .wd-box:hover { background: #fff; border-color: var(--blue); transform: translateY(-2px); }
+
+  .wd-box.primary   { border-top: 4px solid var(--blue); }
+  .wd-box.secondary { border-top: 4px solid var(--gold); }
+  .wd-box.success   { border-top: 4px solid var(--green); cursor: pointer; }
+
+  .wd-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 5px;
+  }
+
+  .wd-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .wd-unit { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+  .wd-sub  { font-size: 11px; color: var(--text-muted); margin-top: 5px; border-top: 1px solid #eee; pt: 5px; }
+
+  .wd-updated {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 20px;
+    font-style: italic;
+  }
+
+  /* Chart Area */
+  .chart-container { height: 250px; width: 100%; }
+
+  /* Modal */
+  .cond-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26, 42, 108, 0.7);
+    backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center; z-index: 9999;
+  }
+
+  .cond-modal-box {
+    background: #fff; width: 90%; max-width: 400px;
+    border-radius: 20px; padding: 30px; text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .cond-modal-box button {
+    margin-top: 20px; background: var(--blue); color: #fff;
+    border: none; padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2 class="sec-head">Current Weather — Elamkulam</h2>
+  
+  <div class="grid-6040">
+    <div class="card">
+      <div class="card-head">
+        <svg viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>
+        Live Conditions
+      </div>
+      <div class="card-body">
+        <p class="wd-title">🌦 ഏലംകുളം കാലാവസ്ഥാ നിരീക്ഷണം</p>
+        <div class="wd-grid">
+          <div class="wd-box primary">
+            <div class="wd-label">Temp</div>
+            <div class="wd-val"><span id="temp">--</span><span class="wd-unit"> °C</span></div>
+          </div>
+          <div class="wd-box primary">
+            <div class="wd-label">Humidity</div>
+            <div class="wd-val"><span id="humidity">--</span><span class="wd-unit"> %</span></div>
+          </div>
+          <div class="wd-box">
+            <div class="wd-label">Feels Like</div>
+            <div class="wd-val"><span id="feels">--</span><span class="wd-unit"> °C</span></div>
+          </div>
+          <div class="wd-box">
+            <div class="wd-label">Visibility</div>
+            <div class="wd-val"><span id="visibility">--</span><span class="wd-unit"> km</span></div>
+          </div>
+          <div class="wd-box">
+            <div class="wd-label">Wind</div>
+            <div class="wd-val"><span id="wind">--</span><span class="wd-unit"> km/h</span></div>
+          </div>
+          <div class="wd-box secondary">
+            <div class="wd-label">Consensus T</div>
+            <div class="wd-val"><span id="om-temp">--</span><span class="wd-unit"> °C</span></div>
+          </div>
+          <div class="wd-box secondary">
+            <div class="wd-label">Pressure</div>
+            <div class="wd-val" style="font-size: 18px;"><span id="pressure">--</span><span class="wd-unit"> hPa</span></div>
+          </div>
+          <div class="wd-box success" id="condition-box">
+            <div class="wd-label">Condition</div>
+            <div class="wd-val" id="condition" style="font-size:14px;">Loading…</div>
+            <div class="wd-sub">Tap for details</div>
+          </div>
+        </div>
+        <p class="wd-updated" id="secret-trigger">Last updated: <span id="last-updated">--</span></p>
+      </div>
+    </div>
+
+    
+
+<div class="cond-modal-overlay" id="cond-modal">
+  <div class="cond-modal-box">
+    <h3 style="font-family: var(--font-serif); margin-bottom: 15px;">Weather Insights</h3>
+    <p id="cond-modal-msg" style="font-family: 'Noto Sans Malayalam', sans-serif;"></p>
+    <button id="cond-modal-close">Close</button>
+  </div>
+</div>
+
+<script type="module">
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+/* --- 1. Unified Configuration --- */
+const firebaseConfig = {
+    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
+    authDomain: "report-20d26.firebaseapp.com",
+    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "report-20d26"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const API_URL = "https://curly-sound-5bea.elwoicelamkulam.workers.dev/api";
+const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
+const LAT = 10.9081; 
+const LON = 76.2296;
+
+let currentLogData = {};
+let tempChartInstance = null;
+
+/* --- 2. Utility Functions --- */
+const pm25ToAQI = (pm) => {
+    const bp = [{cL:0,cH:12,aL:0,aH:50},{cL:12.1,cH:35.4,aL:51,aH:100},{cL:35.5,cH:55.4,aL:101,aH:150},{cL:55.5,cH:150.4,aL:151,aH:200},{cL:150.5,cH:250.4,aL:201,aH:300},{cL:250.5,cH:500,aL:301,aH:500}];
+    const r = bp.find(range => pm >= range.cL && pm <= range.cH) || bp[0];
+    return Math.round(((r.aH-r.aL)/(r.cH-r.cL))*(pm-r.cL)+r.aL);
+};
+
+const getAQIStatus = (aqi) => {
+    if (aqi <= 50) return "Excellent"; if (aqi <= 100) return "Good"; if (aqi <= 150) return "Moderate";
+    if (aqi <= 200) return "Unhealthy"; if (aqi <= 300) return "Very Unhealthy"; return "Hazardous";
+};
+
+/**
+ * Improved Feels Like Logic
+ * Blends local Heat Index (30%) with API Feels Like (70%) 
+ * to account for local humidity while avoiding extreme jumps.
+ */
+const getRealisticFeelsLike = (t, rh, apiFeels) => {
+    if (t < 21) return t.toFixed(1); 
+    const T = (t * 9/5) + 32;
+    const R = rh;
+    
+    // Rothfusz Heat Index Regression
+    let hi = -42.379 + 2.04901523*T + 10.14333127*R - 0.22475541*T*R - 0.00683783*T*T - 0.05481717*R*R + 0.00122874*T*T*R + 0.00085282*T*R*R - 0.00000199*T*T*R*R;
+    
+    const calculatedC = (hi - 32) * 5/9;
+    
+    // Using 70% weight for API to smooth out the result for user comfort
+    const blended = (calculatedC * 0.3) + (apiFeels * 0.7);
+    return blended.toFixed(1);
+};
+
+/* --- 3. Primary Data Fetch & UI Update --- */
+async function loadWeatherSnapshot() {
+    try {
+        const [workerRes, owRes, omRes, fcRes] = await Promise.all([
+            fetch(API_URL).then(r=>r.json()),
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()),
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json()),
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json())
+        ]);
+
+        const localT = owRes.main.temp;
+        const localH = workerRes.rhum_corrected;
+        const pm25Val = workerRes.pm02_corrected;
+        const aqiVal = pm25ToAQI(pm25Val);
+        const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
+        const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
+        const avgWind = ((owRes.wind.speed*3.6 + omRes.current_weather.windspeed)/2).toFixed(1);
+        const omH = omRes.hourly.relativehumidity_2m[new Date().getHours()];
+
+        // Update Dashboard Main IDs
+        const updates = {
+            "temp": localT.toFixed(1),
+            "humidity": localH,
+            "feels": realFeels,
+            "visibility": visibilityKm,
+            "wind": avgWind,
+            "om-temp": ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1),
+            "om-humidity": Math.round((owRes.main.humidity + omH)/2),
+            "pressure": owRes.main.pressure,
+            "condition": owRes.weather[0].main,
+            "last-updated": new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit"})
+        };
+
+        Object.keys(updates).forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.textContent = updates[id];
+        });
+
+        // Update Marquees
+        if(document.getElementById("weather-marquee-1")) {
+            document.getElementById("weather-marquee-1").textContent = 
+                `Elamkulam Now: ${localT.toFixed(1)}°C (Feels like ${realFeels}°C), ${owRes.weather[0].description}, Humidity: ${localH}%, Wind: ${avgWind} km/h`;
+        }
+        if(document.getElementById("weather-marquee-2") && fcRes.list) {
+            const currentFc = fcRes.list[0];
+            document.getElementById("weather-marquee-2").textContent = 
+                `24-Hour Outlook: ${currentFc.main.temp.toFixed(1)}°C, ${currentFc.weather[0].description}`;
+        }
+
+        // Update Table
+        if(document.getElementById("weather-table-body")) {
+            document.getElementById("weather-table-body").innerHTML = `
+                <tr>
+                    <td>Local Station</td>
+                    <td>${localT.toFixed(1)} °C</td>
+                    <td>${localH} %</td>
+                    <td>${(owRes.wind.speed).toFixed(1)} m/s</td>
+                    <td>${owRes.weather[0].description}</td>
+                </tr>
+            `;
+        }
+
+        // Update Extra Details
+        if(document.getElementById("extraWeather")) {
+            document.getElementById("extraWeather").innerHTML = `
+                <div class="details-item"><span>🌡️ Feels like:</span><span>${realFeels}°C</span></div>
+                <div class="details-item"><span>🌬️ Wind:</span><span>${avgWind} km/h</span></div>
+                <div class="details-item"><span>💧 Pressure:</span><span>${owRes.main.pressure} hPa</span></div>
+                <div class="details-item"><span>☀️ Sunrise:</span><span>${new Date(owRes.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+                <div class="details-item"><span>🌙 Sunset:</span><span>${new Date(owRes.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+            `;
+        }
+
+        currentLogData = {
+            temp_c: localT,
+            humidity: localH,
+            pm25: pm25Val,
+            feels_like_c: parseFloat(realFeels),
+            aqi: aqiVal,
+            aqi_status: getAQIStatus(aqiVal),
+            pressure_hpa: owRes.main.pressure,
+            wind_kmh: parseFloat(avgWind),
+            visibility_km: visibilityKm,
+            condition: owRes.weather[0].main,
+            timestamp_utc: new Date().toISOString(),
+            timestamp_ist: new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})
+        };
+
+        window.lastWeatherMeta = { cloudPercent: owRes.clouds?.all || 0, visibilityKm, humidity: localH, temperature: localT };
+    } catch(err){ console.error("Snapshot Error:", err); }
+}
+
+/* --- 4. Charting Logic (With Interaction) --- */
+function loadFirebaseTempChart() {
+    const logsRef = ref(db, "weather_logs");
+    onValue(logsRef, (snapshot) => {
+        if (!snapshot.exists()) return;
+        let data = Object.values(snapshot.val());
+        data.sort((a, b) => new Date(a.timestamp_utc) - new Date(b.timestamp_utc));
+        const now = new Date();
+        const last12h = data.filter(d => (now - new Date(d.timestamp_utc)) <= 12 * 60 * 60 * 1000);
+        const buckets = {};
+        last12h.forEach(d => {
+            const date = new Date(d.timestamp_utc);
+            let roundedMin = date.getMinutes() < 30 ? 0 : 30;
+            const slot = new Date(date);
+            slot.setMinutes(roundedMin, 0, 0);
+            buckets[slot.toISOString()] = d.temp_c;
+        });
+        const sortedKeys = Object.keys(buckets).sort();
+        drawChart(sortedKeys.map(k => {
+            const d = new Date(k);
+            return d.toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit', hour12: false });
+        }), sortedKeys.map(k => buckets[k]));
+    });
+}
+
+function drawChart(times, temps) {
+    const canvas = document.getElementById("trendChart");
+    if (!canvas) return;
+    if (tempChartInstance) tempChartInstance.destroy();
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 300);
+    grad.addColorStop(0, "rgba(0,115,230,0.3)");
+    grad.addColorStop(1, "rgba(0,115,230,0)");
+
+    tempChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: times,
+            datasets: [{
+                data: temps,
+                borderColor: "#0073e6",
+                backgroundColor: grad,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false }, 
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } },
+                y: { grid: { color: "#f0f0f0" } }
+            }
+        }
+    });
+}
+
+/* --- 5. Initializer --- */
+document.addEventListener("DOMContentLoaded", () => {
+    // Modal & Secret triggers
+    const modal = document.getElementById("cond-modal");
+    const condBox = document.getElementById("condition-box");
+    if(condBox) {
+        condBox.onclick = () => {
+            if(!window.lastWeatherMeta) return;
+            const d = window.lastWeatherMeta;
+            let msg = `ഇപ്പോൾ ഏലംകുളത്തിലെ കാലാവസ്ഥ: താപനില ${d.temperature}°C, ആർദ്രത ${d.humidity}% ആണ്.`;
+            msg += d.cloudPercent > 70 ? " ആകാശം മേഘാവൃതമാണ്." : d.cloudPercent > 40 ? " ഭാഗികമായി മേഘാവൃതമായ ആകാശം." : " ആകാശം തെളിഞ്ഞതാണ്.";
+            document.getElementById("cond-modal-msg").textContent = msg;
+            modal.style.display = "flex";
+        };
+    }
+    const closeBtn = document.getElementById("cond-modal-close");
+    if(closeBtn) closeBtn.onclick = () => modal.style.display = "none";
+
+    const secret = document.getElementById("secret-trigger");
+    if(secret) {
+        secret.ondblclick = async () => {
+            const pass = prompt("Admin Code:");
+            if(pass === "5252") {
+                await push(ref(db, "weather_logs"), {...currentLogData, timestamp_utc: new Date(Date.now() - 31*60*1000).toISOString()});
+                alert("Forced Log Entry Success");
+            }
+        };
+    }
+
+    loadWeatherSnapshot();
+    loadFirebaseTempChart();
+    setInterval(loadWeatherSnapshot, 10*60*1000);
+});
+  </script>
+</body>
+</html>
