@@ -54,6 +54,71 @@
     }
 
     /* ============================================================
+       POP UP MASSAGE BOX
+    ============================================================ */
+
+    /* ================= POPUP STYLES ================= */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.popup-box {
+  width: 90%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 22px 20px;
+  text-align: center;
+  animation: popupFade 0.3s ease;
+}
+
+@keyframes popupFade {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.popup-header {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.popup-content {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.popup-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.popup-btn:hover {
+  background: var(--navy-mid);
+}
+
+    /* ============================================================
        UTILITY BAR
     ============================================================ */
     .util-bar {
@@ -484,6 +549,62 @@
       
     }
   </style>
+
+   <script>
+/* ================= POPUP CONTROL PANEL ================= */
+
+// 🔴 MASTER SWITCH
+const POPUP_CONFIG = {
+  enabled: false,   // true = show, false = hide
+
+  title: "WELCOME TO ELWOIC!",
+
+  message: `
+  ELWOIC gives you real time weather details for Elamkulam.
+  `
+};
+
+/* ================= POPUP LOGIC ================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("site-popup-overlay");
+  const titleEl = document.getElementById("popup-title");
+  const msgEl = document.getElementById("popup-message");
+  const closeBtn = document.getElementById("popup-close");
+
+  // Hide completely if disabled
+  if (!POPUP_CONFIG.enabled) {
+    overlay.style.display = "none";
+    return;
+  }
+
+  // Inject content from config
+  titleEl.textContent = POPUP_CONFIG.title;
+  msgEl.innerHTML = POPUP_CONFIG.message;
+
+  // Close button
+  closeBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+});
+</script>
+
+   <!-- ================= POPUP MESSAGE BOX ================= -->
+<div id="site-popup-overlay" class="popup-overlay">
+  <div class="popup-box">
+    
+    <div class="popup-header" id="popup-title"></div>
+
+    <div class="popup-content" id="popup-message"></div>
+
+    <button id="popup-close" class="popup-btn">
+      Continue to Site
+    </button>
+
+  </div>
+</div>
+
+  
 </head>
 <body>
 
