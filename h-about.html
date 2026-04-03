@@ -67,10 +67,13 @@
     .wrap {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 28px 20px 56px;
+      padding: 24px 16px 48px;
       position: relative;
       z-index: 1;
       flex: 1;
+      /* Prevent any child from breaking out */
+      width: 100%;
+      overflow-x: hidden;
     }
 
     /* ============================================================
@@ -78,12 +81,12 @@
     ============================================================ */
     .sec-head {
       font-family: var(--font-serif);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--navy);
       border-left: 4px solid var(--gold);
-      padding-left: 14px;
-      margin: 40px 0 18px;
+      padding-left: 13px;
+      margin: 36px 0 16px;
       line-height: 1.3;
     }
     .sec-head:first-of-type { margin-top: 0; }
@@ -98,22 +101,24 @@
       box-shadow: var(--shadow-sm);
       overflow: hidden;
       margin-bottom: 20px;
+      width: 100%;
     }
     .card-head {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       color: var(--navy);
       letter-spacing: 0.7px;
       text-transform: uppercase;
-      padding: 11px 18px;
+      padding: 10px 16px;
       border-bottom: 1px solid var(--border);
       background: #f7fafd;
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .card-head svg { width: 14px; height: 14px; fill: var(--gold); flex-shrink: 0; }
-    .card-body { padding: 22px; }
+    .card-body { padding: 16px; }
 
     /* ============================================================
        PAGE BANNER
@@ -121,37 +126,27 @@
     .page-banner {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
       border-radius: var(--radius);
-      padding: 22px 26px;
-      margin-bottom: 32px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
       box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    .page-banner::after {
-      content: '';
-      position: absolute;
-      right: -40px; top: -40px;
-      width: 180px; height: 180px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      pointer-events: none;
     }
     .page-banner-title {
       font-family: var(--font-serif);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       color: #fff;
       line-height: 1.2;
     }
     .page-banner-sub {
-      font-size: 13px;
+      font-size: 12.5px;
       color: rgba(255,255,255,0.6);
-      margin-top: 5px;
+      margin-top: 4px;
+      line-height: 1.5;
     }
     .page-banner-badge {
       background: var(--gold);
@@ -160,11 +155,10 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 7px 16px;
+      padding: 6px 14px;
       border-radius: 4px;
       white-space: nowrap;
-      position: relative;
-      z-index: 1;
+      align-self: flex-start;
     }
 
     /* ============================================================
@@ -175,82 +169,42 @@
       border: 1px solid #ffd6d6;
       border-left: 5px solid var(--red);
       border-radius: var(--radius);
-      padding: 18px 22px;
-      margin-bottom: 28px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
     }
     .disclaimer-head {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-    .disclaimer-head svg { width: 20px; height: 20px; fill: var(--red); flex-shrink: 0; }
+    .disclaimer-head svg { width: 18px; height: 18px; fill: var(--red); flex-shrink: 0; }
     .disclaimer-head h3 {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--red);
       text-transform: uppercase;
       letter-spacing: 0.8px;
       margin: 0;
     }
-    .disclaimer ul { list-style: disc; margin-left: 20px; }
+    .disclaimer ul { list-style: disc; margin-left: 18px; }
     .disclaimer li {
-      font-size: 13.5px;
+      font-size: 13px;
       color: #7f1d1d;
       line-height: 1.65;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     .disclaimer li a { color: var(--blue); font-weight: 600; }
     .disclaimer li a:hover { text-decoration: underline; }
     .disclaimer li strong { color: #991b1b; }
     .disclaimer-footer {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #9f4a4a;
       font-style: italic;
       margin-top: 10px;
-      padding-top: 10px;
+      padding-top: 8px;
       border-top: 1px dashed #fca5a5;
     }
-
-    /* ============================================================
-       MISSION HERO — split layout
-    ============================================================ */
-    .mission-hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 680px) {
-      .mission-hero { grid-template-columns: 1fr; }
-    }
-
-    .mission-block {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .mission-block-icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    .mission-block h4 {
-      font-family: var(--font-serif);
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 10px;
-    }
-    .mission-block p {
-      font-size: 14px;
-      color: var(--text-mid);
-      line-height: 1.75;
-    }
-    /* Gold accent top border on first block */
-    .mission-block.accent { border-top: 3px solid var(--gold); }
-    .mission-block.accent-blue { border-top: 3px solid var(--blue); }
 
     /* ============================================================
        MAINTAINER CARD
@@ -258,81 +212,136 @@
     .maintainer-card {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
       border-radius: var(--radius);
-      padding: 24px 26px;
+      padding: 20px;
       display: flex;
-      align-items: center;
-      gap: 22px;
+      align-items: flex-start;
+      gap: 18px;
       flex-wrap: wrap;
       box-shadow: var(--shadow);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .maintainer-avatar {
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: rgba(255,255,255,0.12);
       border: 2px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
+      font-size: 22px;
       flex-shrink: 0;
       color: var(--gold);
     }
-    .maintainer-info {}
+    .maintainer-info { flex: 1; min-width: 200px; }
     .maintainer-name {
       font-family: var(--font-serif);
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       color: #fff;
       margin-bottom: 3px;
     }
     .maintainer-role {
-      font-size: 12.5px;
+      font-size: 12px;
       color: rgba(255,255,255,0.6);
       margin-bottom: 6px;
     }
     .maintainer-desc {
-      font-size: 13.5px;
+      font-size: 13px;
       color: rgba(255,255,255,0.78);
       line-height: 1.6;
-      max-width: 560px;
     }
 
     /* ============================================================
-       WHAT WE PROVIDE — grid
+       MISSION HERO — 2 col → 1 col at 600px
+    ============================================================ */
+    .mission-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .mission-block {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .mission-block-icon { font-size: 26px; margin-bottom: 8px; }
+    .mission-block h4 {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .mission-block p { font-size: 13.5px; color: var(--text-mid); line-height: 1.75; }
+    .mission-block.accent      { border-top: 3px solid var(--gold); }
+    .mission-block.accent-blue { border-top: 3px solid var(--blue); }
+
+    /* ============================================================
+       KEY METRICS — 3 col → 1 col
+    ============================================================ */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .metric-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 16px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      min-width: 0; /* prevents overflow */
+    }
+    .metric-val {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.1;
+      word-break: break-word;
+    }
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ============================================================
+       WHAT WE PROVIDE — 2 col → 1 col
     ============================================================ */
     .provides-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: 12px;
     }
-    @media (max-width: 580px) {
-      .provides-grid { grid-template-columns: 1fr; }
-    }
-
     .provide-item {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      padding: 16px;
+      gap: 12px;
+      padding: 14px;
       background: var(--page-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      transition: background 0.15s, box-shadow 0.15s;
+      transition: background 0.15s;
+      min-width: 0;
     }
-    .provide-item:hover {
-      background: var(--navy-light);
-      box-shadow: var(--shadow-sm);
-    }
+    .provide-item:hover { background: var(--navy-light); }
     .provide-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
       flex-shrink: 0;
     }
     .pi-blue   { background: #dbeafe; }
@@ -343,117 +352,78 @@
     .pi-red    { background: #fee2e2; }
     .pi-navy   { background: var(--navy-light); }
     .pi-gold   { background: var(--gold-pale); }
-
-    .provide-text {}
-    .provide-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 3px;
-    }
-    .provide-desc {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+    .provide-title { font-size: 13.5px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .provide-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
     /* ============================================================
-       KEY METRICS ROW
+       IMPORTANT INFO LIST
     ============================================================ */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
+    .info-list { list-style: none; padding: 0; }
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 13.5px;
+      color: var(--text-mid);
+      line-height: 1.65;
     }
-    @media (max-width: 580px) {
-      .metrics-row { grid-template-columns: 1fr; }
-    }
-    .metric-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--gold);
-      border-radius: var(--radius);
-      padding: 18px 16px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-    }
-    .metric-val {
-      font-family: var(--font-serif);
-      font-size: 26px;
+    .info-list li:last-child { border-bottom: none; }
+    .info-list li::before {
+      content: '›';
+      color: var(--gold);
       font-weight: 700;
-      color: var(--navy);
-      line-height: 1.1;
+      font-size: 17px;
+      line-height: 1.45;
+      flex-shrink: 0;
     }
-    .metric-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
+    .info-list a { color: var(--blue); font-weight: 600; text-decoration: none; }
+    .info-list a:hover { text-decoration: underline; }
 
     /* ============================================================
-       DATA SOURCES
+       DATA SOURCES — 3 col → 2 col → 1 col
     ============================================================ */
     .sources-text {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-mid);
       line-height: 1.75;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .sources-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    @media (max-width: 620px) {
-      .sources-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 400px) {
-      .sources-grid { grid-template-columns: 1fr; }
+      gap: 12px;
+      margin-bottom: 18px;
     }
     .source-item {
       background: var(--page-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 14px;
+      padding: 14px 10px;
       text-align: center;
       transition: background 0.15s;
+      min-width: 0;
     }
     .source-item:hover { background: var(--navy-light); }
     .source-icon {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      margin: 0 auto 10px;
+      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
     }
-    .source-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 3px;
-    }
-    .source-desc {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
+    .source-name { font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .source-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 
-    /* Source link buttons */
-    .source-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    .source-btns { display: flex; flex-wrap: wrap; gap: 8px; }
     .source-btn {
       display: inline-block;
-      padding: 8px 18px;
-      font-size: 12.5px;
+      padding: 7px 16px;
+      font-size: 12px;
       font-weight: 600;
       border-radius: 20px;
       text-decoration: none;
@@ -467,128 +437,72 @@
     .btn-purple { background: #7c3aed; }
 
     /* ============================================================
-       IMPORTANT INFO LIST
-    ============================================================ */
-    .info-list {
-      list-style: none;
-      padding: 0;
-    }
-    .info-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 14px;
-      color: var(--text-mid);
-      line-height: 1.65;
-    }
-    .info-list li:last-child { border-bottom: none; }
-    .info-list li::before {
-      content: '›';
-      color: var(--gold);
-      font-weight: 700;
-      font-size: 18px;
-      line-height: 1.4;
-      flex-shrink: 0;
-    }
-    .info-list a { color: var(--blue); font-weight: 600; text-decoration: none; }
-    .info-list a:hover { text-decoration: underline; }
-
-    /* ============================================================
-       SUPPORT / DONATION SECTION
+       SUPPORT SECTION
     ============================================================ */
     .support-shell {
       background: linear-gradient(135deg, #f0fdf4, #dcfce7);
       border: 1px solid #bbf7d0;
       border-radius: var(--radius);
-      padding: 28px 26px;
+      padding: 22px 20px;
       box-shadow: var(--shadow-sm);
     }
     .support-title {
       font-family: var(--font-serif);
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: #14532d;
       margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
     .support-desc {
-      font-size: 14px;
+      font-size: 13.5px;
       color: #166534;
       line-height: 1.75;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     .support-ml {
       font-family: var(--font-ml);
-      font-size: 13.5px;
+      font-size: 13px;
       color: #166534;
       font-style: italic;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       line-height: 1.7;
     }
     .support-inner {
       display: flex;
-      gap: 36px;
+      gap: 28px;
       flex-wrap: wrap;
       align-items: flex-start;
     }
-    /* QR block */
     .support-qr { text-align: center; }
     .support-qr img {
-      width: 200px;
+      width: 180px;
       max-width: 100%;
       border-radius: 10px;
       border: 1px solid #d1fae5;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .support-qr-label {
-      font-size: 12px;
-      color: #4d7c60;
-      margin-top: 8px;
-    }
+    .support-qr-label { font-size: 11.5px; color: #4d7c60; margin-top: 7px; }
     .upi-btn {
       display: inline-block;
-      margin-top: 12px;
+      margin-top: 10px;
       background: var(--green);
       color: #fff;
-      padding: 10px 24px;
-      border-radius: 24px;
+      padding: 9px 22px;
+      border-radius: 22px;
       font-size: 13px;
       font-weight: 700;
       text-decoration: none;
       transition: background 0.15s;
     }
     .upi-btn:hover { background: #15803d; }
-    .upi-apps {
-      font-size: 11.5px;
-      color: #6b7f72;
-      margin-top: 6px;
-    }
-    /* Transparency block */
-    .support-transparency { flex: 1; min-width: 240px; }
-    .support-transparency h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: #14532d;
-      margin-bottom: 8px;
-    }
-    .support-transparency p {
-      font-size: 13.5px;
-      color: #166534;
-      line-height: 1.7;
-      margin-bottom: 6px;
-    }
-    .support-transparency .ml-note {
-      font-family: var(--font-ml);
-      font-size: 12.5px;
-      color: #4d7c60;
-    }
+    .upi-apps { font-size: 11px; color: #6b7f72; margin-top: 5px; }
+
+    .support-transparency { flex: 1; min-width: 220px; }
+    .support-transparency h4 { font-size: 14px; font-weight: 700; color: #14532d; margin-bottom: 7px; }
+    .support-transparency p  { font-size: 13px; color: #166534; line-height: 1.7; margin-bottom: 5px; }
+    .support-transparency .ml-note { font-family: var(--font-ml); font-size: 12px; color: #4d7c60; }
     .transparency-link {
       display: inline-block;
-      margin-top: 10px;
+      margin-top: 8px;
       color: var(--blue);
       font-size: 13px;
       font-weight: 600;
@@ -603,23 +517,18 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px 24px;
+      padding: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
       box-shadow: var(--shadow-sm);
     }
-    .contact-cta p {
-      font-size: 14px;
-      color: var(--text-mid);
-      line-height: 1.65;
-      max-width: 600px;
-    }
+    .contact-cta p { font-size: 13.5px; color: var(--text-mid); line-height: 1.65; flex: 1; min-width: 200px; }
     .contact-cta a.btn-contact {
       display: inline-block;
-      padding: 10px 22px;
+      padding: 10px 20px;
       background: var(--navy);
       color: #fff;
       font-size: 13px;
@@ -628,108 +537,130 @@
       text-decoration: none;
       white-space: nowrap;
       transition: background 0.15s;
+      flex-shrink: 0;
     }
     .contact-cta a.btn-contact:hover { background: var(--navy-mid); }
 
     /* ============================================================
-       FOOTER — matches home.html style
+       FOOTER
     ============================================================ */
     .site-footer {
       background: var(--navy);
       color: rgba(255,255,255,0.75);
-      margin-top: 0;
-      padding: 40px 0 0;
+      padding: 36px 0 0;
       position: relative;
       z-index: 1;
     }
     .footer-inner {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 20px;
       display: grid;
       grid-template-columns: 2fr 1fr 1fr;
-      gap: 36px;
+      gap: 32px;
     }
-    @media (max-width: 680px) {
-      .footer-inner { grid-template-columns: 1fr; gap: 24px; }
-    }
-    .footer-brand img { width: 40px; height: 40px; margin-bottom: 10px; }
+    .footer-brand img { width: 38px; height: 38px; margin-bottom: 10px; }
     .footer-brand h3 {
       font-family: var(--font-serif);
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       line-height: 1.4;
     }
-    .footer-brand p { font-size: 13px; line-height: 1.75; }
+    .footer-brand p { font-size: 12.5px; line-height: 1.75; }
     .footer-col h4 {
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .footer-col a, .footer-col p {
       display: block;
-      font-size: 13px;
-      color: rgba(255,255,255,0.62);
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.60);
       text-decoration: none;
-      margin-bottom: 7px;
+      margin-bottom: 6px;
       line-height: 1.5;
       transition: color 0.15s;
     }
     .footer-col a:hover { color: #fff; }
     .footer-community {
       border-top: 1px solid rgba(255,255,255,0.1);
-      margin-top: 32px;
-      padding: 20px 24px 0;
+      margin-top: 28px;
+      padding: 18px 20px 0;
       text-align: center;
     }
     .footer-community p {
       font-family: var(--font-ml);
-      color: rgba(255,255,255,0.65);
-      font-size: 14px;
+      color: rgba(255,255,255,0.62);
+      font-size: 13.5px;
       line-height: 1.7;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
-    .footer-community a {
-      font-size: 13px;
-      color: var(--gold);
-      text-decoration: underline;
-      font-family: var(--font-sans);
-      transition: color 0.15s;
-    }
-    .footer-community a:hover { color: #fff; }
     .footer-bottom {
       border-top: 1px solid rgba(255,255,255,0.08);
-      margin-top: 28px;
-      padding: 14px 24px;
+      margin-top: 24px;
+      padding: 12px 20px;
       text-align: center;
-      font-size: 11.5px;
-      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      color: rgba(255,255,255,0.38);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
     }
-    .footer-bottom img { width: 20px; height: 20px; opacity: 0.45; }
+    .footer-bottom img { width: 18px; height: 18px; opacity: 0.4; }
 
     /* ============================================================
-       RESPONSIVE MISC
+       RESPONSIVE BREAKPOINTS
+       All grid collapses happen here — clearly organised
     ============================================================ */
+
+    /* Tablet — 760px */
+    @media (max-width: 760px) {
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+    }
+
+    /* Large mobile — 600px */
     @media (max-width: 600px) {
-      .page-banner   { flex-direction: column; align-items: flex-start; }
-      .support-inner { flex-direction: column; }
-      .contact-cta   { flex-direction: column; }
+      .mission-hero  { grid-template-columns: 1fr; }
+      .metrics-row   { grid-template-columns: 1fr 1fr; } /* 2 col at 600 */
+      .sources-grid  { grid-template-columns: repeat(2, 1fr); }
+      .footer-inner  { grid-template-columns: 1fr; gap: 20px; }
+      .page-banner   { flex-direction: column; }
+    }
+
+    /* Small mobile — 480px */
+    @media (max-width: 480px) {
+      .wrap          { padding: 16px 12px 40px; }
+      .provides-grid { grid-template-columns: 1fr; }
+      .metrics-row   { grid-template-columns: 1fr; } /* 1 col at 480 */
+      .sources-grid  { grid-template-columns: 1fr 1fr; }
+      .support-inner { flex-direction: column; align-items: center; }
+      .support-qr    { width: 100%; }
+      .support-transparency { width: 100%; min-width: unset; }
+      .contact-cta   { flex-direction: column; align-items: flex-start; }
+      .maintainer-card { flex-direction: column; }
+      .page-banner-title { font-size: 19px; }
+      .sec-head      { font-size: 16px; }
+    }
+
+    /* Very small — 360px */
+    @media (max-width: 360px) {
+      .sources-grid  { grid-template-columns: 1fr; }
+      .provides-grid { grid-template-columns: 1fr; }
+      .metrics-row   { grid-template-columns: 1fr; }
+      .card-body     { padding: 12px; }
+      .mission-block { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Notify parent shell: highlight About Us in nav -->
 <script>
   if (window.parent !== window) {
     window.parent.postMessage({ activePage: "about.html" }, "*");
@@ -738,9 +669,7 @@
 
 <div class="wrap">
 
-  <!-- ══════════════════════════════════════
-       PAGE BANNER
-  ══════════════════════════════════════ -->
+  <!-- PAGE BANNER -->
   <div class="page-banner">
     <div>
       <div class="page-banner-title">About ELWOIC</div>
@@ -749,10 +678,7 @@
     <div class="page-banner-badge">Elamkulam, Kerala</div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       DISCLAIMER
-  ══════════════════════════════════════ -->
+  <!-- DISCLAIMER -->
   <div class="disclaimer">
     <div class="disclaimer-head">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
@@ -760,21 +686,15 @@
     </div>
     <ul>
       <li>This is a <strong>personal project</strong> for informational purposes and is <strong>not</strong> an official government or panchayat-owned entity.</li>
-      <li>For <strong>official weather alerts and warnings</strong>, always refer to the
-        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a>.
-      </li>
+      <li>For <strong>official weather alerts and warnings</strong>, always refer to the <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a>.</li>
       <li>Details shown on this site may vary from official reports. Please <strong>exercise caution</strong> and cross-reference data before taking any action.</li>
     </ul>
     <p class="disclaimer-footer">Do not hesitate to contact us for more details. We apologise for any inconvenience caused by the unofficial nature of this website.</p>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       WHO WE ARE
-  ══════════════════════════════════════ -->
+  <!-- WHO WE ARE -->
   <h2 class="sec-head">Who We Are</h2>
 
-  <!-- Maintainer card -->
   <div class="maintainer-card">
     <div class="maintainer-avatar">A</div>
     <div class="maintainer-info">
@@ -788,7 +708,6 @@
     </div>
   </div>
 
-  <!-- Mission + Purpose -->
   <div class="mission-hero">
     <div class="mission-block accent">
       <div class="mission-block-icon">🌍</div>
@@ -802,7 +721,6 @@
     </div>
   </div>
 
-  <!-- Key metrics -->
   <div class="metrics-row">
     <div class="metric-box">
       <div class="metric-val">30 min</div>
@@ -810,18 +728,15 @@
     </div>
     <div class="metric-box">
       <div class="metric-val">~15 km</div>
-      <div class="metric-label">Coverage radius around <a href="https://maps.app.goo.gl/Prpaxc2ULVMUJVgS7" target="_blank" style="color:var(--blue);font-size:11px;">10.892°N, 76.234°E</a></div>
+      <div class="metric-label">Coverage radius around <a href="https://maps.app.goo.gl/Prpaxc2ULVMUJVgS7" target="_blank" style="color:var(--blue);font-size:10px;">10.892°N, 76.234°E</a></div>
     </div>
     <div class="metric-box">
-      <div class="metric-val">24 / 7</div>
+      <div class="metric-val">24/7</div>
       <div class="metric-label">Continuous automated monitoring &amp; observation</div>
     </div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       WHAT WE PROVIDE
-  ══════════════════════════════════════ -->
+  <!-- WHAT WE PROVIDE -->
   <h2 class="sec-head">What We Provide</h2>
 
   <div class="card">
@@ -831,79 +746,43 @@
     </div>
     <div class="card-body">
       <div class="provides-grid">
-
         <div class="provide-item">
           <div class="provide-icon pi-blue">🌡️</div>
-          <div class="provide-text">
-            <div class="provide-title">Real-time Temperature</div>
-            <div class="provide-desc">Current temperature readings updated continuously from local and API sources.</div>
-          </div>
+          <div><div class="provide-title">Real-time Temperature</div><div class="provide-desc">Current temperature readings updated continuously from local and API sources.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-cyan">💧</div>
-          <div class="provide-text">
-            <div class="provide-title">Humidity Levels</div>
-            <div class="provide-desc">Atmospheric moisture content monitoring for accurate comfort index readings.</div>
-          </div>
+          <div><div class="provide-title">Humidity Levels</div><div class="provide-desc">Atmospheric moisture content monitoring for accurate comfort index readings.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-green">💨</div>
-          <div class="provide-text">
-            <div class="provide-title">Wind Speed &amp; Direction</div>
-            <div class="provide-desc">Live wind speed in km/h and compass direction for the Elamkulam area.</div>
-          </div>
+          <div><div class="provide-title">Wind Speed &amp; Direction</div><div class="provide-desc">Live wind speed in km/h and compass direction for the Elamkulam area.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-amber">🌡️</div>
-          <div class="provide-text">
-            <div class="provide-title">Feels Like Temperature</div>
-            <div class="provide-desc">Heat index adjusted apparent temperature, accounting for humidity and wind.</div>
-          </div>
+          <div><div class="provide-title">Feels Like Temperature</div><div class="provide-desc">Heat index adjusted apparent temperature, accounting for humidity and wind.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-purple">🌧️</div>
-          <div class="provide-text">
-            <div class="provide-title">Precipitation Data</div>
-            <div class="provide-desc">Rainfall measurements, probability forecasts, and hourly rain outlooks.</div>
-          </div>
+          <div><div class="provide-title">Precipitation Data</div><div class="provide-desc">Rainfall measurements, probability forecasts, and hourly rain outlooks.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-navy">🌬️</div>
-          <div class="provide-text">
-            <div class="provide-title">Full AQI Details</div>
-            <div class="provide-desc">Complete Air Quality Index with PM2.5, PM10, CO₂, TVOC, and NOx sensor data.</div>
-          </div>
+          <div><div class="provide-title">Full AQI Details</div><div class="provide-desc">Complete Air Quality Index with PM2.5, PM10, CO₂, TVOC, and NOx sensor data.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-red">⚠️</div>
-          <div class="provide-text">
-            <div class="provide-title">Sudden Weather Alerts</div>
-            <div class="provide-desc">Rapid alerts for unexpected weather changes, heavy rain, or hazardous conditions in the Elamkulam region.</div>
-          </div>
+          <div><div class="provide-title">Sudden Weather Alerts</div><div class="provide-desc">Rapid alerts for unexpected weather changes, heavy rain, or hazardous conditions.</div></div>
         </div>
-
         <div class="provide-item">
           <div class="provide-icon pi-gold">📡</div>
-          <div class="provide-text">
-            <div class="provide-title">Live Radar &amp; Forecasts</div>
-            <div class="provide-desc">Windy and IMD radar integration with 7-day and hourly forecast outlooks.</div>
-          </div>
+          <div><div class="provide-title">Live Radar &amp; Forecasts</div><div class="provide-desc">Windy and IMD radar integration with 7-day and hourly forecast outlooks.</div></div>
         </div>
-
       </div>
     </div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       IMPORTANT INFORMATION
-  ══════════════════════════════════════ -->
+  <!-- IMPORTANT INFO -->
   <h2 class="sec-head">Important Information</h2>
 
   <div class="card">
@@ -913,19 +792,16 @@
     </div>
     <div class="card-body">
       <ul class="info-list">
-        <li>Weather data is updated at least every <strong>30 minutes</strong> using multiple API sources — AccuWeather, Windy, IMD Kerala, OpenWeatherMap, and Open-Meteo — for highly accurate local conditions.</li>
+        <li>Weather data is updated at least every <strong>30 minutes</strong> using multiple API sources — AccuWeather, Windy, IMD Kerala, OpenWeatherMap, and Open-Meteo.</li>
         <li>The station covers approximately a <strong>15-kilometre radius</strong> around coordinates <a href="https://maps.app.goo.gl/2SHrmdicqqi2pq6EA" target="_blank" rel="noopener">10.892363, 76.234402</a> with continuous automated monitoring.</li>
-        <li>For technical issues with radar display or if AccuWeather fails to load, we automatically switch to <strong>Windy radar</strong> for uninterrupted monitoring.</li>
+        <li>For technical issues with radar display, we automatically switch to <strong>Windy radar</strong> for uninterrupted monitoring.</li>
         <li>Details shown on the site may vary slightly across sources. Contacting us is always a good option if you notice any discrepancy.</li>
         <li>Air quality data is measured locally using an <strong>AirGradient</strong> monitoring device provided through the AirGradient community programme.</li>
       </ul>
     </div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       DATA SOURCES
-  ══════════════════════════════════════ -->
+  <!-- DATA SOURCES -->
   <h2 class="sec-head">Data Sources &amp; Partners</h2>
 
   <div class="card">
@@ -934,45 +810,15 @@
       Official Data Sources &amp; Partners
     </div>
     <div class="card-body">
-      <p class="sources-text">
-        Our data is aggregated from multiple trusted sources including Open-Meteo forecast models,
-        Windy weather visualisation, professional weather APIs, and local environmental sensors.
-        Air quality is measured locally using an AirGradient monitoring device through the AirGradient community programme.
-      </p>
-
+      <p class="sources-text">Our data is aggregated from multiple trusted sources including Open-Meteo forecast models, Windy weather visualisation, professional weather APIs, and local environmental sensors. Air quality is measured locally using an AirGradient monitoring device.</p>
       <div class="sources-grid">
-        <div class="source-item">
-          <div class="source-icon" style="background:#fef9c3;">🌤️</div>
-          <div class="source-name">OpenWeatherMap</div>
-          <div class="source-desc">Global API &amp; current data</div>
-        </div>
-        <div class="source-item">
-          <div class="source-icon" style="background:#dcfce7;">🇮🇳</div>
-          <div class="source-name">IMD Kerala</div>
-          <div class="source-desc">Official alerts &amp; state forecasts</div>
-        </div>
-        <div class="source-item">
-          <div class="source-icon" style="background:#ffedd5;">🎯</div>
-          <div class="source-name">AccuWeather</div>
-          <div class="source-desc">Professional radar &amp; daily reports</div>
-        </div>
-        <div class="source-item">
-          <div class="source-icon" style="background:#dbeafe;">📈</div>
-          <div class="source-name">Open-Meteo</div>
-          <div class="source-desc">Open-source &amp; hourly models</div>
-        </div>
-        <div class="source-item">
-          <div class="source-icon" style="background:#cffafe;">🌬️</div>
-          <div class="source-name">Windy</div>
-          <div class="source-desc">Rain tracking &amp; wind models</div>
-        </div>
-        <div class="source-item">
-          <div class="source-icon" style="background:#ede9fe;">💜</div>
-          <div class="source-name">AirGradient</div>
-          <div class="source-desc">Local air quality sensor device</div>
-        </div>
+        <div class="source-item"><div class="source-icon" style="background:#fef9c3;">🌤️</div><div class="source-name">OpenWeatherMap</div><div class="source-desc">Global API &amp; current data</div></div>
+        <div class="source-item"><div class="source-icon" style="background:#dcfce7;">🇮🇳</div><div class="source-name">IMD Kerala</div><div class="source-desc">Official alerts &amp; forecasts</div></div>
+        <div class="source-item"><div class="source-icon" style="background:#ffedd5;">🎯</div><div class="source-name">AccuWeather</div><div class="source-desc">Radar &amp; daily reports</div></div>
+        <div class="source-item"><div class="source-icon" style="background:#dbeafe;">📈</div><div class="source-name">Open-Meteo</div><div class="source-desc">Open-source hourly models</div></div>
+        <div class="source-item"><div class="source-icon" style="background:#cffafe;">🌬️</div><div class="source-name">Windy</div><div class="source-desc">Rain tracking &amp; wind models</div></div>
+        <div class="source-item"><div class="source-icon" style="background:#ede9fe;">💜</div><div class="source-name">AirGradient</div><div class="source-desc">Local air quality sensor</div></div>
       </div>
-
       <div class="source-btns">
         <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
         <a href="https://www.accuweather.com/" target="_blank" rel="noopener" class="source-btn btn-orange">AccuWeather</a>
@@ -982,40 +828,26 @@
     </div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       SUPPORT THIS PROJECT
-  ══════════════════════════════════════ -->
+  <!-- SUPPORT -->
   <h2 class="sec-head" id="support-project">Support This Community Project</h2>
 
   <div class="support-shell">
     <div class="support-title">💚 Support ELWOIC</div>
-    <p class="support-desc">
-      This is a non-commercial community initiative created for public information.
-      Voluntary donations help cover basic expenses such as printing notices and website maintenance.
-    </p>
-    <p class="support-ml">
-      ഇത് ലാഭോദ്ദേശമില്ലാത്ത ഒരു സാമൂഹിക സംരംഭമാണ്.
-      അച്ചടി ചിലവുകൾക്കും വെബ്സൈറ്റ് പരിപാലനത്തിനും മാത്രം സഹായം ഉപയോഗിക്കുന്നു.
-    </p>
+    <p class="support-desc">This is a non-commercial community initiative. Voluntary donations help cover basic expenses such as printing notices and website maintenance.</p>
+    <p class="support-ml">ഇത് ലാഭോദ്ദേശമില്ലാത്ത ഒരു സാമൂഹിക സംരംഭമാണ്. അച്ചടി ചിലവുകൾക്കും വെബ്സൈറ്റ് പരിപാലനത്തിനും മാത്രം സഹായം ഉപയോഗിക്കുന്നു.</p>
     <div class="support-inner">
       <div class="support-qr">
         <img src="upi-qr.png" alt="UPI QR Code for voluntary donation">
-        <p class="support-qr-label">UPI — Voluntary donation only · 🔒 Secure via UPI</p>
-        <a href="upi://pay?pa=unnikrishnan9961667714@oksbi&pn=ELWOIC%20Weather%20Station&tn=Donation&cu=INR" class="upi-btn">
-          Donate via UPI
-        </a>
+        <p class="support-qr-label">UPI — Voluntary donation only · 🔒 Secure</p>
+        <a href="upi://pay?pa=unnikrishnan9961667714@oksbi&pn=ELWOIC%20Weather%20Station&tn=Donation&cu=INR" class="upi-btn">Donate via UPI</a>
         <p class="upi-apps">📱 Google Pay · PhonePe · Paytm · BHIM</p>
       </div>
       <div class="support-transparency">
         <h4>Transparency</h4>
         <p>View public details of fund collection and utilisation.</p>
         <p class="ml-note">ഫണ്ട് ശേഖരണവും വിനിയോഗവും സംബന്ധിച്ച വിവരങ്ങൾ</p>
-        <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/fund-collection-details/"
-           target="_blank" rel="noopener" class="transparency-link">
-          View fund collection &amp; utilisation details →
-        </a>
-        <p style="font-size:13px; color:#4d7c60; margin-top:14px; line-height:1.65;">
+        <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/fund-collection-details/" target="_blank" rel="noopener" class="transparency-link">View fund collection &amp; utilisation details →</a>
+        <p style="font-size:13px;color:#4d7c60;margin-top:12px;line-height:1.65;">
           Thank you for your support.<br>
           <span style="font-family:var(--font-ml);">നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി.</span>
         </p>
@@ -1023,10 +855,7 @@
     </div>
   </div>
 
-
-  <!-- ══════════════════════════════════════
-       CONTACT
-  ══════════════════════════════════════ -->
+  <!-- CONTACT -->
   <h2 class="sec-head">Feedback &amp; Contact</h2>
 
   <div class="contact-cta">
@@ -1036,19 +865,14 @@
 
 </div><!-- /wrap -->
 
-
-<!-- ══════════════════════════════════════
-     FOOTER — matches home.html style
-══════════════════════════════════════ -->
+<!-- FOOTER -->
 <footer class="site-footer">
   <div class="footer-inner">
-
     <div class="footer-brand">
       <img src="ELWOIC.png" alt="ELWOIC Logo">
       <h3>Elamkulam Local Weather Observation &amp; Information Centre</h3>
       <p>An independent community initiative providing real-time weather and environmental data for Elamkulam Panchayat, Kerala. Not an official government entity.</p>
     </div>
-
     <div class="footer-col">
       <h4>Legal &amp; Access</h4>
       <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0" target="_blank">Privacy Policy</a>
@@ -1056,21 +880,16 @@
       <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" target="_blank">Introduction &amp; Disclaimer</a>
       <a href="https://info.elwoic.in/" target="_blank">Data Request Portal</a>
     </div>
-
     <div class="footer-col">
       <h4>Contact</h4>
       <p>📍 Elamkulam, Malappuram, Kerala</p>
       <a href="contact.html">Send a Message</a>
       <a href="about.html#support-project">Support This Project</a>
     </div>
-
   </div>
-
   <div class="footer-community">
     <p>ഏലംകുളം സമൂഹത്തിന് — ഒരു സമർപ്പണം.</p>
-    
   </div>
-
   <div class="footer-bottom">
     <span>© 2025–2026 ELWOIC. All rights reserved. Independent community project for informational purposes.</span>
     <span>Designed &amp; managed by ELWOIC Team</span>
