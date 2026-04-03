@@ -654,6 +654,18 @@ Elamkulam, Malappuram, Kerala
         }
       }
 
+
+        const params = new URLSearchParams(window.location.search);
+  const initialPage = params.get("page") || "home.html";
+  frame.src = initialPage;
+
+  const match = document.querySelector(`#main-nav a[data-page="${initialPage}"]`);
+  if (match) {
+    setActive(match);
+    updateTicker(initialPage);
+    updatePageLabel(initialPage, match.getAttribute("data-label"));
+  }
+
       links.forEach(link => {
         link.addEventListener("click", e => {
           e.preventDefault();
