@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELWOIC — Information</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       TOKENS
+    ============================================================ */
+    :root {
+      --navy:       #0d3d6e;
+      --navy-mid:   #1a5490;
+      --navy-light: #e8f2fb;
+      --blue:       #2563eb;
+      --gold:       #c9a227;
+      --gold-dim:   #b08f1e;
+      --gold-pale:  #fdf6e3;
+      --white:      #ffffff;
+      --page-bg:    #f2f5f9;
+      --border:     #d5e2ef;
+      --text:       #1a2e3d;
+      --text-mid:   #4a6a84;
+      --text-muted: #7a9ab5;
+      --red:        #dc3545;
+      --shadow-sm:  0 1px 4px rgba(13,61,110,0.07);
+      --shadow:     0 2px 12px rgba(13,61,110,0.10);
+      --radius:     6px;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', 'Segoe UI', Arial, sans-serif;
+      --font-ml:    'Noto Sans Malayalam', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--page-bg);
+      color: var(--text);
+      font-size: 15px;
+      overflow-x: hidden;
+    }
+
+    /* Subtle watermark */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('Elamkulam Weather Logo Design.1.png');
+      background-repeat: space;
+      background-size: 120px 120px;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       PAGE SHELL — two-column on desktop
+    ============================================================ */
+    .page-shell {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      grid-template-rows: auto;
+      gap: 0 28px;
+      align-items: start;
+    }
+
+    /* Main content column */
+    .main-col { min-width: 0; }
+
+    /* Sidebar column */
+    .side-col {
+      position: sticky;
+      top: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .page-shell {
+        grid-template-columns: 1fr;
+      }
+      .side-col {
+        position: static;
+        order: -1; /* sidebar goes above content on mobile */
+      }
+    }
+
+    /* ============================================================
+       DOCUMENT HEADER — newspaper/gazette feel
+    ============================================================ */
+    .doc-header {
+      border-top: 4px solid var(--navy);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0 14px;
+      margin-bottom: 24px;
+    }
+
+    .doc-kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 8px;
+    }
+
+    .doc-title {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .doc-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta-item {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .doc-meta-sep {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    /* ============================================================
+       NOTICE BANNER — full width, above columns
+    ============================================================ */
+    .notice-banner {
+      grid-column: 1 / -1;
+      background: #fff5f5;
+      border: 1px solid #ffd6d6;
+      border-left: 4px solid var(--red);
+      border-radius: var(--radius);
+      padding: 13px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .notice-banner svg { width: 18px; height: 18px; fill: var(--red); flex-shrink: 0; margin-top: 1px; }
+    .notice-banner-text { flex: 1; }
+    .notice-banner-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+    .notice-banner ul { list-style: disc; margin-left: 18px; }
+    .notice-banner li { font-size: 13px; color: #7f1d1d; line-height: 1.6; margin-bottom: 3px; }
+    .notice-banner li a { color: var(--blue); font-weight: 600; }
+    .notice-banner li a:hover { text-decoration: underline; }
+    .notice-banner-footer { font-size: 11.5px; color: #9f1d1d; font-style: italic; margin-top: 6px; }
+
+    /* ============================================================
+       ARTICLE SECTIONS
+    ============================================================ */
+
+    /* Section rule heading — like a Wikipedia section */
+    .art-section {
+      margin-bottom: 32px;
+    }
+
+    .art-h2 {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .art-h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: var(--gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .art-h2-ml {
+      font-family: var(--font-ml);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .art-h2-ml::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: var(--gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .art-h3 {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 20px 0 8px;
+    }
+
+    .art-h3-ml {
+      font-family: var(--font-ml);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 22px 0 10px;
+      padding: 8px 14px;
+      background: var(--navy-light);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .art-p {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    /* ============================================================
+       ELWOIC IDENTITY BLOCK — hero inside article
+    ============================================================ */
+    .identity-block {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .identity-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('Screenshot 2025-11-16 154855.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .identity-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        rgba(13,61,110,0.88) 0%,
+        rgba(13,61,110,0.60) 60%,
+        rgba(13,61,110,0.40) 100%
+      );
+    }
+
+    .identity-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 28px 26px;
+      flex-wrap: wrap;
+    }
+
+    .identity-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+    }
+
+    .identity-text {}
+
+    .identity-name {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .identity-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 12px;
+    }
+
+    .identity-rule {
+      width: 40px;
+      height: 2px;
+      background: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .identity-facts {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .identity-fact {
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.68);
+    }
+
+    .identity-fact strong { color: rgba(255,255,255,0.9); }
+
+    @media (max-width: 500px) {
+      .identity-content { flex-direction: column; align-items: flex-start; }
+      .identity-name    { font-size: 22px; }
+    }
+
+    /* ============================================================
+       DATA TABLE — for quick facts in sidebar
+    ============================================================ */
+    .fact-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .fact-table tr { border-bottom: 1px solid var(--border); }
+    .fact-table tr:last-child { border-bottom: none; }
+    .fact-table td {
+      padding: 7px 8px;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .fact-table td:first-child {
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+      width: 40%;
+    }
+    .fact-table td:last-child { color: var(--text); }
+
+    /* ============================================================
+       SIDEBAR WIDGETS
+    ============================================================ */
+    .sidebar-widget {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .sidebar-widget-head {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 9px 14px;
+    }
+
+    .sidebar-widget-body {
+      padding: 14px;
+    }
+
+    /* TOC inside sidebar */
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      counter-reset: toc-counter;
+    }
+    .toc-list li {
+      counter-increment: toc-counter;
+      font-size: 12.5px;
+      color: var(--text-mid);
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      cursor: default;
+    }
+    .toc-list li:last-child { border-bottom: none; }
+    .toc-list li::before {
+      content: counter(toc-counter) ".";
+      color: var(--gold-dim);
+      font-weight: 700;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    /* Station card inside sidebar */
+    .station-card {
+      text-align: center;
+    }
+    .station-card img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin: 0 auto 10px;
+      display: block;
+    }
+    .station-card-name {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+    .station-card-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .station-card-rule {
+      width: 36px;
+      height: 2px;
+      background: var(--gold);
+      margin: 10px auto;
+    }
+
+    /* ============================================================
+       MALAYALAM INFO LISTS
+    ============================================================ */
+    .ml-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .ml-list li {
+      font-family: var(--font-ml);
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.8;
+      padding: 7px 0 7px 16px;
+      border-bottom: 1px solid #eef2f7;
+      position: relative;
+    }
+    .ml-list li:last-child { border-bottom: none; }
+    .ml-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+
+    /* Ml section accordion-like block */
+    .ml-block {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .ml-block-head {
+      font-family: var(--font-ml);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--navy);
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ml-block-body {
+      padding: 4px 16px 12px;
+    }
+
+    /* ============================================================
+       MAP
+    ============================================================ */
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 50%;
+      height: 0;
+      overflow: hidden;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .map-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+      display: block;
+    }
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      padding: 6px 13px;
+      background: var(--navy-light);
+      border-radius: 5px;
+      border: 1px solid #b8d4f0;
+      transition: background 0.15s;
+    }
+    .map-link:hover { background: #d0e6f5; }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 600px) {
+      .doc-title { font-size: 24px; }
+      .art-h2    { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Notify parent shell: highlight Information in nav -->
+<script>
+  if (window.parent !== window) {
+    window.parent.postMessage({ activePage: "information.html" }, "*");
+  }
+</script>
+
+<div class="page-shell">
+
+  <!-- ══════════════════════════════════════
+       NOTICE BANNER — spans full width
+  ══════════════════════════════════════ -->
+  <div class="notice-banner">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+  </svg>
+
+  <div class="notice-banner-text">
+    <div class="notice-banner-title">Important Notice</div>
+
+    <ul>
+      <li>This platform is <strong>not an official government or panchayat-operated service</strong>.</li>
+
+      <li>ELWOIC is an <strong>independently developed weather monitoring platform</strong> providing local weather information for Elamkulam.</li>
+
+      <li>For <strong>official weather warnings and alerts</strong>, please refer to the
+        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">
+          India Meteorological Department (IMD)
+        </a>.
+      </li>
+    </ul>
+
+    <p class="notice-banner-footer">
+      Users are advised to verify critical weather information with official sources.
+    </p>
+  </div>
+</div>
+
+
+
+  <!-- ══════════════════════════════════════
+       MAIN CONTENT COLUMN
+  ══════════════════════════════════════ -->
+  <main class="main-col">
+
+    <!-- Document header -->
+    <div class="doc-header">
+      <div class="doc-kicker">ELWOIC · Information &amp; Reference</div>
+      <h1 class="doc-title">Elamkulam Local Weather<br>Observation &amp; Information Centre</h1>
+      <div class="doc-meta">
+        <span class="doc-meta-item">📍 Elamkulam, Malappuram, Kerala</span>
+        <span class="doc-meta-sep"></span>
+        <span class="doc-meta-item">10.908°N, 76.229°E</span>
+        <span class="doc-meta-sep"></span>
+        <span class="doc-meta-item">Independent Weather Monitoring Platform</span>
+      </div>
+    </div>
+
+
+    <!-- ── SECTION 1: About ELWOIC ── -->
+    <div class="art-section">
+      <h2 class="art-h2">About ELWOIC</h2>
+
+      <!-- Identity hero block -->
+      <div class="identity-block">
+        <div class="identity-bg"></div>
+        <div class="identity-content">
+          <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo" class="identity-logo">
+          <div class="identity-text">
+            <div class="identity-name">ELWOIC</div>
+            <div class="identity-sub">Elamkulam Local Weather Observation &amp; Information Centre</div>
+            <div class="identity-rule"></div>
+            <div class="identity-facts">
+              <div class="identity-fact"><strong>Type:</strong> Independent Community Weather Station</div>
+              <div class="identity-fact"><strong>District:</strong> Malappuram, Kerala, India</div>
+              <div class="identity-fact"><strong>Coordinates:</strong> 10.908°N, 76.229°E</div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="art-p">
+        ELWOIC (Elamkulam Local Weather Observation &amp; Information Centre) is an independent,
+        real-time weather monitoring project which serves accurate and reliable weather details
+        for the Elamkulam community in Elamkulam, Malappuram, Kerala. It aims to serve farmers,
+        residents, and local institutions with accessible and timely weather data — empowering
+        the community to make informed decisions about daily activities, agriculture, and safety.
+      </p>
+    </div>
+
+
+    <!-- ── SECTION 2: Location ── -->
+    <div class="art-section">
+      <h2 class="art-h2">Location — Elamkulam Grama Panchayat</h2>
+
+      <a href="https://maps.app.goo.gl/udxAmcNN3R2cqoAW9"
+         target="_blank" rel="noopener" class="map-link">
+        📍 Open in Google Maps ↗
+      </a>
+
+      <div class="map-wrap">
+        <iframe
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d11977.552199844687!2d76.230971!3d10.910373!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDU0JzMzLjYiTiA3NsKwMTMnNDkuOSJF!5e1!3m2!1sen!2sus!4v1764158004224!5m2!1sen!2sus">
+        </iframe>
+      </div>
+    </div>
+
+
+    <!-- ── SECTION 3: Panchayat Info (Malayalam) ── -->
+    <div class="art-section">
+      <h2 class="art-h2-ml">വിവരങ്ങൾ — ഏലംകുളം പഞ്ചായത്ത്</h2>
+
+      <div class="ml-block">
+        <div class="ml-block-head">📍 സ്ഥാനം &amp; ഭരണ സംവിധാനം</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>ഏലംകുളം, പെരിന്തൽമണ്ണ താലൂക്കിൽപ്പെടുന്ന ഒരു ഗ്രാമപഞ്ചായത്താണ് (പിൻകോഡ്: 679340).</li>
+            <li>പെരിന്തൽമണ്ണയിൽ നിന്നും 10 കി.മീ അകലെയും, മലപ്പുറം ജില്ലയിൽ നിന്നും 30 കി.മീ അകലെയുമാണ് സ്ഥിതി.</li>
+            <li>ഭൗമനിരീക്ഷണ അക്ഷാംശ രേഖാംശങ്ങൾ: 10.908°N, 76.229°E.</li>
+            <li>സംസ്ഥാന ഹൈവേ വഴിയും ഗ്രാമീണ റോഡുകളിലൂടെ സമീപ പട്ടണങ്ങളുമായി മികച്ച ഗതാഗത സൗകര്യം.</li>
+            <li>വിദ്യാഭ്യാസ സ്ഥാപനങ്ങൾ, മാർക്കറ്റുകൾ, സർക്കാർ ഓഫീസുകൾ എന്നിവിടങ്ങളിലേക്കുള്ള സുലഭമായ പ്രവേശനം.</li>
+            <li>പഞ്ചായത്ത് പരിധിയിൽ നിരവധി ക്ഷേത്രങ്ങൾ, മസ്ജിദുകൾ, കമ്മ്യൂണിറ്റി സെന്ററുകൾ പ്രവർത്തിക്കുന്നു.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">📏 വിസ്തീർണം &amp; ഭൂമി വിനിയോഗം</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>ആകെ വിസ്തീർണം: 2,134 ഹെക്ടർ (21.34 ച.കി.മീ).</li>
+            <li>കൃഷിയോഗ്യ ഭൂമി: 2,064.1 ഹെക്ടർ (96.7%).</li>
+            <li>ജലസേചന സൗകര്യമുള്ള കൃഷിഭൂമി: 575.1 ഹെക്ടർ (27.9%).</li>
+            <li>കൃഷിയോഗ്യമല്ലാത്ത ഭൂമി: 69.9 ഹെക്ടർ (3.3%).</li>
+            <li>നെല്ല്, തെങ്ങ്, കോടമ്പുഴി, കുരുമുളക്, ഏലക്ക എന്നിവയ്ക്ക് അനുയോജ്യമായ സമൃദ്ധമായ മണ്ണ്.</li>
+            <li>ചെറുകുളങ്ങളും തോടുകളും കാർഷിക ജലസേചനത്തിന് സഹായിക്കുന്നു.</li>
+            <li>മിതമായ വനഭൂമിയും പച്ചപ്പും ജൈവവൈവിധ്യം വർദ്ധിപ്പിക്കുന്നു.</li>
+            <li>ജലസേചന പദ്ധതികളും കൃഷി പുനരുദ്ധാരണ പദ്ധതികളും പ്രവർത്തിച്ചുകൊണ്ടിരിക്കുന്നു.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">🧑‍🤝‍🧑 ജനസംഖ്യാ വിവരം (2011 സെൻസസ്)</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>മൊത്തം ജനസംഖ്യ: ഏകദേശം 26,456 പേർ.</li>
+            <li>ആകെ വീടുകൾ: ഏകദേശം 5,330.</li>
+            <li>സാക്ഷരത നിരക്ക്: 94.65% (ആൺ: 96% | പെൺ: 93.48%).</li>
+            <li>ജനസാന്ദ്രത: ഏകദേശം 1,240 പേർ / ച.കി.മീ.</li>
+            <li>മലയാളം ആണ് പ്രധാന ഭാഷ.</li>
+            <li>യുവജനങ്ങളുടെ അനുപാതം കൂടുതലാണ്.</li>
+            <li>പുരുഷ-സ്ത്രീ അനുപാതം സമതുലിതം.</li>
+            <li>വിദേശ തൊഴിൽ (Gulf/Migration) ഉള്ള കുടുംബങ്ങളുടെ എണ്ണം കൂടുതലാണ്.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">🏛️ ഭരണ ഘടന</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>പഞ്ചായത്തില്‍ 16 വാർഡുകൾ.</li>
+            <li>ഓരോ വാർഡിലും ശരാശരി ഏകദേശം 332 വീടുകൾ ഉണ്ട്.</li>
+            <li>സന്നദ്ധ പങ്കാളിത്തം ശക്തമായ ജനാധിപത്യ ഭരണ സംവിധാനം.</li>
+            <li>ഭവന പദ്ധതികൾ, കുളശുചീകരണം, ജലവിതരണം, റോഡ് വികസനം എന്നിവയിൽ സജീവ പ്രവർത്തനം.</li>
+            <li>ഇ-ഗവണൻസ് സംവിധാനങ്ങളിലൂടെ ജനങ്ങൾക്ക് സേവനങ്ങൾ വേഗത്തിൽ ലഭ്യമാക്കുന്നു.</li>
+            <li>ആശ്രയ പദ്ധതി, MNREGA, കൃഷി പദ്ധതികൾ, ക്ഷേമപദ്ധതികൾ എന്നിവ ഫലപ്രദമായി നടപ്പിലാക്കുന്നു.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">🌦️ കാലാവസ്ഥ &amp; ഭൂപ്രകൃതി</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>ഉഷ്ണമേഖലാ മൺസൂൺ കാലാവസ്ഥ.</li>
+            <li>വാർഷിക മഴ: 2,500 – 3,000 മില്ലിമീറ്റർ.</li>
+            <li>സാധാരണ താപനില പരിധി: 22°C – 35°C.</li>
+            <li>ദക്ഷിണ-പശ്ചിമ മൺസൂൺ: ജൂൺ മുതൽ സെപ്റ്റംബർ വരെ.</li>
+            <li>ആർദ്രത (Humidity) കൂടുതലുള്ള കാലാവസ്ഥ.</li>
+            <li>അലുവിയം &amp; ലാറ്ററൈറ്റ് മണ്ണ് കൃഷിക്ക് അനുയോജ്യം.</li>
+            <li>ചെറുകുന്നുകൾ, വയലുകൾ, ജലാശയങ്ങൾ എന്നിവയാൽ ചുറ്റപ്പെട്ട ഭൂപ്രകൃതി.</li>
+            <li>കടുത്ത മഴക്കാലത്ത് ചില പ്രദേശങ്ങളിൽ ലഘുവായ വെള്ളപ്പൊക്കം അനുഭവപ്പെടാം.</li>
+            <li>കാലാവസ്ഥ മുന്നറിയിപ്പ് ELWOIC മുഖേന ശക്തമാക്കുന്നു.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">💰 സാമ്പത്തിക പ്രവർത്തനങ്ങൾ</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>ആന്തരിക സമ്പദ്‌വ്യവസ്ഥ പ്രധാനമായും കൃഷിയെ ആശ്രയിക്കുന്നു.</li>
+            <li>പ്രധാന വിളകൾ: നെല്ല്, തെങ്ങ്, കായപ്പഴം, കോടമ്പുഴി, കുരുമുളക്, ഏലക്ക.</li>
+            <li>ചെറുകിട വ്യവസായങ്ങൾ, വ്യാപാരം, സർവീസ് മേഖലകൾ ഉൾപ്പെടുന്നു.</li>
+            <li>വിദേശ തൊഴിൽ (Gulf countries) വഴി വരുമാന സഹായം ലഭിക്കുന്ന കുടുംബങ്ങൾ കൂടുതലാണ്.</li>
+            <li>കാർഷിക സഹകരണ സംഘങ്ങൾ (Co-operatives) സജീവമായി പ്രവർത്തിക്കുന്നു.</li>
+            <li>പ്രകൃതിഭംഗിയും സാംസ്കാരിക പൈതൃകവും അടിസ്ഥാനമാക്കി ടൂറിസത്തിന് വളർച്ചാ സാധ്യത.</li>
+            <li>പാൽ ഉത്പാദനം, പശുപാലനം, പച്ചക്കറി കൃഷി എന്നിവയിൽ വളർച്ച.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ml-block">
+        <div class="ml-block-head">➕ അധിക വിവരങ്ങൾ</div>
+        <div class="ml-block-body">
+          <ul class="ml-list">
+            <li>മത-സാംസ്കാരിക ആഘോഷങ്ങൾ, ഓണം, മേളകൾ, കൊലങ്ങൾ ഗ്രാമത്തിന്റെ പ്രത്യേകത.</li>
+            <li>കഥകളി, തീയം, വടംവലി പോലുള്ള പരമ്പരാഗത കലാരൂപങ്ങൾ.</li>
+            <li>വിദ്യാഭ്യാസ സൗകര്യങ്ങൾ: LP, UP, HS, HSS, അങ്കണവാടി, ട്യൂഷൻ സെന്ററുകൾ.</li>
+            <li>ആരോഗ്യ സേവനങ്ങൾ: പ്രാഥമികാരോഗ്യ കേന്ദ്രം, സ്വകാര്യ ക്ലിനിക്കുകൾ, സമീപത്തെ വലിയ ആശുപത്രികൾ.</li>
+            <li>ജലവിതരണം, വൈദ്യുതി, ഇന്റർനെറ്റ്, റോഡ് സൗകര്യം ക്രമേണ മെച്ചപ്പെടുന്നു.</li>
+            <li>ബസ് സേവനങ്ങൾ &amp; അടുത്ത റെയിൽ‌വേ സ്റ്റേഷൻ വഴി ഗതാഗത സൗകര്യം.</li>
+            <li>ELWOIC കാർഷികവും ദിനചര്യയും ലക്ഷ്യമാക്കി നിർണായക കാലാവസ്ഥാ വിവരങ്ങൾ നൽകുന്നു.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /art-section -->
+
+  </main><!-- /main-col -->
+
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="side-col">
+
+    <!-- Station identity card -->
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-head">Station Profile</div>
+      <div class="sidebar-widget-body">
+        <div class="station-card">
+          <img src="Elamkulam Weather Logo Design.1.png" alt="ELWOIC Logo">
+          <div class="station-card-name">ELWOIC</div>
+          <div class="station-card-rule"></div>
+          <div class="station-card-sub">Elamkulam Local Weather Observation &amp; Information Centre</div>
+        </div>
+        <table class="fact-table" style="margin-top:14px;">
+          <tr><td>Type</td><td>Independent Weather Station</td></tr>
+          <tr><td>Status</td><td>Active</td></tr>
+          <tr><td>Location</td><td>Elamkulam, Malappuram, Kerala</td></tr>
+          <tr><td>Lat / Lon</td><td>10.908°N, 76.229°E</td></tr>
+          
+          <tr><td>Nature</td><td>Independent, Non-commercial</td></tr>
+          <tr><td>Data</td><td>Real-time, community-focused</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table of contents -->
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-head">Contents</div>
+      <div class="sidebar-widget-body">
+        <ol class="toc-list">
+          <li>ELWOIC</li>
+          <li>Location — Elamkulam</li>
+          <li>സ്ഥാനം &amp; ഭരണ സംവിധാനം</li>
+          <li>വിസ്തീർണം &amp; ഭൂമി വിനിയോഗം</li>
+          <li>ജനസംഖ്യാ വിവരം</li>
+          <li>ഭരണ ഘടന</li>
+          <li>കാലാവസ്ഥ &amp; ഭൂപ്രകൃതി</li>
+          <li>സാമ്പത്തിക പ്രവർത്തനങ്ങൾ</li>
+          <li>അധിക വിവരങ്ങൾ</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Quick facts -->
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-head">Panchayat Quick Facts</div>
+      <div class="sidebar-widget-body">
+        <table class="fact-table">
+          <tr><td>Pin Code</td><td>679340</td></tr>
+          <tr><td>Taluk</td><td>Perinthalmanna</td></tr>
+          <tr><td>District</td><td>Malappuram</td></tr>
+          <tr><td>Area</td><td>21.34 km²</td></tr>
+          <tr><td>Population</td><td>~26,456</td></tr>
+          <tr><td>Households</td><td>~5,330</td></tr>
+          <tr><td>Literacy</td><td>94.65%</td></tr>
+          <tr><td>Wards</td><td>16</td></tr>
+          <tr><td>Annual Rain</td><td>2,500–3,000 mm</td></tr>
+          <tr><td>Temp Range</td><td>22°C – 35°C</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- IMD link -->
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-head">Official Resources</div>
+      <div class="sidebar-widget-body" style="display:flex;flex-direction:column;gap:8px;">
+        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener"
+           style="font-size:12.5px;color:var(--blue);text-decoration:none;font-weight:600;
+                  display:flex;align-items:center;gap:6px;padding:7px 10px;
+                  background:var(--navy-light);border-radius:5px;border:1px solid #b8d4f0;">
+          🌐 IMD Kerala — Official Site ↗
+        </a>
+        <a href="https://info.elwoic.in/" target="_blank" rel="noopener"
+           style="font-size:12.5px;color:var(--blue);text-decoration:none;font-weight:600;
+                  display:flex;align-items:center;gap:6px;padding:7px 10px;
+                  background:var(--navy-light);border-radius:5px;border:1px solid #b8d4f0;">
+          📊 ELWOIC Data Request Portal ↗
+        </a>
+      </div>
+    </div>
+
+  </aside><!-- /side-col -->
+
+</div><!-- /page-shell -->
+
+</body>
+</html>
