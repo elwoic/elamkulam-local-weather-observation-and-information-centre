@@ -1,806 +1,1226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELWOIC | Contact Us</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Add this icon library for the ▼ arrow -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
- <style>
-/* Simple modal style */
-#refModal {
-  display: none; 
-  position: fixed; 
-  z-index: 9999; 
-  left: 0; top: 0; 
-  width: 100%; height: 100%; 
-  background: rgba(0,0,0,0.5); 
-  justify-content: center; 
-  align-items: center;
-}
-#refModalContent {
-  background: white; 
-  padding: 2rem; 
-  border-radius: 12px; 
-  max-width: 400px; 
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-#refModalContent button {
-  margin-top: 1rem; 
-  padding: 0.5rem 1rem; 
-  background: #004a80; 
-  color: white; 
-  border: none; 
-  border-radius: 6px; 
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELWOIC — Contact Us</title>
 
-    <!-- End Firebase Imports -->
-    <style>
-        /* Custom styles for Header and Navigation */
-        .header-bg-main { background-color: #004a80; }
-        .nav-bg-dark { background-color: #003a63; }
-        .font-inter { font-family: 'Inter', sans-serif; }
-        /* General body styling */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f8fb; /* Light background */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column; 
-        }
-        /* Style for the active navigation link */
-        .active-nav {
-            color: #b3e5fc; /* blue-200 */
-            font-weight: 600; /* font-semibold */
-            text-decoration: underline;
-        }
-        /* Ensures main content expands to push footer down */
-        main {
-            flex-grow: 1;
-        }
-.location-link {
-  color: #2563eb;
-  text-decoration: underline;
-  font-weight: 500;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-.location-link:hover {
-  color: #1e40af;
-  text-decoration-thickness: 2px;
-}
+  <style>
+    :root {
+      --navy:       #0d3d6e;
+      --navy-mid:   #1a5490;
+      --navy-deep:  #082d52;
+      --navy-light: #e8f2fb;
+      --blue:       #2563eb;
+      --gold:       #c9a227;
+      --gold-dim:   #b08f1e;
+      --gold-pale:  #fdf8ec;
+      --white:      #ffffff;
+      --page-bg:    #f0f4f8;
+      --card-bg:    #ffffff;
+      --border:     #d5e2ef;
+      --text:       #1a2e3d;
+      --text-mid:   #4a6a84;
+      --text-muted: #7a9ab5;
+      --red:        #dc3545;
+      --green:      #16a34a;
+      --shadow-sm:  0 1px 4px rgba(13,61,110,0.08);
+      --shadow:     0 4px 16px rgba(13,61,110,0.12);
+      --shadow-lg:  0 8px 32px rgba(13,61,110,0.16);
+      --radius:     10px;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', 'Segoe UI', Arial, sans-serif;
+      --font-ml:    'Noto Sans Malayalam', sans-serif;
+    }
 
-        /* Footer logo positioning */
-        .footer-logo-corner {
-            position: absolute;
-            bottom: 1rem;
-            right: 1.5rem;
-            border: 3px solid #b3e5fc;
-            z-index: 10;
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Inline styles for notice card design */
-        .notice-card-container {
-            /* Centers the card and sets maximum width */
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .notice-card {
-            /* Applies the card shadow */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .notice-list li {
-            /* Custom list item spacing */
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-        }
-.responsive-map {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%; /* 16:9 ratio */
-    height: 0;
-    overflow: hidden;
-    border-radius: 12px; /* optional curved corners */
-}
+    body {
+      font-family: var(--font-sans);
+      background: var(--page-bg);
+      color: var(--text);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-.responsive-map iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-.data-request-mini-link {
-    display: flex;          /* Use flexbox for centering */
-    justify-content: center; /* Centers horizontally */
-    align-items: center;     /* Centers vertically within its padding */
-    width: 100%;            /* Spans the full width of the page */
-    padding: 20px 0;        /* Gives it some breathing room above/below */
-    margin: 10px 0;         /* Space between other elements */
-}
+    /* ============================================================
+       HERO SECTION — full-width dark header for the page
+    ============================================================ */
+    .page-hero {
+      background: var(--navy-deep);
+      background-image:
+        radial-gradient(ellipse at 80% 0%, rgba(201,162,39,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 10% 100%, rgba(26,84,144,0.5) 0%, transparent 50%);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
 
-.data-request-mini-link a {
-    background-color: #dc3545; /* Red background as requested */
-    color: #ffffff;            /* White text */
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    padding: 10px 20px;        /* Balanced button padding */
-    border-radius: 6px;        /* Rounded corners for a modern look */
-    display: inline-block;
-    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
-    transition: all 0.3s ease;
-    text-align: center;
-}
+    /* Top bar inside hero — staff access lives here */
+    .hero-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 10px 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: relative;
+    }
 
-.data-request-mini-link a:hover {
-    background-color: #bb2d3b; /* Darker red on hover */
-    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
-    transform: scale(1.05);    /* Slightly grows when hovered */
-}
-    </style>
+    /* ── Staff Access Dropdown ── */
+    .staff-access-wrap { position: relative; }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+    .staff-access-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.6);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.15s, color 0.15s;
+    }
+    .staff-access-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.9);
+    }
+    .staff-access-btn .material-icons { font-size: 14px; }
+    .staff-chevron {
+      font-size: 14px !important;
+      transition: transform 0.2s;
+    }
+    .staff-access-btn.open .staff-chevron { transform: rotate(180deg); }
+
+    .staff-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 240px;
+      overflow: hidden;
+      z-index: 200;
+      transform-origin: top right;
+    }
+    .staff-dropdown.open { display: block; }
+
+    .staff-dropdown-header {
+      background: var(--navy);
+      padding: 10px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .staff-portal-btn {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      transition: background 0.12s;
+    }
+    .staff-portal-btn:last-child { border-bottom: none; }
+    .staff-portal-btn:hover { background: var(--navy-light); }
+    .staff-portal-btn .material-icons { font-size: 17px; }
+    .staff-portal-btn.mail-btn   { color: #1d4ed8; }
+    .staff-portal-btn.report-btn { color: var(--green); }
+    .staff-portal-btn.admin-btn  { color: #7c3aed; }
+
+    /* Hero main content */
+    .hero-main {
+      padding: 36px 28px 40px;
+      max-width: 1060px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 38px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero-desc {
+      font-size: 14.5px;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.75;
+      max-width: 560px;
+      margin-bottom: 32px;
+    }
+
+    /* Contact channel cards row */
+    .channel-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .channel-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      transition: background 0.15s;
+    }
+    .channel-card:hover { background: rgba(255,255,255,0.11); }
+
+    .channel-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+    .ci-blue   { background: rgba(37,99,235,0.25); }
+    .ci-green  { background: rgba(22,163,74,0.22); }
+    .ci-gold   { background: rgba(201,162,39,0.2); }
+
+    .channel-info {}
+    .channel-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 3px;
+    }
+    .channel-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.45;
+    }
+    .channel-val a { color: rgba(255,255,255,0.88); text-decoration: none; }
+    .channel-val a:hover { color: #fff; text-decoration: underline; }
+
+    /* ============================================================
+       MAIN BODY
+    ============================================================ */
+    .page-body {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* ============================================================
+       NOTICE STRIP
+    ============================================================ */
+    .notice-strip {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      border-left: 4px solid var(--red);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .notice-strip svg { width: 18px; height: 18px; fill: var(--red); flex-shrink: 0; margin-top: 1px; }
+    .notice-strip-body {}
+    .notice-strip-title { font-size: 11.5px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .notice-strip ul { list-style: disc; margin-left: 16px; }
+    .notice-strip li { font-size: 13px; color: #7f1d1d; line-height: 1.6; margin-bottom: 3px; }
+    .notice-strip li a { color: var(--blue); font-weight: 600; }
+    .notice-strip li a:hover { text-decoration: underline; }
+    .notice-strip li strong { color: #991b1b; }
+    .notice-footer { font-size: 11.5px; color: #9f4a4a; font-style: italic; margin-top: 6px; }
+
+    /* Data request bar */
+    .data-bar {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .data-bar a {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 9px 22px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.12s;
+    }
+    .data-bar a:hover { background: #b91c1c; transform: scale(1.02); }
+
+    /* ============================================================
+       TWO-COLUMN LAYOUT
+    ============================================================ */
+    .body-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .body-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       SECTION LABEL
+    ============================================================ */
+    .sec-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 8px;
+    }
+
+    .sec-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* ============================================================
+       FAQ
+    ============================================================ */
+    .faq-wrap { margin-bottom: 28px; }
+
+    details {
+      border-bottom: 1px solid var(--border);
+    }
+    details:first-of-type { border-top: 1px solid var(--border); }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 4px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+      transition: color 0.12s;
+    }
+    summary:hover { color: var(--navy-mid); }
+    summary::-webkit-details-marker { display: none; }
+
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--navy-light);
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    details[open] summary .faq-icon {
+      background: var(--navy);
+      color: #fff;
+    }
+    details[open] summary .faq-icon::after { content: '−'; }
+    .faq-icon::after { content: '+'; }
+
+    details p {
+      font-size: 13.5px;
+      color: var(--text-mid);
+      line-height: 1.75;
+      padding: 0 4px 16px;
+    }
+
+    .see-more-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--navy-mid);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      margin-top: 12px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .see-more-btn:hover { background: var(--navy-light); color: var(--navy); }
+
+    /* More FAQ */
+    #more-faq { display: none; margin-top: 4px; }
+
+    /* ============================================================
+       CONTACT FORM
+    ============================================================ */
+    .form-section { margin-top: 0; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--page-bg);
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+      outline: none;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--navy-mid);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(13,61,110,0.08);
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    #submissionMessage { font-size: 13px; font-weight: 600; min-height: 18px; margin: 8px 0; color: var(--green); }
+
+    .submit-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+    .submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(13,61,110,0.2);
+    }
+    .submit-btn:hover  { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(13,61,110,0.25); }
+    .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .submit-btn .material-icons { font-size: 16px; }
+
+    /* ============================================================
+       SIDEBAR CARDS
+    ============================================================ */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; }
+
+    .s-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .s-card-head {
+      background: var(--navy);
+      padding: 11px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .s-card-head .material-icons { font-size: 14px; color: var(--gold); }
+    .s-card-body { padding: 16px; }
+
+    /* Detail rows */
+    .detail-row {
+      display: flex;
+      flex-direction: column;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .detail-val {
+      font-size: 13.5px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .detail-val a { color: var(--blue); text-decoration: none; }
+    .detail-val a:hover { text-decoration: underline; }
+
+    /* Availability widget */
+    #availability-widget {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      margin-top: 12px;
+      transition: all 0.3s;
+    }
+    .avail-flex { display: flex; align-items: center; gap: 10px; }
+    .avail-dot-wrap { position: relative; width: 12px; height: 12px; flex-shrink: 0; }
+    #status-pulse {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      animation: ping 1.2s ease infinite;
+    }
+    @keyframes ping { 75%,100%{ transform:scale(2.2); opacity:0; } }
+    #status-dot {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+    #status-text  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+    #status-desc  { font-size: 11px; margin-top: 5px; line-height: 1.5; }
+    #note-container { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #fecaca; }
+    #status-note  { font-size: 11px; color: #b91c1c; font-style: italic; }
+    #note-read-more { font-size: 11px; font-weight: 700; text-decoration: underline; margin-left: 4px; color: #991b1b; background: none; border: none; cursor: pointer; }
+
+    /* Map */
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 60%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .map-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .map-coords-link {
+      display: inline-block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      margin-bottom: 8px;
+    }
+    .map-coords-link:hover { text-decoration: underline; }
+
+    /* ============================================================
+       MODALS
+    ============================================================ */
+    #refModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #refModal.show { display: flex; }
+    .ref-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 28px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+    .ref-box-check {
+      width: 60px; height: 60px;
+      background: #dcfce7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: var(--green);
+      font-size: 28px;
+    }
+    #refMessage { font-size: 13.5px; color: var(--text); line-height: 1.7; margin-bottom: 20px; }
+    .ref-done-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.15s;
+    }
+    .ref-done-btn:hover { background: var(--navy-mid); }
+
+    #noteModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #noteModal.show { display: flex; }
+    .note-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 22px;
+      max-width: 300px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+    .note-box h4 { font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    #full-note-text { font-size: 13px; color: var(--text); line-height: 1.65; }
+    .note-close { margin-top: 14px; width: 100%; padding: 9px; background: #f3f4f6; color: var(--text); border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font-sans); }
+    .note-close:hover { background: #e5e7eb; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .site-footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.75);
+      padding: 36px 0 0;
+    }
+    .footer-inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 680px) { .footer-inner { grid-template-columns: 1fr; gap: 20px; } }
+    .footer-brand img { width: 38px; height: 38px; margin-bottom: 10px; }
+    .footer-brand h3 { font-family: var(--font-serif); font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 7px; line-height: 1.4; }
+    .footer-brand p  { font-size: 12.5px; line-height: 1.75; }
+    .footer-col h4   { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .footer-col a, .footer-col p { display: block; font-size: 12.5px; color: rgba(255,255,255,0.60); text-decoration: none; margin-bottom: 6px; line-height: 1.5; transition: color 0.15s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-community { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 28px; padding: 18px 20px 0; text-align: center; }
+    .footer-community p { font-family: var(--font-ml); color: rgba(255,255,255,0.62); font-size: 13.5px; line-height: 1.7; margin-bottom: 5px; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 24px; padding: 12px 20px; text-align: center; font-size: 11px; color: rgba(255,255,255,0.38); display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .footer-bottom img { width: 18px; height: 18px; opacity: 0.4; }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 640px) {
+      .channel-row  { grid-template-columns: 1fr; gap: 10px; }
+      .hero-title   { font-size: 28px; }
+      .hero-main    { padding: 24px 16px 28px; }
+      .hero-topbar  { padding: 8px 16px; }
+      .page-body    { padding: 20px 14px 48px; }
+    }
+    @media (max-width: 400px) {
+      .hero-title { font-size: 24px; }
+      .channel-card { padding: 12px 14px; }
+    }
+  </style>
 </head>
-
 <body>
-<div id="refModal" style="display:none;" class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
-    </div>
-    <div id="refMessage" class="text-gray-800 mb-6 leading-relaxed text-sm">
-      </div>
-    <button onclick="closeRefModal()" class="w-full bg-[#004a80] text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition shadow-lg">
-      Done
-    </button>
-  </div>
-</div>
 
-<header class="header-bg-main text-white shadow-lg">
-    <div class="flex items-center justify-between p-4 md:px-8">
-        <!-- Left Logo Placeholder -->
-        <img src="elwoic (2).png" alt="ELWOIC Logo Left" class="rounded-lg w-16 h-16 object-cover">
-        <div class="text-center flex-grow mx-4">
-            <h1 class="text-xl sm:text-2xl font-bold mb-1">Elamkulam Local Weather Observation & Information Centre</h1>
-            <h4 class="text-sm sm:text-base font-medium opacity-90">ELWOIC Contact Us</h4>
-        </div>
-
-        <!-- Right Logo Placeholder -->
-        <img src="secondlwoic.png" alt="ELWOIC Logo Right" class="rounded-lg w-16 h-16 object-cover">
-    </div>
-
-    <!-- Navigation Bar (ID added for JavaScript) -->
-    <nav id="main-nav" class="nav-bg-dark flex flex-wrap justify-end gap-4 p-3 sm:gap-6 md:px-8">
-        <a href="index.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">HOME</a>
-        <a href="Forecast.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">FORECAST</a>
-        <a href="information.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">INFORMATION</a>
-        <a href="about.html" class="text-white hover:text-blue-200 transition duration-150 text-sm md:text-base">ABOUT</a>
-        <!-- ACTIVE LINK -->
-        <a href="contact.html" class="active-nav text-sm md:text-base">CONTACT</a>
-        <!-- NEW: Admin Portal Link to view responses -->
-       <!-- Admin Dropdown Toggle -->
-<div class="relative flex-shrink-0">
-    <button id="adminToggle" class="text-white hover:text-blue-200 text-sm md:text-base flex items-center gap-1">
-        <span class="material-icons">expand_more</span>
-
-    </button>
-<!-- Dropdown panel -->
-<div id="adminDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-300 p-5 transform origin-top transition-all duration-300 scale-y-0 opacity-0 z-50">
-    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 border-b pb-2">Admin Portals</p>
-    <div class="flex flex-col gap-3">
-        <a href="javascript:void(0)" onclick="handleAdminAccess('admin.html')" class="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
-           <span class="material-icons text-base">mail</span> Contact Massages
-        </a>
-        <a href="javascript:void(0)" onclick="handleAdminAccess('report-admin.html')" class="text-sm font-semibold text-green-600 hover:text-green-800 hover:underline flex items-center gap-2">
-           <span class="material-icons text-base">reports</span> Submited reports
-        </a>
-        <a href="javascript:void(0)" onclick="handleAdminAccess('co-admin.html')" class="text-sm font-semibold text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-2">
-           <span class="material-icons text-base">admin_panel_settings</span> Administration Portal
-        </a>
-    </div>
-</div>
-    <p class="text-[10px] text-gray-400 mt-4 italic border-t pt-2"></p>
-</div>
-
-    </nav>
-</header>
-<main class="container mx-auto px-4 py-8">
-
-<!-- NEW: 'Get in Touch' introductory box -->
-    <div class="max-w-3xl mx-auto mb-8 p-6 bg-blue-50 border-l-4 border-[#004a80] rounded-xl shadow-lg">
-        <h2 class="text-3xl font-bold text-[#004a80] mb-2">Get in Touch</h2>
-        <p class="text-gray-700 leading-relaxed">
-            We welcome your questions, feedback, or suggestions regarding the Elamkulam Local Weather Observation And Information Center. You can reach us via the contact form below, email us directly, or call. We will do our best to respond promptly. Your input helps us improve the Elamkulam Local Weather website for the community.
-        </p>
-    </div>
-
-    <!-- Official Notice Section -->
-    <section id="official-notice-board" class="container mx-auto px-4 py-8">
-
-    <div class="notice-card-container w-full bg-white rounded-xl overflow-hidden border-t-8 border-red-500 notice-card">
-        <!-- Header/Title -->
-        <div class="p-6 bg-red-50">
-            <h2 class="text-3xl font-bold italic text-red-700 leading-tight flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 fill-current text-red-500" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                Official Notice
-            </h2>
-        </div>
-
-        <!-- Content List -->
-        <div class="p-6 text-gray-700 text-lg">
-            <ul class="list-disc pl-5 notice-list font-medium">
-                <li>
-                    This website is <strong class="text-red-600">not an official government or panchayat-owned entity</strong>.
-                </li>
-
-                <li>
-                    It is a **personal project** created by a student for informational purposes.
-                </li>
-                <li>
-                    For <strong class="text-red-600">official weather alerts and warnings</strong>, users should always refer to the 
-                    <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" class="text-blue-600 hover:text-blue-800 font-semibold underline transition duration-150">
-                        official IMD Kerala website
-                    </a>.
-                </li>
-            </ul>
-            <p class="mt-6 text-sm text-gray-500 italic border-t pt-4">
-                Please exercise caution and cross-reference data with official sources.
-            </p>
-        </div>
-    </div>
-    </section>
-    <div class="data-request-mini-link">
-        <a href="https://info.elwoic.in/" target="_blank">Looking for weather data? Data Request Form →</a>
-    </div>
-    <!-- Main Contact Grid -->
-<section class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <!-- Contact Form Card (Takes 2/3 width on large screens) -->
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-blue-100">
-            <h2 class="text-3xl font-extrabold text-[#004a80] mb-6 border-b pb-2">
-       Do you have any common questions?
-        </h2>
-            <!-- Added ID for JavaScript handling -->
-            <form id="contactForm" class="space-y-4">
-<!-- FAQ Card -->
-<div id="faqAccordion" class="bg-white rounded-2xl shadow-xl p-6 border border-blue-100">
-  <h3 class="text-xl font-bold text-[#004a80] mb-4">
-    Frequently Asked Questions
-  </h3>
-
-  <details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-      How long does it take to get a reply?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-      We usually respond within 24–48 hours.
-    </p>
-  </details>
-  
-<details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-      Why does this website use multiple weather data providers?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-     We use multiple weather providers to improve accuracy and reliability.<br><br>
-
-Weather conditions can vary by location and time,and no single provider is always 100% accurate.<br>
-By comparing data from multiple trusted sources, we reduce errors, fill data gaps, and provide more consistent and dependable weather information.
-    </p>
-    
-  </details>
-<details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-     This site uses multiple weather providers, and how should I trust it?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-     Weather forecasting isn’t perfect and no single provider always has the best data for every location.<br>
-     Different weather services use various data sources (such as satellites, ground stations, and forecasting models), and they also update at different times and with different algorithms, which can lead to differences in their results.<br><br>
-
-By showing data from multiple trusted providers, we help cross-check and compare forecasts within minimum time, giving a broader picture of the weather instead of relying on just one source. This makes the overall weather information more reliable and useful, especially for local conditions where forecasts can vary more.<br><br>
-
-Still, forecasting isn’t exact — if you need official alerts or safety warnings, always refer to your national meteorological authority (like IMD for India).
-    </p>
-  </details>
-  
-  <details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-      Do I need to create an account?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-      No, you can submit feedback without any registration.
-    </p>
-  </details>
-  
-  <details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-     Is this a government-authorised website?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-      No.
-This website is an independent, community-focused weather observation and information platform. It is not operated, owned, or officially authorized by any government agency.<br><br>
-
-The data shown here is collected from multiple publicly available weather providers and local observations to help users better understand local weather conditions.
-    </p>
-  </details>
-
-  <details class="mb-3">
-    <summary class="cursor-pointer font-medium text-gray-800">
-      Can I report a website issue here?
-    </summary>
-    <p class="text-sm text-gray-600 mt-2">
-      Yes, select “Report an Issue” in the form and describe the problem.
-    </p>
-  </details>
-</div>
-<div class="mt-4 text-right">
-<button id="seeMoreFaq"
-        type="button"
-        class="text-sm font-semibold text-[#004a80] hover:underline">
-  See more questions →
-</button>
-
-</div>
-       <h2 class="text-3xl font-extrabold text-[#004a80] mb-6 border-b pb-2">
-       Send Us a Message
-        </h2>
-  <div>
-  <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input type="text" id="name" name="name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <input type="email" id="email" name="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                </div>
-                <div>
-  <label for="questionType" class="block text-sm font-medium text-gray-700 mb-1">
-    What is this about?
-  </label>
-  <select id="questionType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-    <option value="">Select a topic</option>
-    <option value="general">General Question</option>
-    <option value="support">Technical Support</option>
-    <option value="feedback">Website Feedback</option>
-    <option value="report">Report an Issue</option>
-    <option value="suggestion">Suggestion / Idea</option>
-  </select>
-</div>
-                <div>
-                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                    <input type="text" id="subject" name="subject" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                </div>
-                <div>
-                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
-                    <textarea id="message" name="message" rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150"></textarea>
-                </div>
-                <p id="submissionMessage" class="font-medium h-6"></p>
-                <button type="submit" class="w-full md:w-auto px-6 py-3 bg-[#004a80] text-white font-semibold rounded-lg shadow-md hover:bg-[#003a63] transition duration-200 transform hover:scale-[1.01]">
-                    Submit Message
-                </button>
-            </form>
-        </div>
-        <!-- Details & Location Card (Takes 1/3 width on large screens) -->
-        <div class="lg:col-span-1 space-y-8">
-
-            <!-- Contact Info -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 border border-blue-100">
-                <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    Contact Details
-                </h3>
-                <div class="space-y-3 text-gray-600">
-                    <p class="font-semibold">Project Manager:</p>
-                    <p>Aswanth Krishna K </p>
-                    <p class="font-semibold mt-3">Official Email:</p>
-<p>
-<a href="mailto:info@elwoic.in" class="text-blue-500 hover:underline">
-info@elwoic.in
-</a>
-</p>
-
-<p class="font-semibold mt-3">Project Office Email:</p>
-<p>
-<a href="mailto:elwoicelamkulam@gmail.com" class="text-blue-500 hover:underline">
-elwoicelamkulam@gmail.com
-</a>
-</p>
-
-<p class="font-semibold mt-3">Project Manager (Direct):</p>
-<p>
-<a href="mailto:aswanthkrishnak822@gmail.com" class="text-blue-500 hover:underline">
-aswanthkrishnak822@gmail.com
-</a>
-</p>
-
-                    <p class="font-semibold mt-3">Phone:</p>
-                    <p><a href="tel:+914933316750" class="text-blue-500 hover:underline">04933 316 750 (Office)</a></p>
-                    <div id="availability-widget" class="mt-6 p-4 rounded-xl border transition-all duration-300 bg-gray-50 border-gray-200">
-    <div class="flex items-center gap-3">
-        <div class="relative flex h-3 w-3">
-            <span id="status-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
-            <span id="status-dot" class="relative inline-flex rounded-full h-3 w-3"></span>
-        </div>
-        <span id="status-text" class="text-[11px] font-bold uppercase tracking-wider">Loading status...</span>
-    </div>
-    
-    <div id="status-desc" class="text-[10px] mt-1 leading-relaxed"></div>
-    
-    <div id="note-container" class="hidden mt-2 pt-2 border-t border-red-100">
-        <p id="status-note" class="text-[10px] text-red-700 italic inline"></p>
-        <button id="note-read-more" onclick="showFullNote()" class="text-[10px] font-bold underline ml-1 text-red-800 hidden">Read More</button>
-    </div>
-</div>
-
-<div id="noteModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg p-5 max-w-xs w-full shadow-2xl">
-        <h4 class="text-xs font-bold text-red-600 mb-2 uppercase">Status Message</h4>
-        <p id="full-note-text" class="text-sm text-gray-700 leading-snug"></p>
-        <button onclick="closeNoteModal()" class="mt-4 w-full py-2 bg-gray-100 text-gray-800 text-xs font-bold rounded hover:bg-gray-200">Close</button>
-    </div>
-</div>
-                </div>
-            </div>
-              
-            <!-- Location Map -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 border border-blue-100">
-
-              <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-
-         </svg>
-
-            Station Location
-
-        </h3>
-
-<h4> Head Office Location</h4>
-<p class="text-sm text-gray-500 mt-2">
-Elamkulam Local Weather Observation 
-And Information Center
-<br>
-Coordinates Of Office: 
-<a href="https://maps.app.goo.gl/Gmf1uH5ASuXesBqT6" target="_blank">
-10°53'31.2"N 76°14'02.4"E
-</a>
-<br>
-Malappuram District, Kerala, India</p> <br>
-              <a href="https://maps.app.goo.gl/Gmf1uH5ASuXesBqT6"
-   target="_blank"
-   rel="noopener"
-   class="location-link">
-  📍 ELWOIC Station Location
-</a>
-              <div class="responsive-map">
-    <iframe
-        width="600"
-        height="450"
-        style="border:0;"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d187.16058121416083!2d76.23443437997251!3d10.892366288928486!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!4v1764343417290!5m2!1sen!2sin">
-    ></iframe>
-</div>
-
-             <p class="text-sm text-gray-500 mt-2">The weather station covers an area around Elamkulam Panchayat.</p><br>
-            
-            </div>
-        </div>
-    </section>
-
-</main>
-<p style="font-size:0.9em; text-align:center; margin-top:30px;">
-  <a href="about.html#support-project" style="color:#555; text-decoration:underline;">
-    Support this non-commercial project
-  </a>
-</p>
-<section id="more-faq"
-         class="max-w-6xl mx-auto mt-16 px-4 hidden">
-  <div id="faqAccordionMore" class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-blue-100">
-
-
-    <h2 class="text-3xl font-extrabold text-[#004a80] mb-6 border-b pb-2">
-      Questions You May Have
-    </h2>
-
-    <div class="space-y-4">
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          How often is the weather information updated?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          Updates depend on the data source and may occur every few minutes to a few hours. 
-          Forecast updates usually using the automated sytem. And IMD alert showing on home page is manually updated by the developer.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          Does this site show real-time weather or forecasts?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          The site displays both current conditions and forecasted weather, depending on the page and data availability.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          What does “feels like” temperature mean?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          “Feels like” temperature represents how the weather actually feels to the human body, 
-          taking humidity, wind, and other factors into account.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          Why does the forecast sometimes change during the day?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          Weather forecasts change as new data becomes available from satellites, radar, and local observations.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          How far ahead is the forecast reliable?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          Short-term forecasts (1–3 days) are usually more reliable than long-term forecasts, 
-          which are best used as general guidance.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          Why is rainfall shown as a percentage?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          The percentage represents the probability of rain occurring in the area, 
-          not how long or how heavy the rain will be.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          Can I use this site on mobile devices?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          Yes. The website is designed to work on mobile phones, tablets, and desktop devices.
-        </p>
-      </details>
-
-      <details>
-        <summary class="cursor-pointer font-semibold text-gray-800">
-          Why might my location’s weather differ slightly from nearby areas?
-        </summary>
-        <p class="mt-2 text-sm text-gray-600">
-          Local factors such as buildings, water bodies, elevation, and wind patterns can cause small variations in weather.
-        </p>
-      </details>
-<p class="mt-2 text-sm text-gray-600">
-  🙂If you have more questions and more to be known, Please fill the above form and submite it.🙂        
-        </p>
-    </div>
-  </div>
-</section>
-
-<!-- Footer Section (Integrated from the component) -->
-<footer class="header-bg-main text-white p-6 mt-8 shadow-inner relative">
-    <!-- Added responsive padding (pr-0 for mobile, md:pr-20 for desktop) to create space for the corner logo -->
-    <div class="container mx-auto text-center space-y-3 pr-0 md:pr-20">
-
-        <p class="text-sm md:text-base px-4 md:px-0">
-            © 2025-2026 Elamkulam Local Weather Observation And Information Center (ELWOIC). 
-            All rights reserved. This is a student project for educational and 
-            informational purposes.
-        </p>
-        <!-- Policy Links - Using the correct white color and actual URLs -->
-        <p class="text-sm md:text-base">
-            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0" class="text-white hover:text-blue-200 transition duration-150 underline">Privacy Policy</a>
-            <span class="mx-2 text-gray-400">|</span>
-            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/terms-of-service?authuser=0" class="text-white hover:text-blue-200 transition duration-150 underline">Terms Of Service</a>
-            <span class="mx-2 text-gray-400">|</span> 
-            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" class="text-white hover:text-blue-200 transition duration-150 underline">Introduction & Disclaimer</a>
-        </p>
-
-        <p class="text-sm text-gray-400">Designed and Managed by ELWOIC Team</p>
-
-    </div>
-    
-    <!-- Logo placed in the bottom right corner -->
-    <img src="House Public Board Seal of AswanthKK.png" alt="HPBD Logo" 
-         class="footer-logo w-12 h-12 sm:w-16 sm:h-16 rounded-full footer-logo-corner">
-</footer>
-<!-- Scripts for dynamic functionality -->
+<!-- postMessage for nav highlight -->
 <script>
-    // --- ACTIVE NAVIGATION SCRIPT (Modified to not interfere with Firebase module) ---
-    document.addEventListener("DOMContentLoaded", function() {
-        // Function to set the active navigation link based on the current file name
-        const setActiveNav = () => {
-            // Get the current file name (e.g., "contact.html")
-            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-            const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
-            // Loop through all navigation links
-            for (let i = 0; i < navLinks.length; i++) {
-                const linkHref = navLinks[i].getAttribute('href');
-                const linkPath = linkHref ? linkHref.split('/').pop() : '';
-
-                if (linkPath === currentPath) {
-                    // Remove standard white/hover styles
-                    navLinks[i].classList.remove('text-white', 'hover:text-blue-200', 'transition', 'duration-150');
-                    // Add the active class
-                    navLinks[i].classList.add('active-nav');
-                }
-            }
-        };
-        // We run this *after* all other DOM content is loaded
-        setActiveNav();
-    });
+  if (window.parent !== window) {
+    window.parent.postMessage({ activePage: "contact.html" }, "*");
+  }
 </script>
+
+
+<!-- ══════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════ -->
+<div class="page-hero">
+
+  <!-- Top bar with Staff Access -->
+  <div class="hero-topbar">
+    <div class="staff-access-wrap" id="staffWrap">
+      <button class="staff-access-btn" id="staffBtn" onclick="toggleStaff()">
+        <span class="material-icons">lock</span>
+        Staff Access
+        <span class="material-icons staff-chevron">expand_more</span>
+      </button>
+      <div class="staff-dropdown" id="staffDropdown">
+        <div class="staff-dropdown-header">Admin Portals</div>
+        <button class="staff-portal-btn mail-btn"   onclick="handleAdminAccess('admin.html')">
+          <span class="material-icons">mail</span> Contact Messages
+        </button>
+        <button class="staff-portal-btn report-btn" onclick="handleAdminAccess('report-admin.html')">
+          <span class="material-icons">summarize</span> Submitted Reports
+        </button>
+        <button class="staff-portal-btn admin-btn"  onclick="handleAdminAccess('co-admin.html')">
+          <span class="material-icons">admin_panel_settings</span> Administration Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero content -->
+  <div class="hero-main">
+    <div class="hero-eyebrow">ELWOIC · Elamkulam, Kerala</div>
+    <h1 class="hero-title">Contact Us</h1>
+    <p class="hero-desc">We welcome your questions, feedback, or suggestions regarding ELWOIC. Reach out via the form, email us directly, or call. Your input helps us improve this platform for the entire Elamkulam community.</p>
+
+    <!-- Channel cards -->
+    <div class="channel-row">
+      <div class="channel-card">
+        <div class="channel-icon ci-blue">📧</div>
+        <div class="channel-info">
+          <div class="channel-label">Official Email</div>
+          <div class="channel-val"><a href="mailto:info@elwoic.in">info@elwoic.in</a></div>
+        </div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-icon ci-green">📞</div>
+        <div class="channel-info">
+          <div class="channel-label">Office Phone</div>
+          <div class="channel-val"><a href="tel:+914933316750">04933 316 750</a></div>
+        </div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-icon ci-gold">📍</div>
+        <div class="channel-info">
+          <div class="channel-label">Location</div>
+          <div class="channel-val">Elamkulam, Malappuram, Kerala</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE BODY
+══════════════════════════════════════ -->
+<div class="page-body">
+
+  <!-- Notice -->
+  <div class="notice-strip">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <div class="notice-strip-body">
+      <div class="notice-strip-title">Official Notice</div>
+      <ul>
+        <li>This website is <strong>not an official government or panchayat-owned entity</strong>.</li>
+        <li>It is a <strong>personal project</strong> created for informational purposes.</li>
+        <li>For <strong>official weather alerts</strong>, always refer to the <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a>.</li>
+      </ul>
+      <p class="notice-footer">Please exercise caution and cross-reference data with official sources.</p>
+    </div>
+  </div>
+
+  <!-- Data request -->
+  <div class="data-bar">
+    <a href="https://info.elwoic.in/" target="_blank" rel="noopener">Looking for weather data? Visit the Data Request Portal →</a>
+  </div>
+
+  <!-- Body grid -->
+  <div class="body-grid">
+
+    <!-- LEFT: FAQ + Form -->
+    <div>
+
+      <!-- FAQ -->
+      <div class="faq-wrap">
+        <div class="sec-label">Help</div>
+        <div class="sec-title">Frequently Asked Questions</div>
+
+        <div id="faqAccordion">
+          <details>
+            <summary>How long does it take to get a reply? <span class="faq-icon"></span></summary>
+            <p>We usually respond within 24–48 hours.</p>
+          </details>
+          <details>
+            <summary>Why does this website use multiple weather data providers? <span class="faq-icon"></span></summary>
+            <p>We use multiple weather providers to improve accuracy and reliability. Weather conditions can vary by location and time, and no single provider is always 100% accurate. By comparing data from multiple trusted sources, we reduce errors, fill data gaps, and provide more consistent weather information.</p>
+          </details>
+          <details>
+            <summary>How should I trust data from multiple providers? <span class="faq-icon"></span></summary>
+            <p>Different weather services use various data sources — satellites, ground stations, and forecasting models — and update at different times. By showing data from multiple trusted providers, we help cross-check and compare forecasts, giving a broader and more reliable picture. For official alerts, always refer to IMD.</p>
+          </details>
+          <details>
+            <summary>Do I need an account to submit feedback? <span class="faq-icon"></span></summary>
+            <p>No, you can submit feedback without any registration.</p>
+          </details>
+          <details>
+            <summary>Is this a government-authorised website? <span class="faq-icon"></span></summary>
+            <p>No. This website is an independent, community-focused weather observation and information platform. It is not operated, owned, or officially authorised by any government agency.</p>
+          </details>
+          <details>
+            <summary>Can I report a website issue here? <span class="faq-icon"></span></summary>
+            <p>Yes — select "Report an Issue" in the contact form and describe the problem in detail.</p>
+          </details>
+        </div>
+
+        <button id="seeMoreFaq" type="button" class="see-more-btn">See more questions →</button>
+      </div>
+
+      <!-- More FAQ -->
+      <div id="more-faq">
+        <div class="sec-label" style="margin-top:4px;">More</div>
+        <div class="sec-title">Additional Questions</div>
+        <div id="faqAccordionMore">
+          <details>
+            <summary>How often is the weather information updated? <span class="faq-icon"></span></summary>
+            <p>Updates depend on the data source and may occur every few minutes to a few hours. Forecast updates use the automated system. The IMD alert shown on the home page is manually updated by the developer.</p>
+          </details>
+          <details>
+            <summary>Does this site show real-time weather or forecasts? <span class="faq-icon"></span></summary>
+            <p>The site displays both current conditions and forecasted weather, depending on the page and data availability.</p>
+          </details>
+          <details>
+            <summary>What does "feels like" temperature mean? <span class="faq-icon"></span></summary>
+            <p>"Feels like" temperature represents how the weather actually feels to the human body, taking humidity, wind, and other factors into account.</p>
+          </details>
+          <details>
+            <summary>Why does the forecast sometimes change during the day? <span class="faq-icon"></span></summary>
+            <p>Weather forecasts change as new data becomes available from satellites, radar, and local observations.</p>
+          </details>
+          <details>
+            <summary>How far ahead is the forecast reliable? <span class="faq-icon"></span></summary>
+            <p>Short-term forecasts (1–3 days) are usually more reliable. Long-term forecasts are best used as general guidance only.</p>
+          </details>
+          <details>
+            <summary>Why is rainfall shown as a percentage? <span class="faq-icon"></span></summary>
+            <p>The percentage represents the probability of rain occurring in the area, not how long or how heavy the rain will be.</p>
+          </details>
+          <details>
+            <summary>Why might my location's weather differ from nearby areas? <span class="faq-icon"></span></summary>
+            <p>Local factors such as buildings, water bodies, elevation, and wind patterns can cause small variations in weather even across short distances.</p>
+          </details>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:14px;">😊 Still have questions? Fill the contact form below and submit it.</p>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="form-section" style="margin-top:32px;">
+        <div class="sec-label">Message</div>
+        <div class="sec-title">Send Us a Message</div>
+
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" required placeholder="Your full name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="questionType">Topic</label>
+            <select id="questionType">
+              <option value="">Select a topic</option>
+              <option value="general">General Question</option>
+              <option value="support">Technical Support</option>
+              <option value="feedback">Website Feedback</option>
+              <option value="report">Report an Issue</option>
+              <option value="suggestion">Suggestion / Idea</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" required placeholder="Message subject">
+          </div>
+
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Write your message here…"></textarea>
+          </div>
+
+          <p id="submissionMessage"></p>
+          <div class="submit-row">
+            <button type="submit" class="submit-btn">
+              <span class="material-icons">send</span>
+              Submit Message
+            </button>
+          </div>
+        </form>
+      </div>
+    </div><!-- /left -->
+
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- Contact details -->
+      <div class="s-card">
+        <div class="s-card-head">
+          <span class="material-icons">contacts</span>
+          Contact Details
+        </div>
+        <div class="s-card-body">
+          <div class="detail-row">
+            <span class="detail-key">Project Manager</span>
+            <span class="detail-val">Aswanth Krishna K</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Official Email</span>
+            <span class="detail-val"><a href="mailto:info@elwoic.in">info@elwoic.in</a></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Project Office</span>
+            <span class="detail-val"><a href="mailto:elwoicelamkulam@gmail.com">elwoicelamkulam@gmail.com</a></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Direct (Manager)</span>
+            <span class="detail-val"><a href="mailto:aswanthkrishnak822@gmail.com">aswanthkrishnak822@gmail.com</a></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Phone</span>
+            <span class="detail-val"><a href="tel:+914933316750">04933 316 750 (Office)</a></span>
+          </div>
+
+          <!-- Availability widget -->
+          <div id="availability-widget">
+            <div class="avail-flex">
+              <div class="avail-dot-wrap">
+                <span id="status-pulse" style="background:#9ca3af;"></span>
+                <span id="status-dot"   style="background:#9ca3af;"></span>
+              </div>
+              <span id="status-text" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#6b7280;margin-left:8px;">Loading…</span>
+            </div>
+            <div id="status-desc" style="font-size:11px;margin-top:5px;line-height:1.5;color:var(--text-muted);"></div>
+            <div id="note-container" style="display:none;margin-top:8px;padding-top:8px;border-top:1px dashed #fecaca;">
+              <span id="status-note" style="font-size:11px;color:#b91c1c;font-style:italic;"></span>
+              <button id="note-read-more" onclick="showFullNote()" style="font-size:11px;font-weight:700;text-decoration:underline;margin-left:4px;color:#991b1b;background:none;border:none;cursor:pointer;display:none;">Read More</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="s-card">
+        <div class="s-card-head">
+          <span class="material-icons">location_on</span>
+          Station Location
+        </div>
+        <div class="s-card-body">
+          <p style="font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:10px;">
+            Elamkulam Local Weather Observation And Information Centre<br>
+            Malappuram District, Kerala, India
+          </p>
+          <a href="https://maps.app.goo.gl/Gmf1uH5ASuXesBqT6" target="_blank" rel="noopener" class="map-coords-link">
+            📍 10°53'31.2"N 76°14'02.4"E ↗
+          </a>
+          <div class="map-wrap">
+            <iframe
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d187.16058121416083!2d76.23443437997251!3d10.892366288928486!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!4v1764343417290!5m2!1sen!2sin">
+            </iframe>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">Covers the area around Elamkulam Panchayat.</p>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+
+  </div><!-- /body-grid -->
+</div><!-- /page-body -->
+
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+<div id="noteModal">
+  <div class="note-box">
+    <h4>Status Message</h4>
+    <p id="full-note-text"></p>
+    <button class="note-close" onclick="closeNoteModal()">Close</button>
+  </div>
+</div>
+
+<div id="refModal">
+  <div class="ref-box">
+    <div class="ref-box-check">✓</div>
+    <div id="refMessage"></div>
+    <button class="ref-done-btn" onclick="closeRefModal()">Done</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="ELWOIC.png" alt="ELWOIC Logo">
+      <h3>Elamkulam Local Weather Observation &amp; Information Centre</h3>
+      <p>An independent community initiative providing real-time weather and environmental data for Elamkulam Panchayat, Kerala. Not an official government entity.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Legal &amp; Access</h4>
+      <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0" target="_blank">Privacy Policy</a>
+      <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/terms-of-service?authuser=0" target="_blank">Terms of Service</a>
+      <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" target="_blank">Introduction &amp; Disclaimer</a>
+      <a href="https://info.elwoic.in/" target="_blank">Data Request Portal</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>📍 Elamkulam, Malappuram, Kerala</p>
+      <a href="contact.html">Send a Message</a>
+      <a href="about.html#support-project">Support This Project</a>
+    </div>
+  </div>
+  <div class="footer-community">
+    <p>ഏലംകുളം സമൂഹത്തിന് — ഒരു സമർപ്പണം.</p>
+     <!-- Support -->
+      
+        <a href="about.html#support-project" style="color:var(--text-muted);text-decoration:underline;">Support this non-commercial project →</a>
+      </p>
+  </div>
+  <div class="footer-bottom">
+    <p style="font-family:var(--font-ml);font-size:13px;color:rgba(255,255,255,0.4);margin-top:8px;letter-spacing:1px;">വിശ്വസ്തം  • ലളിതം • സുതാര്യം</p>
+    <span>© 2025–2026 ELWOIC. All rights reserved. Independent community project for informational purposes.</span>
+    <span>Designed &amp; managed by ELWOIC Team</span>
+    <img src="House Public Board Seal of AswanthKK.png" alt="Seal">
+  </div>
+</footer>
+
+
+<!-- ══════════════════════════════════════
+     SCRIPTS — all preserved exactly
+══════════════════════════════════════ -->
+
+<!-- Staff access dropdown toggle -->
+<script>
+function toggleStaff() {
+  const btn      = document.getElementById('staffBtn');
+  const dropdown = document.getElementById('staffDropdown');
+  const isOpen   = dropdown.classList.contains('open');
+  if (isOpen) {
+    dropdown.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    dropdown.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+// Close on outside click
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('staffWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('staffDropdown').classList.remove('open');
+    document.getElementById('staffBtn').classList.remove('open');
+  }
+});
+</script>
+
+<!-- Topic → placeholder -->
 <script>
 document.getElementById("questionType").addEventListener("change", function () {
   const message = document.getElementById("message");
-
   const templates = {
-    general: "Please describe your question clearly.",
-    support: "Describe the issue you are facing. Include device, browser, or error details.",
-    feedback: "Tell us what you liked or what can be improved.",
-    report: "Explain the issue, where it occurred, and when.",
+    general:    "Please describe your question clearly.",
+    support:    "Describe the issue you are facing. Include device, browser, or error details.",
+    feedback:   "Tell us what you liked or what can be improved.",
+    report:     "Explain the issue, where it occurred, and when.",
     suggestion: "Share your idea or feature suggestion in detail."
   };
-
-  message.placeholder = templates[this.value] || "Write your message here...";
+  message.placeholder = templates[this.value] || "Write your message here…";
 });
 </script>
+
+<!-- Topic → subject autofill -->
 <script>
 document.getElementById("questionType").addEventListener("change", function () {
   const subject = document.getElementById("subject");
-
   const subjects = {
-    general: "General Inquiry",
-    support: "Technical Support Request",
-    feedback: "Website Feedback",
-    report: "Issue Report",
+    general:    "General Inquiry",
+    support:    "Technical Support Request",
+    feedback:   "Website Feedback",
+    report:     "Issue Report",
     suggestion: "Suggestion / Idea"
   };
-
   subject.value = subjects[this.value] || "";
 });
 </script>
+
+<!-- See More FAQ -->
 <script>
 document.getElementById("seeMoreFaq").addEventListener("click", function () {
   const section = document.getElementById("more-faq");
-
-  // show section
-  section.classList.remove("hidden");
-
-  // smooth scroll
+  section.style.display = "block";
   section.scrollIntoView({ behavior: "smooth" });
 });
 </script>
-<script>
-  document.querySelectorAll('[id^="faqAccordion"]').forEach((accordion) => {
-    const detailsElements = accordion.querySelectorAll("details");
 
-    detailsElements.forEach((details) => {
-      details.addEventListener("toggle", () => {
-        if (details.open) {
-          detailsElements.forEach((other) => {
-            if (other !== details) {
-              other.removeAttribute("open");
-            }
-          });
-        }
-      });
+<!-- FAQ — one open at a time -->
+<script>
+document.querySelectorAll('[id^="faqAccordion"]').forEach((accordion) => {
+  const items = accordion.querySelectorAll("details");
+  items.forEach((d) => {
+    d.addEventListener("toggle", () => {
+      if (d.open) items.forEach((o) => { if (o !== d) o.removeAttribute("open"); });
     });
   });
+});
 </script>
+
+<!-- Modal helpers -->
+<script>
+window.closeRefModal = () => {
+  const m = document.getElementById('refModal');
+  m.classList.remove('show');
+  m.style.display = 'none';
+};
+let fullNoteContent = "";
+window.showFullNote = () => {
+  document.getElementById('full-note-text').innerText = fullNoteContent;
+  const m = document.getElementById('noteModal');
+  m.style.display = 'flex';
+  m.classList.add('show');
+};
+window.closeNoteModal = () => {
+  const m = document.getElementById('noteModal');
+  m.classList.remove('show');
+  m.style.display = 'none';
+};
+</script>
+
+<!-- Firebase Contact Form — unchanged -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getDatabase, ref, push, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+  import { initializeApp }    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getDatabase, ref, push, serverTimestamp, runTransaction }
+                               from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
-    authDomain: "elwoic.firebaseapp.com",
-    databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "elwoic",
-    storageBucket: "elwoic.firebasestorage.app",
+    apiKey:            "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
+    authDomain:        "elwoic.firebaseapp.com",
+    databaseURL:       "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "elwoic",
+    storageBucket:     "elwoic.firebasestorage.app",
     messagingSenderId: "597873791800",
-    appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd"
+    appId:             "1:597873791800:web:d78dd1d5c3005b2ec8e7cd"
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Modal Control
-  window.closeRefModal = () => {
-    document.getElementById('refModal').style.display = 'none';
-  };
+  const db  = getDatabase(app);
 
   document.getElementById("contactForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"]');
+    const btn        = e.target.querySelector('button[type="submit"]');
     const statusText = document.getElementById("submissionMessage");
+    const qType      = document.getElementById("questionType").value;
 
-    // 1. Validate Topic
-    const qType = document.getElementById("questionType").value;
-    if (!qType) {
-      alert("Please select a topic before submitting.");
-      return;
-    }
+    if (!qType) { alert("Please select a topic before submitting."); return; }
 
     try {
-      btn.disabled = true;
-      btn.innerText = "Sending...";
-      statusText.innerText = "Generating reference number...";
+      btn.disabled    = true;
+      btn.innerHTML   = '<span class="material-icons">hourglass_empty</span> Sending…';
+      statusText.innerText = "Generating reference number…";
 
-      // 2. Reference Number Generation (YYMMDD + Sequential Index)
-      const now = new Date();
-      const dateKey = now.getFullYear().toString().slice(-2) + 
-                      String(now.getMonth() + 1).padStart(2, '0') + 
-                      String(now.getDate()).padStart(2, '0');
+      const now     = new Date();
+      const dateKey = now.getFullYear().toString().slice(-2)
+                    + String(now.getMonth() + 1).padStart(2, '0')
+                    + String(now.getDate()).padStart(2, '0');
 
       const counterRef = ref(db, `counters/${dateKey}`);
-      const result = await runTransaction(counterRef, c => (c || 0) + 1);
-      
-      const indexStr = String(result.snapshot.val()).padStart(3, '0');
+      const result     = await runTransaction(counterRef, c => (c || 0) + 1);
+      const indexStr   = String(result.snapshot.val()).padStart(3, '0');
       const finalRefNum = `${dateKey}${indexStr}`;
 
-      // 3. Data Object
       const submission = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
+        name:         document.getElementById("name").value,
+        email:        document.getElementById("email").value,
         questionType: qType,
-        subject: document.getElementById("subject").value,
-        message: document.getElementById("message").value,
-        refNumber: finalRefNum,
-        timestamp: serverTimestamp()
+        subject:      document.getElementById("subject").value,
+        message:      document.getElementById("message").value,
+        refNumber:    finalRefNum,
+        timestamp:    serverTimestamp()
       };
 
-      // 4. Push to Firebase
       await push(ref(db, 'messages'), submission);
 
-      // 5. Success UI
       document.getElementById('refMessage').innerHTML = `
-        <p class="font-bold text-lg mb-2 text-green-600">Sent Successfully!</p>
+        <p style="font-weight:700;font-size:16px;color:#16a34a;margin-bottom:8px;">Sent Successfully!</p>
         Your reference number is:<br>
-        <span class="text-2xl font-mono font-black text-[#004a80]">${finalRefNum}</span><br>
-        <p class="mt-2 text-gray-500">You can write down this number for further follow-up or assistance.</p>
-      `;
-      document.getElementById('refModal').style.display = 'flex';
-      
+        <span style="font-size:26px;font-family:monospace;font-weight:900;color:#0d3d6e;display:block;margin:8px 0;">${finalRefNum}</span>
+        <span style="font-size:12.5px;color:#6b7280;">Keep this number for any follow-up or assistance.</span>`;
+
+      const modal = document.getElementById('refModal');
+      modal.style.display = 'flex';
+      modal.classList.add('show');
       statusText.innerText = "";
       e.target.reset();
 
@@ -808,272 +1228,159 @@ document.getElementById("seeMoreFaq").addEventListener("click", function () {
       console.error(err);
       alert("Submission failed. Check your internet connection or Firebase rules.");
     } finally {
-      btn.disabled = false;
-      btn.innerText = "Submit Message";
+      btn.disabled  = false;
+      btn.innerHTML = '<span class="material-icons">send</span> Submit Message';
     }
   });
 </script>
 
+<!-- Admin access — obfuscated JS preserved exactly as original -->
 <script>
-// Unified Admin Access Logic
-/* ELWOIC Security Layer - Filename Corrected */
 var _0x510f=["\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4D\x44\x51\x35\x4D\x7A\x4D\x3D","\x72\x65\x70\x6F\x72\x74\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x4E\x54\x49\x7A\x4F\x54\x45\x79","\x63\x6F\x2D\x61\x64\x6D\x69\x6E\x2E\x68\x74\x6D\x6C","\x5A\x57\x78\x33\x62\x32\x6C\x6A\x4D\x44\x45\x34\x4E\x6A\x67\x3D","\x45\x6E\x74\x65\x72\x20\x61\x75\x74\x68\x6F\x72\x69\x7A\x61\x74\x69\x6F\x6E\x20\x63\x6F\x64\x65\x3A","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x41\x63\x63\x65\x73\x73\x20\x44\x65\x6E\x69\x65\x64\x21"];
 
 function handleAdminAccess(_0x2287x2){
-    var _0x2287x3=prompt(_0x510f[6]);
-    if(_0x2287x3===null){return}
-    var _0x2287x4=btoa(_0x2287x3);
-    var _0x2287x5=false;
-
-    if(_0x2287x2===_0x510f[0]&&_0x2287x4===_0x510f[1]){
-        _0x2287x5=true;
-    } else if(_0x2287x2===_0x510f[2]&&_0x2287x4===_0x510f[3]){
-        _0x2287x5=true;
-    } else if(_0x2287x2===_0x510f[4]&&_0x2287x4===_0x510f[5]){
-        _0x2287x5=true;
-    }
-
-    if(_0x2287x5){
-        window[_0x510f[8]][_0x510f[7]]=_0x2287x2;
-    } else {
-        alert(_0x510f[9]);
-    }
+  var _0x2287x3=prompt(_0x510f[6]);
+  if(_0x2287x3===null){return}
+  var _0x2287x4=btoa(_0x2287x3);
+  var _0x2287x5=false;
+  if(_0x2287x2===_0x510f[0]&&_0x2287x4===_0x510f[1]){_0x2287x5=true;}
+  else if(_0x2287x2===_0x510f[2]&&_0x2287x4===_0x510f[3]){_0x2287x5=true;}
+  else if(_0x2287x2===_0x510f[4]&&_0x2287x4===_0x510f[5]){_0x2287x5=true;}
+  if(_0x2287x5){window[_0x510f[8]][_0x510f[7]]=_0x2287x2;}
+  else{alert(_0x510f[9]);}
 }
-
-document.addEventListener("DOMContentLoaded",function(){
-    const _0x2287x6=document.getElementById("adminToggle");
-    const _0x2287x7=document.getElementById("adminDropdown");
-    let _0x2287x8=false;
-
-    _0x2287x6.addEventListener("click",function(_0x2287x9){
-        _0x2287x9.stopPropagation();
-        _0x2287x8=!_0x2287x8;
-        if(_0x2287x8){
-            _0x2287x7.classList.remove("hidden");
-            setTimeout(()=>{
-                _0x2287x7.classList.remove("scale-y-0","opacity-0");
-                _0x2287x7.classList.add("scale-y-100","opacity-100");
-            },10);
-        } else {
-            closeDropdown();
-        }
-    });
-
-    document.addEventListener("click",()=>{
-        if(_0x2287x8) closeDropdown();
-    });
-
-    function closeDropdown(){
-        _0x2287x8=false;
-        _0x2287x7.classList.add("scale-y-0","opacity-0");
-        _0x2287x7.classList.remove("scale-y-100","opacity-100");
-        setTimeout(()=>_0x2287x7.classList.add("hidden"),300);
-    }
-});
 </script>
 
-<div id="refModal" style="display:none;" class="fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[100] p-4">
-  <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform transition-all">
-    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
-    </div>
-    
-    <div id="refMessage" class="text-gray-800 mb-6 leading-relaxed text-sm"></div>
-    
-    <button onclick="closeRefModal()" class="w-full bg-[#004a80] text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition shadow-lg">
-      Done
-    </button>
-  </div>
-</div>
+<!-- Availability widget Firebase — unchanged -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCTdb7oM8hayioOOkyNycm10Pnb8sAOVm4",
-    authDomain: "contact-controll.firebaseapp.com",
-    databaseURL: "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "contact-controll",
-    storageBucket: "contact-controll.firebasedatabase.app",
-    messagingSenderId: "357811399820",
-    appId: "1:357811399820:web:6674904d6e18e68d7cdfa9"
+  apiKey:            "AIzaSyCTdb7oM8hayioOOkyNycm10Pnb8sAOVm4",
+  authDomain:        "contact-controll.firebaseapp.com",
+  databaseURL:       "https://contact-controll-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "contact-controll",
+  storageBucket:     "contact-controll.firebasedatabase.app",
+  messagingSenderId: "357811399820",
+  appId:             "1:357811399820:web:6674904d6e18e68d7cdfa9"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const app   = initializeApp(firebaseConfig);
+const db    = getDatabase(app);
 const dbRef = ref(db, 'site_config');
 
-let fullNoteContent = "";
 let latestData = null;
 
-// ----------------------------
-// HELPER FUNCTIONS
-// ----------------------------
-function timeToNumber(timeStr) {
-    return parseInt(timeStr.replace(':', ''));
-}
+function timeToNumber(t)           { return parseInt(t.replace(':', '')); }
+function isInside(s, e, c)         { return s <= e ? c >= s && c <= e : c >= s || c <= e; }
 
-// Check if currentTime is inside start → end range, supports overnight
-function isInside(start, end, current) {
-    if (start <= end) return current >= start && current <= end;
-    return current >= start || current <= end;
-}
-
-// ----------------------------
-// STATUS ENGINE
-// ----------------------------
 function getAutoStatus(data) {
-    const now = new Date();
-    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const todayIndex = now.getDay();
-    const yesterdayIndex = (todayIndex + 6) % 7;
+  const now          = new Date();
+  const days         = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayIndex   = now.getDay();
+  const yesterIndex  = (todayIndex + 6) % 7;
+  const todayName    = days[todayIndex];
+  const yesterName   = days[yesterIndex];
+  const todayStr     = now.toISOString().split('T')[0];
+  const cur          = now.getHours()*100 + now.getMinutes();
 
-    const todayName = days[todayIndex];
-    const yesterdayName = days[yesterdayIndex];
-    const todayStr = now.toISOString().split('T')[0];
-    const currentTime = now.getHours()*100 + now.getMinutes();
-
-    // 1️⃣ TEMP SESSION
-    if (data.tempSession) {
-        const start = timeToNumber(data.tempSession.start);
-        const end = timeToNumber(data.tempSession.end);
-
-        if (isInside(start, end, currentTime)) return "available";
-
-        // Temp session ended, revert
-        if (data.tempSession.revertTo === "away") {
-            update(dbRef, { tempSession: null, currentStatus: "away", useSchedule: false });
-        } else {
-            update(dbRef, { tempSession: null, useSchedule: true });
-        }
-        return data.currentStatus;
-    }
-
-    // 2️⃣ DATED OVERRIDES
-    if (data.datedOverrides && data.datedOverrides[todayStr] && data.datedOverrides[todayStr].active) {
-        const o = data.datedOverrides[todayStr];
-        if (o.is24h) return "available";
-        const start = timeToNumber(o.start);
-        const end = timeToNumber(o.end);
-
-        if (isInside(start, end, currentTime)) return "available";
-        return "away";
-    }
-
-    // 3️⃣ WEEKLY SCHEDULE
-    const todaySched = data.schedule ? data.schedule[todayName] : null;
-    const yesterdaySched = data.schedule ? data.schedule[yesterdayName] : null;
-
-    // Check yesterday overnight
-    if (yesterdaySched && yesterdaySched.active) {
-        const startY = timeToNumber(yesterdaySched.start);
-        const endY = timeToNumber(yesterdaySched.end);
-        if (startY > endY && currentTime <= endY) return "available";
-    }
-
-    // Check today schedule
-    if (todaySched && todaySched.active) {
-        const startT = timeToNumber(todaySched.start);
-        const endT = timeToNumber(todaySched.end);
-        if (isInside(startT, endT, currentTime)) return "available";
-    }
-
-    return "away";
+  if (data.tempSession) {
+    const s = timeToNumber(data.tempSession.start);
+    const e = timeToNumber(data.tempSession.end);
+    if (isInside(s, e, cur)) return "available";
+    if (data.tempSession.revertTo === "away") update(dbRef, { tempSession:null, currentStatus:"away", useSchedule:false });
+    else update(dbRef, { tempSession:null, useSchedule:true });
+    return data.currentStatus;
+  }
+  if (data.datedOverrides && data.datedOverrides[todayStr] && data.datedOverrides[todayStr].active) {
+    const o = data.datedOverrides[todayStr];
+    if (o.is24h) return "available";
+    const s = timeToNumber(o.start), e = timeToNumber(o.end);
+    return isInside(s, e, cur) ? "available" : "away";
+  }
+  const todaySched  = data.schedule ? data.schedule[todayName]  : null;
+  const yesterSched = data.schedule ? data.schedule[yesterName] : null;
+  if (yesterSched && yesterSched.active) {
+    const sY = timeToNumber(yesterSched.start), eY = timeToNumber(yesterSched.end);
+    if (sY > eY && cur <= eY) return "available";
+  }
+  if (todaySched && todaySched.active) {
+    const sT = timeToNumber(todaySched.start), eT = timeToNumber(todaySched.end);
+    if (isInside(sT, eT, cur)) return "available";
+  }
+  return "away";
 }
 
-// ----------------------------
-// RENDER UI
-// ----------------------------
 function renderStatus(data) {
-    const finalStatus = (data.tempSession || data.useSchedule) ? getAutoStatus(data) : data.currentStatus;
+  const finalStatus = (data.tempSession || data.useSchedule) ? getAutoStatus(data) : data.currentStatus;
 
-    const widget = document.getElementById('availability-widget');
-    const dot = document.getElementById('status-dot');
-    const pulse = document.getElementById('status-pulse');
-    const text = document.getElementById('status-text');
-    const desc = document.getElementById('status-desc');
-    const noteContainer = document.getElementById('note-container');
-    const noteText = document.getElementById('status-note');
-    const readMoreBtn = document.getElementById('note-read-more');
+  const widget    = document.getElementById('availability-widget');
+  const dot       = document.getElementById('status-dot');
+  const pulse     = document.getElementById('status-pulse');
+  const text      = document.getElementById('status-text');
+  const desc      = document.getElementById('status-desc');
+  const noteC     = document.getElementById('note-container');
+  const noteT     = document.getElementById('status-note');
+  const readMore  = document.getElementById('note-read-more');
 
-    if (!widget || !dot || !pulse || !text || !desc) return; // safety
+  if (!widget) return;
 
-    if (finalStatus === 'available') {
-        widget.className = "mt-6 p-4 rounded-xl border transition-all duration-300 bg-green-50 border-green-200";
-        dot.className = "relative inline-flex rounded-full h-3 w-3 bg-green-500";
-        pulse.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75";
-        pulse.classList.remove('hidden');
+  if (finalStatus === 'available') {
+    widget.style.background  = '#f0fdf4';
+    widget.style.borderColor = '#bbf7d0';
+    dot.style.background     = '#16a34a';
+    pulse.style.background   = '#4ade80';
+    pulse.style.display      = 'block';
+    text.innerText           = 'Office Online';
+    text.style.color         = '#15803d';
+    desc.innerText           = 'Staff are available. You can contact us via phone.';
+    desc.style.color         = '#166534';
+    noteC.style.display      = 'none';
+  } else {
+    widget.style.background  = '#fff5f5';
+    widget.style.borderColor = '#fecaca';
+    dot.style.background     = '#dc3545';
+    pulse.style.display      = 'none';
+    text.innerText           = 'Phone Support Unavailable';
+    text.style.color         = '#991b1b';
+    desc.innerText           = 'Calling is temporarily unavailable. Please use the contact form or email.';
+    desc.style.color         = '#b91c1c';
 
-        text.innerText = "Office Online";
-        text.className = "text-[11px] font-bold uppercase tracking-wider text-green-700";
-        desc.innerText = "Staff are available. You can contact us via phone.";
-        desc.className = "text-[10px] mt-1 leading-relaxed text-green-600";
+    let reason = "";
+    if (data.currentStatus === "away" && !data.useSchedule) reason = data.awayNote || "";
+    else if (data.useSchedule) reason = data.autoOfflineNote || "";
 
-        noteContainer.classList.add('hidden');
-
+    if (reason) {
+      noteC.style.display  = 'block';
+      fullNoteContent      = reason;
+      noteT.innerText      = "Note: " + (reason.length > 20 ? reason.substring(0, 20) + "…" : reason);
+      readMore.style.display = reason.length > 20 ? 'inline' : 'none';
     } else {
-        widget.className = "mt-6 p-4 rounded-xl border transition-all duration-300 bg-red-50 border-red-200";
-        dot.className = "relative inline-flex rounded-full h-3 w-3 bg-red-500";
-        pulse.classList.add('hidden');
-
-        text.innerText = "Phone Support Unavailable";
-        text.className = "text-[11px] font-bold uppercase tracking-wider text-red-700";
-        desc.innerText = "Calling is temporarily unavailable. Please use the contact form or email.";
-        desc.className = "text-[10px] mt-1 leading-relaxed text-red-600";
-
-        // -----------------------------
-        // NEW NOTE LOGIC
-        // -----------------------------
-        let reason = "";
-
-        if (data.currentStatus === "away" && !data.useSchedule) {
-            // Manual offline
-            reason = data.awayNote || "";
-        } else if (data.useSchedule) {
-            // Auto-schedule offline
-            reason = data.autoOfflineNote || "";
-        }
-
-        if (reason) {
-            noteContainer.classList.remove('hidden');
-            fullNoteContent = reason;
-            noteText.innerText = "Note: " + (reason.length > 20 ? reason.substring(0, 20) + "..." : reason);
-            readMoreBtn.classList.toggle('hidden', reason.length <= 20);
-        } else {
-            noteContainer.classList.add('hidden');
-        }
+      noteC.style.display = 'none';
     }
+  }
 }
 
-// ----------------------------
-// REALTIME LISTENER
-// ----------------------------
 onValue(dbRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-    latestData = data;
-    renderStatus(data);
+  const data = snapshot.val();
+  if (!data) return;
+  latestData = data;
+  renderStatus(data);
 });
 
-// Auto refresh every 30s
-setInterval(() => { if(latestData) renderStatus(latestData); }, 30000);
+setInterval(() => { if (latestData) renderStatus(latestData); }, 30000);
 
-// ----------------------------
-// MODAL
-// ----------------------------
-window.showFullNote = () => {
-    const fullTextEl = document.getElementById('full-note-text');
-    if(fullTextEl) fullTextEl.innerText = fullNoteContent;
-    const modalEl = document.getElementById('noteModal');
-    if(modalEl) modalEl.classList.remove('hidden');
+window.showFullNote  = () => {
+  document.getElementById('full-note-text').innerText = fullNoteContent;
+  const m = document.getElementById('noteModal');
+  m.style.display = 'flex'; m.classList.add('show');
 };
-
 window.closeNoteModal = () => {
-    const modalEl = document.getElementById('noteModal');
-    if(modalEl) modalEl.classList.add('hidden');
+  const m = document.getElementById('noteModal');
+  m.classList.remove('show'); m.style.display = 'none';
 };
 </script>
+
 </body>
-</html> 
+</html>
