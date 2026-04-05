@@ -821,23 +821,23 @@ Elamkulam, Malappuram, Kerala
 
       // Auto-resize iframe to content height
      // Add this inside your DOMContentLoaded nav script
-frame.addEventListener("load", () => {
+// Add this inside DOMContentLoaded, after your existing nav code
+let lastPage = "";
+setInterval(() => {
   try {
-    // Sync active nav to whatever page the iframe is now showing
-    const currentSrc = frame.contentWindow.location.pathname.split("/").pop();
-    links.forEach(l => {
-      const page = l.getAttribute("data-page");
-      if (page === currentSrc) {
-        setActive(l);
-        updateTicker(page);
-        updatePageLabel(page, l.getAttribute("data-label") || "");
-      }
-    });
-
-    // Also resize
-    frame.style.height = frame.contentDocument.body.scrollHeight + "px";
-  } catch(e) { /* cross-origin */ }
-});
+    const currentSrc = frame.contentWindow.location.pathname.split("/").pop() || "home.html";
+    if (currentSrc !== lastPage) {
+      lastPage = currentSrc;
+      links.forEach(l => {
+        if (l.getAttribute("data-page") === currentSrc) {
+          setActive(l);
+          updateTicker(currentSrc);
+          updatePageLabel(currentSrc, l.getAttribute("data-label") || "");
+        }
+      });
+    }
+  } catch(e) {}
+}, 100); // checks every 100ms — fast enough to feel instant
 
 // Listen for postMessage from iframe pages so they can
 // tell the shell which page is active (e.g. direct URL entry)
