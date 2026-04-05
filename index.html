@@ -820,9 +820,21 @@ Elamkulam, Malappuram, Kerala
       });
 
       // Auto-resize iframe to content height
-      // Auto-resize iframe to content height
+     // Add this inside your DOMContentLoaded nav script
 frame.addEventListener("load", () => {
   try {
+    // Sync active nav to whatever page the iframe is now showing
+    const currentSrc = frame.contentWindow.location.pathname.split("/").pop();
+    links.forEach(l => {
+      const page = l.getAttribute("data-page");
+      if (page === currentSrc) {
+        setActive(l);
+        updateTicker(page);
+        updatePageLabel(page, l.getAttribute("data-label") || "");
+      }
+    });
+
+    // Also resize
     frame.style.height = frame.contentDocument.body.scrollHeight + "px";
   } catch(e) { /* cross-origin */ }
 });
