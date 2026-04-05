@@ -1,901 +1,593 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELWOIC — About Us</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELWOIC | About</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    /* ============================================================
-       TOKENS
-    ============================================================ */
-    :root {
-      --navy:       #0d3d6e;
-      --navy-mid:   #1a5490;
-      --navy-light: #e8f2fb;
-      --blue:       #2563eb;
-      --gold:       #c9a227;
-      --gold-dim:   #b08f1e;
-      --gold-pale:  #fdf8ec;
-      --white:      #ffffff;
-      --page-bg:    #eef3f8;
-      --card-bg:    #ffffff;
-      --border:     #d5e2ef;
-      --text:       #1a2e3d;
-      --text-mid:   #4a6a84;
-      --text-muted: #7a9ab5;
-      --red:        #dc3545;
-      --green:      #16a34a;
-      --shadow-sm:  0 1px 4px rgba(13,61,110,0.07);
-      --shadow:     0 2px 12px rgba(13,61,110,0.10);
-      --radius:     8px;
-      --font-serif: 'Playfair Display', Georgia, serif;
-      --font-sans:  'DM Sans', 'Segoe UI', Arial, sans-serif;
-      --font-ml:    'Noto Sans Malayalam', sans-serif;
-    }
+    <!-- Custom Theme Colors & Fonts -->
+    <style>
+        .header-bg-main { background-color: #004a80; }
+        .nav-bg-dark { background-color: #003a63; }
+        .font-inter { font-family: 'Inter', sans-serif; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Footer logo fix */
+        .footer-logo-corner {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            border: 3px solid #b3e5fc;
+            z-index: 10;
+        }
+        .modern-link {
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
 
-    body {
-      font-family: var(--font-sans);
-      background: var(--page-bg);
-      color: var(--text);
-      font-size: 15px;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+.modern-link:hover {
+  color: #1e3a8a;
+}
+        
+    /* Icon circular background */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url('Elamkulam Weather Logo Design.1.png');
-      background-repeat: space;
-      background-size: 120px 120px;
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: 0;
+    /* Access buttons uniform design */
+    .access-button {
+        padding: 8px 18px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: 0.2s ease;
+        display: inline-block;
     }
 
-    /* ============================================================
-       LAYOUT
-    ============================================================ */
-    .wrap {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 24px 16px 48px;
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      /* Prevent any child from breaking out */
-      width: 100%;
-      overflow-x: hidden;
+    .access-button:hover {
+        transform: translateY(-2px);
     }
+    </style>
 
-    /* ============================================================
-       SECTION HEADING
-    ============================================================ */
-    .sec-head {
-      font-family: var(--font-serif);
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--navy);
-      border-left: 4px solid var(--gold);
-      padding-left: 13px;
-      margin: 36px 0 16px;
-      line-height: 1.3;
-    }
-    .sec-head:first-of-type { margin-top: 0; }
-
-    /* ============================================================
-       CARD
-    ============================================================ */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      margin-bottom: 20px;
-      width: 100%;
-    }
-    .card-head {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--navy);
-      letter-spacing: 0.7px;
-      text-transform: uppercase;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      background: #f7fafd;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .card-head svg { width: 14px; height: 14px; fill: var(--gold); flex-shrink: 0; }
-    .card-body { padding: 16px; }
-
-    /* ============================================================
-       PAGE BANNER
-    ============================================================ */
-    .page-banner {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      box-shadow: var(--shadow);
-    }
-    .page-banner-title {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .page-banner-sub {
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 4px;
-      line-height: 1.5;
-    }
-    .page-banner-badge {
-      background: var(--gold);
-      color: var(--navy);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 4px;
-      white-space: nowrap;
-      align-self: flex-start;
-    }
-
-    /* ============================================================
-       DISCLAIMER
-    ============================================================ */
-    .disclaimer {
-      background: #fff5f5;
-      border: 1px solid #ffd6d6;
-      border-left: 5px solid var(--red);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      margin-bottom: 24px;
-    }
-    .disclaimer-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .disclaimer-head svg { width: 18px; height: 18px; fill: var(--red); flex-shrink: 0; }
-    .disclaimer-head h3 {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--red);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin: 0;
-    }
-    .disclaimer ul { list-style: disc; margin-left: 18px; }
-    .disclaimer li {
-      font-size: 13px;
-      color: #7f1d1d;
-      line-height: 1.65;
-      margin-bottom: 5px;
-    }
-    .disclaimer li a { color: var(--blue); font-weight: 600; }
-    .disclaimer li a:hover { text-decoration: underline; }
-    .disclaimer li strong { color: #991b1b; }
-    .disclaimer-footer {
-      font-size: 11.5px;
-      color: #9f4a4a;
-      font-style: italic;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px dashed #fca5a5;
-    }
-
-    /* ============================================================
-       MAINTAINER CARD
-    ============================================================ */
-    .maintainer-card {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      align-items: flex-start;
-      gap: 18px;
-      flex-wrap: wrap;
-      box-shadow: var(--shadow);
-      margin-bottom: 18px;
-    }
-    .maintainer-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: 2px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-      color: var(--gold);
-    }
-    .maintainer-info { flex: 1; min-width: 200px; }
-    .maintainer-name {
-      font-family: var(--font-serif);
-      font-size: 19px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 3px;
-    }
-    .maintainer-role {
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 6px;
-    }
-    .maintainer-desc {
-      font-size: 13px;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.6;
-    }
-
-    /* ============================================================
-       MISSION HERO — 2 col → 1 col at 600px
-    ============================================================ */
-    .mission-hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-    .mission-block {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .mission-block-icon { font-size: 26px; margin-bottom: 8px; }
-    .mission-block h4 {
-      font-family: var(--font-serif);
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 8px;
-    }
-    .mission-block p { font-size: 13.5px; color: var(--text-mid); line-height: 1.75; }
-    .mission-block.accent      { border-top: 3px solid var(--gold); }
-    .mission-block.accent-blue { border-top: 3px solid var(--blue); }
-
-    /* ============================================================
-       KEY METRICS — 3 col → 1 col
-    ============================================================ */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .metric-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--gold);
-      border-radius: var(--radius);
-      padding: 16px 12px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      min-width: 0; /* prevents overflow */
-    }
-    .metric-val {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--navy);
-      line-height: 1.1;
-      word-break: break-word;
-    }
-    .metric-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-
-    /* ============================================================
-       WHAT WE PROVIDE — 2 col → 1 col
-    ============================================================ */
-    .provides-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    .provide-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px;
-      background: var(--page-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: background 0.15s;
-      min-width: 0;
-    }
-    .provide-item:hover { background: var(--navy-light); }
-    .provide-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .pi-blue   { background: #dbeafe; }
-    .pi-cyan   { background: #cffafe; }
-    .pi-green  { background: #dcfce7; }
-    .pi-purple { background: #ede9fe; }
-    .pi-amber  { background: #fef3c7; }
-    .pi-red    { background: #fee2e2; }
-    .pi-navy   { background: var(--navy-light); }
-    .pi-gold   { background: var(--gold-pale); }
-    .provide-title { font-size: 13.5px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
-    .provide-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-
-    /* ============================================================
-       IMPORTANT INFO LIST
-    ============================================================ */
-    .info-list { list-style: none; padding: 0; }
-    .info-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 13.5px;
-      color: var(--text-mid);
-      line-height: 1.65;
-    }
-    .info-list li:last-child { border-bottom: none; }
-    .info-list li::before {
-      content: '›';
-      color: var(--gold);
-      font-weight: 700;
-      font-size: 17px;
-      line-height: 1.45;
-      flex-shrink: 0;
-    }
-    .info-list a { color: var(--blue); font-weight: 600; text-decoration: none; }
-    .info-list a:hover { text-decoration: underline; }
-
-    /* ============================================================
-       DATA SOURCES — 3 col → 2 col → 1 col
-    ============================================================ */
-    .sources-text {
-      font-size: 13.5px;
-      color: var(--text-mid);
-      line-height: 1.75;
-      margin-bottom: 18px;
-    }
-    .sources-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .source-item {
-      background: var(--page-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 10px;
-      text-align: center;
-      transition: background 0.15s;
-      min-width: 0;
-    }
-    .source-item:hover { background: var(--navy-light); }
-    .source-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin: 0 auto 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-    .source-name { font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
-    .source-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-
-    .source-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-    .source-btn {
-      display: inline-block;
-      padding: 7px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 20px;
-      text-decoration: none;
-      transition: opacity 0.15s, transform 0.15s;
-      color: #fff;
-    }
-    .source-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .btn-cyan   { background: #0891b2; }
-    .btn-orange { background: #ea580c; }
-    .btn-green  { background: #16a34a; }
-    .btn-purple { background: #7c3aed; }
-
-    /* ============================================================
-       SUPPORT SECTION
-    ============================================================ */
-    .support-shell {
-      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-      border: 1px solid #bbf7d0;
-      border-radius: var(--radius);
-      padding: 22px 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .support-title {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      font-weight: 700;
-      color: #14532d;
-      margin-bottom: 8px;
-    }
-    .support-desc {
-      font-size: 13.5px;
-      color: #166534;
-      line-height: 1.75;
-      margin-bottom: 5px;
-    }
-    .support-ml {
-      font-family: var(--font-ml);
-      font-size: 13px;
-      color: #166534;
-      font-style: italic;
-      margin-bottom: 20px;
-      line-height: 1.7;
-    }
-    .support-inner {
-      display: flex;
-      gap: 28px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-    .support-qr { text-align: center; }
-    .support-qr img {
-      width: 180px;
-      max-width: 100%;
-      border-radius: 10px;
-      border: 1px solid #d1fae5;
-    }
-    .support-qr-label { font-size: 11.5px; color: #4d7c60; margin-top: 7px; }
-    .upi-btn {
-      display: inline-block;
-      margin-top: 10px;
-      background: var(--green);
-      color: #fff;
-      padding: 9px 22px;
-      border-radius: 22px;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: background 0.15s;
-    }
-    .upi-btn:hover { background: #15803d; }
-    .upi-apps { font-size: 11px; color: #6b7f72; margin-top: 5px; }
-
-    .support-transparency { flex: 1; min-width: 220px; }
-    .support-transparency h4 { font-size: 14px; font-weight: 700; color: #14532d; margin-bottom: 7px; }
-    .support-transparency p  { font-size: 13px; color: #166534; line-height: 1.7; margin-bottom: 5px; }
-    .support-transparency .ml-note { font-family: var(--font-ml); font-size: 12px; color: #4d7c60; }
-    .transparency-link {
-      display: inline-block;
-      margin-top: 8px;
-      color: var(--blue);
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .transparency-link:hover { text-decoration: underline; }
-
-    /* ============================================================
-       CONTACT CTA
-    ============================================================ */
-    .contact-cta {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      box-shadow: var(--shadow-sm);
-    }
-    .contact-cta p { font-size: 13.5px; color: var(--text-mid); line-height: 1.65; flex: 1; min-width: 200px; }
-    .contact-cta a.btn-contact {
-      display: inline-block;
-      padding: 10px 20px;
-      background: var(--navy);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 6px;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .contact-cta a.btn-contact:hover { background: var(--navy-mid); }
-
-    /* ============================================================
-       FOOTER
-    ============================================================ */
-    .site-footer {
-      background: var(--navy);
-      color: rgba(255,255,255,0.75);
-      padding: 36px 0 0;
-      position: relative;
-      z-index: 1;
-    }
-    .footer-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 32px;
-    }
-    .footer-brand img { width: 38px; height: 38px; margin-bottom: 10px; }
-    .footer-brand h3 {
-      font-family: var(--font-serif);
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 7px;
-      line-height: 1.4;
-    }
-    .footer-brand p { font-size: 12.5px; line-height: 1.75; }
-    .footer-col h4 {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 10px;
-    }
-    .footer-col a, .footer-col p {
-      display: block;
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.60);
-      text-decoration: none;
-      margin-bottom: 6px;
-      line-height: 1.5;
-      transition: color 0.15s;
-    }
-    .footer-col a:hover { color: #fff; }
-    .footer-community {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      margin-top: 28px;
-      padding: 18px 20px 0;
-      text-align: center;
-    }
-    .footer-community p {
-      font-family: var(--font-ml);
-      color: rgba(255,255,255,0.62);
-      font-size: 13.5px;
-      line-height: 1.7;
-      margin-bottom: 5px;
-    }
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-top: 24px;
-      padding: 12px 20px;
-      text-align: center;
-      font-size: 11px;
-      color: rgba(255,255,255,0.38);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .footer-bottom img { width: 18px; height: 18px; opacity: 0.4; }
-
-    /* ============================================================
-       RESPONSIVE BREAKPOINTS
-       All grid collapses happen here — clearly organised
-    ============================================================ */
-
-    /* Tablet — 760px */
-    @media (max-width: 760px) {
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
-    }
-
-    /* Large mobile — 600px */
-    @media (max-width: 600px) {
-      .mission-hero  { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr 1fr; } /* 2 col at 600 */
-      .sources-grid  { grid-template-columns: repeat(2, 1fr); }
-      .footer-inner  { grid-template-columns: 1fr; gap: 20px; }
-      .page-banner   { flex-direction: column; }
-    }
-
-    /* Small mobile — 480px */
-    @media (max-width: 480px) {
-      .wrap          { padding: 16px 12px 40px; }
-      .provides-grid { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr; } /* 1 col at 480 */
-      .sources-grid  { grid-template-columns: 1fr 1fr; }
-      .support-inner { flex-direction: column; align-items: center; }
-      .support-qr    { width: 100%; }
-      .support-transparency { width: 100%; min-width: unset; }
-      .contact-cta   { flex-direction: column; align-items: flex-start; }
-      .maintainer-card { flex-direction: column; }
-      .page-banner-title { font-size: 19px; }
-      .sec-head      { font-size: 16px; }
-    }
-
-    /* Very small — 360px */
-    @media (max-width: 360px) {
-      .sources-grid  { grid-template-columns: 1fr; }
-      .provides-grid { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr; }
-      .card-body     { padding: 12px; }
-      .mission-block { padding: 16px; }
-    }
-  </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
 
-<script>
-  if (window.parent !== window) {
-    window.parent.postMessage({ activePage: "about.html" }, "*");
-  }
-</script>
+<body class="bg-gray-50 font-inter min-h-screen flex flex-col">
 
-<div class="wrap">
+<!-- HEADER -->
+<header class="header-bg-main text-white shadow-lg">
+    <div class="flex flex-col sm:flex-row items-center justify-between p-4 md:px-8 gap-3">
 
-  <!-- PAGE BANNER -->
-  <div class="page-banner">
-    <div>
-      <div class="page-banner-title">About ELWOIC</div>
-      <div class="page-banner-sub">Our mission, what we provide, data sources &amp; how to support us</div>
-    </div>
-    <div class="page-banner-badge">Elamkulam, Kerala</div>
-  </div>
+        <!-- Left Logo -->
+        <img src="elwoic (2).png"
+             alt="ELWOIC Logo Left"
+             class="rounded-lg w-20 h-20 sm:w-16 sm:h-16 object-cover">
 
-  <!-- DISCLAIMER -->
-  <div class="disclaimer">
-    <div class="disclaimer-head">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-      <h3>Official Disclaimer</h3>
-    </div>
-    <ul>
-      <li>This is a <strong>personal project</strong> for informational purposes and is <strong>not</strong> an official government or panchayat-owned entity.</li>
-      <li>For <strong>official weather alerts and warnings</strong>, always refer to the <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a>.</li>
-      <li>Details shown on this site may vary from official reports. Please <strong>exercise caution</strong> and cross-reference data before taking any action.</li>
-    </ul>
-    <p class="disclaimer-footer">Do not hesitate to contact us for more details. We apologise for any inconvenience caused by the unofficial nature of this website.</p>
-  </div>
-
-  <!-- WHO WE ARE -->
-  <h2 class="sec-head">Who We Are</h2>
-
-  <div class="maintainer-card">
-    <div class="maintainer-avatar">A</div>
-    <div class="maintainer-info">
-      <div class="maintainer-name">Aswanth Krishna K</div>
-      <div class="maintainer-role">Founder &amp; Maintainer — ELWOIC</div>
-      <div class="maintainer-desc">
-        This platform is developed and maintained by Aswanth Krishna K, from Elamkulam, Kerala.
-        With a passion for weather monitoring and community service, ELWOIC was created to provide
-        reliable and accessible local weather information for the Elamkulam region.
-      </div>
-    </div>
-  </div>
-
-  <div class="mission-hero">
-    <div class="mission-block accent">
-      <div class="mission-block-icon">🌍</div>
-      <h4>Our Mission</h4>
-      <p>ELWOIC is an independent, real-time weather monitoring project dedicated to serving accurate and reliable weather details for the Elamkulam community in Malappuram, Kerala. We provide timely, accessible data that empowers residents, farmers, and local institutions to make informed decisions about daily activities, agriculture, and safety.</p>
-    </div>
-    <div class="mission-block accent-blue">
-      <div class="mission-block-icon">🎯</div>
-      <h4>Purpose &amp; Value</h4>
-      <p>The goal of ELWOIC is to serve the Elamkulam community with easy-to-understand, local weather information. Whether planning daily activities, travelling, or staying safe during sudden weather changes, users can rely on this platform for real-time local observations and forecasts tailored specifically to this region.</p>
-    </div>
-  </div>
-
-  <div class="metrics-row">
-    <div class="metric-box">
-      <div class="metric-val">30 min</div>
-      <div class="metric-label">Minimum data refresh interval from multiple sources</div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-val">~15 km</div>
-      <div class="metric-label">Coverage radius around <a href="https://maps.app.goo.gl/Prpaxc2ULVMUJVgS7" target="_blank" style="color:var(--blue);font-size:10px;">10.892°N, 76.234°E</a></div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-val">24/7</div>
-      <div class="metric-label">Continuous automated monitoring &amp; observation</div>
-    </div>
-  </div>
-
-  <!-- WHAT WE PROVIDE -->
-  <h2 class="sec-head">What We Provide</h2>
-
-  <div class="card">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-      Real-time Data &amp; Services — Elamkulam Region
-    </div>
-    <div class="card-body">
-      <div class="provides-grid">
-        <div class="provide-item">
-          <div class="provide-icon pi-blue">🌡️</div>
-          <div><div class="provide-title">Real-time Temperature</div><div class="provide-desc">Current temperature readings updated continuously from local and API sources.</div></div>
+        <!-- Center Title -->
+        <div class="text-center sm:flex-grow mx-4">
+            <h1 class="text-xl sm:text-2xl font-bold leading-tight">
+                Elamkulam Local Weather Observation & Information Centre
+            </h1>
+            <h4 class="text-sm sm:text-base opacity-90">ELWOIC About Us</h4>
         </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-cyan">💧</div>
-          <div><div class="provide-title">Humidity Levels</div><div class="provide-desc">Atmospheric moisture content monitoring for accurate comfort index readings.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-green">💨</div>
-          <div><div class="provide-title">Wind Speed &amp; Direction</div><div class="provide-desc">Live wind speed in km/h and compass direction for the Elamkulam area.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-amber">🌡️</div>
-          <div><div class="provide-title">Feels Like Temperature</div><div class="provide-desc">Heat index adjusted apparent temperature, accounting for humidity and wind.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-purple">🌧️</div>
-          <div><div class="provide-title">Precipitation Data</div><div class="provide-desc">Rainfall measurements, probability forecasts, and hourly rain outlooks.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-navy">🌬️</div>
-          <div><div class="provide-title">Full AQI Details</div><div class="provide-desc">Complete Air Quality Index with PM2.5, PM10, CO₂, TVOC, and NOx sensor data.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-red">⚠️</div>
-          <div><div class="provide-title">Sudden Weather Alerts</div><div class="provide-desc">Rapid alerts for unexpected weather changes, heavy rain, or hazardous conditions.</div></div>
-        </div>
-        <div class="provide-item">
-          <div class="provide-icon pi-gold">📡</div>
-          <div><div class="provide-title">Live Radar &amp; Forecasts</div><div class="provide-desc">Windy and IMD radar integration with 7-day and hourly forecast outlooks.</div></div>
-        </div>
-      </div>
+
+        <!-- Right Logo -->
+        <img src="secondlwoic.png"
+             alt="ELWOIC Logo Right"
+             class="rounded-lg w-20 h-20 sm:w-16 sm:h-16 object-cover">
     </div>
-  </div>
 
-  <!-- IMPORTANT INFO -->
-  <h2 class="sec-head">Important Information</h2>
+    <!-- Navigation -->
+    <nav class="nav-bg-dark flex flex-wrap justify-center sm:justify-end gap-4 p-3 md:px-8">
+        <a href="index.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">HOME</a>
+        <a href="Forecast.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">FORECAST</a>
+        <a href="information.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">INFORMATION</a>
+        <a href="about.html" class="text-blue-200 underline font-semibold text-sm md:text-base">ABOUT</a>
+        <a href="contact.html" class="text-white hover:text-blue-200 transition text-sm md:text-base">CONTACT</a>
+    </nav>
+</header>
+<section id="disclaimer-information" class="container mx-auto px-4 py-8">
+    <!-- Main Card Container: centered and styled -->
+    <div class="max-w-4xl mx-auto w-full bg-white rounded-xl overflow-hidden border-t-8 border-red-600 shadow-2xl">
+        
+        <!-- Header/Title -->
+        <div class="p-6 bg-red-50 rounded-t-lg">
+            <h2 class="text-3xl font-bold text-red-700 leading-tight flex items-center">
+                <!-- SVG Icon for Warning/Information -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 fill-current text-red-600" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                Official Disclaimer & Project Information
+            </h2>
+        </div>
 
-  <div class="card">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-      Technical &amp; Operational Details
+        <!-- Content Section 1: Project Details -->
+        <div class="p-6 pb-4 text-gray-800">
+            <h3 class="text-2xl font-semibold mb-3 text-blue-700">
+                ELWOIC - Elamkulam Local Weather Observation And Information Centre
+            </h3>
+            
+            <p class="mb-4 text-sm text-gray-600">
+                In coordination with the House Public Board Department (HPBD) | Real-Time Weather Monitoring
+            </p>
+
+            <!-- Key Metrics List -->
+            <ul class="list-none space-y-2 text-base text-gray-700 font-medium border-l-4 border-gray-200 pl-4 py-2 bg-gray-50 rounded-lg shadow-inner">
+                <li>
+                    Data refreshes atleast every <strong class="text-blue-600">30 minutes</strong> from multiple sources.
+                </li>
+                <li>
+  Approximatly 15 Km around the coordinates :
+  <a href="https://maps.app.goo.gl/Prpaxc2ULVMUJVgS7"
+     target="_blank"
+     class="font-mono bg-gray-200 px-2 py-0.5 rounded text-sm text-gray-900 hover:underline">
+     10.892363, 76.234402
+  </a>
+</li>
+            </ul>
+        </div>
+        
+        <!-- Content Section 2: Disclaimer List -->
+        <div class="p-6 pt-0 text-gray-700">
+            <h3 class="text-xl font-semibold mt-4 mb-3 text-red-700 border-b pb-1">
+                Important Disclaimer
+            </h3>
+
+            <ul class="list-disc pl-5 space-y-3 text-base font-medium leading-relaxed">
+                <li class="mb-2">
+                    This is a <strong class="text-red-600">personal project created by a student</strong> for informational purposes and is <strong class="text-red-600">not</strong> an official government or panchayat-owned entity.
+                </li>
+                <li class="mb-2">
+                    For <strong class="text-red-600">official weather alerts and warnings</strong>, users must always refer to the 
+                    <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold underline transition duration-150">
+                        official IMD Kerala website
+                    </a>.
+                </li>
+                <li class="mb-2">
+                    The details shown on this site may vary from official reports. Please <strong class="text-red-600">exercise caution</strong> and cross-reference data before taking any action.
+                </li>
+            </ul>
+
+            <p class="mt-6 text-base text-gray-600 italic border-t pt-4">
+                <span class="font-semibold text-gray-700">Contact:</span> Do not hesitate to contact us for more details. We apologize for any inconvenience or discomfort caused by the unofficial nature of this website.
+            </p>
+        </div>
+        
     </div>
-    <div class="card-body">
-      <ul class="info-list">
-        <li>Weather data is updated at least every <strong>30 minutes</strong> using multiple API sources — AccuWeather, Windy, IMD Kerala, OpenWeatherMap, and Open-Meteo.</li>
-        <li>The station covers approximately a <strong>15-kilometre radius</strong> around coordinates <a href="https://maps.app.goo.gl/2SHrmdicqqi2pq6EA" target="_blank" rel="noopener">10.892363, 76.234402</a> with continuous automated monitoring.</li>
-        <li>For technical issues with radar display, we automatically switch to <strong>Windy radar</strong> for uninterrupted monitoring.</li>
-        <li>Details shown on the site may vary slightly across sources. Contacting us is always a good option if you notice any discrepancy.</li>
-        <li>Air quality data is measured locally using an <strong>AirGradient</strong> monitoring device provided through the AirGradient community programme.</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- DATA SOURCES -->
-  <h2 class="sec-head">Data Sources &amp; Partners</h2>
-
-  <div class="card">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64C12.11 5.56 12 5.14 12 5c0-1.1.9-2 2-2zm6 17H8V8h12v12z"/></svg>
-      Official Data Sources &amp; Partners
-    </div>
-    <div class="card-body">
-      <p class="sources-text">Our data is aggregated from multiple trusted sources including Open-Meteo forecast models, Windy weather visualisation, professional weather APIs, and local environmental sensors. Air quality is measured locally using an AirGradient monitoring device.</p>
-      <div class="sources-grid">
-        <div class="source-item"><div class="source-icon" style="background:#fef9c3;">🌤️</div><div class="source-name">OpenWeatherMap</div><div class="source-desc">Global API &amp; current data</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#dcfce7;">🇮🇳</div><div class="source-name">IMD Kerala</div><div class="source-desc">Official alerts &amp; forecasts</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#ffedd5;">🎯</div><div class="source-name">AccuWeather</div><div class="source-desc">Radar &amp; daily reports</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#dbeafe;">📈</div><div class="source-name">Open-Meteo</div><div class="source-desc">Open-source hourly models</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#cffafe;">🌬️</div><div class="source-name">Windy</div><div class="source-desc">Rain tracking &amp; wind models</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#ede9fe;">💜</div><div class="source-name">AirGradient</div><div class="source-desc">Local air quality sensor</div></div>
-      </div>
-      <div class="source-btns">
-        <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
-        <a href="https://www.accuweather.com/" target="_blank" rel="noopener" class="source-btn btn-orange">AccuWeather</a>
-        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener" class="source-btn btn-green">IMD Kerala</a>
-        <a href="https://www.airgradient.com/" target="_blank" rel="noopener" class="source-btn btn-purple">AirGradient</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUPPORT -->
-  <h2 class="sec-head" id="support-project">Support This Community Project</h2>
-
-  <div class="support-shell">
-    <div class="support-title">💚 Support ELWOIC</div>
-    <p class="support-desc">This is a non-commercial community initiative. Voluntary donations help cover basic expenses such as printing notices and website maintenance.</p>
-    <p class="support-ml">ഇത് ലാഭോദ്ദേശമില്ലാത്ത ഒരു സാമൂഹിക സംരംഭമാണ്. അച്ചടി ചിലവുകൾക്കും വെബ്സൈറ്റ് പരിപാലനത്തിനും മാത്രം സഹായം ഉപയോഗിക്കുന്നു.</p>
-    <div class="support-inner">
-      <div class="support-qr">
-        <img src="upi-qr.png" alt="UPI QR Code for voluntary donation">
-        <p class="support-qr-label">UPI — Voluntary donation only · 🔒 Secure</p>
-        <a href="upi://pay?pa=unnikrishnan9961667714@oksbi&pn=ELWOIC%20Weather%20Station&tn=Donation&cu=INR" class="upi-btn">Donate via UPI</a>
-        <p class="upi-apps">📱 Google Pay · PhonePe · Paytm · BHIM</p>
-      </div>
-      <div class="support-transparency">
-        <h4>Transparency</h4>
-        <p>View public details of fund collection and utilisation.</p>
-        <p class="ml-note">ഫണ്ട് ശേഖരണവും വിനിയോഗവും സംബന്ധിച്ച വിവരങ്ങൾ</p>
-        <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/fund-collection-details/" target="_blank" rel="noopener" class="transparency-link">View fund collection &amp; utilisation details →</a>
-        <p style="font-size:13px;color:#4d7c60;margin-top:12px;line-height:1.65;">
-          Thank you for your support.<br>
-          <span style="font-family:var(--font-ml);">നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി.</span>
+</section>
+<main class="container mx-auto px-4 py-8">
+    
+        <h2 class="text-3xl font-extrabold text-[#004a80] border-b-4 border-blue-100 pb-3 mb-6">Our Mission and History</h2>
+        
+        <!-- Placeholder Content for About Section -->
+        <section id="mission" class="mb-8">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Who We Are</h3>
+            <h4 class="text-2xl font-semibold text-gray-700 mb-3">1️⃣ Personal Introduction Maintained by:</h4>
+            This site is developed and maintained by Aswanthkrishna K, a 12th‑standard Computer Science student from Elamkulam, Kerala. With a passion for weather monitoring and community service, I created this platform to provide reliable and accessible local weather information for the Elamkulam region. 
+<br><br>
+            <section class="max-w-3xl w-full mx-auto p-4">
+    <!-- Centering and Card Styling -->
+        <!-- Title -->
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 text-center mb-2">
+            About Elamkulam Weather Station
+        </h2>
+        <p class="text-center text-lg text-gray-500 mb-8">
+            Your trusted source for accurate local weather information
         </p>
-      </div>
+
+  
+            <h3 class="text-2xl font-bold text-gray-800 mb-3 flex items-center">
+                <span class="text-4xl mr-3">🌍</span> Our Mission
+            </h3>
+            <p class="text-gray-600 leading-relaxed text-lg">
+                The Elamkulam Local Weather Observation And Information Center is dedicated to providing accurate, 
+                real-time weather information for the Elamkulam region in Malappuram District, Kerala. Our mission is 
+                to serve the local community with reliable meteorological data that helps in daily planning and safety 
+                decisions through continuous monitoring and analysis.
+            </p>
+      
+        <h3 class="text-2xl font-semibold text-gray-700 mb-3">2️⃣ Purpose / Value for Users  </h3>
+         The goal of this site is to serve the Elamkulam community by delivering timely, accurate, and easy-to-understand weather information. Whether planning daily activities, traveling, or staying safe during sudden weather changes, users can rely on this platform for local forecasts and real-time observations. 
+
+        
+  
+</section>
+       
+
+        <section id="values" class="mb-8">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Our Core Values</h3>
+            <ul class="space-y-3 text-gray-600 list-disc list-inside ml-4">
+                <section class="container mx-auto px-4 py-8">
+    <!-- Inline styles copied from your provided file for immediate use -->
+    <style>
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .card {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .capability-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+        }
+        @media (min-width: 640px) {
+            .capability-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .capability-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+    </style>
+    
+    <!-- Content starts here -->
+    <div class="main-container">
+
+       
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-6 border-b pb-2">
+                What We Provide
+            </h2>
+
+            <div class="capability-grid">
+                
+                <!-- Item 1: Real-time Temperature -->
+                <div class="capability-item">
+                    <div class="p-3 rounded-full bg-blue-100 flex-shrink-0">
+                        <!-- Blue Icon -->
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.75a2 2 0 01-1.894-2.106l.394-3.15a2 2 0 011.894-1.894h.75l-.394-3.15A2 2 0 019.237 10H5.736a2 2 0 00-1.789 2.894l3.5 7A2 2 0 008.736 21h4.75a2 2 0 001.894-2.106l-.394-3.15a2 2 0 00-1.894-1.894h-.75l.394-3.15z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-semibold text-gray-900">Real-time Temperature</p>
+                        <p class="text-sm text-gray-500">Current temperature and feels-like readings</p>
+                    </div>
+                </div>
+
+                <!-- Item 2: Humidity Levels -->
+                <div class="capability-item">
+                    <div class="p-3 rounded-full bg-cyan-100 flex-shrink-0">
+                        <!-- Cyan Icon (Changed to a raindrop/water icon for humidity relevance) -->
+                        <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.7v5.6a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-semibold text-gray-900">Humidity Levels</p>
+                        <p class="text-sm text-gray-500">Atmospheric moisture content monitoring</p>
+                    </div>
+                </div>
+
+                <!-- Item 3: Wind Conditions -->
+                <div class="capability-item">
+                    <div class="p-3 rounded-full bg-green-100 flex-shrink-0">
+                        <!-- Green Icon (Changed to a wind icon for relevance) -->
+                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 14h-1.5a2.5 2.5 0 01-2.5-2.5V8a2 2 0 00-2-2H6a2 2 0 00-2 2v3.5a2.5 2.5 0 002.5 2.5H13zm5 0h-1.5a2.5 2.5 0 01-2.5-2.5V8a2 2 0 00-2-2H13a2 2 0 00-2 2v3.5a2.5 2.5 0 002.5 2.5H18z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 16h3.5"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-semibold text-gray-900">Wind Conditions</p>
+                        <p class="text-sm text-gray-500">Wind speed and direction measurements</p>
+                    </div>
+                </div>
+
+                <!-- Item 4: Precipitation Data -->
+                <div class="capability-item">
+                    <div class="p-3 rounded-full bg-purple-100 flex-shrink-0">
+                        <!-- Purple Icon (Changed to a rain/cloud icon for relevance) -->
+                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.882-6.52A5.98 5.98 0 0112 4a5.98 5.98 0 015.882 5.48A4 4 0 0117 16m-4 1v4m-4-4v4m8-4v4m-4-4l-4 4m4 0l4-4"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-semibold text-gray-900">Precipitation Data</p>
+                        <p class="text-sm text-gray-500">Rainfall measurements and forecasts</p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- 2. Important Information Card -->
+       
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-4">
+                Important Information
+            </h2>
+            
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Our weather data is updated every **30 minutes** using multiple API sources for highly accurate conditions, including **AccuWeather, Windy, IMD Kerala, OpenWeather app and Open-Meteo** for exact rain timing.
+            </p>
+
+            <ul class="list-none space-y-3 text-gray-700 bg-gray-50 p-4 rounded-lg">
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-lg mr-2">&bull;</span>
+                    <p>
+                        The Elamkulam Weather Station covers approximately a **15-kilometer radius** around coordinates **<a href="https://maps.app.goo.gl/2SHrmdicqqi2pq6EA"
+     target="_blank"
+     class="font-mono bg-gray-200 px-2 py-0.5 rounded text-sm text-gray-900 hover:underline">
+      10.892363, 76.234402 
+  </a>** with **24/7 automated monitoring systems**.
+                    </p>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-lg mr-2">&bull;</span>
+                    <p>
+                        For technical issues with radar display or if AccuWeather fails to load, we automatically switch to **Windy radar** for continuous monitoring.
+                    </p>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 font-bold text-lg mr-2">&bull;</span>
+                    <p>
+                        Do not hesitate to contact us for more details. The details shown on the site may vary, therefore contacting is a good option if needed.
+                    </p>
+                </li>
+            </ul>
+     
+<section class="px-4 sm:px-8 lg:px-16 py-10 bg-gray-50">
+    <h2 class="text-xl font-semibold mt-6">Data Sources</h2>
+
+    <p class="text-gray-600 mt-2">
+Our data is aggregated from multiple sources including Open-Meteo forecast models, 
+Windy weather visualisation, external weather APIs, and local environmental sensors. 
+Air quality data is measured locally using an AirGradient monitoring device provided 
+through the AirGradient community program.
+</p>
+
+    <div id="partners-container" class="mt-10">
+
+        <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 text-center mb-10">
+            Official Data Sources & Partners
+        </h2>
+
+        <!-- Partner Icons Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-7 sm:gap-8 mb-10">
+
+            <!-- OpenWeather -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-yellow-500/20">
+                    <svg class="w-7 h-7 text-yellow-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.5 10c-1.12 0-2.07.72-2.45 1.7L15 13H5c-1.1 0-2 .9-2 2s.9 2 2 2h10l2.05 2.5c.38.98 1.33 1.7 2.45 1.7 1.66 0 3-1.34 3-3 0-1.66-1.34-3-3-3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">OpenWeatherMap</h3>
+                <p class="text-[0.65rem] text-gray-500">Global API and Current Data</p>
+            </div>
+
+            <!-- IMD -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-green-500/20">
+                    <svg class="w-7 h-7 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.69 2 6 4.69 6 8h1.75c0-1.4 1.15-2.5 2.5-2.5 1.4 0 2.5 1.1 2.5 2.5v.5h1.25c2.4 0 4.2 2 4.2 4.2C18.2 14.7 16.5 16 14 16h-1.25c-.4 0-.75.35-.75.75v3.5c0 .4.35.75.75.75h1.25c3.31 0 6-2.69 6-6s-2.69-6-6-6h-.5c-.3 0-.5-.2-.5-.5V3.75c0-.4-.35-.75-.75-.75z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">IMD Kerala</h3>
+                <p class="text-[0.65rem] text-gray-500">Official alerts & state forecasts</p>
+            </div>
+
+            <!-- AccuWeather -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-orange-500/20">
+                    <svg class="w-7 h-7 text-orange-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12c0 3.83 2.06 7.23 5.18 9.07l.95-1.79C6.03 17.84 4 14.88 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.88-2.03 5.84-4.13 7.28l.95 1.79C19.94 19.23 22 15.83 22 12c0-5.52-4.48-10-10-10z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">AccuWeather</h3>
+                <p class="text-[0.65rem] text-gray-500">Professional radar & daily reports</p>
+            </div>
+
+            <!-- Open-Meteo -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-blue-500/20">
+                    <svg class="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 10c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2s-.9-2-2-2h-1zm-6-4h2c2.21 0 4 1.79 4 4v3h-4.5l-1.5 2v-2H5c-1.11 0-2-.9-2-2s.89-2 2-2h1c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">Open-Meteo</h3>
+                <p class="text-[0.65rem] text-gray-500">Open-source & hourly models</p>
+            </div>
+
+            <!-- Windy -->
+            <div class="text-center flex flex-col items-center">
+                <div class="icon-circle bg-cyan-500/20">
+                    <svg class="w-7 h-7 text-cyan-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 10c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2zm-2 5h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2zm2.5-9h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3c1.1 0 2-.9 2-2s-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">Windy</h3>
+                <p class="text-[0.65rem] text-gray-500">Rain tracking & air models</p>
+            </div>
+            <!-- AirGradient -->
+<div class="text-center flex flex-col items-center">
+    <div class="icon-circle bg-purple-500/20">
+        <svg class="w-7 h-7 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 12h3l2-4 4 8 2-4h7v2h-6l-3 6-4-8-2 4H3z"/>
+        </svg>
     </div>
-  </div>
+    <h3 class="font-semibold text-xs sm:text-sm text-gray-800 mt-2">AirGradient</h3>
+    <p class="text-[0.65rem] text-gray-500">Open-source air quality monitoring device</p>
+</div>
 
-  <!-- CONTACT -->
-  <h2 class="sec-head">Feedback &amp; Contact</h2>
+        </div>
+<div class="flex justify-center flex-wrap gap-3">
 
-  <div class="contact-cta">
-    <p>If you have questions, suggestions, or notice any discrepancies in the weather data, please do not hesitate to reach out. Your feedback directly helps improve the accuracy and usefulness of this site for the Elamkulam community.</p>
-    <a href="contact.html#contactForm" class="btn-contact">Contact Us →</a>
-  </div>
+    <a href="https://www.windy.com/" 
+       target="_blank" 
+       class="access-button bg-cyan-500 text-white hover:bg-cyan-600">
+       Windy Radar
+    </a>
 
-</div><!-- /wrap -->
+    <a href="https://www.accuweather.com/" 
+       target="_blank" 
+       class="access-button bg-orange-500 text-white hover:bg-orange-600">
+       AccuWeather
+    </a>
 
+    <a href="https://mausam.imd.gov.in/thiruvananthapuram/" 
+       target="_blank" 
+       class="access-button bg-green-500 text-white hover:bg-green-600">
+       IMD Kerala
+    </a>
+
+    <a href="https://www.airgradient.com/"
+       target="_blank"
+       class="access-button bg-purple-500 text-white hover:bg-purple-600">
+       AirGradient
+    </a>
+
+</div>
+
+
+</section>
+        <section id="team">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3">Meet the Team</h3>
+            
+            <p class="text-gray-600 leading-relaxed">
+  <h3 class="text-1xl font-semibold text-gray-700 mb-3">Feedback & Contact: </h3>              
+  If you have questions, suggestions, or notice any discrepancies in the weather data, please do not hesitate to contact us. Your feedback helps improve the accuracy and usefulness of this site for the Elamkulam community.
+<a href="contact.html#contactForm" class="modern-link">Contact Us</a>
+
+  <hr style="margin:40px 0;">
+        </section>
+
+                       <section style="width:100%; margin:0 auto; text-align:center; padding:30px 20px; background:#ffffff; border:1px solid #d1fae5; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08);">
+
+<h3 style="color:#15803d; font-size:1.6em; margin-bottom:10px;">
+💚 Support This Community Project
+</h3>
+
+<p style="font-size:1em; line-height:1.6;">
+This is a non-commercial community initiative created for public information.
+Voluntary donations help cover basic expenses such as printing notices and website maintenance.
+</p>
+
+<p style="font-size:0.95em; line-height:1.6; color:#555; margin-top:10px;">
+<em>
+ഇത് ലാഭോദ്ദേശമില്ലാത്ത ഒരു സാമൂഹിക സംരംഭമാണ്.
+അച്ചടി ചിലവുകൾക്കും വെബ്സൈറ്റ് പരിപാലനത്തിനും മാത്രം സഹായം ഉപയോഗിക്കുന്നു.
+</em>
+</p>
+
+<p style="font-size:0.9em; color:#15803d; margin-top:10px;">
+🔒 Secure payment via UPI
+</p>
+
+<div style="margin-top:25px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:40px;">
+
+<!-- QR Code -->
+<div>
+<img src="upi-qr.png"
+     alt="UPI QR Code for voluntary donation"
+     style="max-width:240px; width:100%; height:auto; border-radius:10px; border:1px solid #ddd;">
+
+<p style="font-size:0.9em; color:#666; margin-top:8px;">
+UPI – Voluntary donation only
+</p>
+
+<a href="upi://pay?pa=unnikrishnan9961667714@oksbi&pn=ELWOIC%20Weather%20Station&tn=Donation&cu=INR"
+   style="display:inline-block; margin-top:10px; background:#16a34a; color:white; padding:10px 22px; border-radius:25px; font-size:0.95em; text-decoration:none;">
+Donate via UPI
+</a>
+
+<p style="font-size:0.8em; color:#777; margin-top:6px;">
+📱 Accepted via UPI: Google Pay • PhonePe • Paytm • BHIM
+</p>
+
+</div>
+
+<!-- Transparency -->
+<div style="max-width:420px; text-align:left;">
+
+<p style="font-size:1em; line-height:1.6; margin:0;">
+<strong>Transparency:</strong><br>
+View public details of fund collection and utilisation.
+</p>
+
+<p style="font-size:0.9em; color:#777; margin-top:5px;">
+ഫണ്ട് ശേഖരണവും വിനിയോഗവും സംബന്ധിച്ച വിവരങ്ങൾ
+</p>
+
+<p style="margin-top:10px;">
+<a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/fund-collection-details/"
+target="_blank"
+style="font-size:1em; color:#2a6fd4; text-decoration:underline;">
+View fund collection & utilisation details
+</a>
+</p>
+
+</div>
+
+</div>
+
+<p style="font-size:0.95em; color:#666; margin-top:25px;">
+Thank you for your support.
+</p>
+
+<p style="font-size:0.9em; color:#777;">
+നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി.
+</p>
+
+</section>
+
+        <!-- End of Placeholder Content --!>
+                </main>
 <!-- FOOTER -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <img src="ELWOIC.png" alt="ELWOIC Logo">
-      <h3>Elamkulam Local Weather Observation &amp; Information Centre</h3>
-      <p>An independent community initiative providing real-time weather and environmental data for Elamkulam Panchayat, Kerala. Not an official government entity.</p>
+<footer class="w-full bg-[#004a80] text-white py-8 shadow-inner relative">
+
+    <div class="mx-auto text-center space-y-3 px-4 md:px-20 max-w-[1400px]">
+
+        <p class="text-sm md:text-base leading-relaxed">
+            © 2025-2026 Elamkulam Local Weather Observation And Information Center(ELWOIC).
+            All rights reserved. Student project for educational purposes.
+        </p>
+
+        <p class="text-sm md:text-base">
+            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0"
+               class="hover:text-blue-200 underline">Privacy Policy</a>
+            <span class="mx-2 text-gray-300">|</span>
+
+            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/terms-of-service?authuser=0"
+               class="hover:text-blue-200 underline">Terms Of Service</a>
+            <span class="mx-2 text-gray-300">|</span>
+
+            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/"
+               class="hover:text-blue-200 underline">Introduction & Disclaimer</a>
+        </p>
+
+        <p class="text-sm text-blue-100">Designed and Managed by ELWOIC Team</p>
     </div>
-    <div class="footer-col">
-      <h4>Legal &amp; Access</h4>
-      <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0" target="_blank">Privacy Policy</a>
-      <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/terms-of-service?authuser=0" target="_blank">Terms of Service</a>
-      <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/" target="_blank">Introduction &amp; Disclaimer</a>
-      <a href="https://info.elwoic.in/" target="_blank">Data Request Portal</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <p>📍 Elamkulam, Malappuram, Kerala</p>
-      <a href="contact.html">Send a Message</a>
-      <a href="about.html#support-project">Support This Project</a>
-    </div>
-  </div>
-  <div class="footer-community">
-    <p>ഏലംകുളം സമൂഹത്തിന് — ഒരു സമർപ്പണം.</p>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2025–2026 ELWOIC. All rights reserved. Independent community project for informational purposes.</span>
-    <span>Designed &amp; managed by ELWOIC Team</span>
-    <img src="House Public Board Seal of AswanthKK.png" alt="Seal">
-  </div>
+
+    <!-- Corner Logo -->
+    <img src="House Public Board Seal of AswanthKK.png"
+         class="w-16 h-16 rounded-full footer-logo-corner">
 </footer>
+
+
+
 
 </body>
 </html>
