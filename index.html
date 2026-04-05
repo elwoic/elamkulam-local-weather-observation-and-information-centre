@@ -2,2012 +2,858 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Elamkulam Local Weather Observation And Information Centre</title>
-
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-<meta name="google-site-verification" content="zLZZ0vwaWtltQlXxYT91Apt-7MA6nQHqa2ISOClgQeM">
-<meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Centre">
-<meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayat, Kerala, India.">
-<meta name="description" content="ELWOIC is a student-led community weather station providing real-time weather, air quality (AQI), and environmental observations for Elamkulam and surrounding areas in Kerala." />
-<meta property="og:image" content="https://elwoic.in/favicon.png">
-<meta property="og:url" content="https://elwoic.in/">
-<meta property="og:type" content="website">
-
-<meta name="twitter:card" content="summary_large_image">
-<script src="https://cdn.tailwindcss.com"></script>
- <!-- FIRST-VISIT ALERT POPUP -->
-    <style>
-        
-        /* Popup background overlay */
-        #firstVisitOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        /* Popup box */
-        #firstVisitPopup {
-            background: #ffffff;
-            padding: 25px;
-            width: 90%;
-            max-width: 350px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            transform: translateY(-50px);
-            opacity: 0;
-            animation: slideUp 0.6s ease-out forwards;
-        }
-
-        /* Button */
-        #closeFirstVisit {
-            margin-top: 15px;
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        #closeFirstVisit:hover {
-            background: #005fcc;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            0% { transform: translateY(60px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-    
-    </style>
-
-     <script>
-        // Show alert only on first visit (not reload)
-        document.addEventListener("DOMContentLoaded", function () {
-            if (!sessionStorage.getItem("firstVisitShown")) {
-
-                // Create popup elements
-                const overlay = document.createElement("div");
-                overlay.id = "firstVisitOverlay";
-
-                overlay.innerHTML = `
-                    <div id="firstVisitPopup">
-                        <h2 style="font-size: 18px; margin-bottom: 10px;">
-                            Attention Please!
-                        </h2>
-                        <p style="font-size: 15px; color: #444;">
-                            Our website is currently undergoing a minor reconstruction. We kindly request your cooperation during this period.<br><br>
-
-Any inconvenience caused will be resolved as soon as possible. Thank you for your patience and understanding.
-                        </p>
-                        <button id="closeFirstVisit">Continue to Site</button>
-                    </div>
-                `;
-
-                document.body.appendChild(overlay);
-
-                // Close popup and save session
-                document.getElementById("closeFirstVisit").onclick = function () {
-                    overlay.remove();
-                    sessionStorage.setItem("firstVisitShown", "yes");
-                };
-            }
-        });
-    </script>
-    
-    
-    <style>
-/* ---------------------------------------------------- */
-/* 1. GLOBAL BASE - The white-space fix is here */
-/* ---------------------------------------------------- */
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    background: #f4f8fb;
-    /* --- COMPULSORY FIX --- */
-    overflow-x: hidden; 
-    /* ---------------------- */
-}
-
-/* ---------------------------------------------------- */
-/* 2. HEADER */
-/* ---------------------------------------------------- */
-.imd-header {
-    background: #004a80;
-    color: white;
-    width: 100%;
-}
-.imd-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    flex-wrap: nowrap;
-}
-.imd-logo {
-    background: white;
-    border-radius: 8px;
-    padding: 4px;
-    width: 55px;
-    height: 55px;
-}
-       /* Right logo + audio group */
-.right-logo-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Title Area */
-.imd-title {
-    flex: 1;
-    text-align: center;
-    min-width: 250px;
-}
-.imd-title h2 {
-    margin: 0 auto;
-    font-size: 20px;
-    color: white;
-    border-bottom: 1px solid rgba(255,255,255,0.7);
-    width: 80%;
-    padding-bottom: 2px;
-    margin-bottom: 3px;
-}
-.imd-title h4 {
-    margin: 0;
-    font-size: 14px;
-}
-/* Navigation */    
-.imd-nav {
-    background: #003a63;
-    display: flex;
-    flex-wrap: wrap;        /* allows 2 rows */
-    justify-content: flex-end; /* align to the right */
-    gap: 3px;
-    padding: 5px;
-}
-
-/* limit to maximum 2 rows */
-.imd-nav > * {
-    flex: 0 0 auto;
-}
-
-/* Hide scrollbar in Chrome/Edge/Safari */
-.imd-nav::-webkit-scrollbar {
-    display: none;
-}
-.imd-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 5px 5px;
-}
-.imd-nav a:hover {
-    border-bottom: 2px solid #fff;
-}
-.imd-nav a.active-nav {
-    color: #87CEEB;
-    border-bottom: 2px solid #87CEEB;
-}
-/* ---------------------------------------------------- */
-/* NEW: DATA REQUEST LINK INTEGRATION */
-/* ---------------------------------------------------- */
-.request-link-wrapper {
-    display: flex;
-    justify-content: flex-end; /* Keeps it right aligned */
-    padding: 2px 15px;
-    background: transparent; /* No background color as requested */
-    margin-bottom: -18px;    /* Pulls the marquee up to close the gap */
-    position: relative;      /* Ensures it stays on top */
-    z-index: 10;
-}
-
-.request-link-wrapper a {
-    color: #FFD700;
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.request-link-wrapper a:hover {
-    color: #0073e6;
-    text-decoration: underline;
-}
-
-/* Mobile Adjustment */
-@media (max-width: 600px) {
-    .request-link-wrapper {
-        margin-bottom: -15px;
-        padding-right: 10px;
-    }
-}
-/* ---------------------------------------------------- */
-/* 3. MARQUEE SECTIONS & ANIMATIONS (Unified) */
-/* Keyframe names are unique to prevent conflicts */
-/* ---------------------------------------------------- */
-
-.marquee-container {
-    width: 100%;
-    overflow: hidden;
-    padding: 10px 0;
-    box-sizing: border-box;
-    margin: 20px 0;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-}
-
-/* 3A. Top Info Marquee */
-.top-info-marquee {
-    background-color: #004080; /* Blue background */
-}
-.top-info-marquee .scroll-text {
-    display: inline-block;
-    white-space: nowrap;
-    font-weight: bold;
-    color: yellow;
-    font-size: 16px;
-    animation: scroll-info 35s linear infinite;
-}
-@keyframes scroll-info {
-    0% { transform: translateX(20%); }
-    100% { transform: translateX(-100%); }
-}
-
-/* 3B. Intro Marquee (Blue Gradient) */
-#intro-marquee .marquee-container {
-    background: linear-gradient(90deg, #0078ff, #00c6ff);
-    color: white;
-}
-#intro-marquee .marquee-text {
-    display: inline-block;
-    white-space: nowrap;
-    padding-left: 100%; /* Restart gap */
-    animation: scroll-intro 30s linear infinite;
-    font-weight: 500;
-    font-size: 1.1em;
-    letter-spacing: 0.5px;
-}
-@keyframes scroll-intro {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
-/* 3C. IMD Marquee (Traffic Light) */
-#imd-marquee-section .marquee-container {
-    background: linear-gradient(90deg, red, yellow, green);
-    color: white;
-    border-radius: 5px;
-    height: 30px; /* Recommended: Set a fixed height */
-    overflow: hidden; /* 💥 CRITICAL FIX: Hides the overflow */
-    position: relative; /* Recommended: For absolute positioning of text */
-}
-
-#imd-marquee-section .marquee-text {
-    display: inline-block;
-    white-space: nowrap;
-    animation: scroll-imd 18s linear infinite;
-    font-weight: 600;
-    font-size: 1.1em;
-    letter-spacing: 0.5px;
-    
-    /* Recommended: Ensure the text sits correctly in the container */
-    position: absolute; 
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Center vertically */
-}
-
-/* NOTE: You will likely need to adjust the animation transform 
-   to ONLY use the animation's transform, so the initial setting
-   of transform: translateY(-50%) should be merged into the keyframes. 
-   
-   A simpler approach might be to use Flexbox on the container instead 
-   of absolute positioning for vertical centering.
-*/
-
-@keyframes scroll-imd {
-    from { transform: translate(100%, -50%); } /* Merged with vertical centering */
-    to { transform: translate(-100%, -50%); } /* Merged with vertical centering */
-}
-
-/* Pause on hover for all marquees */
-.marquee-container:hover .scroll-text, 
-.marquee-container:hover .marquee-text {
-    animation-play-state: paused;
-}
-/* 3D. White Box Container for Alert */
-#imd-alert-wrapper {
-    /* Styles for the white box */
-    background-color: white;
-    padding: 1px; /* Space inside the box */
-    border-radius: 8px; /* Slightly rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    max-width: 1200px; /* Adjust this to fit your layout */
-    margin: 20px auto; /* Centers the box on the page */
-}
-
-/* 3E. Small Note Below the Marquee */
-.alert-update-note {
-    text-align: center; /* Align the note to the right */
-    margin-top: 5px; /* Small space above the note */
-    font-size: 0.85em; /* Make the text small */
-    color: #666; /* Gray text color */
-}
-
-.alert-update-note a {
-    color: #007bff; /* Standard link color */
-    text-decoration: none; /* Remove underline */
-}
-
-.alert-update-note a:hover {
-    text-decoration: underline; /* Add underline on hover */
-}
-
-/* Optional: Ensure the marquee section itself doesn't have extra padding/margin */
-#imd-marquee-section {
-    margin-bottom: 5px; /* A little space between marquee and the note */
-}
-/* ---------------------------------------------------- */
-/* 4. MAIN CONTENT & SECTIONS */
-/* ---------------------------------------------------- */
-} .forecast-box { max-width: 850px; background: #fff; padding: 20px; margin: 25px auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } .forecast-box h2 { color: #004a80; border-bottom: 2px solid #e3effa; padding-bottom: 6px; } iframe { width: 100%; height: 450px; border: none; border-radius: 10px; }
-/* ------------------------------ */
-/* UNIQUE DISCLAIMER STYLES       */
-/* ------------------------------ */
-
-#unique-disclaimer {
-    max-width: 900px;
-    margin: 20px auto;
-    background: #ffffff;
-    border-left: 6px solid #ff4d4d;
-    padding: 22px 28px;
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    text-align: left;
-    overflow: hidden;
-    transition: max-height 0.6s ease-in-out, padding 0.4s ease;
-    max-height: 1000px;
-    transform: translateZ(0);
-}
-
-/* Collapsed state */
-#unique-disclaimer.collapsed {
-    max-height: 75px !important;
-    padding-bottom: 0 !important;
-    cursor: pointer;
-}
-
-#unique-disclaimer.collapsed .unique-disclaimer-list,
-#unique-disclaimer.collapsed .unique-disclaimer-footer {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-
-/* Header */
-.unique-disclaimer-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
-    height: 40px;
-}
-
-/* Arrow toggle */
-.unique-disclaimer-toggle {
-    font-size: 1.2rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 5px;
-    transition: transform 0.35s ease;
-}
-
-#unique-disclaimer.collapsed .unique-disclaimer-toggle {
-    transform: rotate(-90deg);
-    animation: unique-arrow-bounce 2s infinite;
-}
-
-@keyframes unique-arrow-bounce {
-    0%, 100% { transform: rotate(-90deg) translateX(0); }
-    50% { transform: rotate(-90deg) translateX(5px); }
-}
-
-/* Heading */
-#unique-disclaimer h2 {
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: #002b5c;
-    margin: 0;
-}
-
-/* List items */
-.unique-disclaimer-list li {
-    font-size: 1rem;
-    color: #00315c;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-/* Footer */
-.unique-disclaimer-footer {
-    margin-top: 15px;
-    color: #555;
-    font-size: 0.9rem;
-    font-style: italic;
-}
-
-/* Mobile fixes */
-@media (max-width: 480px) {
-    #unique-disclaimer {
-        margin: 10px;
-        padding: 15px 20px;
-    }
-    #unique-disclaimer h2 {
-        font-size: 1.2rem;
-    }
-    #unique-disclaimer.collapsed {
-        max-height: 70px !important;
-    }
-}
-/* ===== ELWOIC Alerts Panel =====Manual update */
-
-#alerts-panel {
-  max-width: 900px;
-  margin: 20px auto;
-  background: #ffffff;
-  border-left: 6px solid #ff4e4e;
-  padding: 18px 20px;
-  border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  display: none; /* JS decides */
-}
-
-/* Main title */
-.alerts-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #002b5c;
-  margin: 0 0 10px 0;
-  border-bottom: 2px solid #e3effa;
-  padding-bottom: 6px;
-}
-
-/* Section wrapper */
-.alerts-block {
-  margin-top: 15px;
-}
-
-/* Section headings */
-.alerts-heading {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-}
-
-.alerts-manual-title { color: red; }
-.alerts-pre-title { color: #f1c40f; }
-.alerts-info-title { color: #0073e6; }
-
-/* Message text */
-.alert-line {
-  font-size: 1rem;
-  line-height: 1.6;
-  font-weight: 500;
-  margin-bottom: 10px;
-  min-height: 1.2em;
-}
-
-/* Timestamp */
-#alert-timestamp {
-  font-size: 0.7rem;
-  color: #888;
-  margin-top: 12px;
-}
-       
-/* Default (no alert) style */
-.alert-default {
-  color: #6c757d;      /* soft gray */
-  font-weight: 400;    /* lighter weight */
-  font-style: italic;  /* optional - makes it softer */
-}
-
-/* Blink animation */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.blink {
-  animation: blink 1.2s infinite;
-  font-weight: 700;
-}
-
-/* Kerala Weather Widgets Section */
-.weather-widgets-section {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.widget-box {
-    background: #fff;
-    border-radius: 0px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-.widget-box h2 {
-    color: #0277BD;
-    margin-bottom: 25px;
-}
-.kerala-today-header {
-    color: #0277BD;
-    margin-top: 40px;
-    margin-bottom: 25px;
-}
-
-/* OpenWeather Dashboard */
-.weather-dashboard-section {
-    font-family: 'Roboto', sans-serif;
-    padding: 40px 20px;
-    color: #333;
-    text-align: center;
-}
-.weather-dashboard-section h1 {
-    color: #1f3a93;
-    margin-bottom: 35px;
-    font-size: 32px;
-    font-weight: 500;
-}
-.dashboard-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-table {
-    width: 100%;
-    min-width: 700px;
-    border-collapse: collapse;
-    text-align: left;
-}
-th, td {
-    padding: 16px 20px;
-    border: 1px solid #e0e0e0;
-    transition: background-color 0.3s ease;
-}
-th {
-    background-color: #e6eef7;
-    color: #1f3a93;
-    font-weight: 700;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.data-label {
-    font-weight: 500;
-    color: #444;
-    background-color: #f7f9fb;
-}
-td {
-    font-size: 15px;
-    color: #555;
-}
-tr:hover {
-    background-color: #fcfdff;
-}
-.source-info-row td {
-    font-weight: 400;
-    font-size: 13px;
-    background-color: #007bff1a;
-    color: #1f3a93;
-}
-.rain-status {
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 20px;
-    display: inline-block;
-    font-size: 13px;
-    transition: all 0.3s ease;
-}
-.rain-status.yes {
-    background: #d9edf7;
-    color: #31708f;
-    border: 1px solid #bce8f1;
-}
-.rain-status.no {
-    background: #dff0d8;
-    color: #3c763d;
-    border: 1px solid #d6e9c6;
-}
-.error-status {
-    color: #a94442;
-    font-weight: 700;
-}
-tfoot td {
-    padding: 15px;
-    font-size: 12px;
-    color: #888;
-    background-color: #f0f4f8;
-    border-top: 1px solid #eef1f5;
-    text-align: center;
-}
-
-/* Radar Window Section */
-.radar-window-section {
-    font-family: 'Roboto', sans-serif;
-    margin: 40px auto;
-    padding: 0 20px 20px;
-    color: #333;
-    max-width: 1000px;
-}
-.radar-window-section .container {
-    max-width: 960px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-}
-.radar-window-section .header {
-    background-color: #1f3a93;
-    color: #fff;
-    padding: 18px 20px;
-    font-size: 22px;
-    font-weight: 700;
-    text-align: center;
-}
-.radar-window-section .tabs {
-    display: flex;
-    gap: 10px;
-    background: #e6eef7;
-    padding: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.radar-window-section .tab {
-    padding: 10px 16px;
-    background: #fff;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    font-size: 14px;
-}
-.radar-window-section .tab.active {
-    background: #2563eb;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.25);
-}
-.radar-window-section .view {
-    display: none;
-    height: 60vh;
-}
-.radar-window-section .view iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0 0 12px 12px;
-}
-.radar-window-section .panel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 60vh;
-    padding: 16px;
-    text-align: center;
-}
-.radar-window-section .btn {
-    display: inline-block;
-    padding: 10px 16px;
-    background: #2563eb;
-    color: #fff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    transition: 0.2s;
-    margin: 4px;
-}
-.radar-window-section .btn:hover {
-    background: #1d4ed8;
-}
-
-/* Apply Poppins and scope CSS variables only to elements within the dashboard scope */
-.weather-dashboard-scope {
-    font-family: 'Poppins', sans-serif;
-    color: #333;
-    /* Define CSS Variables within the scope for safety */
-    --primary-blue: #004080;
-    --secondary-blue: #0073e6;
-    --background-color: #f7f9fc;
-    --card-background: #ffffff;
-    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-subtle: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* --- Main Dashboard Container --- */
-.weather-dashboard-scope .unified-container {
-    max-width: 950px;
-    margin: 20px auto;
-    padding: 0 15px;
-}
-
-.weather-dashboard-scope .dashboard-section {
-    background: var(--card-background);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-light);
-    margin-bottom: 25px;
-    transition: transform 0.3s ease;
-}
-
-.weather-dashboard-scope .dashboard-section:hover {
-    transform: translateY(-2px);
-}
-
-.weather-dashboard-scope h2 {
-    text-align: center;
-    font-size: 1.5em;
-    color: var(--primary-blue);
-    margin-top: 0;
-    margin-bottom: 15px;
-    border-bottom: 3px solid var(--secondary-blue);
-    padding-bottom: 10px;
-    font-weight: 600;
-}
-
-/* --- Marquee Styles (For the running text) --- */
-.weather-dashboard-scope .marquee-wrapper {
-    width: 100%;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-}
-
-.weather-dashboard-scope .marquee-container {
-    max-width: 950px;
-    margin: 8px auto;
-    overflow: hidden;
-    background-color: var(--primary-blue);
-    padding: 10px 15px;
-    border-radius: 8px;
-    box-shadow: var(--shadow-light);
-}
-
-.weather-dashboard-scope .marquee-container:nth-of-type(2) {
-    background-color: var(--secondary-blue);
-}
-
-.weather-dashboard-scope .scroll-text {
-    display: inline-block;
-    white-space: nowrap;
-    animation: scroll 30s linear infinite;
-    font-weight: 500;
-    color: #ecf0f1;
-    font-size: 15px;
-}
-
-@keyframes scroll {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
-
-/* --- Table Styles --- */
-.weather-dashboard-scope .table-wrapper {
-    overflow-x: auto;
-}
-
-.weather-dashboard-scope table {
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 650px;
-    text-align: center;
-    font-size: 0.95em;
-}
-
-.weather-dashboard-scope th, 
-.weather-dashboard-scope td {
-    padding: 12px 8px;
-    border-bottom: 1px solid #eef1f6;
-}
-
-.weather-dashboard-scope th {
-    background: var(--primary-blue);
-    color: #fff;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-/* --- Chart Styles --- */
-.weather-dashboard-scope #chart-container {
-    width: 100%;
-    height: 300px;
-    padding: 10px;
-    box-sizing: border-box;
-    position: relative;
-}
-
-/* --- Extra Details Widget --- */
-.weather-dashboard-scope .extra-details {
-    padding: 15px;
-    background-color: var(--background-color);
-    border-radius: 8px;
-    box-shadow: inset var(--shadow-subtle);
-    margin-top: 15px;
-}
-
-.weather-dashboard-scope .details-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    font-size: 15px;
-}
-
-.weather-dashboard-scope .details-item span:first-child {
-    font-weight: 500;
-    color: var(--primary-blue);
-}
-
-.weather-dashboard-scope .details-item span:last-child {
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.weather-dashboard-scope .details-item:not(:last-child) {
-    border-bottom: 1px dashed #cfd8dc;
-}
-
-/* --- Responsive Layout (Windy Map and Details side-by-side) --- */
-@media (min-width: 768px) {
-    .weather-dashboard-scope .bottom-sections {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elamkulam Local Weather Observation And Information Centre</title>
+
+  
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --navy:        #0d3d6e;
+      --navy-mid:    #1a5490;
+      --gold:        #c9a227;
+      --gold-dim:    #b08f1e;
+      --white:       #ffffff;
+      --bg-page:     #eef3f8;
+      --bg-util:     #f5f8fc;
+      --bg-header:   #ffffff;
+      --border:      #d5e2ef;
+      --text-dark:   #0d3d6e;
+      --text-mid:    #4a6a84;
+      --text-muted:  #7a9ab5;
+      --font-serif:  'Playfair Display', 'EB Garamond', Georgia, serif;
+      --font-sans:   'DM Sans', 'Segoe UI', Arial, sans-serif;
     }
 
-    .weather-dashboard-scope .dashboard-section {
-        margin-bottom: 0;
-    }
-}
-.poster-float {
-  position: fixed;
-  bottom: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  z-index: 10000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* MODAL BACKDROP */
-.poster-modal {
-  display: none; /* IMPORTANT */
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-page);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       TOP ACCENT STRIPE
+    ============================================================ */
+    .top-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy) 70%, var(--gold) 100%);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       POP UP MASSAGE BOX
+    ============================================================ */
+
+    /* ================= POPUP STYLES ================= */
+.popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  display: flex;
   align-items: center;
-  z-index: 9999;
+  justify-content: center;
+  z-index: 2000;
 }
 
-.poster-content {
-  background: #fff;
-  padding: 12px;
-  width: 95%;
-  max-width: 700px;
-  max-height: 90vh;
+.popup-box {
+  width: 90%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  box-sizing: border-box;
-}
-        
-.poster-content {
-  overflow: hidden;   /* NOT auto */
-}
-
-.poster-image {
-  width: 100%;
-  max-height: 65vh;
-  object-fit: contain;
-  cursor: zoom-in;
-  transition: transform 0.3s ease;
-}
-.poster-image {
-  width: 100%;
-  max-height: 65vh;
-  object-fit: contain;
-  cursor: grab;
-  user-select: none;
-  transition: transform 0.15s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 22px 20px;
+  text-align: center;
+  animation: popupFade 0.3s ease;
 }
 
-    
-.poster-image {
-  transition: transform 0.2s ease;
-  cursor: zoom-in;
-}
-        
-.poster-image {
-  cursor: grab;
-  user-select: none;
-  transition: transform 0.15s ease;
+@keyframes popupFade {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
-.close-btn {
-  position: sticky;
-  top: 0;
-  float: right;
-  font-size: 18px;
-  background: none;
+.popup-header {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.popup-content {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.popup-btn {
+  background: var(--navy);
+  color: #fff;
   border: none;
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-@media (max-width: 480px) {
-  .poster-image {
-    max-height: 60vh;
-  }
+.popup-btn:hover {
+  background: var(--navy-mid);
 }
 
-/* ---------------------------------------------------- */
-/* 5. FOOTER & ASIDE */
-/* ---------------------------------------------------- */
-footer {
-    background: #004a80;
-    color: #FFFFFF; /* CORRECTED: Changed #FFFFF to #FFFFFF (or white) */
-    padding: 20px 10px;
-    text-align: center;
-    font-size: 13px;
-    position: relative;
-    /* Ensure footer stretches full width */
-    width: 100%; 
-}
-footer p {
-    margin: 5px 0;
-}
-.footer-logo {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    width: 25px;
-    height: 25px;
-}
-        /* Fix for unreadable links in the dark footer */
-footer a {
-    color: #FFFFFF !important; /* Forces link text to be white */
-    text-decoration: none; /* Optional: Remove the underline for a cleaner look */
-    font-weight: 500; /* Optional: Make the text slightly bolder for emphasis */
-    margin: 0 5px; /* Adds a little horizontal space around the links */
-    display: inline-block;
-}
-
-/* Optional: Add a hover effect for usability */
-footer a:hover {
-    text-decoration: underline;
-    color: #87CEEB !important; /* Change color on hover (using the yellow from your theme) */
-}
-/* Quick-links section */
-.quick-links {
-    max-width: 900px;
-    margin: 30px auto 20px;
-    padding: 20px;
-    background: #f7f9fb;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    text-align: center;
-    font-family: 'Noto Sans Malayalam', sans-serif;
-}
-
-.quick-links h3 {
-    color: #004a80; /* Heading color */
-    border-bottom: 2px solid #e3effa; 
-    padding-bottom: 8px; 
-    margin-bottom: 15px;
-}
-
-.quick-links p {
-    color: #555;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-/* Symbol icons under the sentence */
-.symbol-icons {
-    display: flex;
-    justify-content: center; /* Center the icons */
-    gap: 10px;
-    flex-wrap: wrap; /* Wrap on small screens */
-}
-
-.symbol-icons img {
-    width: 24px;
-    height: 24px;
-}
-/* ---------------------------------------------------- */
-/* 6. RESPONSIVE FIXES */
-/* ---------------------------------------------------- */
-@media (max-width: 600px) {
-    .imd-title h2 {
-        font-size: 16px;
-        width: 90%;
-    }
-    .imd-title h4 {
-        font-size: 12px;
-    }
-    .imd-logo {
-        width: 45px;
-        height: 45px;
-    }
-    .info-box { 
-        flex: 1 1 80px; 
-        min-width: 80px; 
-    }
-    .info-value { 
-        font-size: 1.1em; 
-    }
-}
-@media (max-width: 768px) {
-    .weather-dashboard-section h1 {
-        font-size: 24px;
-    }
-    th, td {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
-    .data-label {
-        font-size: 14px;
-    }
-    .rain-status {
-        font-size: 12px;
-    }
-    .radar-window-section .view {
-        height: 50vh;
-    }
-    .radar-window-section .tab {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-}
-@media (max-width: 500px) {
-    .data-label {
-        font-size: 12px;
-    }
-}
- @media (max-width: 600px) {
-    .right-logo-group {
-        flex-direction: column-reverse;
-        align-items: center;
-        gap: 6px;
+    /* ============================================================
+       UTILITY BAR
+    ============================================================ */
+    .util-bar {
+      background: var(--bg-util);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
+    .util-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #dateTime {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .util-sep {
+      width: 1px;
+      height: 10px;
+      background: var(--border);
+    }
+
+    .util-link {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .util-link:hover { color: var(--navy-mid); }
+
+    .util-social {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .util-social a {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border-radius: 3px;
+      transition: color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+    .util-social a:hover {
+      color: var(--navy);
+      background: #dce9f5;
+    }
+    .util-social svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      display: block;
+    }
+
+    /* ============================================================
+       MAIN HEADER
+       — inner wrapper caps width and centres logos on wide screens
+    ============================================================ */
+    .main-header {
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+    }
+
+    /* This wrapper keeps everything centred and prevents logos
+       from flying to the very edges on ultra-wide screens */
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Left logo box */
+    .h-logo {
+      width: 72px;
+      height: 72px;
+      border: 1px solid var(--border);
+      background: #f9fbfd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .h-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Centre title block */
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .station-name {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+      letter-spacing: 0.1px;
+    }
+
+    .gold-rule {
+      width: 48px;
+      height: 2px;
+      background: var(--gold);
+      margin: 8px auto 7px;
+      display: block;
+    }
+
+    /* FIX 1 — subtitle: readable size, professional slate-gray colour,
+       never shrinks to invisibility */
+    .station-sub {
+      font-size: 11px;           /* was 10px / overridden to tiny sizes */
+      font-weight: 500;
+      color: #6b7f92;            /* warm slate-gray — clear, professional */
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      line-height: 1.5;
+      white-space: normal;
+    }
+
+    /* FIX 2 — page-subtitle shown below the main sub on non-home pages */
+    .page-label {
+      display: none;             /* hidden by default; JS shows it */
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gold-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Right cluster */
+    .h-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* FIX 3 — audio button: always visible, never hidden */
     .audio-btn {
-        margin-right: 0;
+      width: 18px;
+      height: 18px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      display: flex !important;   /* override any media-query hiding */
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
+      flex-shrink: 0;
     }
-}
-
-    .audio-btn {
-        margin-right: 0;
+    .audio-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: #f0f5fb;
     }
-}
-@media (max-width: 600px) {
-    .audio-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
+    .audio-btn svg {
+      width: 8px;
+      height: 8px;
+      fill: currentColor;
+      display: block;
     }
-}
- 
-       .audio-btn {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.4);
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background 0.2s ease, transform 0.1s ease;
-}
 
-.audio-btn:hover {
-    background: rgba(255,255,255,0.3);
-}
-
-.audio-btn:active {
-    transform: scale(0.95);
-}
-
-    </style>
-</head>
-<body>
-    <header class="imd-header">
-        <div class="imd-top">
-    <img src="ELWOIC.png" alt="ELWOIC Logo" class="imd-logo">
-    <div class="imd-title">
-        <h2>Elamkulam Local Weather Observation & Information Centre</h2>
-        <h4>Community Weather Monitoring Initiative, Elamkulam, Kerala</h4>
-    </div>
-    <div class="right-logo-group">
-    <button id="audioBtn" class="audio-btn" title="Play intro sound">
-        🔊
-    </button>
-
-    <img src="Elamkulam Weather Logo Design.1.png"
-         alt="Weather Logo"
-         class="imd-logo">
-</div>
-
-</div>
-<audio id="siteAudio" src="audio/elwoic-intro.mp3"></audio>
-        <div id="dateTime" class="text-white text-sm font-semibold"></div>
-        <nav class="imd-nav" id="main-nav">
-            <a href="index.html" class="active-nav">HOME</a>
-            <a href="Forecast.html">FORECAST</a>
-            <a href="information.html">INFORMATION</a>
-            <a href="about.html">ABOUT US</a>
-            <a href="contact.html">CONTACT</a>
-        </nav>
-      <div class="request-link-wrapper">
-             <a href="https://info.elwoic.in/" target="_blank">Data Request Form →</a>
-        </div>
-        <div class="marquee-container top-info-marquee">
-        <div class="scroll-text" id="info-marquee">
-            ELWOIC - <span class="highlight">Elamkulam Local Weather Observation And Information Centre</span>
-            In coordination with <span class="highlight">House Public Board Department (HPBD)</span> |
-            <span class="highlight">Real-Time Weather Monitoring</span> | Data refreshes every <span id="refresh-time">30</span> minutes from multiple sources |
-            Location: 10.908°N, 76.229°E | Do not hesitate to contact us for more details.
-            The details shown on the site may vary, therefore contacting is a good option if needed.Contact No: 04933 316 750."⚠️Both ELWOIC and HPBD are a student made project, Not an official one.⚠️"
-        </div>
-    </div>
-         <div id="weather-badge" style="position: fixed; top: 80px; right: 20px; z-index: 1000; cursor: pointer; display: none;">
-  <div style="background: #1e40af; color: white; padding: 12px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-    </svg>
-    <span id="badge-count" style="position: absolute; top: -5px; right: -5px; background: white; color: #1e40af; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 1px solid #1e40af;">0</span>
-  </div>
-</div>
-
-<div id="panel-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1100; display: none; opacity: 0; transition: opacity 0.3s;"></div>
-<div id="weather-panel" style="position: fixed; top: 0; right: 0; height: 100%; width: 320px; background: #ffffff; z-index: 1200; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.3s ease-in-out; display: flex; flex-direction: column;">
-  <div style="background: #1e3a8a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="margin: 0; font-size: 18px;">Community Weather Reports</h3>
-    <button id="close-panel" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
-  </div>
-  
-  <div style="padding: 12px; background: #ffffff; border-bottom: 1px solid #dbeafe; text-align: center;">
-    <a href="report.html" style="color: #2563eb; font-size: 8px; text-decoration: underline; font-weight: 600; line-height: 1.5; display: inline-block; transition: color 0.2s;">
-        <span style="display: flex; items-right; justify-content: center; gap: 5px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:inline-block; vertical-align: middle;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            ഇതുപോലെ നിങ്ങളുടെ അഭിപ്രായങ്ങളും കാലാവസ്ഥ നിരീക്ഷണങ്ങളും കാഴ്ചപ്പാടും പങ്കുവയ്ക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക.
-        </span>
-    </a>
-</div>
-
-  <div id="panel-content" style="flex: 1; overflow-y: auto; padding: 15px; background: #f8fafc;">
-    </div>
-</div>
-    </header>
-
-
-    <main>
-        <div id="unique-disclaimer">
-  <div class="unique-disclaimer-header">
-    <button class="unique-disclaimer-toggle"
-        type="button"
-        aria-label="Expand or collapse notice"
-        title="Expand / Collapse">
-      ▼
-    </button>
-
-    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ff4d4d"
-         viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-    </svg>
-
-    <h2>Important Notice</h2>
-  </div>
-
-  <ul class="unique-disclaimer-list">
-      <li>This website is <b>not an official Government or Panchayat owned entity</b>.</li>
-      <li>This is a <b>personal project created by a student</b> for informational purposes.</li>
-      <li>
-          For official weather alerts and warnings, please visit 
-          <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank">
-              IMD Kerala (Thiruvananthapuram)
-          </a>.
-      </li>
-  </ul>
-  
-  <span class="unique-disclaimer-footer">
-      Cross-check severe weather alerts with official IMD sources.
-  </span>
-</div>
-<section id="alerts-panel">
-  <h2 class="alerts-title">ELWOIC Manual Update</h2>
-
-  <div class="alerts-block">
-    <h3 class="alerts-heading alerts-manual-title">Current Update</h3>
-    <div id="alert-manual" class="alert-line"></div>
-  </div>
-
-  <div class="alerts-block">
-    <h3 class="alerts-heading alerts-pre-title">Pre-Update</h3>
-    <div id="alert-pre" class="alert-line"></div>
-  </div>
-
-  <div class="alerts-block">
-    <h3 class="alerts-heading alerts-info-title">Information</h3>
-    <div id="alert-info" class="alert-line"></div>
-  </div>
-
-  <div id="alert-timestamp"></div>
-</section>
-<script type="module" src="alerts-panel.js"></script>
-   </main>
-
-    <section id="intro-marquee">
-        <div class="marquee-container">
-            <div class="marquee-text">
-                🌤️ Elamkulam Local Weather Observation And Information Center — Gives you weather info of Elamkulam.
-            </div>
-        </div>
-    </section>
-<div id="imd-alert-wrapper"> <section id="imd-marquee-section">
-        <div class="marquee-container" id="marqueeContainer">
-            <div class="marquee-text" id="marqueeText">Loading alert data...</div>
-        </div>
-        <script src="imd-marquee.js"></script> 
-    </section>
-
-    <p class="alert-update-note">
-        <a href="alert-info.html">
-            Click here to see how IMD alert updates
-        </a>
-    </p>
-    
-</div>
- <section id="weather-snapshot-section">
-    <div style="max-width:700px; margin:auto;">
-    <iframe 
-        src="tem_dash.html" 
-        style="width:100%; border:none; height:400px;" 
-        loading="lazy">
-    </iframe>
-</div>
- </section> 
-    <h3 style="max-width: 1200px; margin: 25px auto 10px; color: #333;">Average KERALA</h3>
-    <section class="kerala average">
-        <title>Kerala Weather Widgets Section</title>
-        <div class="widget-box">
-            <h2>Expected In KERALA For Next 7 days</h2>
-            <div id="ww_7d443210e054f" v='1.3' loc='id' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Free weather widget for website</a></div>
-        </div>
-        <h2 class="kerala-today-header">KERALA Today</h2>
-        <div id="ww_306f1b351ac5d" v='1.3' loc='id' a='{"t":"horizontal","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_306f1b351ac5d_u" target="_blank">Free weather widget for website</a></div>
-    </section>
-
-    <section class="weather-dashboard-section">
-        <h1> ☁ ️ Elamkulam OpenWeather Forecast Dashboard</h1>
-        <div class="dashboard-container">
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Current Conditions</th>
-                            <th>Next 3 Hours</th>
-                            <th>Next 6 Hours</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="source-info-row">
-                            <td class="data-label">Data Scope</td>
-                            <td>Live Data</td>
-                            <td>Forecast Point 1</td>
-                            <td>Forecast Point 2</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">🌡️ Temperature</td>
-                            <td id="owTemp0">--°C</td>
-                            <td id="owTemp1">--°C</td>
-                            <td id="owTemp2">--°C</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">Feels Like</td>
-                            <td id="owFeels0">--°C</td>
-                            <td id="owFeels1">--°C</td>
-                            <td id="owFeels2">--°C</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">Condition</td>
-                            <td id="owCond0">Loading...</td>
-                            <td id="owCond1">Loading...</td>
-                            <td id="owCond2">Loading...</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">💧 Humidity</td>
-                            <td id="owHum0">--%</td>
-                            <td id="owHum1">--%</td>
-                            <td id="owHum2">--%</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">⏲️ Pressure</td>
-                            <td id="owPress0">-- hPa</td>
-                            <td id="owPress1">-- hPa</td>
-                            <td id="owPress2">-- hPa</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">💨 Wind Speed</td>
-                            <td id="owWind0">-- km/h</td>
-                            <td id="owWind1">-- km/h</td>
-                            <td id="owWind2">-- km/h</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">👁️ Visibility</td>
-                            <td id="owVis0">-- km</td>
-                            <td id="owVis1">-- km</td>
-                            <td id="owVis2">-- km</td>
-                        </tr>
-                        <tr>
-                            <td class="data-label">🌧️ Rain/PCPN</td>
-                            <td id="owRainBox0">Checking...</td>
-                            <td id="owRainBox1">Checking...</td>
-                            <td id="owRainBox2">Checking...</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4">Data powered by OpenWeatherMap API.</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </section>
- <div id="weather-report"></div>
-
-   <section class="radar-window-section">
-    <div class="container">
-        <div class="header">🌦️ Live Weather Radar – Elamkulam</div>
-
-        <div class="tabs">
-            <div class="tab active" data-i="0">Windy Forecast</div>
-            <div class="tab" data-i="1">Windy Radar</div>
-            <div class="tab" data-i="2">AccuWeather Links</div>
-            <div class="tab" data-i="3">IMD Radar Links</div>
-            <div class="tab" data-i="4">ELWOIC Radar</div>
-        </div>
-
-        <div class="view" data-view-id="0" style="display:block;">
-            <iframe src="https://embed.windy.com/embed2.html?lat=10.9077&lon=76.2315&zoom=7&detailLat=10.9077&detailLon=76.2315&detail=true&metricWind=km/h&metricTemp=°C&marker=true" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-        <div class="view" data-view-id="1">
-            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&zoom=8&overlay=radar&product=radar&level=surface&lat=10.87&lon=76.307" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-        <div class="view" data-view-id="2">
-            <div class="panel">
-                <div>
-                    <p style="margin-bottom:12px;">Click below to open the official pages of AccuWeather:</p>
-                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/weather-forecast/2875704" target="_blank" rel="noopener">Open AccuWeather Forecast</a>
-                    <p style="margin-bottom:12px;">See air quality of Elamkulam:</p>
-                    <a class="btn" href="https://www.accuweather.com/en/in/elamkulam/2875704/air-quality-index/2875704" target="_blank" rel="noopener">Open AccuWeather Air Quality</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="view" data-view-id="3">
-            <div class="panel">
-                <div>
-                    <p style="margin-bottom:12px;">To see IMD animated weather radar Kochi click below:</p>
-                    <a class="btn" href="https://mausam.imd.gov.in/responsive/radar_animation.php?id=Kochi" target="_blank" rel="noopener">Open IMD Kochi Radar</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="view" data-view-id="4">
-            <iframe src="radar.html" allowfullscreen loading="lazy"></iframe>
-        </div>
-
-    </div>
-</section>
-   <section class="aqi-dashboard-section">
-         <div style="width: 100%; display: flex; justify-content: center;">
-    <iframe 
-      src="aqi_dash.html" 
-      width="100%" 
-      height="420"
-      style="max-width: 700px; border: none; background: transparent;" 
-      title="ELWOIC Air Quality Bulletin"
-      scrolling="yes">
-    </iframe>
-</div>
-    </section>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-<div class="weather-dashboard-scope">
-
-    <div class="marquee-wrapper">
-        <div class="marquee-container">
-            <div class="scroll-text" id="weather-marquee-1">Loading current weather...</div>
-        </div>
-        <div class="marquee-container">
-            <div class="scroll-text" id="weather-marquee-2">Loading forecast...</div>
-        </div>
-    </div>
-
-    <div class="unified-container">
-        
-        <div class="dashboard-section">
-            <h2>📊 Current Conditions & Forecast Trend</h2>
-            
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Source</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
-                            <th>Wind Speed (m/s)</th>
-                            <th>Condition</th>
-                        </tr>
-                    </thead>
-                    <tbody id="weather-table-body">
-                        <tr><td colspan="5">Loading data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h2 style="margin-top:25px;">📉 24-Hour Temperature Trend</h2>
-            <div id="chart-container">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </div>
-
-        <div class="bottom-sections">
-
-            <div class="weather-widget-box dashboard-section">
-                <h2>☁️ Elamkulam Weather Forecast</h2>
-                <div class="weather-widget">
-                    <a class="weatherwidget-io"
-                        href="https://forecast7.com/en/10d9176d23/elamkulam/"
-                        data-label_1="ELAMKULAM"
-                        data-label_2="FORECAST"
-                        data-icons="Climacons Animated"
-                        data-theme="pure">ELAMKULAM WEATHER</a>
-                </div>
-                
-                <h2 style="margin-top: 25px;">Additional Details (Current)</h2>
-                <div class="extra-details" id="extraWeather">
-                    Loading extra details...
-                </div>
-            </div>
-
-            <div class="windy-box dashboard-section">
-                <h2> Windy Forecast</h2>
-                <iframe src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=10.9077&detailLon=76.2315&metricTemp=%C2%B0C&metricRain=mm&metricWind=km/h&width=100%"></iframe>
-            </div>
-
-        </div>
-    </div> 
-
-</div> <script>
-    !function(d,s,id){
-        var js,fjs=d.getElementsByTagName(s)[0];
-        if(!d.getElementById(id)){
-            js=d.createElement(s);js.id=id;
-            js.src='https://weatherwidget.io/js/widget.min.js';
-            fjs.parentNode.insertBefore(js,fjs);
-        }
-    }(document,'script','weatherwidget-io-js');
-</script>
-   <aside class="quick-links" style="font-family: 'Noto Sans Malayalam', sans-serif;">
-    <h3>
-        <!-- Optional heading -->
-    </h3>
-    <p>
-        ഏലംകുളം സമൂഹത്തിന് — ഒരു വിദ്യാർത്ഥിയുടെ സമർപ്പണം.
-    </p>
-
-  <!-- Other footer content -->
-  <p style="font-size:0.9em; text-align:center; margin-top:30px;">
-    <a href="about.html#support-project" style="color:#555; text-decoration:underline;">
-      If you feel this information is useful, Support this non-commercial project
-    </a>
-  </p>
-
-    <!-- Symbol Images -->
-    <div class="symbol-icons">
-        <img src="ELWOIC.png" alt="Symbol 1">
-        <img src="HPBD seal transparent.png" alt="Symbol 2">
-        <img src="Elamkulam Weather Logo Design.1.png" alt="Symbol 3">
-        <img src="signature.png" alt="Symbol 4">
-    </div>
-</aside>
-  <button id="openPoster" class="poster-float">📄</button>
-
-<div id="posterModal" class="poster-modal">
-  <div class="poster-content">
-    <button class="close-btn" id="closePoster">✖</button>
-
-    <img
-      id="posterImg"
-      src="ELWOIC Poster.png"
-      class="poster-image"
-      alt="ELWOIC Project Poster"
-    />
-
-    <a href="ELWOIC Poster.png" download>⬇️ Download Poster</a>
-    <p>This poster is for informational and educational purposes only.</p>
-  </div>
-</div>
-
-
-    <footer>
-        <p>© 2025-2026 Elamkulam Local Weather Observation And Information Center (ELWOIC). 
-        All rights reserved. This is a student project for educational and 
-        informational purposes.</p>
-        <p>
-            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/privacy-policy?authuser=0"><u>Privacy Policy</u></a>
-            |
-            <a href="https://sites.google.com/view/elamkulamlocalweather-laptop-/terms-of-service?authuser=0"><u>Terms Of Service</u></a>
-            |  
-            <a href="https://elamkulamweatherobservationandinformationcenter.wordpress.com/"><u>Introduction & Disclaimer</u></a>
-            |
-            <a href="head.html"><u>Radar</u></a>
-        </p>
-        <p>Designed and Managed by ELWOIC Team</p>
-        <img src="House Public Board Seal of AswanthKK.png" alt="HPBD Logo" class="footer-logo">
-    </footer>
-
-    <script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
-    <script async src="https://app3.weatherwidget.org/js/?id=ww_306f1b351ac5d"></script>
-    <script type="module" src="elwoic-manual-update.js"></script>
-    <script src="snapshot.js"></script>
-    <script src="table.js"></script>
-    <script type="module" src="weather-dashboard.js"></script>
-    <script type="module" src="./notie-badge.js"></script>
-    <script src="unique-disclaimer.js" defer></script>
-    <script>
-    // --- INLINE JAVASCRIPT ---
-    
-    // 1. MARQUEE REFRESH TIME SCRIPT
-    const refreshTime = 30; // change if needed
-    document.getElementById("refresh-time").textContent = refreshTime;
-
-    // 2. ACTIVE NAVIGATION SCRIPT
-    document.addEventListener("DOMContentLoaded", function() {
-        const currentPath = window.location.pathname.split('/').pop();
-        const navLinks = document.getElementById('main-nav').getElementsByTagName('a');
-        
-        for (let i = 0; i < navLinks.length; i++) {
-            const linkHref = navLinks[i].getAttribute('href');
-            const linkPath = linkHref ? linkHref.split('/').pop() : '';
-            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
-                navLinks[i].classList.add('active-nav');
-            } else {
-                navLinks[i].classList.remove('active-nav');
-            }
-        }
-    });
-
-    // 3. Tab switching logic for the radar section
-    document.addEventListener('DOMContentLoaded', () => {
-        const container = document.querySelector('.radar-window-section');
-        if (!container) return; 
-        const tabs = Array.from(container.querySelectorAll('.tab'));
-        const views = Array.from(container.querySelectorAll('.view'));
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const i = Number(tab.getAttribute('data-i'));
-                tabs.forEach(t => t.classList.remove('active'));
-                views.forEach(v => v.style.display = 'none');
-                tab.classList.add('active');
-                views[i].style.display = 'block';
-                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
-    });
-    </script>
-    <script>
-function updateDateTime() {
-    const now = new Date();
-    const options = { 
-        timeZone: "Asia/Kolkata",
-        weekday: "short", year: "numeric", month: "short", day: "numeric"
-    };
-    const date = now.toLocaleDateString("en-GB", options);
-    const time = now.toLocaleTimeString("en-GB", { 
-        timeZone: "Asia/Kolkata",
-        hour12: false 
-    });
-    document.getElementById("dateTime").innerHTML = date + " | " + time + " IST";
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-</script>
-    <script>
-document.querySelectorAll(".radar-window-section .tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-        const i = tab.getAttribute("data-i");
-
-        document.querySelectorAll(".radar-window-section .tab")
-            .forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-
-        document.querySelectorAll(".radar-window-section .view")
-            .forEach(v => v.style.display = "none");
-        document.querySelector(`.radar-window-section .view[data-view-id="${i}"]`)
-            .style.display = "block";
-    });
-});
-</script>
-
-<script>
-    const openPoster = document.getElementById("openPoster");
-const closePoster = document.getElementById("closePoster");
-const posterModal = document.getElementById("posterModal");
-
-openPoster.addEventListener("click", () => {
-  posterModal.style.display = "flex";
-  resetZoom(); // important
-});
-
-closePoster.addEventListener("click", () => {
-  posterModal.style.display = "none";
-  resetZoom();
-});
-
-// close when clicking outside poster
-posterModal.addEventListener("click", (e) => {
-  if (e.target === posterModal) {
-    posterModal.style.display = "none";
-    resetZoom();
-  }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  const posterImg = document.getElementById("posterImg");
-  if (!posterImg) {
-    console.error("posterImg not found");
-    return;
-  }
-
-  let scale = 1;
-  let isDragging = false;
-  let startX = 0, startY = 0;
-  let translateX = 0, translateY = 0;
-posterImg.addEventListener("wheel", (e) => {
-  e.preventDefault(); // stop page scroll
-
-  const zoomSpeed = 0.1;
-  const minScale = 1;
-  const maxScale = 4;
-
-  if (e.deltaY < 0) {
-    scale += zoomSpeed; // zoom in
-  } else {
-    scale -= zoomSpeed; // zoom out
-  }
-
-  scale = Math.min(Math.max(scale, minScale), maxScale);
-
-  applyTransform();
-}, { passive: false });
-
-  posterImg.style.cursor = "grab";
-
-  posterImg.addEventListener("mousedown", (e) => {
-    if (scale <= 1) return;
-    isDragging = true;
-    startX = e.clientX - translateX;
-    startY = e.clientY - translateY;
-    posterImg.style.cursor = "grabbing";
-  });
-posterImg.addEventListener("click", () => {
-  if (scale === 1) {
-    scale = 2;
-  } else {
-    resetZoom();
-  }
-  applyTransform();
-});
-
-  window.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    translateX = e.clientX - startX;
-    translateY = e.clientY - startY;
-    applyTransform();
-  });
-
-  window.addEventListener("mouseup", () => {
-    isDragging = false;
-    posterImg.style.cursor = "grab";
-  });
-
-  function applyTransform() {
-    posterImg.style.transform =
-      `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-  }
-
-  // Expose functions if buttons need them
-  window.applyZoom = function (newScale) {
-    scale = newScale;
-    applyTransform();
-  };
-
-  window.resetZoom = function () {
-    scale = 1;
-    translateX = 0;
-    translateY = 0;
-    applyTransform();
-  };
-
-});
-</script>
-
-   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getDatabase,
-    ref,
-    push,
-    onValue,
-    query,
-    limitToLast
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-  /* ---------- Firebase ---------- */
-  const firebaseConfig = {
-    apiKey: "AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4",
-    authDomain: "report-20d26.firebaseapp.com",
-    databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "report-20d26",
-    storageBucket: "report-20d26.firebasestorage.app",
-    messagingSenderId: "293755368519",
-    appId: "1:293755368519:web:a41877cad54a65f93c2d62"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  /* ---------- Elements ---------- */
-  const logBtn = document.getElementById("log-btn");
-  const cooldownTimerEl = document.getElementById("cooldown-timer");
-  const cooldownText = document.getElementById("cooldown-text");
-  const statusText = document.getElementById("log-status");
-
-  /* ---------- Constants ---------- */
-  const LAT = 10.9081;
-  const LON = 76.2296;
-  const API_KEY = "ca13a2cbdc07e7613b6af82cff262295";
-  const COOLDOWN_MINUTES = 30;
-
-  let lastPushTimeUTC = null;
-  let timer = null;
-
-  /* ---------- Helpers ---------- */
-  function formatMMSS(sec) {
-    const m = String(Math.floor(sec / 60)).padStart(2, "0");
-    const s = String(sec % 60).padStart(2, "0");
-    return `${m}:${s}`;
-  }
-
-function aqiStatus(aqi) {
-  if (aqi <= 50) return "Good";
-  if (aqi <= 100) return "Moderate";
-  if (aqi <= 150) return "Unhealthy (Sensitive)";
-  if (aqi <= 200) return "Unhealthy";
-  if (aqi <= 300) return "Very Unhealthy";
-  return "Hazardous";
-}
-
-  function pm25ToAQI(pm) {
-    const bp = [
-      { cL: 0, cH: 12, aL: 0, aH: 50 },
-      { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
-      { cL: 35.5, cH: 55.4, aL: 101, aH: 150 },
-      { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
-      { cL: 150.5, cH: 250.4, aL: 201, aH: 300 },
-      { cL: 250.5, cH: 500, aL: 301, aH: 500 }
-    ];
-    for (const r of bp) {
-      if (pm >= r.cL && pm <= r.cH) {
-        return Math.round(
-          ((r.aH - r.aL) / (r.cH - r.cL)) * (pm - r.cL) + r.aL
-        );
+    /* Right logo box */
+    .h-logo-right {
+      width: 72px;
+      height: 72px;
+      border: 1px solid var(--border);
+      background: #f9fbfd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .h-logo-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ============================================================
+       NAVIGATION BAR
+    ============================================================ */
+    .nav-bar {
+      background: var(--navy);
+      border-bottom: 3px solid var(--gold);
+      display: flex;
+      align-items: stretch;
+      padding: 0 24px;
+      min-height: 38px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: stretch;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links li a {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      height: 38px;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .nav-links li:first-child a {
+      border-left: 1px solid rgba(255,255,255,0.08);
+    }
+    .nav-links li a:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+    .nav-links li a.active-nav {
+      color: var(--navy);
+      background: var(--gold);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       LIVE TICKER
+    ============================================================ */
+    .ticker-wrap {
+      background: #f0f5fb;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      height: 30px;
+      overflow: hidden;
+      transition: height 0.3s ease, opacity 0.3s ease;
+    }
+    .ticker-wrap.hidden {
+      height: 0;
+      opacity: 0;
+      pointer-events: none;
+      border-bottom: none;
+    }
+
+    .ticker-badge {
+      background: var(--navy);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ticker-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      animation: blink-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes blink-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .ticker-track::before,
+    .ticker-track::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 20px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ticker-track::before {
+      left: 0;
+      background: linear-gradient(to right, #f0f5fb, transparent);
+    }
+    .ticker-track::after {
+      right: 0;
+      background: linear-gradient(to left, #f0f5fb, transparent);
+    }
+
+    .ticker-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-size: 11.5px;
+      color: var(--text-mid);
+      animation: ticker-scroll 55s linear infinite;
+      padding-left: 100%;
+    }
+    .ticker-text .hl {
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .ticker-wrap:hover .ticker-text {
+      animation-play-state: paused;
+    }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ============================================================
+       STICKY NAV + TICKER
+    ============================================================ */
+    .sticky-shell {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    /* ============================================================
+       IFRAME CONTENT
+    ============================================================ */
+    #content-frame {
+      width: 100%;
+      flex: 1;
+      border: none;
+      display: block;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 900px) {
+      .header-inner {
+        grid-template-columns: 60px 1fr auto;
+        gap: 14px;
       }
+      .h-logo, .h-logo-right { width: 60px; height: 60px; }
+      .station-name { font-size: 20px; }
     }
-    return 0;
-  }
 
-  /* ---------- Cooldown Logic ---------- */
-  function startCooldown() {
-    if (timer) clearInterval(timer);
-
-    timer = setInterval(() => {
-      const elapsedSec = Math.floor((Date.now() - lastPushTimeUTC) / 1000);
-      const remainingSec = COOLDOWN_MINUTES * 60 - elapsedSec;
-
-   if (remainingSec <= 0) {
-  logBtn.disabled = false;
-  logBtn.textContent = "⏳ Push on cooldown";
-  cooldownTimerEl.textContent = "30:00";
-  cooldownTimerEl.style.color = "#22c55e";
-  cooldownText.textContent = "You can push now";
-  clearInterval(timer);
-} else {
-        logBtn.disabled = true;
-        cooldownTimerEl.textContent = formatMMSS(remainingSec);
-        cooldownTimerEl.style.color = "#facc15";
-        cooldownText.textContent = "Cooldown running, please wait for the next push";
+    @media (max-width: 700px) {
+      .main-header { padding: 10px 14px; }
+      .header-inner {
+        grid-template-columns: 50px 1fr auto;
+        gap: 10px;
       }
-    }, 1000);
-  }
+      .h-logo, .h-logo-right { width: 50px; height: 50px; }
+      .station-name { font-size: 16px; }
+      /* subtitle stays at 11px — no further shrink */
+      .gold-rule    { margin: 5px auto; }
+      .nav-bar      { padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
+      .nav-bar::-webkit-scrollbar { display: none; }
+      .nav-links li a { padding: 0 10px; font-size: 9.5px; letter-spacing: 1px; }
+      .util-bar     { padding: 0 12px; }
+      .util-link    { display: none; }
+      #dateTime     { font-size: 9.5px; }
+    }
 
-  /* ---------- Firebase Listener ---------- */
-  const latestLogQuery = query(ref(db, "weather_logs"), limitToLast(1));
+    @media (max-width: 520px) {
+      .main-header { padding: 8px 10px; }
+      .header-inner {
+        grid-template-columns: 40px 1fr auto;
+        gap: 8px;
+      }
+      .h-logo, .h-logo-right { width: 40px; height: 40px; }
+      .station-name { font-size: 13px; }
+      .station-sub  { font-size: 10px; letter-spacing: 0.8px; }
+      /* audio-btn intentionally NOT hidden here — FIX 3 */
+      .nav-links li a { padding: 0 8px; font-size: 9px; }
+    }
 
-  onValue(latestLogQuery, (snapshot) => {
+    @media (max-width: 400px) {
+      .main-header { padding: 7px 9px; }
+      .header-inner {
+        grid-template-columns: 36px 1fr auto;
+        gap: 7px;
+      }
+      /* h-right kept visible so audio button always shows */
+      .h-logo       { width: 36px; height: 36px; }
+      .h-logo-right { width: 36px; height: 36px; }
+      .station-name { font-size: 12px; }
+      .station-sub  { font-size: 10px; letter-spacing: 0.5px; }
+      
+    }
+  </style>
 
-  if (!snapshot.exists()) {
-    // Nobody has pushed yet
-    logBtn.disabled = false;
-    logBtn.textContent = "📤 Push Weather into our cloud storage.";
-    cooldownTimerEl.textContent = "30:00";
-    cooldownTimerEl.style.color = "#22c55e";
-    cooldownText.textContent = "You can push now";
-    return;
-  }
+   <script>
+/* ================= POPUP CONTROL PANEL ================= */
 
-  const data = Object.values(snapshot.val())[0];
-  lastPushTimeUTC = new Date(data.timestamp_utc).getTime();
-  startCooldown();
+// 🔴 MASTER SWITCH
+const POPUP_CONFIG = {
+  enabled: false,   // true = show, false = hide
 
-});
+  title: "WELCOME TO ELWOIC!",
 
-
-  /* ---------- Button ---------- */
-  logBtn.addEventListener("click", async () => {
-    if (logBtn.disabled) return;
-
-    try {
-      const [wRes, aRes] = await Promise.all([
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric`),
-        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5`)
-      ]);
-
-      const w = await wRes.json();
-      const a = await aRes.json();
-
-      const windMps = w.wind.speed;
-const windKmh = +(windMps * 3.6).toFixed(1);
-const windMph = +(windMps * 2.237).toFixed(1);
-const visibilityKm = w.visibility ? +(w.visibility / 1000).toFixed(1) : null;
-
-const pm25 = a.current.pm2_5;
-const aqiValue = pm25ToAQI(pm25);
-
-const payload = {
-  city: "Elamkulam",
-
-  /* 🌡 Temperature */
-  temp_c: w.main.temp,
-  feels_like_c: w.main.feels_like,
-
-  /* 💧 Atmosphere */
-  humidity: w.main.humidity,
-  pressure_hpa: w.main.pressure,
-  visibility_km: visibilityKm,
-
-  /* 🌬 Wind */
-  wind_mps: windMps,
-  wind_kmh: windKmh,
-  wind_mph: windMph,
-
-  /* ☁ Weather */
-  condition: w.weather[0].description,
-
-  /* 🫁 Air quality */
-  pm25: pm25,
-  aqi: aqiValue,
-  aqi_status: aqiStatus(aqiValue),
-
-  /* 🕒 Time */
-  timestamp_utc: new Date().toISOString(),
-  timestamp_ist: new Date().toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour12: false
-  })
+  message: `
+  ELWOIC gives you real time weather details for Elamkulam.
+  `
 };
 
+/* ================= POPUP LOGIC ================= */
 
-      await push(ref(db, "weather_logs"), payload);
-      statusText.textContent = "✅ Data pushed. Thank you for your help";
-    } catch (err) {
-      console.error(err);
-      statusText.textContent = "❌ Push failed. Check your internet connection or sent a feedback.";
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("site-popup-overlay");
+  const titleEl = document.getElementById("popup-title");
+  const msgEl = document.getElementById("popup-message");
+  const closeBtn = document.getElementById("popup-close");
+
+  // Hide completely if disabled
+  if (!POPUP_CONFIG.enabled) {
+    overlay.style.display = "none";
+    return;
+  }
+
+  // Inject content from config
+  titleEl.textContent = POPUP_CONFIG.title;
+  msgEl.innerHTML = POPUP_CONFIG.message;
+
+  // Close button
+  closeBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+});
+</script>
+
+   <!-- ================= POPUP MESSAGE BOX ================= -->
+<div id="site-popup-overlay" class="popup-overlay">
+  <div class="popup-box">
+    
+    <div class="popup-header" id="popup-title"></div>
+
+    <div class="popup-content" id="popup-message"></div>
+
+    <button id="popup-close" class="popup-btn">
+      Continue to Site
+    </button>
+
+  </div>
+</div>
+
+  
+</head>
+<body>
+
+  <!-- ① TOP ACCENT STRIPE -->
+  <div class="top-stripe" aria-hidden="true"></div>
+
+  <!-- ② UTILITY BAR -->
+  <div class="util-bar">
+    <div class="util-left">
+      <span id="dateTime"></span>
+      <div class="util-sep"></div>
+      <a href="https://info.elwoic.in/" target="_blank" class="util-link">Data Request →</a>
+    </div>
+    <div class="util-social">
+      <!-- Instagram -->
+      <a href="https://instagram.com/YOUR_HANDLE" target="_blank" rel="noopener" title="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <!-- YouTube -->
+      <a href="https://youtube.com/@YOUR_CHANNEL" target="_blank" rel="noopener" title="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <!-- X / Twitter -->
+      <a href="https://twitter.com/YOUR_HANDLE" target="_blank" rel="noopener" title="X (Twitter)">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ③ MAIN HEADER -->
+  <div class="main-header">
+    <div class="header-inner">
+
+      <!-- Left logo -->
+      <div class="h-logo">
+        <img src="ELWOIC.png" alt="ELWOIC Logo">
+      </div>
+
+      <!-- Centre title -->
+      <div class="title-block">
+        <div class="station-name">Elamkulam Local Weather Observation &amp; Information Centre</div>
+        <div class="gold-rule"></div>
+        <div class="station-sub">Community Weather Monitoring Initiative &nbsp;·&nbsp; Elamkulam, Kerala, India</div>
+        <!-- FIX 2 — page indicator, shown/updated by JS on nav click -->
+        <div class="page-label" id="page-label"></div>
+      </div>
+
+      <!-- Right: audio button + right logo -->
+      <div class="h-right">
+        <!-- FIX 3 — audio button always visible -->
+        <button id="audioBtn" class="audio-btn" title="Play intro sound">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        </button>
+        <div class="h-logo-right">
+          <img src="Elamkulam Weather Logo Design.1.png" alt="Weather Logo">
+        </div>
+      </div>
+
+    </div><!-- end .header-inner -->
+  </div>
+
+  <audio id="siteAudio" src="audio/elwoic-intro.mp3"></audio>
+
+  <!-- ④ STICKY SHELL: nav + ticker stay fixed to top while header scrolls away -->
+  <div class="sticky-shell">
+
+
+     <!-- NAVIGATION BAR -->
+    <nav class="nav-bar" id="main-nav">
+  <ul class="nav-links">
+    <li><a href="javascript:void(0)" data-page="home.html" class="active-nav">Home</a></li>
+    <li><a href="javascript:void(0)" data-page="forecast.html">Forecast</a></li>
+    <li><a href="javascript:void(0)" data-page="information.html">Information</a></li>
+    <li><a href="javascript:void(0)" data-page="about.html">About Us</a></li>
+    <li><a href="javascript:void(0)" data-page="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+    <!-- LIVE TICKER (hidden on non-home pages) -->
+    <div class="ticker-wrap" id="tickerWrap">
+      <div class="ticker-badge">
+        <span class="ticker-dot"></span>
+        Live
+      </div>
+      <div class="ticker-track">
+        <span class="ticker-text">
+          ELWOIC — Elamkulam Local Weather Observation And Information Centre
+&nbsp;&nbsp;|&nbsp;&nbsp;
+Real-Time Weather Monitoring & Forecasting
+&nbsp;&nbsp;|&nbsp;&nbsp;
+Radar · Satellite · Ground-Based Observations · Weather Analysis
+&nbsp;&nbsp;|&nbsp;&nbsp;
+Updates atleast atleast <span id="refresh-time">30</span> minutes
+&nbsp;&nbsp;|&nbsp;&nbsp;
+Elamkulam, Malappuram, Kerala
+
+        </span>
+      </div>
+    </div>
+
+  </div><!-- end .sticky-shell -->
+
+  <!-- ⑤ IFRAME — page content loads here -->
+  <iframe id="content-frame" src="home.html" title="Page Content"></iframe>
+
+  <!-- ============================================================ SCRIPTS -->
+  <script>
+    // Live date & time
+    function updateDateTime() {
+      const now  = new Date();
+      const date = now.toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        weekday: "short", day: "numeric", month: "short", year: "numeric"
+      });
+      const time = now.toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata", hour12: false,
+        hour: "2-digit", minute: "2-digit", second: "2-digit"
+      });
+      const el = document.getElementById("dateTime");
+      if (el) el.textContent = date + "  ·  " + time + " IST";
     }
-  });
-</script>
-   <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("audioBtn");
-    const audio = document.getElementById("siteAudio");
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
 
-    if (!btn || !audio) return;
-
-    btn.addEventListener("click", () => {
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-
-      // Auto-stop after 5 seconds
-      setTimeout(() => {
-        audio.pause();
+  <script>
+    // Audio button
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn   = document.getElementById("audioBtn");
+      const audio = document.getElementById("siteAudio");
+      if (!btn || !audio) return;
+      btn.addEventListener("click", () => {
         audio.currentTime = 0;
-      }, 5000);
+        audio.play().catch(() => {});
+        setTimeout(() => { audio.pause(); audio.currentTime = 0; }, 5000);
+      });
     });
-  });
-</script>
+  </script>
 
+  <script>
+    // Nav — load pages into iframe, set active, show/hide ticker,
+    // and FIX 2: update the page-label in the header
+    document.addEventListener("DOMContentLoaded", () => {
+      const frame     = document.getElementById("content-frame");
+      const links     = document.querySelectorAll("#main-nav a[data-page]");
+      const ticker    = document.getElementById("tickerWrap");
+      const pageLabel = document.getElementById("page-label");
+      const HOME_PAGE = "home.html";
+
+      function setActive(el) {
+        links.forEach(l => l.classList.remove("active-nav"));
+        el.classList.add("active-nav");
+      }
+
+      function updateTicker(page) {
+        ticker.classList.toggle("hidden", page !== HOME_PAGE);
+      }
+
+      // FIX 2: show/hide page label based on current page
+      function updatePageLabel(page, label) {
+        if (page === HOME_PAGE) {
+          pageLabel.style.display = "none";
+          pageLabel.textContent   = "";
+        } else {
+          pageLabel.style.display = "block";
+          pageLabel.textContent   = "— " + label + " —";
+        }
+      }
+
+
+        const params = new URLSearchParams(window.location.search);
+  const initialPage = params.get("page") || "home.html";
+  frame.src = initialPage;
+
+  const match = document.querySelector(`#main-nav a[data-page="${initialPage}"]`);
+  if (match) {
+    setActive(match);
+    updateTicker(initialPage);
+    updatePageLabel(initialPage, match.getAttribute("data-label"));
+  }
+
+      links.forEach(link => {
+        link.addEventListener("click", e => {
+          e.preventDefault();
+          const page  = link.getAttribute("data-page");
+          const label = link.getAttribute("data-label");
+          frame.src   = page;
+          setActive(link);
+          updateTicker(page);
+          updatePageLabel(page, label);
+          frame.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      // Auto-resize iframe to content height
+      // Auto-resize iframe to content height
+frame.addEventListener("load", () => {
+  try {
+    frame.style.height = frame.contentDocument.body.scrollHeight + "px";
+  } catch(e) { /* cross-origin */ }
+});
+
+// Listen for postMessage from iframe pages so they can
+// tell the shell which page is active (e.g. direct URL entry)
+window.addEventListener("message", (e) => {
+  const page = e.data && e.data.activePage;
+  if (!page) return;
+  const match = document.querySelector(`#main-nav a[data-page="${page}"]`);
+  if (!match) return;
+  setActive(match);
+  updateTicker(page);
+  const label = match.getAttribute("data-label") || "";
+  updatePageLabel(page, label);
+});
+    });
+  </script>
+
+  <!-- Notification badge module -->
+  <script type="module" src="./notie-badge.js"></script>
+
+  <!-- ── COMMUNITY WEATHER REPORTS BADGE ── -->
+  <div id="weather-badge" style="position:fixed;top:80px;right:20px;z-index:1000;cursor:pointer;display:none;">
+    <div style="background:#1e40af;color:white;padding:12px;border-radius:50%;box-shadow:0 4px 15px rgba(0,0,0,0.3);position:relative;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+      <span id="badge-count" style="position:absolute;top:-5px;right:-5px;background:white;color:#1e40af;font-size:12px;font-weight:bold;padding:2px 6px;border-radius:10px;border:1px solid #1e40af;">0</span>
+    </div>
+  </div>
+
+  <!-- ── PANEL OVERLAY ── -->
+  <div id="panel-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1100;display:none;opacity:0;transition:opacity 0.3s;"></div>
+
+  <!-- ── SIDE PANEL ── -->
+  <div id="weather-panel" style="position:fixed;top:0;right:0;height:100%;width:320px;background:#ffffff;z-index:1200;box-shadow:-5px 0 15px rgba(0,0,0,0.1);transform:translateX(100%);transition:transform 0.3s ease-in-out;display:flex;flex-direction:column;">
+    <div style="background:#1e3a8a;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="margin:0;font-size:18px;">Community Weather Reports</h3>
+      <button id="close-panel" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">&times;</button>
+    </div>
+    <div style="padding:12px;background:#ffffff;border-bottom:1px solid #dbeafe;text-align:center;">
+      <a href="report.html" style="color:#2563eb;font-size:13px;text-decoration:underline;font-weight:600;line-height:1.5;display:inline-block;">
+        ഇതുപോലെ നിങ്ങളുടെ അഭിപ്രായങ്ങളും കാലാവസ്ഥ നിരീക്ഷണങ്ങളും പങ്കുവയ്ക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക.
+      </a>
+    </div>
+    <div id="panel-content" style="flex:1;overflow-y:auto;padding:15px;background:#f8fafc;"></div>
+  </div>
+
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"e9220bd56c334ef2b9294f00b8f95788","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
-
