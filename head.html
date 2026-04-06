@@ -5,6 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elamkulam Local Weather Observation And Information Centre</title>
 
+  <link rel="stylesheet" href="style.css">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<meta name="google-site-verification" content="zLZZ0vwaWtltQlXxYT91Apt-7MA6nQHqa2ISOClgQeM">
+<meta property="og:title" content="ELWOIC | Elamkulam Local Weather Observation & Information Centre">
+<meta property="og:description" content="Real-Time Weather Monitoring System for Elamkulam Panchayat, Kerala, India.">
+<meta name="description" content="ELWOIC is a student-led community weather station providing real-time weather, air quality (AQI), and environmental observations for Elamkulam and surrounding areas in Kerala." />
+<meta property="og:image" content="https://elwoic.in/favicon.png">
+<meta property="og:url" content="https://elwoic.in/">
+<meta property="og:type" content="website">
+
+<meta name="twitter:card" content="summary_large_image">
   
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -678,10 +696,10 @@ document.addEventListener("DOMContentLoaded", () => {
     <nav class="nav-bar" id="main-nav">
   <ul class="nav-links">
     <li><a href="javascript:void(0)" data-page="home.html" class="active-nav">Home</a></li>
-    <li><a href="javascript:void(0)" data-page="h-forecast.html">Forecast</a></li>
-    <li><a href="javascript:void(0)" data-page="h-information.html">Information</a></li>
-    <li><a href="javascript:void(0)" data-page="h-about.html">About Us</a></li>
-    <li><a href="javascript:void(0)" data-page="h-contact.html">Contact</a></li>
+    <li><a href="javascript:void(0)" data-page="Forecast.html">Forecast</a></li>
+    <li><a href="javascript:void(0)" data-page="information.html">Information</a></li>
+    <li><a href="javascript:void(0)" data-page="about.html">About Us</a></li>
+    <li><a href="javascript:void(0)" data-page="contact.html">Contact</a></li>
   </ul>
 </nav>
 
@@ -802,12 +820,24 @@ Elamkulam, Malappuram, Kerala
       });
 
       // Auto-resize iframe to content height
-      // Auto-resize iframe to content height
-frame.addEventListener("load", () => {
+     // Add this inside your DOMContentLoaded nav script
+// Add this inside DOMContentLoaded, after your existing nav code
+let lastPage = "";
+setInterval(() => {
   try {
-    frame.style.height = frame.contentDocument.body.scrollHeight + "px";
-  } catch(e) { /* cross-origin */ }
-});
+    const currentSrc = frame.contentWindow.location.pathname.split("/").pop() || "home.html";
+    if (currentSrc !== lastPage) {
+      lastPage = currentSrc;
+      links.forEach(l => {
+        if (l.getAttribute("data-page") === currentSrc) {
+          setActive(l);
+          updateTicker(currentSrc);
+          updatePageLabel(currentSrc, l.getAttribute("data-label") || "");
+        }
+      });
+    }
+  } catch(e) {}
+}, 100); // checks every 100ms — fast enough to feel instant
 
 // Listen for postMessage from iframe pages so they can
 // tell the shell which page is active (e.g. direct URL entry)
@@ -855,5 +885,6 @@ window.addEventListener("message", (e) => {
   </div>
 
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"e9220bd56c334ef2b9294f00b8f95788","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"e9220bd56c334ef2b9294f00b8f95788","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
