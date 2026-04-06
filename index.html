@@ -852,6 +852,27 @@ window.addEventListener("message", (e) => {
   updatePageLabel(page, label);
 });
     });
+    
+    window.addEventListener("message", function(event) {
+  if (!event.data || !event.data.page) return;
+
+  const header = document.querySelector('.main-header');
+  if (!header) return;
+
+  const page = event.data.page;
+
+  // Hide header ONLY for admin pages
+  if (
+    page === "admin.html" ||
+    page === "report-admin.html" ||
+    page === "co-admin.html"
+  ) {
+    header.style.display = "none";
+  } else {
+    header.style.display = "";
+  }
+});
+
   </script>
 
   <!-- Notification badge module -->
