@@ -311,6 +311,9 @@ function getStatusLabel(status) {
   return "🆕 Pending";
 }
 
+if (window.parent !== window) {
+  window.parent.postMessage({ page: "admin.html" }, "*");
+}
 
 //---------------------------- Escape HTML ----------------------------
 function escape(s) {
