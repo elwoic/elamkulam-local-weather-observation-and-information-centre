@@ -568,21 +568,19 @@
     }
   </style>
 
-   <script>
-/* ================= POPUP CONTROL PANEL ================= */
+   <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🔴 MASTER SWITCH
-const POPUP_CONFIG = {
-  enabled: false,   // true = show, false = hide
-
-  title: "⚠️ External Data Service Issue",
-
-  message: `
-  One of the external data services is currently facing a temporary disruption, which may slow down dashboard loading. The system will continue to operate normally once the issue is resolved.
-  `
+const firebaseConfig = {
+  apiKey: "AIzaSyBiTNKib18UgHd2HQCS0iBpUvo5oBI_7CQ",
+  authDomain: "popalert-335e9.firebaseapp.com",
+  databaseURL: "https://popalert-335e9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "popalert-335e9"
 };
 
-/* ================= POPUP LOGIC ================= */
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("site-popup-overlay");
@@ -590,17 +588,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const msgEl = document.getElementById("popup-message");
   const closeBtn = document.getElementById("popup-close");
 
-  // Hide completely if disabled
-  if (!POPUP_CONFIG.enabled) {
-    overlay.style.display = "none";
-    return;
-  }
+  // Listen realtime — any change in Firebase updates popup instantly
+  onValue(ref(db, "popup"), (snap) => {
+    if (!snap.exists()) { overlay.style.display = "none"; return; }
+    const data = snap.val();
 
-  // Inject content from config
-  titleEl.textContent = POPUP_CONFIG.title;
-  msgEl.innerHTML = POPUP_CONFIG.message;
+    if (!data.enabled) { overlay.style.display = "none"; return; }
 
-  // Close button
+    titleEl.textContent = data.title || "";
+    msgEl.innerHTML = data.message || "";
+    overlay.style.display = "flex";
+  });
+
   closeBtn.addEventListener("click", () => {
     overlay.style.display = "none";
   });
