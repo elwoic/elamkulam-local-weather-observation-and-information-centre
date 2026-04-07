@@ -1394,15 +1394,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if(closeBtn) closeBtn.onclick = () => modal.style.display = "none";
 
     const secret = document.getElementById("secret-trigger");
-    if(secret) {
-        secret.ondblclick = async () => {
-            const pass = prompt("Admin Code:");
-            if(pass === "5252") {
-                await push(ref(db, "weather_logs"), {...currentLogData, timestamp_utc: new Date(Date.now() - 31*60*1000).toISOString()});
-                alert("Forced Log Entry Success");
+if(secret) {
+    secret.ondblclick = async () => {
+        const pass = prompt("Admin Code:");
+        if (pass === "5252") {
+            if (!currentLogData || !currentLogData.temp_c) {
+                alert("Weather data not loaded yet. Wait a moment and try again.");
+                return;
             }
-        };
-    }
+            await push(ref(db, "weather_logs"), {
+                ...currentLogData,
+                timestamp_utc: new Date(Date.now() - 31*60*1000).toISOString()
+            });
+            alert("Forced Log Entry Success");
+        }
+    };
+}
 
     loadWeatherSnapshot();
     loadFirebaseTempChart();
