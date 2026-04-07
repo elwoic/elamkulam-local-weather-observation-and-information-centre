@@ -1212,22 +1212,34 @@ const getRealisticFeelsLike = (t, rh, apiFeels) => {
 /* --- 3. Primary Data Fetch & UI Update --- */
 async function loadWeatherSnapshot() {
     try {
-        const [workerRes, owRes, omRes, fcRes] = await Promise.all([
-            fetch(API_URL).then(r=>r.json()),
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()),
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json()),
-            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json())
-        ]);
+       const [workerRes, owRes, omRes, fcRes] = await Promise.all([
+    fetch(API_URL).then(r=>r.json()).catch(()=>null),
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()).catch(()=>null),
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json()).catch(()=>null),
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()).catch(()=>null)
+]);
 
-        const localT = owRes.main.temp;
-        const localH = workerRes.rhum_corrected;
-        const pm25Val = workerRes.pm02_corrected;
-        const aqiVal = pm25ToAQI(pm25Val);
-        const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
-        const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
-        const avgWind = ((owRes.wind.speed*3.6 + omRes.current_weather.windspeed)/2).toFixed(1);
-        const omH = omRes.hourly.relativehumidity_2m[new Date().getHours()];
+// Stop only if the critical sources failed
+if (!owRes || !workerRes) {
+    console.error("Critical weather sources failed, skipping update.");
+    return;
+}
 
+const localT = owRes.main.temp;
+const localH = workerRes.rhum_corrected;
+const pm25Val = workerRes.pm02_corrected;
+const aqiVal = pm25ToAQI(pm25Val);
+const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
+const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
+
+// omRes fallback — if Open-Meteo is down, use only OpenWeather wind
+const avgWind = omRes
+    ? ((owRes.wind.speed * 3.6 + omRes.current_weather.windspeed) / 2).toFixed(1)
+    : (owRes.wind.speed * 3.6).toFixed(1);
+
+// omH fallback
+const omH = omRes ? omRes.hourly.relativehumidity_2m[new Date().getHours()] : owRes.main.humidity;
+      
         // Update Dashboard Main IDs
         const updates = {
             "temp": localT.toFixed(1),
@@ -1235,7 +1247,9 @@ async function loadWeatherSnapshot() {
             "feels": realFeels,
             "visibility": visibilityKm,
             "wind": avgWind,
-            "om-temp": ((owRes.main.temp + omRes.current_weather.temperature)/2).toFixed(1),
+            "om-temp": omRes
+    ? ((owRes.main.temp + omRes.current_weather.temperature) / 2).toFixed(1)
+    : owRes.main.temp.toFixed(1),
             "om-humidity": Math.round((owRes.main.humidity + omH)/2),
             "pressure": owRes.main.pressure,
             "condition": owRes.weather[0].main,
