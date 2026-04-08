@@ -36,88 +36,60 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   onValue(ref(db, "/"), (snapshot) => {
-  const data = snapshot.val() || {};
-  const now = new Date();
-  const todayTs = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  ).getTime();
+    const data = snapshot.val() || {};
+    const now = new Date();
+    const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-  let hasManual = false;
-  let hasPre = false;
-  let hasInfo = false;
+    let hasManual = false;
+    let hasPre = false;
+    let hasInfo = false;
 
-  manualEl.classList.remove("blink");
-  preEl.classList.remove("blink");
+    // 1. Reset States
+    const resetElement = (el) => {
+        el.classList.remove("blink", "alert-default");
+        el.style.color = "";
+        el.textContent = ""; 
+    };
 
-  manualEl.style.color = "";
-  preEl.style.color = "";
+    [manualEl, preEl, infoEl].forEach(resetElement);
 
-  manualEl.textContent = "No active alerts for today.";
-manualEl.classList.add("alert-default");
-
-preEl.textContent = "No upcoming updates scheduled.";
-preEl.classList.add("alert-default");
-
-infoEl.textContent = "No general announcements at this time.";
-infoEl.classList.add("alert-default");
-
-
-  /* ---------- MANUAL ---------- */
-  if (data.manualUpdate) {
-    const manualTs = dateOnlyTs(data.manualUpdate.date);
-
-    if (
-      !Number.isNaN(manualTs) &&
-      manualTs === todayTs &&
-      data.manualUpdate.text
-    ) {
-      manualEl.textContent = data.manualUpdate.text;
-manualEl.classList.remove("alert-default");
-manualEl.style.color = "red";
-hasManual = true;
-
-      if (data.manualUpdate.blink) {
-        manualEl.classList.add("blink");
-      }
+    /* ---------- MANUAL ---------- */
+    // Logic: Show if date is TODAY
+    if (data.manualUpdate?.text && data.manualUpdate?.date) {
+        const manualTs = dateOnlyTs(data.manualUpdate.date);
+        if (manualTs === todayTs) {
+            manualEl.textContent = data.manualUpdate.text;
+            manualEl.style.color = "red";
+            hasManual = true;
+            if (data.manualUpdate.blink) manualEl.classList.add("blink");
+        }
     }
-  }
 
-  /* ---------- PRE UPDATE ---------- */
-  if (data.preUpdate) {
-    const preTs = dateOnlyTs(data.preUpdate.date);
-
-    if (
-      !Number.isNaN(preTs) &&
-      todayTs < preTs &&
-      data.preUpdate.text
-    ) {
-      preEl.textContent = data.preUpdate.text;
-preEl.classList.remove("alert-default");
-preEl.style.color = "#f1c40f";
-hasPre = true;
-
-      if (data.preUpdate.blink) {
-        preEl.classList.add("blink");
-      }
+    /* ---------- PRE UPDATE ---------- */
+    // Logic: Show only if the target date is in the FUTURE
+    if (data.preUpdate?.text && data.preUpdate?.date) {
+        const preTs = dateOnlyTs(data.preUpdate.date);
+        if (todayTs < preTs) {
+            preEl.textContent = data.preUpdate.text;
+            preEl.style.color = "#f1c40f"; // Amber/Yellow
+            hasPre = true;
+            if (data.preUpdate.blink) preEl.classList.add("blink");
+        }
     }
-  }
 
-  /* ---------- INFO ---------- */
-  if (data.info?.text) {
-    infoEl.textContent = data.info.text;
-infoEl.classList.remove("alert-default");
-hasInfo = true;
-  }
+    /* ---------- INFO ---------- */
+    if (data.info?.text) {
+        infoEl.textContent = data.info.text;
+        hasInfo = true;
+    }
 
-  const shouldShowPanel = hasManual || hasPre || hasInfo;
-  panel.style.display = shouldShowPanel ? "block" : "none";
+    // 2. Final Visibility Toggle
+    // If an alert is active, show the panel. Otherwise, hide it.
+    const shouldShowPanel = hasManual || hasPre || hasInfo;
+    panel.style.display = shouldShowPanel ? "block" : "none";
 
-  if (shouldShowPanel && data.lastUpdated) {
-    timeEl.textContent = "Last updated: " + data.lastUpdated;
-  } else {
-    timeEl.textContent = "";
-  }
+    if (shouldShowPanel && data.lastUpdated) {
+        timeEl.textContent = "Last updated: " + data.lastUpdated;
+    }
 });
 });
