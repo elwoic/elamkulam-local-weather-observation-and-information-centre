@@ -1,924 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ELWOIC — Admin Data Centre</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #f5f5f3;
-    --surface: #ffffff;
-    --surface-2: #f9f9f8;
-    --surface-3: #f3f3f0;
-    --border: #e8e8e4;
-    --border-strong: #d4d4ce;
-    --text: #1a1a18;
-    --text-2: #6b6b64;
-    --text-3: #a8a89e;
-    --accent: #1a1a18;
-    --accent-fg: #fff;
-    --blue: #2563eb;
-    --blue-bg: #eff6ff;
-    --blue-border: #bfdbfe;
-    --green: #16a34a;
-    --green-bg: #f0fdf4;
-    --green-border: #bbf7d0;
-    --red: #dc2626;
-    --red-bg: #fef2f2;
-    --red-border: #fecaca;
-    --amber: #d97706;
-    --amber-bg: #fffbeb;
-    --amber-border: #fde68a;
-    --teal: #0d9488;
-    --teal-bg: #f0fdfa;
-    --teal-border: #99f6e4;
-    --purple: #7c3aed;
-    --purple-bg: #f5f3ff;
-    --purple-border: #ddd6fe;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ── TOPBAR ── */
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow);
-  }
-
-  .topbar-brand { display: flex; align-items: center; gap: 12px; }
-
-  .topbar-mark {
-    width: 32px; height: 32px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px; font-weight: 500;
-    color: var(--text-2);
-  }
-
-  .topbar-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .topbar-sub   { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
-  .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-  .sys-status {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--text-2);
-    font-family: 'DM Mono', monospace;
-  }
-
-  .sys-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 0 2px var(--green-border);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 7px 14px;
-    border: none; border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12.5px; font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    white-space: nowrap;
-  }
-
-  .btn:hover  { opacity: 0.85; }
-  .btn:active { transform: scale(0.98); }
-
-  .btn-ghost  { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
-  .btn-export { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); font-size: 11.5px; padding: 5px 12px; }
-
-  /* ── BODY ── */
-  .page-body {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px 24px 60px;
-  }
-
-  /* ── TABS ── */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow);
-    width: fit-content;
-  }
-
-  .tab-btn {
-    padding: 7px 18px;
-    border: none; border-radius: 4px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    color: var(--text-2);
-    background: transparent;
-    transition: all 0.15s;
-  }
-
-  .tab-btn:hover { background: var(--surface-2); color: var(--text); }
-
-  .tab-btn.active-admin   { background: var(--accent); color: #fff; font-weight: 600; }
-  .tab-btn.active-weather { background: var(--teal); color: #fff; font-weight: 600; }
-
-  /* ── SEARCH BAR ── */
-  .search-wrap {
-    position: relative;
-    margin-bottom: 20px;
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 12px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-3);
-    font-size: 14px;
-    pointer-events: none;
-  }
-
-  .search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 9px 12px 9px 36px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13.5px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    box-shadow: var(--shadow);
-  }
-
-  .search-input:focus {
-    border-color: var(--border-strong);
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
-  }
-
-  .search-input::placeholder { color: var(--text-3); }
-
-  /* ── SECTION (tab panel) ── */
-  .section { display: none; }
-  .section.active { display: block; }
-
-  /* ── SUMMARY STRIP ── */
-  .summary-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .summary-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    box-shadow: var(--shadow);
-  }
-
-  .summary-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-  .summary-val   { font-size: 20px; font-weight: 600; color: var(--text); }
-  .summary-sub   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-
-  /* ── DATE GROUP ── */
-  .date-group {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 12px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-  }
-
-  .date-header {
-    padding: 13px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    background: var(--surface-2);
-    border-bottom: 1px solid transparent;
-    transition: background 0.15s;
-    user-select: none;
-  }
-
-  .date-header:hover { background: var(--surface-3); }
-  .date-header.open  { border-bottom-color: var(--border); }
-
-  .date-header-left { display: flex; align-items: center; gap: 10px; }
-
-  .date-label {
-    font-size: 13px; font-weight: 600;
-    color: var(--text);
-  }
-
-  .date-count {
-    font-size: 11px;
-    background: var(--surface-3);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 1px 8px;
-    color: var(--text-2);
-    font-family: 'DM Mono', monospace;
-  }
-
-  .date-chevron {
-    font-size: 11px;
-    color: var(--text-3);
-    transition: transform 0.2s;
-  }
-
-  .date-header.open .date-chevron { transform: rotate(180deg); }
-
-  .date-body { display: none; padding: 12px 14px; }
-  .date-body.open { display: block; }
-
-  /* ── LOG ENTRY (admin) ── */
-  .log-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-    overflow: hidden;
-    transition: border-color 0.15s;
-  }
-
-  .log-card:last-child { margin-bottom: 0; }
-  .log-card:hover { border-color: var(--border-strong); }
-
-  .log-card-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    cursor: pointer;
-  }
-
-  .log-badge {
-    display: inline-flex; align-items: center;
-    font-size: 10px; font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 100px;
-    font-family: 'DM Mono', monospace;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .lb-manual  { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
-  .lb-pre     { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .lb-info    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .lb-bulk    { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
-  .lb-revoke  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-
-  .log-summary { font-size: 13px; color: var(--text); line-height: 1.4; }
-  .log-summary span { color: var(--text-2); }
-
-  .log-time-badge {
-    font-size: 11px; color: var(--text-3);
-    font-family: 'DM Mono', monospace;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .log-chevron {
-    font-size: 11px; color: var(--text-3);
-    transition: transform 0.2s;
-    flex-shrink: 0;
-  }
-
-  .log-card.open .log-chevron { transform: rotate(180deg); }
-
-  .log-card-body { display: none; }
-  .log-card.open .log-card-body { display: block; }
-
-  .log-detail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
-  }
-
-  .log-detail-cell {
-    background: var(--surface-2);
-    padding: 10px 14px;
-  }
-
-  .ldc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-  .ldc-val   { font-size: 13px; color: var(--text); font-weight: 500; word-break: break-word; }
-  .ldc-val.mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-
-  .blink-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 600;
-    padding: 2px 8px; border-radius: 100px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .blink-on  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .blink-off { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border); }
-
-  /* ── WEATHER CARD ── */
-  .weather-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-    overflow: hidden;
-    transition: border-color 0.15s;
-  }
-
-  .weather-card:last-child { margin-bottom: 0; }
-  .weather-card:hover { border-color: var(--border-strong); }
-
-  .weather-card-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    cursor: pointer;
-  }
-
-  .aqi-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10.5px; font-weight: 600;
-    padding: 3px 9px; border-radius: 100px;
-    font-family: 'DM Mono', monospace;
-    flex-shrink: 0;
-  }
-
-  .aqi-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-
-  .weather-summary { font-size: 13px; color: var(--text); }
-  .weather-summary span { color: var(--text-2); }
-
-  .weather-card-body { display: none; }
-  .weather-card.open .weather-card-body { display: block; }
-
-  .weather-card.open .log-chevron { transform: rotate(180deg); }
-
-  .weather-detail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
-  }
-
-  .weather-detail-cell {
-    background: var(--surface-2);
-    padding: 10px 14px;
-  }
-
-  .wdc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-  .wdc-val   { font-size: 14px; color: var(--text); font-weight: 600; }
-  .wdc-unit  { font-size: 11px; color: var(--text-3); font-weight: 400; margin-left: 2px; }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text-3);
-    font-size: 13.5px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-
-  /* ── LOADING ── */
-  .loading {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text-3);
-    font-size: 13px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 800px) {
-    .summary-strip { grid-template-columns: 1fr 1fr; }
-    .topbar { padding: 0 16px; }
-    .page-body { padding: 16px 14px 60px; }
-    .topbar-sub { display: none; }
-    .log-card-head { grid-template-columns: auto 1fr auto; }
-    .log-time-badge { display: none; }
-    .weather-card-head { grid-template-columns: auto 1fr auto; }
-  }
-
-  @media (max-width: 500px) {
-    .summary-strip { grid-template-columns: 1fr 1fr; }
-    .tabs { width: 100%; }
-    .tab-btn { flex: 1; text-align: center; }
-  }
-</style>
-</head>
-<body>
-
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="topbar-brand">
-    <div class="topbar-mark">ELW</div>
-    <div>
-      <div class="topbar-title">ELWOIC data centre</div>
-      <div class="topbar-sub">ADMIN READ-ONLY VIEW</div>
-    </div>
-  </div>
-  <div class="topbar-right">
-    <div class="sys-status"><div class="sys-dot"></div>Connected</div>
-    <button class="btn btn-ghost" onclick="window.logout && window.logout()">Logout</button>
-  </div>
-</div>
-
-<!-- PAGE -->
-<div class="page-body">
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active-admin" id="tab-admin" onclick="switchTab('admin')">Admin logs</button>
-    <button class="tab-btn" id="tab-weather" onclick="switchTab('weather')">Weather history</button>
-  </div>
-
-  <!-- Search -->
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" id="search-input" placeholder="Search by date, message, condition, AQI status…">
-  </div>
-
-  <!-- Admin section -->
-  <div class="section active" id="section-admin">
-    <div class="summary-strip" id="admin-summary"></div>
-    <div id="admin-container"><div class="loading">Loading admin logs…</div></div>
-  </div>
-
-  <!-- Weather section -->
-  <div class="section" id="section-weather">
-    <div class="summary-strip" id="weather-summary"></div>
-    <div id="weather-container"><div class="loading">Loading weather history…</div></div>
-  </div>
-
-</div>
-
-<!-- AUTH CHECK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const authApp = initializeApp({
+const authConfig = {
   apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
   authDomain: "administration-protal.firebaseapp.com"
-}, "adminAuthApp");
+};
 
+const authApp = initializeApp(authConfig, "adminAuthApp");
 const auth = getAuth(authApp);
 
 onAuthStateChanged(auth, user => {
-  if (!user) window.location.replace("data_login.html");
+  if (!user) { window.location.replace("data_login.html"); }
 });
 
-window.logout = () => signOut(auth).then(() => window.location.replace("data_login.html"));
+window.logout = () => {
+  signOut(auth).then(() => { window.location.replace("data_login.html"); });
+};
 </script>
 
-<!-- DATA -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<style>
+:root{
+  --bg:#f1f5f9;--panel:#fff;--border:#cbd5e1;
+  --text:#0f172a;--muted:#64748b;
+  --accent:#2563eb;--weather:#10b981;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Segoe UI,sans-serif;
+  background:var(--bg);color:var(--text)
+}
+.container{
+  max-width:1100px;margin:auto;padding:20px
+}
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#1e293b;color:#fff;padding:20px;border-radius:12px
+}
+.tab-nav{display:flex;gap:10px;margin:20px 0}
+.tab-btn{
+  flex:1;padding:14px;border:0;border-radius:8px;
+  font-weight:700;cursor:pointer;
+  background:var(--border);color:var(--muted)
+}
+.tab-btn.active{background:var(--accent);color:#fff}
+.tab-btn.weather-active{background:var(--weather);color:#fff}
 
+.content-section{display:none}
+.content-section.active{display:block}
+
+.search-box{
+  width:100%;padding:14px;border-radius:8px;
+  border:1px solid var(--border);margin-bottom:15px
+}
+
+.date-group{
+  border:1px solid var(--border);
+  border-radius:10px;margin-bottom:16px;
+  background:#fff;overflow:hidden
+}
+.date-header{
+  background:#f8fafc;padding:15px 20px;
+  display:flex;justify-content:space-between;
+  align-items:center;cursor:pointer
+}
+.date-content{display:none;padding:15px}
+.date-content.open{display:block}
+
+.entry-card{
+  border:1px solid #e2e8f0;
+  border-radius:8px;padding:14px;
+  margin-bottom:10px;background:#fff
+}
+.entry-head{
+  display:flex;justify-content:space-between;
+  align-items:center;cursor:pointer
+}
+.entry-details{
+  display:none;margin-top:10px;
+  font-size:.9rem;line-height:1.5
+}
+.entry-details.open{display:block}
+
+.badge{
+  padding:4px 10px;border-radius:4px;
+  font-size:.75rem;font-weight:700;color:#fff
+}
+.export-btn{
+  background:#0f766e;color:#fff;
+  border:0;border-radius:6px;
+  padding:6px 12px;font-size:.75rem;
+  cursor:pointer
+}
+.raw{
+  font-family:monospace;background:#f1f5f9;
+  padding:8px;border-radius:6px;
+  font-size:.75rem;white-space:pre-wrap
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="header">
+  <div>
+    <h1 style="margin:0">ELWOIC Admin Centre</h1>
+    <small>System Authenticated</small>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button id="btn-admin" class="tab-btn active">🛠️ Admin Logs</button>
+  <button id="btn-weather" class="tab-btn">🌤️ Weather History</button>
+</div>
+
+<input id="globalSearch" class="search-box"
+ placeholder="Search logs, dates, or conditions…">
+
+<div id="section-admin" class="content-section active">
+  <div id="admin-container">Loading admin logs…</div>
+</div>
+
+<div id="section-weather" class="content-section">
+  <div id="weather-container">Loading weather history…</div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from
+"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+/* FIREBASE */
 const adminApp = initializeApp({
-  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app"
-}, "adminDataApp");
+  apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  databaseURL:"https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app"
+},"admin");
 
 const weatherApp = initializeApp({
-  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
-}, "weatherDataApp");
+  apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  databaseURL:"https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
+},"weather");
 
-const adminDb   = getDatabase(adminApp);
+const adminDb = getDatabase(adminApp);
 const weatherDb = getDatabase(weatherApp);
 
-let adminData   = [];
-let weatherData = [];
-let currentTab  = "admin";
-let searchQuery = "";
+let adminHistory=[], weatherHistory=[];
 
-/* ── TAB SWITCH ── */
-window.switchTab = function(tab) {
-  currentTab = tab;
-  document.getElementById("section-admin").classList.toggle("active", tab === "admin");
-  document.getElementById("section-weather").classList.toggle("active", tab === "weather");
-  document.getElementById("tab-admin").className   = "tab-btn" + (tab === "admin"   ? " active-admin"   : "");
-  document.getElementById("tab-weather").className = "tab-btn" + (tab === "weather" ? " active-weather" : "");
-  renderCurrent();
-};
+/* TAB SWITCH */
+const secAdmin=document.getElementById("section-admin");
+const secWeather=document.getElementById("section-weather");
+const btnAdmin=document.getElementById("btn-admin");
+const btnWeather=document.getElementById("btn-weather");
 
-/* ── SEARCH ── */
-document.getElementById("search-input").addEventListener("input", e => {
-  searchQuery = e.target.value.toLowerCase();
-  renderCurrent();
-});
+btnAdmin.onclick=()=>showTab("admin");
+btnWeather.onclick=()=>showTab("weather");
 
-function renderCurrent() {
-  if (currentTab === "admin") renderAdmin();
-  else renderWeather();
+function showTab(t){
+  secAdmin.classList.remove("active");
+  secWeather.classList.remove("active");
+  btnAdmin.classList.remove("active");
+  btnWeather.classList.remove("weather-active");
+
+  if(t==="admin"){
+    secAdmin.classList.add("active");
+    btnAdmin.classList.add("active");
+  }else{
+    secWeather.classList.add("active");
+    btnWeather.classList.add("weather-active");
+  }
 }
 
-/* ══════════════════════════════
-   ADMIN LOGS
-══════════════════════════════ */
-onValue(ref(adminDb, "grant_history"), snap => {
-  adminData = [];
-  snap.forEach(child => adminData.push({ _key: child.key, ...child.val() }));
-  adminData.reverse();
+/* DATA */
+onValue(ref(adminDb,"grant_history"),s=>{
+  adminHistory=Object.values(s.val()||{}).reverse();
   renderAdmin();
 });
-
-function renderAdmin() {
-  const container = document.getElementById("admin-container");
-  const summary   = document.getElementById("admin-summary");
-
-  const filtered = searchQuery
-    ? adminData.filter(e => JSON.stringify(e).toLowerCase().includes(searchQuery))
-    : adminData;
-
-  // Summary counts
-  const counts = { manualUpdate: 0, preUpdate: 0, info: 0, BULK_UPDATE: 0, REVOKE_ALL: 0, revoke: 0 };
-  adminData.forEach(e => {
-    if (e.action === 'revoke') counts.revoke++;
-    else if (counts[e.type] !== undefined) counts[e.type]++;
-  });
-
-  summary.innerHTML = `
-    <div class="summary-card">
-      <div class="summary-label">Total actions</div>
-      <div class="summary-val">${adminData.length}</div>
-      <div class="summary-sub">all time</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label">Manual updates</div>
-      <div class="summary-val">${counts.manualUpdate}</div>
-      <div class="summary-sub">+ ${counts.preUpdate} pre-updates</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label">Revokes</div>
-      <div class="summary-val" style="color:var(--red)">${counts.revoke + counts.REVOKE_ALL}</div>
-      <div class="summary-sub">${counts.REVOKE_ALL} full clears</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label">Bulk ops</div>
-      <div class="summary-val">${counts.BULK_UPDATE}</div>
-      <div class="summary-sub">update-all actions</div>
-    </div>
-  `;
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">No admin logs found${searchQuery ? ' for "' + searchQuery + '"' : ''}.</div>`;
-    return;
-  }
-
-  // Group by date
-  const groups = {};
-  filtered.forEach(e => {
-    const d = (e.timestamp || "Unknown date").split(",")[0].trim();
-    (groups[d] = groups[d] || []).push(e);
-  });
-
-  container.innerHTML = Object.keys(groups).map(date => `
-    <div class="date-group">
-      <div class="date-header" onclick="toggleGroup(this)">
-        <div class="date-header-left">
-          <span class="date-label">${date}</span>
-          <span class="date-count">${groups[date].length} action${groups[date].length !== 1 ? 's' : ''}</span>
-        </div>
-        <span class="date-chevron">▼</span>
-      </div>
-      <div class="date-body">
-        ${groups[date].map(e => renderAdminCard(e)).join("")}
-      </div>
-    </div>
-  `).join("");
-}
-
-function renderAdminCard(e) {
-  const isRevokeSingle = e.action === 'revoke';
-  const isRevokeAll    = e.type === 'REVOKE_ALL';
-  const isBulk         = e.type === 'BULK_UPDATE';
-
-  const badgeMap = {
-    manualUpdate: { label: "Manual",  cls: "lb-manual" },
-    preUpdate:    { label: "Pre",     cls: "lb-pre" },
-    info:         { label: "Info",    cls: "lb-info" },
-    BULK_UPDATE:  { label: "Bulk",    cls: "lb-bulk" },
-    REVOKE_ALL:   { label: "Revoke",  cls: "lb-revoke" },
-  };
-
-  const meta = isRevokeSingle
-    ? { label: "Revoke", cls: "lb-revoke" }
-    : (badgeMap[e.type] || { label: e.type || "—", cls: "lb-bulk" });
-
-  // Build summary line
-  let summary = "";
-  if (isRevokeAll) {
-    summary = `<b>All sections cleared</b> — portal wiped`;
-  } else if (isBulk) {
-    const d = e.data || {};
-    const parts = [];
-    if (d.manualUpdate?.text) parts.push(`Manual: "${truncate(d.manualUpdate.text, 40)}"`);
-    if (d.preUpdate?.text)    parts.push(`Pre: "${truncate(d.preUpdate.text, 40)}"`);
-    if (d.info?.text)         parts.push(`Info: "${truncate(d.info.text, 40)}"`);
-    summary = `<b>All sections updated</b>${parts.length ? ' — ' + parts[0] : ''}`;
-  } else if (isRevokeSingle) {
-    const prevText = e.data?.text ? `"${truncate(e.data.text, 50)}"` : '(empty)';
-    summary = `<b>${e.type}</b> revoked — was: <span>${prevText}</span>`;
-  } else if (e.data) {
-    const d = e.data;
-    const parts = [];
-    if (d.date) parts.push(`<b>${d.date}</b>`);
-    if (d.text) parts.push(`<span>${truncate(d.text, 60)}</span>`);
-    summary = parts.join(" — ") || "—";
-  } else {
-    summary = e.details || "—";
-  }
-
-  const time = (e.timestamp || "").split(",")[1]?.trim() || e.timestamp || "—";
-
-  // Detail cells
-  let detailCells = "";
-
-  if (isBulk && e.data) {
-    const d = e.data;
-    if (d.manualUpdate) {
-      detailCells += detailCell("Manual — date", d.manualUpdate.date || "—");
-      detailCells += detailCell("Manual — message", d.manualUpdate.text || "—");
-      detailCells += detailCell("Manual — blink", blinkChip(d.manualUpdate.blink));
-    }
-    if (d.preUpdate) {
-      detailCells += detailCell("Pre — target date", d.preUpdate.date || "—");
-      detailCells += detailCell("Pre — message", d.preUpdate.text || "—");
-      detailCells += detailCell("Pre — blink", blinkChip(d.preUpdate.blink));
-    }
-    if (d.info) {
-      detailCells += detailCell("Info — content", d.info.text || "—");
-    }
-  } else if (isRevokeAll) {
-    detailCells += detailCell("Action", "Full portal clear");
-    detailCells += detailCell("Sections affected", "manualUpdate, preUpdate, info");
-    detailCells += detailCell("Details", e.details || "All live sections removed");
-  } else if (isRevokeSingle && e.data) {
-    const d = e.data;
-    if (d.date) detailCells += detailCell("Previous date", d.date);
-    if (d.text) detailCells += detailCell("Previous message", d.text);
-    if (d.blink !== undefined) detailCells += detailCell("Previous blink", blinkChip(d.blink));
-    if (d.updatedAt) detailCells += detailCell("Was last updated", d.updatedAt);
-  } else if (e.data) {
-    const d = e.data;
-    if (d.date)      detailCells += detailCell("Date", d.date);
-    if (d.text)      detailCells += detailCell("Message", d.text);
-    if (d.blink !== undefined) detailCells += detailCell("Blink alert", blinkChip(d.blink));
-    if (d.updatedAt) detailCells += detailCell("Saved at", d.updatedAt);
-  }
-
-  detailCells += detailCell("Full timestamp", e.timestamp || "—");
-  detailCells += detailCell("Sort date (ISO)", e.sortDate || "—", true);
-
-  return `
-    <div class="log-card" onclick="toggleCard(this)">
-      <div class="log-card-head">
-        <span class="log-badge ${meta.cls}">${meta.label}</span>
-        <span class="log-summary">${summary}</span>
-        <span class="log-time-badge">${time}</span>
-        <span class="log-chevron">▼</span>
-      </div>
-      <div class="log-card-body">
-        <div class="log-detail-grid">${detailCells}</div>
-      </div>
-    </div>
-  `;
-}
-
-function detailCell(label, val, mono = false) {
-  return `
-    <div class="log-detail-cell">
-      <div class="ldc-label">${label}</div>
-      <div class="ldc-val${mono ? ' mono' : ''}">${val}</div>
-    </div>
-  `;
-}
-
-function blinkChip(val) {
-  const on = val === true || val === 'true';
-  return on
-    ? `<span class="blink-chip blink-on">● ON</span>`
-    : `<span class="blink-chip blink-off">○ OFF</span>`;
-}
-
-function truncate(str, n) {
-  return str && str.length > n ? str.slice(0, n) + "…" : (str || "");
-}
-
-/* ══════════════════════════════
-   WEATHER HISTORY
-══════════════════════════════ */
-onValue(ref(weatherDb, "weather_logs"), snap => {
-  weatherData = [];
-  snap.forEach(child => weatherData.push({ _key: child.key, ...child.val() }));
-  weatherData.reverse();
+onValue(ref(weatherDb,"weather_logs"),s=>{
+  weatherHistory=Object.values(s.val()||{}).reverse();
   renderWeather();
 });
 
-function renderWeather() {
-  const container = document.getElementById("weather-container");
-  const summary   = document.getElementById("weather-summary");
+/* ADMIN */
+function renderAdmin(){
+  const box=document.getElementById("admin-container");
+  box.innerHTML="";
+  if(!adminHistory.length){box.textContent="No admin logs";return;}
 
-  const filtered = searchQuery
-    ? weatherData.filter(e => JSON.stringify(e).toLowerCase().includes(searchQuery))
-    : weatherData;
-
-  // Summary
-  if (weatherData.length) {
-    const latest  = weatherData[0];
-    const avgTemp = (weatherData.slice(0, 48).reduce((a, b) => a + (b.temp_c || 0), 0) / Math.min(48, weatherData.length)).toFixed(1);
-    const maxAQI  = Math.max(...weatherData.slice(0, 48).map(w => w.aqi || 0));
-
-    summary.innerHTML = `
-      <div class="summary-card">
-        <div class="summary-label">Total records</div>
-        <div class="summary-val">${weatherData.length}</div>
-        <div class="summary-sub">all time</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Latest temp</div>
-        <div class="summary-val">${latest.temp_c ?? "—"}°C</div>
-        <div class="summary-sub">Feels ${latest.feels_like_c ?? "—"}°C</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Avg temp (48h)</div>
-        <div class="summary-val">${avgTemp}°C</div>
-        <div class="summary-sub">last 48 records</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Peak AQI (48h)</div>
-        <div class="summary-val" style="color:${aqiColor(maxAQI)}">${maxAQI}</div>
-        <div class="summary-sub">${aqiLabel(maxAQI)}</div>
-      </div>
-    `;
-  }
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">No weather records found${searchQuery ? ' for "' + searchQuery + '"' : ''}.</div>`;
-    return;
-  }
-
-  // Group by date
-  const groups = {};
-  filtered.forEach(w => {
-    const d = (w.timestamp_ist || w.timestamp_utc || "Unknown").split(",")[0].trim();
-    (groups[d] = groups[d] || []).push(w);
+  const g={};
+  adminHistory.forEach(h=>{
+    const d=(h.timestamp||"Unknown").split(",")[0];
+    (g[d]=g[d]||[]).push(h);
   });
 
-  container.innerHTML = Object.keys(groups).map(date => `
+  Object.keys(g).forEach(d=>{
+    box.innerHTML+=`
     <div class="date-group">
-      <div class="date-header" onclick="toggleGroup(this)">
-        <div class="date-header-left">
-          <span class="date-label">${date}</span>
-          <span class="date-count">${groups[date].length} record${groups[date].length !== 1 ? 's' : ''}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <button class="btn btn-export" onclick="event.stopPropagation(); exportCSV('${date}')">Export CSV</button>
-          <span class="date-chevron">▼</span>
-        </div>
+      <div class="date-header"
+        onclick="this.nextElementSibling.classList.toggle('open')">
+        📅 ${d} (${g[d].length})
       </div>
-      <div class="date-body">
-        ${groups[date].map(w => renderWeatherCard(w)).join("")}
+      <div class="date-content">
+        ${g[d].map(i=>`
+          <div class="entry-card">
+            <strong>${(i.timestamp||"").split(",")[1]}</strong>
+            <div class="raw">${JSON.stringify(i,null,2)}</div>
+          </div>`).join("")}
       </div>
-    </div>
-  `).join("");
+    </div>`;
+  });
 }
 
-function renderWeatherCard(w) {
-  const time    = (w.timestamp_ist || w.timestamp_utc || "").split(",")[1]?.trim() || "—";
-  const aqi     = w.aqi ?? "—";
-  const aqiStat = w.aqi_status || "—";
-  const { bg, color, border } = aqiStyle(w.aqi);
+/* WEATHER */
+function renderWeather(){
+  const box=document.getElementById("weather-container");
+  box.innerHTML="";
+  if(!weatherHistory.length){box.textContent="No weather records";return;}
 
-  return `
-    <div class="weather-card" onclick="toggleCard(this)">
-      <div class="weather-card-head">
-        <span class="aqi-badge" style="background:${bg};color:${color};border:1px solid ${border}">
-          <span class="aqi-dot" style="background:${color}"></span>AQI ${aqi}
-        </span>
-        <span class="weather-summary">
-          <b>${w.temp_c ?? "—"}°C</b> · Feels ${w.feels_like_c ?? "—"}°C · 
-          <span>${w.condition ?? "—"} · ${aqiStat}</span>
-        </span>
-        <span class="log-time-badge">${time}</span>
-        <span class="log-chevron">▼</span>
+  const g={};
+  weatherHistory.forEach(w=>{
+    const d=(w.timestamp_ist||"Unknown").split(",")[0];
+    (g[d]=g[d]||[]).push(w);
+  });
+
+  Object.keys(g).forEach(d=>{
+    box.innerHTML+=`
+    <div class="date-group">
+      <div class="date-header"
+        onclick="this.nextElementSibling.classList.toggle('open')">
+        📅 ${d}
+        <button class="export-btn"
+          onclick="event.stopPropagation();exportCSV('${d}')">
+          Export CSV
+        </button>
       </div>
-      <div class="weather-card-body">
-        <div class="weather-detail-grid">
-          ${wCell("Temperature", w.temp_c, "°C")}
-          ${wCell("Feels like", w.feels_like_c, "°C")}
-          ${wCell("Humidity", w.humidity, "%")}
-          ${wCell("Wind speed", w.wind_kmh, "km/h")}
-          ${wCell("Pressure", w.pressure_hpa, "hPa")}
-          ${wCell("Visibility", w.visibility_km, "km")}
-          ${wCell("PM2.5", w.pm25, "µg/m³")}
-          ${wCell("AQI", w.aqi, "")}
-          ${wCell("AQI status", w.aqi_status, "")}
-          ${wCell("Condition", w.condition, "")}
-          ${wCell("Timestamp IST", (w.timestamp_ist || "—").split(",")[1]?.trim() || w.timestamp_ist, "")}
-          ${wCell("Timestamp UTC", w.timestamp_utc, "")}
-        </div>
+      <div class="date-content">
+        ${g[d].map(w=>`
+        <div class="entry-card">
+          <div class="entry-head"
+            onclick="this.nextElementSibling.classList.toggle('open')">
+            🕒 ${(w.timestamp_ist||"").split(",")[1]}
+           <span class="badge" style="background:${aqiColor(w.aqi)}">
+            AQI ${w.aqi} – ${w.aqi_status}
+          </span>
+          </div>
+          <div class="entry-details">
+            🌡 ${w.temp_c}°C (Feels ${w.feels_like_c}°C)<br>
+            ☁ ${w.condition}<br>
+            🌬 Wind ${w.wind_kmh} km/h<br>
+            💧 Humidity ${w.humidity}%<br>
+            📊 Pressure ${w.pressure_hpa} hPa<br>
+            👁 Visibility ${w.visibility_km} km<br>
+            🫁 PM2.5 ${w.pm25}<br>
+            🏙 ${w.city}
+          </div>
+        </div>`).join("")}
       </div>
-    </div>
-  `;
+    </div>`;
+  });
 }
 
-function wCell(label, val, unit) {
-  return `
-    <div class="weather-detail-cell">
-      <div class="wdc-label">${label}</div>
-      <div class="wdc-val">${val ?? "—"}<span class="wdc-unit">${unit}</span></div>
-    </div>
-  `;
-}
-
-/* ── TOGGLE HELPERS ── */
-window.toggleGroup = function(header) {
-  header.classList.toggle("open");
-  header.nextElementSibling.classList.toggle("open");
-};
-
-window.toggleCard = function(card) {
-  card.classList.toggle("open");
-};
-
-/* ── AQI HELPERS ── */
-function aqiStyle(aqi) {
-  if (!aqi || aqi <= 50)  return { bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" };
-  if (aqi <= 100)         return { bg: "#fffbeb", color: "#d97706", border: "#fde68a" };
-  if (aqi <= 150)         return { bg: "#fff7ed", color: "#ea580c", border: "#fed7aa" };
-  return                         { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" };
-}
-
-function aqiColor(aqi) {
-  if (!aqi || aqi <= 50)  return "#16a34a";
-  if (aqi <= 100)         return "#d97706";
-  if (aqi <= 150)         return "#ea580c";
-  return "#dc2626";
-}
-
-function aqiLabel(aqi) {
-  if (!aqi || aqi <= 50)  return "Excellent";
-  if (aqi <= 100)         return "Good";
-  if (aqi <= 150)         return "Moderate";
-  if (aqi <= 200)         return "Unhealthy";
-  return "Hazardous";
-}
-
-/* ── CSV EXPORT ── */
-window.exportCSV = function(date) {
-  const rows = weatherData.filter(w => (w.timestamp_ist || "").startsWith(date));
-  if (!rows.length) return;
-  const keys = ["timestamp_ist","timestamp_utc","temp_c","feels_like_c","humidity","wind_kmh","pressure_hpa","visibility_km","pm25","aqi","aqi_status","condition"];
-  const csv  = [keys.join(","), ...rows.map(r => keys.map(k => JSON.stringify(r[k] ?? "")).join(","))].join("\n");
-  const a    = document.createElement("a");
-  a.href     = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-  a.download = `weather_${date.replace(/\//g,"-")}.csv`;
+/* CSV */
+window.exportCSV=date=>{
+  const rows=weatherHistory.filter(w=>(w.timestamp_ist||"").startsWith(date));
+  const keys=Object.keys(rows[0]);
+  const csv=[keys.join(",")].concat(
+    rows.map(r=>keys.map(k=>JSON.stringify(r[k]??"")).join(","))
+  ).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=`weather_${date}.csv`;
   a.click();
 };
+
+function aqiColor(a){
+  if(a<=50)return"#10b981";
+  if(a<=100)return"#facc15";
+  return"#ef4444";
+}
 </script>
 </body>
 </html>
