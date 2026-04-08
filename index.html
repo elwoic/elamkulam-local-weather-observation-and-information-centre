@@ -80,7 +80,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 2000;
@@ -590,11 +590,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Listen realtime — any change in Firebase updates popup instantly
   onValue(ref(db, "popup"), (snap) => {
-    if (!snap.exists()) { overlay.style.display = "none"; return; }
+    // Firebase has now responded — decide here
+    if (!snap.exists()) return;  // stay hidden
     const data = snap.val();
 
-    if (!data.enabled) { overlay.style.display = "none"; return; }
+    if (!data.enabled) return;   // stay hidden
 
+    // Only NOW show the popup
     titleEl.textContent = data.title || "";
     msgEl.innerHTML = data.message || "";
     overlay.style.display = "flex";
