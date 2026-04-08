@@ -77,11 +77,12 @@ const adminConfig = {
 };
 
 /* Named app to avoid collisions */
+/* ... inside your script module ... */
+
 const app = initializeApp(adminConfig, "adminAuthApp");
 const auth = getAuth(app);
 
-/* Ensure login survives reloads */
-await setPersistence(auth, browserLocalPersistence);
+// REMOVED: setPersistence (It is 'local' by default, no need to await it here)
 
 const emailInput = document.getElementById("email");
 const passInput = document.getElementById("password");
@@ -107,31 +108,30 @@ function login() {
 
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
-      /* ✅ SUCCESS */
+      // SUCCESS
       window.location.replace("elwoic_data_centre.html");
     })
     .catch(err => {
-      console.error("Login error:", err.code);
+      console.error("Full Error Object:", err); // Look at your browser console (F12) for this!
 
       switch (err.code) {
         case "auth/user-not-found":
         case "auth/invalid-credential":
           showError("Invalid email or password.");
           break;
-
+        case "auth/operation-not-allowed":
+          showError("Email/Password login is not enabled in Firebase Console.");
+          break;
         case "auth/too-many-requests":
           showError("Too many attempts. Try again later.");
           break;
-
-        case "auth/network-request-failed":
-          showError("Network error. Check your connection.");
-          break;
-
         default:
-          showError("Login failed. " + err.message);
+          // This will show you the exact error if it's something else
+          showError(err.code.replace("auth/", "").replace(/-/g, " "));
       }
     });
 }
+/* ... rest of your event listeners ... */
 
 /* Button click */
 loginBtn.addEventListener("click", login);
