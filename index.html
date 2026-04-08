@@ -567,8 +567,7 @@
       
     }
   </style>
-
-   <script type="module">
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -588,15 +587,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const msgEl = document.getElementById("popup-message");
   const closeBtn = document.getElementById("popup-close");
 
-  // Listen realtime — any change in Firebase updates popup instantly
+  let shown = false;
+
   onValue(ref(db, "popup"), (snap) => {
-    // Firebase has now responded — decide here
-    if (!snap.exists()) return;  // stay hidden
+    if (shown) return;
+    if (!snap.exists()) return;
     const data = snap.val();
+    if (!data.enabled) return;
 
-    if (!data.enabled) return;   // stay hidden
-
-    // Only NOW show the popup
+    shown = true;
     titleEl.textContent = data.title || "";
     msgEl.innerHTML = data.message || "";
     overlay.style.display = "flex";
@@ -607,7 +606,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
-
    <!-- ================= POPUP MESSAGE BOX ================= -->
 <div id="site-popup-overlay" class="popup-overlay">
   <div class="popup-box">
