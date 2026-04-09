@@ -183,15 +183,29 @@
     /* ============================================================
        ALERTS PANEL
     ============================================================ */
-    #alerts-panel {
-      display: none;
-      background: var(--white);
-      border-left: 5px solid var(--red);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 20px;
-      padding: 16px 18px;
+     #alerts-panel {
+     display: block; /* Show it immediately for the loading state */
+     background: var(--white);
+     border-left: 5px solid var(--red);
+     border-radius: var(--radius);
+     box-shadow: var(--shadow-sm);
+     margin-bottom: 20px;
+     padding: 16px 18px;
+     min-height: 50px; /* Prevents layout jumping */
     }
+
+    .loading-text {
+  font-size: 14px;
+  color: var(--navy);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+    .dot-pulse {
+  animation: blink 1.2s infinite;
+}
     .alerts-title {
       font-size: 15px;
       font-weight: 700;
