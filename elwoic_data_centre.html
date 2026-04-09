@@ -1,292 +1,742 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELWOIC — Admin Data Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --surface-2: #f9f9f8;
+    --surface-3: #f3f3f0;
+    --border: #e8e8e4;
+    --border-strong: #d4d4ce;
+    --text: #1a1a18;
+    --text-2: #6b6b64;
+    --text-3: #a8a89e;
+    --accent: #1a1a18;
+    --accent-fg: #fff;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --teal: #0d9488;
+    --teal-bg: #f0fdfa;
+    --teal-border: #99f6e4;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow);
+  }
+
+  .topbar-brand { display: flex; align-items: center; gap: 12px; }
+
+  .topbar-mark {
+    width: 32px; height: 32px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; color: var(--text-2);
+  }
+
+  .topbar-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .topbar-sub   { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .sys-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--text-2); font-family: 'DM Mono', monospace;
+  }
+
+  .sys-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 0 2px var(--green-border);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 7px 14px; border: none; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s; white-space: nowrap;
+  }
+  .btn:hover  { opacity: 0.85; }
+  .btn:active { transform: scale(0.98); }
+  .btn-ghost  { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+  .btn-export { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); font-size: 11.5px; padding: 5px 12px; }
+
+  /* ── PAGE BODY ── */
+  .page-body { max-width: 1100px; margin: 0 auto; padding: 24px 24px 60px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 4px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 4px;
+    margin-bottom: 20px; box-shadow: var(--shadow); width: fit-content;
+  }
+
+  .tab-btn {
+    padding: 7px 20px; border: none; border-radius: 4px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--text-2); background: transparent; transition: all 0.15s;
+  }
+  .tab-btn:hover { background: var(--surface-2); color: var(--text); }
+  .tab-btn.active-admin   { background: var(--accent); color: #fff; font-weight: 600; }
+  .tab-btn.active-weather { background: var(--teal);   color: #fff; font-weight: 600; }
+
+  /* ── SEARCH ── */
+  .search-wrap { position: relative; margin-bottom: 20px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 14px; pointer-events: none; }
+  .search-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 12px 9px 36px;
+    font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s; box-shadow: var(--shadow);
+  }
+  .search-input:focus { border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+  .search-input::placeholder { color: var(--text-3); }
+
+  /* ── SECTION ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── SUMMARY STRIP ── */
+  .summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; box-shadow: var(--shadow); }
+  .summary-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .summary-val   { font-size: 20px; font-weight: 600; color: var(--text); }
+  .summary-sub   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  /* ── DATE GROUP ── */
+  .date-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; box-shadow: var(--shadow); }
+
+  .date-header {
+    padding: 12px 18px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; background: var(--surface-2); border-bottom: 1px solid transparent;
+    transition: background 0.15s; user-select: none;
+  }
+  .date-header:hover { background: var(--surface-3); }
+  .date-header.open  { border-bottom-color: var(--border); }
+
+  .date-left { display: flex; align-items: center; gap: 10px; }
+  .date-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .date-count {
+    font-size: 11px; background: var(--surface-3); border: 1px solid var(--border);
+    border-radius: 100px; padding: 1px 8px; color: var(--text-2); font-family: 'DM Mono', monospace;
+  }
+  .date-chevron { font-size: 11px; color: var(--text-3); transition: transform 0.2s; }
+  .date-header.open .date-chevron { transform: rotate(180deg); }
+
+  .date-body { display: none; padding: 10px 12px; }
+  .date-body.open { display: block; }
+
+  /* ── RECORD CARD (shared admin + weather) ── */
+  .record-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .record-card:last-child { margin-bottom: 0; }
+  .record-card:hover { border-color: var(--border-strong); }
+
+  .record-head {
+    display: grid; grid-template-columns: auto 1fr auto auto;
+    align-items: center; gap: 12px; padding: 10px 14px;
+    cursor: pointer; user-select: none;
+  }
+
+  /* badge */
+  .rec-badge {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; font-family: 'DM Mono', monospace;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .rb-manual  { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .rb-pre     { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .rb-info    { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .rb-bulk    { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .rb-revoke  { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+
+  .rec-summary { font-size: 13px; color: var(--text); line-height: 1.4; min-width: 0; }
+  .rec-summary .dim { color: var(--text-2); font-weight: 400; }
+
+  .rec-time { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
+  .rec-chevron { font-size: 10px; color: var(--text-3); transition: transform 0.2s; flex-shrink: 0; }
+  .record-card.open .rec-chevron { transform: rotate(180deg); }
+
+  .record-body { display: none; }
+  .record-card.open .record-body { display: block; }
+
+  /* ── DETAIL GRID ── */
+  .detail-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px; background: var(--border); border-top: 1px solid var(--border);
+  }
+
+  .detail-cell { background: var(--surface-2); padding: 10px 14px; }
+  .dc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .dc-val   { font-size: 13px; color: var(--text); font-weight: 500; word-break: break-word; line-height: 1.5; }
+  .dc-val.mono  { font-family: 'DM Mono', monospace; font-size: 11.5px; color: var(--text-2); }
+  .dc-val.full  { white-space: pre-wrap; font-size: 12.5px; font-weight: 400; }
+
+  /* firebase ID cell */
+  .dc-id { grid-column: 1 / -1; background: var(--surface-3); }
+  .dc-id .dc-label { color: var(--text-3); }
+  .dc-id .dc-val   { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); }
+
+  /* subsection header inside detail grid */
+  .dc-section-head {
+    grid-column: 1 / -1;
+    background: var(--surface-3);
+    padding: 7px 14px;
+    font-size: 11px; font-weight: 600; color: var(--text-2);
+    font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+  }
+
+  .blink-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+  }
+  .bc-on  { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .bc-off { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border); }
+
+  /* AQI badge */
+  .aqi-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 100px;
+    font-family: 'DM Mono', monospace; flex-shrink: 0;
+  }
+  .aqi-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── EMPTY / LOADING ── */
+  .empty-state, .loading-state {
+    text-align: center; padding: 48px 24px;
+    color: var(--text-3); font-size: 13.5px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .loading-state { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    .summary-strip { grid-template-columns: 1fr 1fr; }
+    .topbar { padding: 0 16px; }
+    .page-body { padding: 16px 14px 60px; }
+    .topbar-sub { display: none; }
+    .record-head { grid-template-columns: auto 1fr auto; }
+    .rec-time { display: none; }
+    .tabs { width: 100%; }
+    .tab-btn { flex: 1; }
+  }
+
+  @media (max-width: 500px) {
+    .summary-strip { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-mark">ELW</div>
+    <div>
+      <div class="topbar-title">ELWOIC data centre</div>
+      <div class="topbar-sub">ADMIN READ-ONLY VIEW</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sys-status"><div class="sys-dot"></div>Connected</div>
+    <button class="btn btn-ghost" onclick="window.doLogout && window.doLogout()">Logout</button>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page-body">
+
+  <div class="tabs">
+    <button class="tab-btn active-admin" id="tab-admin"   onclick="switchTab('admin')">Admin logs</button>
+    <button class="tab-btn"              id="tab-weather" onclick="switchTab('weather')">Weather history</button>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search-input" placeholder="Search by date, message, condition, AQI…">
+  </div>
+
+  <div class="section active" id="section-admin">
+    <div class="summary-strip" id="admin-summary"></div>
+    <div id="admin-container"><div class="loading-state">Loading admin logs…</div></div>
+  </div>
+
+  <div class="section" id="section-weather">
+    <div class="summary-strip" id="weather-summary"></div>
+    <div id="weather-container"><div class="loading-state">Loading weather history…</div></div>
+  </div>
+
+</div>
+
+<!-- AUTH -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const authConfig = {
+const authApp = initializeApp({
   apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
   authDomain: "administration-protal.firebaseapp.com"
-};
+}, "adminAuthApp");
 
-const authApp = initializeApp(authConfig, "adminAuthApp");
 const auth = getAuth(authApp);
-
-onAuthStateChanged(auth, user => {
-  if (!user) { window.location.replace("data_login.html"); }
-});
-
-window.logout = () => {
-  signOut(auth).then(() => { window.location.replace("data_login.html"); });
-};
+onAuthStateChanged(auth, user => { if (!user) window.location.replace("data_login.html"); });
+window.doLogout = () => signOut(auth).then(() => window.location.replace("data_login.html"));
 </script>
 
-<style>
-:root{
-  --bg:#f1f5f9;--panel:#fff;--border:#cbd5e1;
-  --text:#0f172a;--muted:#64748b;
-  --accent:#2563eb;--weather:#10b981;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:Segoe UI,sans-serif;
-  background:var(--bg);color:var(--text)
-}
-.container{
-  max-width:1100px;margin:auto;padding:20px
-}
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  background:#1e293b;color:#fff;padding:20px;border-radius:12px
-}
-.tab-nav{display:flex;gap:10px;margin:20px 0}
-.tab-btn{
-  flex:1;padding:14px;border:0;border-radius:8px;
-  font-weight:700;cursor:pointer;
-  background:var(--border);color:var(--muted)
-}
-.tab-btn.active{background:var(--accent);color:#fff}
-.tab-btn.weather-active{background:var(--weather);color:#fff}
-
-.content-section{display:none}
-.content-section.active{display:block}
-
-.search-box{
-  width:100%;padding:14px;border-radius:8px;
-  border:1px solid var(--border);margin-bottom:15px
-}
-
-.date-group{
-  border:1px solid var(--border);
-  border-radius:10px;margin-bottom:16px;
-  background:#fff;overflow:hidden
-}
-.date-header{
-  background:#f8fafc;padding:15px 20px;
-  display:flex;justify-content:space-between;
-  align-items:center;cursor:pointer
-}
-.date-content{display:none;padding:15px}
-.date-content.open{display:block}
-
-.entry-card{
-  border:1px solid #e2e8f0;
-  border-radius:8px;padding:14px;
-  margin-bottom:10px;background:#fff
-}
-.entry-head{
-  display:flex;justify-content:space-between;
-  align-items:center;cursor:pointer
-}
-.entry-details{
-  display:none;margin-top:10px;
-  font-size:.9rem;line-height:1.5
-}
-.entry-details.open{display:block}
-
-.badge{
-  padding:4px 10px;border-radius:4px;
-  font-size:.75rem;font-weight:700;color:#fff
-}
-.export-btn{
-  background:#0f766e;color:#fff;
-  border:0;border-radius:6px;
-  padding:6px 12px;font-size:.75rem;
-  cursor:pointer
-}
-.raw{
-  font-family:monospace;background:#f1f5f9;
-  padding:8px;border-radius:6px;
-  font-size:.75rem;white-space:pre-wrap
-}
-</style>
-</head>
-
-<body>
-<div class="container">
-
-<div class="header">
-  <div>
-    <h1 style="margin:0">ELWOIC Admin Centre</h1>
-    <small>System Authenticated</small>
-  </div>
-</div>
-
-<div class="tab-nav">
-  <button id="btn-admin" class="tab-btn active">🛠️ Admin Logs</button>
-  <button id="btn-weather" class="tab-btn">🌤️ Weather History</button>
-</div>
-
-<input id="globalSearch" class="search-box"
- placeholder="Search logs, dates, or conditions…">
-
-<div id="section-admin" class="content-section active">
-  <div id="admin-container">Loading admin logs…</div>
-</div>
-
-<div id="section-weather" class="content-section">
-  <div id="weather-container">Loading weather history…</div>
-</div>
-
-</div>
-
+<!-- DATA -->
 <script type="module">
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-/* FIREBASE */
 const adminApp = initializeApp({
-  apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  databaseURL:"https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app"
-},"admin");
+  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app"
+}, "dcAdminApp");
 
 const weatherApp = initializeApp({
-  apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  databaseURL:"https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
-},"weather");
+  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+  databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
+}, "dcWeatherApp");
 
-const adminDb = getDatabase(adminApp);
+const adminDb   = getDatabase(adminApp);
 const weatherDb = getDatabase(weatherApp);
 
-let adminHistory=[], weatherHistory=[];
+let adminData   = []; // [{_id, ...fields}]
+let weatherData = [];
+let currentTab  = "admin";
+let query       = "";
 
-/* TAB SWITCH */
-const secAdmin=document.getElementById("section-admin");
-const secWeather=document.getElementById("section-weather");
-const btnAdmin=document.getElementById("btn-admin");
-const btnWeather=document.getElementById("btn-weather");
+/* ── TAB ── */
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.getElementById("section-admin").classList.toggle("active", tab === "admin");
+  document.getElementById("section-weather").classList.toggle("active", tab === "weather");
+  document.getElementById("tab-admin").className   = "tab-btn" + (tab === "admin"   ? " active-admin"   : "");
+  document.getElementById("tab-weather").className = "tab-btn" + (tab === "weather" ? " active-weather" : "");
+  render();
+};
 
-btnAdmin.onclick=()=>showTab("admin");
-btnWeather.onclick=()=>showTab("weather");
+/* ── SEARCH ── */
+document.getElementById("search-input").addEventListener("input", e => {
+  query = e.target.value.toLowerCase().trim();
+  render();
+});
 
-function showTab(t){
-  secAdmin.classList.remove("active");
-  secWeather.classList.remove("active");
-  btnAdmin.classList.remove("active");
-  btnWeather.classList.remove("weather-active");
-
-  if(t==="admin"){
-    secAdmin.classList.add("active");
-    btnAdmin.classList.add("active");
-  }else{
-    secWeather.classList.add("active");
-    btnWeather.classList.add("weather-active");
-  }
+function render() {
+  if (currentTab === "admin") renderAdmin();
+  else renderWeather();
 }
 
-/* DATA */
-onValue(ref(adminDb,"grant_history"),s=>{
-  adminHistory=Object.values(s.val()||{}).reverse();
+/* ════════════════════════════
+   ADMIN LOGS
+════════════════════════════ */
+// Use forEach to preserve Firebase push keys as _id
+onValue(ref(adminDb, "grant_history"), snap => {
+  adminData = [];
+  snap.forEach(child => adminData.push({ _id: child.key, ...child.val() }));
+  adminData.reverse(); // newest first
   renderAdmin();
 });
-onValue(ref(weatherDb,"weather_logs"),s=>{
-  weatherHistory=Object.values(s.val()||{}).reverse();
+
+function renderAdmin() {
+  const container = document.getElementById("admin-container");
+  const summary   = document.getElementById("admin-summary");
+
+  const filtered = query
+    ? adminData.filter(e => JSON.stringify(e).toLowerCase().includes(query))
+    : adminData;
+
+  // Summary counts
+  const counts = { manual: 0, pre: 0, info: 0, bulk: 0, revoke: 0 };
+  adminData.forEach(e => {
+    if (e.action === 'revoke' || e.type === 'REVOKE_ALL') counts.revoke++;
+    else if (e.type === 'BULK_UPDATE') counts.bulk++;
+    else if (e.type === 'manualUpdate') counts.manual++;
+    else if (e.type === 'preUpdate')    counts.pre++;
+    else if (e.type === 'info')         counts.info++;
+  });
+
+  summary.innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">Total records</div>
+      <div class="summary-val">${adminData.length}</div>
+      <div class="summary-sub">all time</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Updates</div>
+      <div class="summary-val">${counts.manual + counts.pre + counts.info + counts.bulk}</div>
+      <div class="summary-sub">${counts.bulk} bulk, ${counts.manual} manual</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Revokes</div>
+      <div class="summary-val" style="color:var(--red)">${counts.revoke}</div>
+      <div class="summary-sub">section clears</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Showing</div>
+      <div class="summary-val">${filtered.length}</div>
+      <div class="summary-sub">${query ? 'filtered results' : 'all records'}</div>
+    </div>`;
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state">No records found${query ? ' for "' + query + '"' : ''}.</div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  filtered.forEach(e => {
+    const d = (e.timestamp || "Unknown").split(",")[0].trim();
+    (groups[d] = groups[d] || []).push(e);
+  });
+
+  container.innerHTML = Object.keys(groups).map(date => `
+    <div class="date-group">
+      <div class="date-header" onclick="tog(this)">
+        <div class="date-left">
+          <span class="date-label">${date}</span>
+          <span class="date-count">${groups[date].length} record${groups[date].length !== 1 ? 's' : ''}</span>
+        </div>
+        <span class="date-chevron">▼</span>
+      </div>
+      <div class="date-body">
+        ${groups[date].map(e => adminCard(e)).join("")}
+      </div>
+    </div>`).join("");
+}
+
+function adminCard(e) {
+  const isRevokeSingle = e.action === 'revoke';
+  const isRevokeAll    = e.type === 'REVOKE_ALL';
+  const isBulk         = e.type === 'BULK_UPDATE';
+
+  const badgeMap = {
+    manualUpdate: { label: "Manual", cls: "rb-manual" },
+    preUpdate:    { label: "Pre",    cls: "rb-pre"    },
+    info:         { label: "Info",   cls: "rb-info"   },
+    BULK_UPDATE:  { label: "Bulk",   cls: "rb-bulk"   },
+    REVOKE_ALL:   { label: "Revoke", cls: "rb-revoke" },
+  };
+
+  const meta = (isRevokeSingle)
+    ? { label: "Revoke", cls: "rb-revoke" }
+    : (badgeMap[e.type] || { label: e.type || "—", cls: "rb-bulk" });
+
+  const time = (e.timestamp || "—").split(",")[1]?.trim() || "—";
+
+  // Summary line
+  let summary = "";
+  if (isRevokeAll) {
+    summary = `<b>All sections cleared</b>`;
+  } else if (isBulk) {
+    const txt = e.data?.manualUpdate?.text || e.data?.preUpdate?.text || "";
+    summary = `<b>All sections updated</b>${txt ? ` — <span class="dim">${trunc(txt, 50)}</span>` : ""}`;
+  } else if (isRevokeSingle) {
+    const prev = e.data?.text ? trunc(e.data.text, 55) : "";
+    summary = `<b>${e.type}</b> revoked${prev ? ` — <span class="dim">"${prev}"</span>` : ""}`;
+  } else if (e.data) {
+    const parts = [];
+    if (e.data.date) parts.push(`<b>${e.data.date}</b>`);
+    if (e.data.text) parts.push(`<span class="dim">${trunc(e.data.text, 60)}</span>`);
+    summary = parts.join(" — ") || "—";
+  } else {
+    summary = e.details || "—";
+  }
+
+  // Detail cells
+  let cells = `<div class="detail-cell dc-id"><div class="dc-label">Firebase ID</div><div class="dc-val">${e._id || "—"}</div></div>`;
+
+  if (isBulk && e.data) {
+    const d = e.data;
+    if (d.manualUpdate) {
+      cells += `<div class="dc-section-head">Manual Update</div>`;
+      cells += dc("Date",        d.manualUpdate.date || "—");
+      cells += dc("Message",     d.manualUpdate.text || "—", false, true);
+      cells += dc("Blink alert", blink(d.manualUpdate.blink));
+      cells += dc("Saved at",    d.manualUpdate.updatedAt || "—");
+    }
+    if (d.preUpdate) {
+      cells += `<div class="dc-section-head">Pre Update</div>`;
+      cells += dc("Target date", d.preUpdate.date || "—");
+      cells += dc("Message",     d.preUpdate.text || "—", false, true);
+      cells += dc("Blink alert", blink(d.preUpdate.blink));
+      cells += dc("Saved at",    d.preUpdate.updatedAt || "—");
+    }
+    if (d.info) {
+      cells += `<div class="dc-section-head">General Info</div>`;
+      cells += dc("Content", d.info.text || "—", false, true);
+      cells += dc("Saved at", d.info.updatedAt || "—");
+    }
+  } else if (isRevokeAll) {
+    cells += dc("Action", "Full portal clear — all sections removed");
+    cells += dc("Details", e.details || "Admin cleared all live sections");
+  } else if (isRevokeSingle && e.data) {
+    cells += `<div class="dc-section-head">Content before revoke</div>`;
+    if (e.data.date)      cells += dc("Date",          e.data.date);
+    if (e.data.text)      cells += dc("Message",       e.data.text, false, true);
+    if (e.data.blink !== undefined) cells += dc("Blink alert", blink(e.data.blink));
+    if (e.data.updatedAt) cells += dc("Was saved at",  e.data.updatedAt);
+  } else if (e.data) {
+    if (e.data.date)      cells += dc("Date",          e.data.date);
+    if (e.data.text)      cells += dc("Message",       e.data.text, false, true);
+    if (e.data.blink !== undefined) cells += dc("Blink alert", blink(e.data.blink));
+    if (e.data.updatedAt) cells += dc("Saved at",      e.data.updatedAt);
+  } else if (e.details) {
+    cells += dc("Details", e.details);
+  }
+
+  cells += `<div class="dc-section-head">Record metadata</div>`;
+  cells += dc("Full timestamp", e.timestamp || "—");
+  cells += dc("Sort date (ISO)", e.sortDate || "—", true);
+  cells += dc("Action type", e.action || "update");
+
+  return `
+    <div class="record-card" onclick="this.classList.toggle('open')">
+      <div class="record-head">
+        <span class="rec-badge ${meta.cls}">${meta.label}</span>
+        <span class="rec-summary">${summary}</span>
+        <span class="rec-time">${time}</span>
+        <span class="rec-chevron">▼</span>
+      </div>
+      <div class="record-body">
+        <div class="detail-grid">${cells}</div>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════
+   WEATHER HISTORY
+════════════════════════════ */
+onValue(ref(weatherDb, "weather_logs"), snap => {
+  weatherData = [];
+  snap.forEach(child => weatherData.push({ _id: child.key, ...child.val() }));
+  weatherData.reverse();
   renderWeather();
 });
 
-/* ADMIN */
-function renderAdmin(){
-  const box=document.getElementById("admin-container");
-  box.innerHTML="";
-  if(!adminHistory.length){box.textContent="No admin logs";return;}
+function renderWeather() {
+  const container = document.getElementById("weather-container");
+  const summary   = document.getElementById("weather-summary");
 
-  const g={};
-  adminHistory.forEach(h=>{
-    const d=(h.timestamp||"Unknown").split(",")[0];
-    (g[d]=g[d]||[]).push(h);
+  const filtered = query
+    ? weatherData.filter(e => JSON.stringify(e).toLowerCase().includes(query))
+    : weatherData;
+
+  // Summary strip
+  if (weatherData.length) {
+    const latest  = weatherData[0];
+    const last48  = weatherData.slice(0, 48);
+    const avgTemp = (last48.reduce((a, b) => a + (b.temp_c || 0), 0) / last48.length).toFixed(1);
+    const maxAQI  = Math.max(...last48.map(w => w.aqi || 0));
+
+    summary.innerHTML = `
+      <div class="summary-card">
+        <div class="summary-label">Total records</div>
+        <div class="summary-val">${weatherData.length}</div>
+        <div class="summary-sub">all time</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Latest temp</div>
+        <div class="summary-val">${latest.temp_c ?? "—"}°C</div>
+        <div class="summary-sub">Feels ${latest.feels_like_c ?? "—"}°C</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Avg temp (48h)</div>
+        <div class="summary-val">${avgTemp}°C</div>
+        <div class="summary-sub">last 48 records</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Peak AQI (48h)</div>
+        <div class="summary-val" style="color:${aqiColor(maxAQI)}">${maxAQI}</div>
+        <div class="summary-sub">${aqiLabel(maxAQI)}</div>
+      </div>`;
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state">No records found${query ? ' for "' + query + '"' : ''}.</div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  filtered.forEach(w => {
+    const d = (w.timestamp_ist || w.timestamp_utc || "Unknown").split(",")[0].trim();
+    (groups[d] = groups[d] || []).push(w);
   });
 
-  Object.keys(g).forEach(d=>{
-    box.innerHTML+=`
+  container.innerHTML = Object.keys(groups).map(date => `
     <div class="date-group">
-      <div class="date-header"
-        onclick="this.nextElementSibling.classList.toggle('open')">
-        📅 ${d} (${g[d].length})
+      <div class="date-header" onclick="tog(this)">
+        <div class="date-left">
+          <span class="date-label">${date}</span>
+          <span class="date-count">${groups[date].length} record${groups[date].length !== 1 ? 's' : ''}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn btn-export" onclick="event.stopPropagation();exportCSV('${date}')">Export CSV</button>
+          <span class="date-chevron">▼</span>
+        </div>
       </div>
-      <div class="date-content">
-        ${g[d].map(i=>`
-          <div class="entry-card">
-            <strong>${(i.timestamp||"").split(",")[1]}</strong>
-            <div class="raw">${JSON.stringify(i,null,2)}</div>
-          </div>`).join("")}
+      <div class="date-body">
+        ${groups[date].map(w => weatherCard(w)).join("")}
       </div>
-    </div>`;
-  });
+    </div>`).join("");
 }
 
-/* WEATHER */
-function renderWeather(){
-  const box=document.getElementById("weather-container");
-  box.innerHTML="";
-  if(!weatherHistory.length){box.textContent="No weather records";return;}
+function weatherCard(w) {
+  const time    = (w.timestamp_ist || "").split(",")[1]?.trim() || "—";
+  const { bg, color, border } = aqiStyle(w.aqi);
 
-  const g={};
-  weatherHistory.forEach(w=>{
-    const d=(w.timestamp_ist||"Unknown").split(",")[0];
-    (g[d]=g[d]||[]).push(w);
-  });
-
-  Object.keys(g).forEach(d=>{
-    box.innerHTML+=`
-    <div class="date-group">
-      <div class="date-header"
-        onclick="this.nextElementSibling.classList.toggle('open')">
-        📅 ${d}
-        <button class="export-btn"
-          onclick="event.stopPropagation();exportCSV('${d}')">
-          Export CSV
-        </button>
+  return `
+    <div class="record-card" onclick="this.classList.toggle('open')">
+      <div class="record-head">
+        <span class="aqi-badge" style="background:${bg};color:${color};border:1px solid ${border}">
+          <span class="aqi-dot" style="background:${color}"></span>AQI ${w.aqi ?? "—"}
+        </span>
+        <span class="rec-summary">
+          <b>${w.temp_c ?? "—"}°C</b> · Feels ${w.feels_like_c ?? "—"}°C · 
+          <span class="dim">${w.condition ?? "—"} · ${w.aqi_status ?? "—"}</span>
+        </span>
+        <span class="rec-time">${time}</span>
+        <span class="rec-chevron">▼</span>
       </div>
-      <div class="date-content">
-        ${g[d].map(w=>`
-        <div class="entry-card">
-          <div class="entry-head"
-            onclick="this.nextElementSibling.classList.toggle('open')">
-            🕒 ${(w.timestamp_ist||"").split(",")[1]}
-           <span class="badge" style="background:${aqiColor(w.aqi)}">
-            AQI ${w.aqi} – ${w.aqi_status}
-          </span>
+      <div class="record-body">
+        <div class="detail-grid">
+          <div class="detail-cell dc-id">
+            <div class="dc-label">Firebase ID</div>
+            <div class="dc-val">${w._id || "—"}</div>
           </div>
-          <div class="entry-details">
-            🌡 ${w.temp_c}°C (Feels ${w.feels_like_c}°C)<br>
-            ☁ ${w.condition}<br>
-            🌬 Wind ${w.wind_kmh} km/h<br>
-            💧 Humidity ${w.humidity}%<br>
-            📊 Pressure ${w.pressure_hpa} hPa<br>
-            👁 Visibility ${w.visibility_km} km<br>
-            🫁 PM2.5 ${w.pm25}<br>
-            🏙 ${w.city}
-          </div>
-        </div>`).join("")}
+          <div class="dc-section-head">Weather readings</div>
+          ${wdc("Temperature",      w.temp_c,           "°C")}
+          ${wdc("Feels like",       w.feels_like_c,     "°C")}
+          ${wdc("Humidity",         w.humidity,         "%")}
+          ${wdc("Wind speed",       w.wind_kmh,         "km/h")}
+          ${wdc("Pressure",         w.pressure_hpa,     "hPa")}
+          ${wdc("Visibility",       w.visibility_km,    "km")}
+          ${wdc("PM2.5",            w.pm25,             "µg/m³")}
+          ${wdc("AQI",              w.aqi,              "")}
+          ${wdc("AQI status",       w.aqi_status,       "")}
+          ${wdc("Condition",        w.condition,        "")}
+          ${w.consensus_temp      !== undefined ? wdc("Consensus temp",     w.consensus_temp,     "°C") : ""}
+          ${w.consensus_humidity  !== undefined ? wdc("Consensus humidity", w.consensus_humidity, "%")  : ""}
+          <div class="dc-section-head">Timestamps</div>
+          ${wdc("Time IST",         (w.timestamp_ist || "—").split(",")[1]?.trim() || w.timestamp_ist, "")}
+          ${wdc("Date IST",         (w.timestamp_ist || "—").split(",")[0]?.trim(), "")}
+          ${wdc("Timestamp UTC",    w.timestamp_utc,    "")}
+        </div>
       </div>
     </div>`;
-  });
 }
 
-/* CSV */
-window.exportCSV=date=>{
-  const rows=weatherHistory.filter(w=>(w.timestamp_ist||"").startsWith(date));
-  const keys=Object.keys(rows[0]);
-  const csv=[keys.join(",")].concat(
-    rows.map(r=>keys.map(k=>JSON.stringify(r[k]??"")).join(","))
-  ).join("\n");
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download=`weather_${date}.csv`;
+/* ── TOGGLE ── */
+window.tog = function(header) {
+  header.classList.toggle("open");
+  header.nextElementSibling.classList.toggle("open");
+};
+
+/* ── CSV EXPORT ── */
+window.exportCSV = function(date) {
+  const rows = weatherData.filter(w => (w.timestamp_ist || "").startsWith(date));
+  if (!rows.length) return;
+  const keys = ["_id","timestamp_ist","timestamp_utc","temp_c","feels_like_c","humidity",
+                "wind_kmh","pressure_hpa","visibility_km","pm25","aqi","aqi_status",
+                "condition","consensus_temp","consensus_humidity"];
+  const csv = [keys.join(","), ...rows.map(r => keys.map(k => JSON.stringify(r[k] ?? "")).join(","))].join("\n");
+  const a   = document.createElement("a");
+  a.href    = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = `weather_${date.replace(/\//g, "-")}.csv`;
   a.click();
 };
 
-function aqiColor(a){
-  if(a<=50)return"#10b981";
-  if(a<=100)return"#facc15";
-  return"#ef4444";
+/* ── HELPERS ── */
+function dc(label, val, mono = false, full = false) {
+  return `<div class="detail-cell">
+    <div class="dc-label">${label}</div>
+    <div class="dc-val${mono ? ' mono' : ''}${full ? ' full' : ''}">${val ?? "—"}</div>
+  </div>`;
+}
+
+function wdc(label, val, unit) {
+  return `<div class="detail-cell">
+    <div class="dc-label">${label}</div>
+    <div class="dc-val">${val ?? "—"}${unit && val !== undefined && val !== null ? '<span style="font-size:11px;color:var(--text-3);margin-left:2px;font-weight:400">' + unit + '</span>' : ''}</div>
+  </div>`;
+}
+
+function blink(val) {
+  const on = val === true || val === 'true';
+  return on
+    ? `<span class="blink-chip bc-on">● ON</span>`
+    : `<span class="blink-chip bc-off">○ OFF</span>`;
+}
+
+function trunc(s, n) { return s && s.length > n ? s.slice(0, n) + "…" : (s || ""); }
+
+function aqiStyle(aqi) {
+  if (!aqi || aqi <= 50)  return { bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" };
+  if (aqi <= 100)         return { bg: "#fffbeb", color: "#d97706", border: "#fde68a" };
+  if (aqi <= 150)         return { bg: "#fff7ed", color: "#ea580c", border: "#fed7aa" };
+  return                         { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" };
+}
+
+function aqiColor(aqi) {
+  if (!aqi || aqi <= 50) return "#16a34a";
+  if (aqi <= 100)        return "#d97706";
+  if (aqi <= 150)        return "#ea580c";
+  return "#dc2626";
+}
+
+function aqiLabel(aqi) {
+  if (!aqi || aqi <= 50) return "Excellent";
+  if (aqi <= 100)        return "Good";
+  if (aqi <= 150)        return "Moderate";
+  if (aqi <= 200)        return "Unhealthy";
+  return "Hazardous";
 }
 </script>
 </body>
