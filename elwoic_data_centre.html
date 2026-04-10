@@ -21,9 +21,10 @@
   --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --shm:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
 }
+
 body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
 
-/* TOPBAR */
+/* ── TOPBAR ── */
 .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--sh); }
 .tb-brand { display:flex; align-items:center; gap:12px; }
 .tb-mark { width:32px; height:32px; background:var(--s2); border:1px solid var(--border); border-radius:var(--rs); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--t2); }
@@ -34,111 +35,114 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 .sys-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 2px var(--green-b); animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:7px 14px; border:none; border-radius:var(--rs); font-family:'DM Sans',sans-serif; font-size:12.5px; font-weight:600; cursor:pointer; transition:opacity .15s,transform .1s; white-space:nowrap; }
-.btn:hover{opacity:.85} .btn:active{transform:scale(.98)}
-.btn-ghost { background:transparent; color:var(--t2); border:1px solid var(--border); }
+.btn:hover { opacity:.85; } .btn:active { transform:scale(.98); }
+.btn-ghost  { background:transparent; color:var(--t2); border:1px solid var(--border); }
 .btn-export { background:var(--teal-bg); color:var(--teal); border:1px solid var(--teal-b); font-size:11.5px; padding:5px 12px; }
 
-/* BODY */
+/* ── PAGE ── */
 .page { max-width:1100px; margin:0 auto; padding:24px 24px 60px; }
 
-/* TABS */
+/* ── TABS ── */
 .tabs { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:var(--rs); padding:4px; margin-bottom:20px; box-shadow:var(--sh); width:fit-content; }
 .tab-btn { padding:7px 20px; border:none; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; color:var(--t2); background:transparent; transition:all .15s; }
 .tab-btn:hover { background:var(--s2); color:var(--text); }
 .tab-admin   { background:#1a1a18; color:#fff; font-weight:600; }
 .tab-weather { background:var(--teal); color:#fff; font-weight:600; }
 
-/* SEARCH */
+/* ── SEARCH ── */
 .search-wrap { position:relative; margin-bottom:20px; }
 .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--t3); font-size:14px; pointer-events:none; }
 .search-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:var(--rs); padding:9px 12px 9px 36px; font-family:'DM Sans',sans-serif; font-size:13.5px; color:var(--text); outline:none; transition:border-color .15s,box-shadow .15s; box-shadow:var(--sh); }
 .search-input:focus { border-color:var(--border2); box-shadow:0 0 0 3px rgba(0,0,0,.05); }
 .search-input::placeholder { color:var(--t3); }
 
-/* SECTION */
+/* ── SECTION ── */
 .section { display:none; } .section.active { display:block; }
 
-/* SUMMARY */
+/* ── SUMMARY STRIP ── */
 .sum-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
 .sum-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--rs); padding:12px 16px; box-shadow:var(--sh); }
 .sum-lbl { font-size:11px; color:var(--t3); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
 .sum-val { font-size:20px; font-weight:600; color:var(--text); }
 .sum-sub { font-size:11px; color:var(--t3); margin-top:2px; }
 
-/* DATE GROUP */
+/* ── DATE GROUP ── */
 .dg { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); margin-bottom:12px; overflow:hidden; box-shadow:var(--sh); }
-.dg-head { padding:12px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; background:var(--s2); border-bottom:1px solid transparent; transition:background .15s; user-select:none; }
+.dg-head { padding:12px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; background:var(--s2); border-bottom:1px solid var(--border); user-select:none; transition:background .15s; }
 .dg-head:hover { background:var(--s3); }
-.dg-head.open { border-bottom-color:var(--border); }
 .dg-left { display:flex; align-items:center; gap:10px; }
 .dg-date { font-size:13px; font-weight:600; color:var(--text); }
 .dg-count { font-size:11px; background:var(--s3); border:1px solid var(--border); border-radius:100px; padding:1px 8px; color:var(--t2); font-family:'DM Mono',monospace; }
 .dg-chev { font-size:11px; color:var(--t3); transition:transform .2s; }
-.dg-head.open .dg-chev { transform:rotate(180deg); }
-.dg-body { display:none; padding:10px 12px; }
-.dg-body.open { display:block; }
+.dg-head.closed .dg-chev { transform:rotate(-90deg); }
+.dg-body { padding:10px 12px; }
+.dg-body.closed { display:none; }
 
-/* RECORD CARD */
-.rc { background:var(--surface); border:1px solid var(--border); border-radius:var(--rs); margin-bottom:8px; overflow:hidden; transition:border-color .15s; }
-.rc:last-child { margin-bottom:0; }
-.rc:hover { border-color:var(--border2); }
-.rc-head { display:grid; grid-template-columns:auto 1fr auto auto; align-items:center; gap:12px; padding:10px 14px; cursor:pointer; user-select:none; }
-.rc-body { display:none; }
-.rc.open .rc-body { display:block; }
-.rc-chev { font-size:10px; color:var(--t3); transition:transform .2s; flex-shrink:0; }
-.rc.open .rc-chev { transform:rotate(180deg); }
-.rc-time { font-size:11px; color:var(--t3); font-family:'DM Mono',monospace; white-space:nowrap; flex-shrink:0; }
-.rc-sum { font-size:13px; color:var(--text); line-height:1.4; min-width:0; overflow:hidden; }
-.rc-sum .dim { color:var(--t2); font-weight:400; }
+/* ── ENTRY CARD ── */
+.ec { background:var(--surface); border:1px solid var(--border); border-radius:var(--rs); margin-bottom:8px; overflow:hidden; }
+.ec:last-child { margin-bottom:0; }
+.ec-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; cursor:pointer; user-select:none; transition:background .1s; }
+.ec-head:hover { background:var(--s2); }
+.ec-left { display:flex; align-items:center; gap:10px; min-width:0; }
+.ec-time { font-size:12px; color:var(--t2); font-family:'DM Mono',monospace; white-space:nowrap; }
+.ec-preview { font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ec-preview b { font-weight:600; }
+.ec-preview .dim { color:var(--t2); }
+.ec-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.ec-chev { font-size:10px; color:var(--t3); transition:transform .2s; }
+.ec.open .ec-chev { transform:rotate(180deg); }
+.ec-body { display:none; border-top:1px solid var(--border); }
+.ec.open .ec-body { display:block; }
 
-/* BADGES */
-.rbadge { display:inline-flex; align-items:center; font-size:10px; font-weight:600; padding:2px 8px; border-radius:100px; font-family:'DM Mono',monospace; white-space:nowrap; flex-shrink:0; }
-.rb-manual  { background:var(--blue-bg);   color:var(--blue);   border:1px solid var(--blue-b); }
-.rb-pre     { background:var(--amber-bg);  color:var(--amber);  border:1px solid var(--amber-b); }
-.rb-info    { background:var(--green-bg);  color:var(--green);  border:1px solid var(--green-b); }
-.rb-bulk    { background:var(--purple-bg); color:var(--purple); border:1px solid var(--purple-b); }
-.rb-revoke  { background:var(--red-bg);    color:var(--red);    border:1px solid var(--red-b); }
+/* ── TYPE BADGES ── */
+.tbadge { display:inline-flex; align-items:center; font-size:10px; font-weight:600; padding:2px 8px; border-radius:100px; font-family:'DM Mono',monospace; white-space:nowrap; flex-shrink:0; }
+.tb-manual { background:var(--blue-bg);   color:var(--blue);   border:1px solid var(--blue-b); }
+.tb-pre    { background:var(--amber-bg);  color:var(--amber);  border:1px solid var(--amber-b); }
+.tb-info   { background:var(--green-bg);  color:var(--green);  border:1px solid var(--green-b); }
+.tb-bulk   { background:var(--purple-bg); color:var(--purple); border:1px solid var(--purple-b); }
+.tb-revoke { background:var(--red-bg);    color:var(--red);    border:1px solid var(--red-b); }
 
-.aqi-badge { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px; font-family:'DM Mono',monospace; flex-shrink:0; }
-.aqi-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
-
-/* DETAIL GRID */
-.dgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1px; background:var(--border); border-top:1px solid var(--border); }
+/* ── DETAIL GRID ── */
+.dgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1px; background:var(--border); }
 .dcell { background:var(--s2); padding:10px 14px; }
-.dcell.id-row { grid-column:1/-1; background:var(--s3); }
-.dcell.sec-head { grid-column:1/-1; background:var(--s3); padding:7px 14px; border-top:1px solid var(--border); }
+.dcell.full-row { grid-column:1/-1; }
+.dcell.id-cell  { grid-column:1/-1; background:var(--s3); }
+.dcell.sec-cell { grid-column:1/-1; background:var(--s3); padding:7px 14px; border-top:1px solid var(--border); }
 .dc-lbl { font-size:10.5px; color:var(--t3); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
-.dc-val { font-size:13px; color:var(--text); font-weight:500; word-break:break-word; line-height:1.5; }
+.dc-val { font-size:13px; color:var(--text); font-weight:500; word-break:break-word; line-height:1.6; }
 .dc-val.mono { font-family:'DM Mono',monospace; font-size:11.5px; color:var(--t2); font-weight:400; }
-.dc-val.msg  { white-space:pre-wrap; font-size:12.5px; font-weight:400; line-height:1.7; }
-.sec-head-txt { font-size:11px; font-weight:600; color:var(--t2); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
+.dc-val.msg  { white-space:pre-wrap; font-size:13px; font-weight:400; line-height:1.8; }
+.sec-lbl { font-size:11px; font-weight:600; color:var(--t2); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
 
 .bchip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:2px 8px; border-radius:100px; font-family:'DM Mono',monospace; }
-.bc-on  { background:var(--red-bg);  color:var(--red);  border:1px solid var(--red-b); }
+.bc-on  { background:var(--red-bg); color:var(--red); border:1px solid var(--red-b); }
 .bc-off { background:var(--s3); color:var(--t3); border:1px solid var(--border); }
 
-/* EMPTY/LOADING */
-.empty,.loading { text-align:center; padding:48px 24px; color:var(--t3); font-size:13.5px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); }
+/* ── AQI BADGE ── */
+.aqi-pill { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px; font-family:'DM Mono',monospace; flex-shrink:0; }
+.aqi-dot { width:5px; height:5px; border-radius:50%; }
+
+/* ── EMPTY / LOADING ── */
+.empty, .loading { text-align:center; padding:48px 24px; color:var(--t3); font-size:13.5px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); }
 .loading { font-family:'DM Mono',monospace; font-size:12px; }
 
-/* RESPONSIVE */
+/* ── RESPONSIVE ── */
 @media(max-width:800px){
-  .sum-strip{grid-template-columns:1fr 1fr}
-  .topbar{padding:0 16px}
-  .page{padding:16px 14px 60px}
-  .tb-sub{display:none}
-  .rc-head{grid-template-columns:auto 1fr auto}
-  .rc-time{display:none}
-  .tabs{width:100%}
-  .tab-btn{flex:1}
+  .sum-strip { grid-template-columns:1fr 1fr; }
+  .topbar { padding:0 16px; }
+  .page { padding:16px 14px 60px; }
+  .tb-sub { display:none; }
+  .tabs { width:100%; }
+  .tab-btn { flex:1; }
 }
-@media(max-width:500px){ .sum-strip{grid-template-columns:1fr 1fr} }
+@media(max-width:500px){ .sum-strip { grid-template-columns:1fr 1fr; } }
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="tb-brand">
     <div class="tb-mark">ELW</div>
@@ -153,6 +157,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
   </div>
 </div>
 
+<!-- PAGE -->
 <div class="page">
   <div class="tabs">
     <button class="tab-btn tab-admin"   id="tab-admin"   onclick="switchTab('admin')">Admin logs</button>
@@ -172,16 +177,16 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
   </div>
 </div>
 
-<!-- SINGLE COMBINED SCRIPT — avoids all module scoping and app name conflicts -->
+<!-- Firebase compat — single script, no module conflicts -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 
-/* ── FIREBASE INIT ── */
+/* ── INIT ── */
 const authApp    = firebase.initializeApp({ apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ", authDomain:"administration-protal.firebaseapp.com" }, "dcAuth");
 const adminApp   = firebase.initializeApp({ apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ", databaseURL:"https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app" }, "dcAdmin");
-const weatherApp = firebase.initializeApp({ apiKey:"AIzaSyDo3Rm9PBZ8GZqOucYh1VyCCc3hBPLbTn4", databaseURL:"https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app" }, "dcWeather");
+const weatherApp = firebase.initializeApp({ apiKey:"AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ", databaseURL:"https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app" }, "dcWeather");
 
 const auth      = authApp.auth();
 const adminDb   = adminApp.database();
@@ -200,7 +205,7 @@ let weatherData = [];
 let currentTab  = "admin";
 let query       = "";
 
-/* ── TAB ── */
+/* ── TABS ── */
 function switchTab(tab) {
   currentTab = tab;
   document.getElementById("sec-admin").classList.toggle("active", tab === "admin");
@@ -216,17 +221,28 @@ document.getElementById("search-input").addEventListener("input", e => {
   query = e.target.value.toLowerCase().trim();
   render();
 });
-
 function render() {
   if (currentTab === "admin") renderAdmin();
   else renderWeather();
 }
 
-/* ══════════════════════════════
+/* ── TOGGLE HELPERS (inline onclick compatible) ── */
+window.togGroup = function(el) {
+  el.classList.toggle("closed");
+  el.nextElementSibling.classList.toggle("closed");
+};
+window.togEntry = function(el) {
+  el.closest(".ec").classList.toggle("open");
+};
+
+/* ══════════════════════════════════
    ADMIN LOGS
-══════════════════════════════ */
+   — same logic as old working code,
+     just with professional rendering
+══════════════════════════════════ */
 adminDb.ref("grant_history").on("value", snap => {
   adminData = [];
+  // Use forEach to keep Firebase push keys
   snap.forEach(child => adminData.push({ _id: child.key, ...child.val() }));
   adminData.reverse();
   renderAdmin();
@@ -236,43 +252,46 @@ function renderAdmin() {
   const box = document.getElementById("admin-box");
   const sum = document.getElementById("admin-sum");
 
-  const list = query ? adminData.filter(e => JSON.stringify(e).toLowerCase().includes(query)) : adminData;
+  const list = query
+    ? adminData.filter(e => JSON.stringify(e).toLowerCase().includes(query))
+    : adminData;
 
-  // counts
-  let cManual=0, cPre=0, cInfo=0, cBulk=0, cRevoke=0;
+  // Summary
+  let cM=0,cP=0,cI=0,cB=0,cR=0;
   adminData.forEach(e => {
-    if (e.action === "revoke" || e.type === "REVOKE_ALL") cRevoke++;
-    else if (e.type === "BULK_UPDATE")   cBulk++;
-    else if (e.type === "manualUpdate")  cManual++;
-    else if (e.type === "preUpdate")     cPre++;
-    else if (e.type === "info")          cInfo++;
+    if (e.action==="revoke"||e.type==="REVOKE_ALL") cR++;
+    else if (e.type==="BULK_UPDATE")  cB++;
+    else if (e.type==="manualUpdate") cM++;
+    else if (e.type==="preUpdate")    cP++;
+    else if (e.type==="info")         cI++;
   });
-
   sum.innerHTML = `
     <div class="sum-card"><div class="sum-lbl">Total records</div><div class="sum-val">${adminData.length}</div><div class="sum-sub">all time</div></div>
-    <div class="sum-card"><div class="sum-lbl">Manual updates</div><div class="sum-val">${cManual}</div><div class="sum-sub">+ ${cPre} pre, ${cInfo} info</div></div>
-    <div class="sum-card"><div class="sum-lbl">Bulk ops</div><div class="sum-val">${cBulk}</div><div class="sum-sub">update-all actions</div></div>
-    <div class="sum-card"><div class="sum-lbl">Revokes</div><div class="sum-val" style="color:var(--red)">${cRevoke}</div><div class="sum-sub">section clears</div></div>`;
+    <div class="sum-card"><div class="sum-lbl">Manual updates</div><div class="sum-val">${cM}</div><div class="sum-sub">+ ${cP} pre, ${cI} info</div></div>
+    <div class="sum-card"><div class="sum-lbl">Bulk ops</div><div class="sum-val">${cB}</div><div class="sum-sub">update-all actions</div></div>
+    <div class="sum-card"><div class="sum-lbl">Revokes</div><div class="sum-val" style="color:var(--red)">${cR}</div><div class="sum-sub">section clears</div></div>`;
 
-  if (!list.length) { box.innerHTML = `<div class="empty">No records found${query ? ' for "'+query+'"' : ''}.</div>`; return; }
+  if (!list.length) { box.innerHTML = `<div class="empty">No records found.</div>`; return; }
 
-  // group by date
-  const groups = {};
+  // Group by date — same as old working code
+  const g = {};
   list.forEach(e => {
-    const d = (e.timestamp || "Unknown date").split(",")[0].trim();
-    (groups[d] = groups[d] || []).push(e);
+    const d = (e.timestamp || "Unknown").split(",")[0].trim();
+    (g[d] = g[d] || []).push(e);
   });
 
-  box.innerHTML = Object.keys(groups).map(date => `
+  box.innerHTML = Object.keys(g).map(date => `
     <div class="dg">
-      <div class="dg-head open" onclick="togGroup(this)">
+      <div class="dg-head" onclick="togGroup(this)">
         <div class="dg-left">
           <span class="dg-date">${date}</span>
-          <span class="dg-count">${groups[date].length} record${groups[date].length!==1?"s":""}</span>
+          <span class="dg-count">${g[date].length} record${g[date].length!==1?"s":""}</span>
         </div>
         <span class="dg-chev">▼</span>
       </div>
-      <div class="dg-body open">${groups[date].map(adminCard).join("")}</div>
+      <div class="dg-body">
+        ${g[date].map(e => adminCard(e)).join("")}
+      </div>
     </div>`).join("");
 }
 
@@ -282,99 +301,114 @@ function adminCard(e) {
   const isBulk         = e.type === "BULK_UPDATE";
 
   const bmap = {
-    manualUpdate:{ label:"Manual", cls:"rb-manual" },
-    preUpdate:   { label:"Pre",    cls:"rb-pre"    },
-    info:        { label:"Info",   cls:"rb-info"   },
-    BULK_UPDATE: { label:"Bulk",   cls:"rb-bulk"   },
-    REVOKE_ALL:  { label:"Revoke", cls:"rb-revoke" },
+    manualUpdate:{ label:"Manual", cls:"tb-manual" },
+    preUpdate:   { label:"Pre",    cls:"tb-pre"    },
+    info:        { label:"Info",   cls:"tb-info"   },
+    BULK_UPDATE: { label:"Bulk",   cls:"tb-bulk"   },
+    REVOKE_ALL:  { label:"Revoke", cls:"tb-revoke" },
   };
-  const meta = isRevokeSingle ? {label:"Revoke",cls:"rb-revoke"} : (bmap[e.type]||{label:e.type||"—",cls:"rb-bulk"});
-  const time = (e.timestamp||"—").split(",")[1]?.trim()||"—";
+  const meta = isRevokeSingle
+    ? { label:"Revoke", cls:"tb-revoke" }
+    : (bmap[e.type] || { label: e.type||"—", cls:"tb-bulk" });
 
-  // summary
-  let sum = "";
+  const time = (e.timestamp||"—").split(",")[1]?.trim() || "—";
+
+  // Preview line
+  let preview = "";
   if (isRevokeAll) {
-    sum = `<b>All sections cleared</b>`;
+    preview = `<b>All sections cleared</b>`;
   } else if (isBulk) {
     const txt = e.data?.manualUpdate?.text || e.data?.preUpdate?.text || e.data?.info?.text || "";
-    sum = `<b>All sections updated</b>${txt ? ` — <span class="dim">${trunc(txt,55)}</span>` : ""}`;
+    preview = `<b>All sections updated</b>${txt ? ` — <span class="dim">${txt.slice(0,60)}${txt.length>60?"…":""}</span>` : ""}`;
   } else if (isRevokeSingle) {
-    const prev = e.data?.text ? trunc(e.data.text, 55) : "";
-    sum = `<b>${e.type}</b> revoked${prev ? ` — <span class="dim">"${prev}"</span>` : ""}`;
+    const prev = e.data?.text || "";
+    preview = `<b>${e.type}</b> revoked${prev ? ` — <span class="dim">"${prev.slice(0,55)}${prev.length>55?"…":""}"</span>` : ""}`;
   } else if (e.data) {
     const parts = [];
     if (e.data.date) parts.push(`<b>${e.data.date}</b>`);
-    if (e.data.text) parts.push(`<span class="dim">${trunc(e.data.text, 65)}</span>`);
-    sum = parts.join(" — ") || "—";
+    if (e.data.text) parts.push(`<span class="dim">${e.data.text.slice(0,65)}${e.data.text.length>65?"…":""}</span>`);
+    preview = parts.join(" — ") || "—";
   } else {
-    sum = e.details || "—";
+    preview = e.details || "—";
   }
 
-  // detail cells
-  let cells = cell("Firebase ID", e._id||"—", "mono", true);
+  // Full detail cells
+  let cells = `
+    <div class="dcell id-cell">
+      <div class="dc-lbl">Firebase ID</div>
+      <div class="dc-val mono">${e._id||"—"}</div>
+    </div>`;
 
   if (isBulk && e.data) {
     const d = e.data;
     if (d.manualUpdate) {
       cells += secHead("Manual Update");
-      cells += cell("Date",        d.manualUpdate.date   || "—");
-      cells += cell("Message",     d.manualUpdate.text   || "—", "msg");
-      cells += cell("Blink alert", blinkChip(d.manualUpdate.blink));
-      cells += cell("Saved at",    d.manualUpdate.updatedAt || "—");
+      cells += dc("Date",        d.manualUpdate.date    || "—");
+      cells += dc("Message",     d.manualUpdate.text    || "—", "msg");
+      cells += dc("Blink alert", bchip(d.manualUpdate.blink));
+      cells += dc("Saved at",    d.manualUpdate.updatedAt || "—");
     }
     if (d.preUpdate) {
       cells += secHead("Pre Update");
-      cells += cell("Target date", d.preUpdate.date || "—");
-      cells += cell("Message",     d.preUpdate.text || "—", "msg");
-      cells += cell("Blink alert", blinkChip(d.preUpdate.blink));
-      cells += cell("Saved at",    d.preUpdate.updatedAt || "—");
+      cells += dc("Target date", d.preUpdate.date || "—");
+      cells += dc("Message",     d.preUpdate.text || "—", "msg");
+      cells += dc("Blink alert", bchip(d.preUpdate.blink));
+      cells += dc("Saved at",    d.preUpdate.updatedAt || "—");
     }
     if (d.info) {
       cells += secHead("General Info");
-      cells += cell("Content",  d.info.text      || "—", "msg");
-      cells += cell("Saved at", d.info.updatedAt || "—");
+      cells += dc("Content",  d.info.text      || "—", "msg");
+      cells += dc("Saved at", d.info.updatedAt || "—");
     }
   } else if (isRevokeAll) {
-    cells += cell("Action",  "Full portal clear — all sections removed");
-    cells += cell("Details", e.details || "Admin cleared all live sections");
+    cells += dc("Action",  "Full portal clear — all sections removed");
+    cells += dc("Details", e.details || "Admin cleared all live sections");
   } else if (isRevokeSingle) {
     cells += secHead("Content before revoke");
-    if (e.data?.date)             cells += cell("Date",        e.data.date);
-    if (e.data?.text)             cells += cell("Message",     e.data.text, "msg");
-    if (e.data?.blink !== undefined) cells += cell("Blink alert", blinkChip(e.data.blink));
-    if (e.data?.updatedAt)        cells += cell("Was saved at",e.data.updatedAt);
+    if (e.data?.date)  cells += dc("Date",        e.data.date);
+    if (e.data?.text)  cells += dc("Message",     e.data.text, "msg");
+    if (e.data?.blink !== undefined) cells += dc("Blink alert", bchip(e.data.blink));
+    if (e.data?.updatedAt) cells += dc("Was saved at", e.data.updatedAt);
   } else if (e.data) {
-    if (e.data.date)              cells += cell("Date",        e.data.date);
-    if (e.data.text)              cells += cell("Message",     e.data.text, "msg");
-    if (e.data.blink !== undefined) cells += cell("Blink alert", blinkChip(e.data.blink));
-    if (e.data.updatedAt)         cells += cell("Saved at",    e.data.updatedAt);
+    if (e.data.date)  cells += dc("Date",        e.data.date);
+    if (e.data.text)  cells += dc("Message",     e.data.text, "msg");
+    if (e.data.blink !== undefined) cells += dc("Blink alert", bchip(e.data.blink));
+    if (e.data.updatedAt) cells += dc("Saved at", e.data.updatedAt);
   } else if (e.details) {
-    cells += cell("Details", e.details);
+    cells += dc("Details", e.details);
   }
 
   cells += secHead("Record metadata");
-  cells += cell("Full timestamp",  e.timestamp  || "—");
-  cells += cell("Sort date (ISO)", e.sortDate   || "—", "mono");
-  cells += cell("Action type",     e.action     || "update");
-  cells += cell("Entry type",      e.type       || "—");
+  cells += dc("Timestamp",     e.timestamp || "—");
+  cells += dc("Sort date ISO", e.sortDate  || "—", "mono");
+  cells += dc("Type",          e.type      || "—");
+  cells += dc("Action",        e.action    || "update");
 
   return `
-    <div class="rc open" onclick="this.classList.toggle('open')">
-      <div class="rc-head">
-        <span class="rbadge ${meta.cls}">${meta.label}</span>
-        <span class="rc-sum">${sum}</span>
-        <span class="rc-time">${time}</span>
-        <span class="rc-chev">▼</span>
+    <div class="ec">
+      <div class="ec-head" onclick="togEntry(this)">
+        <div class="ec-left">
+          <span class="tbadge ${meta.cls}">${meta.label}</span>
+          <span class="ec-time">${time}</span>
+          <span class="ec-preview">${preview}</span>
+        </div>
+        <div class="ec-right">
+          <span class="ec-chev">▼</span>
+        </div>
       </div>
-      <div class="rc-body"><div class="dgrid">${cells}</div></div>
+      <div class="ec-body">
+        <div class="dgrid">${cells}</div>
+      </div>
     </div>`;
 }
 
-/* ══════════════════════════════
+/* ══════════════════════════════════
    WEATHER HISTORY
-══════════════════════════════ */
+   — same logic as old working code
+══════════════════════════════════ */
 weatherDb.ref("weather_logs").on("value", snap => {
   weatherData = [];
+  // Use forEach to keep Firebase push keys
   snap.forEach(child => weatherData.push({ _id: child.key, ...child.val() }));
   weatherData.reverse();
   renderWeather();
@@ -384,114 +418,119 @@ function renderWeather() {
   const box = document.getElementById("weather-box");
   const sum = document.getElementById("weather-sum");
 
-  const list = query ? weatherData.filter(e => JSON.stringify(e).toLowerCase().includes(query)) : weatherData;
+  const list = query
+    ? weatherData.filter(w => JSON.stringify(w).toLowerCase().includes(query))
+    : weatherData;
 
+  // Summary
   if (weatherData.length) {
-    const lat   = weatherData[0];
-    const s48   = weatherData.slice(0, 48);
-    const avg   = s48.length ? (s48.reduce((a,b) => a+(b.temp_c||0), 0) / s48.length).toFixed(1) : "—";
-    const maxAQ = s48.length ? Math.max(...s48.map(w => w.aqi||0)) : 0;
+    const lat  = weatherData.find(w => w.temp_c != null) || weatherData[0];
+    const s48  = weatherData.slice(0,48);
+    const avg  = (s48.reduce((a,b) => a+(b.temp_c||0),0) / s48.length).toFixed(1);
+    const maxA = Math.max(...s48.map(w => w.aqi||0));
     sum.innerHTML = `
       <div class="sum-card"><div class="sum-lbl">Total records</div><div class="sum-val">${weatherData.length}</div><div class="sum-sub">all time</div></div>
       <div class="sum-card"><div class="sum-lbl">Latest temp</div><div class="sum-val">${lat.temp_c??"—"}°C</div><div class="sum-sub">Feels ${lat.feels_like_c??"—"}°C</div></div>
       <div class="sum-card"><div class="sum-lbl">Avg temp (48h)</div><div class="sum-val">${avg}°C</div><div class="sum-sub">last 48 records</div></div>
-      <div class="sum-card"><div class="sum-lbl">Peak AQI (48h)</div><div class="sum-val" style="color:${aqiColor(maxAQ)}">${maxAQ}</div><div class="sum-sub">${aqiLabel(maxAQ)}</div></div>`;
+      <div class="sum-card"><div class="sum-lbl">Peak AQI (48h)</div><div class="sum-val" style="color:${aqiColor(maxA)}">${maxA}</div><div class="sum-sub">${aqiLabel(maxA)}</div></div>`;
   }
 
-  if (!list.length) { box.innerHTML = `<div class="empty">No records found${query ? ' for "'+query+'"' : ''}.</div>`; return; }
+  if (!list.length) { box.innerHTML = `<div class="empty">No records found.</div>`; return; }
 
-  const groups = {};
+  // Group by date — same as old working code
+  const g = {};
   list.forEach(w => {
-    const d = (w.timestamp_ist || w.timestamp_utc || "Unknown").split(",")[0].trim();
-    (groups[d] = groups[d] || []).push(w);
+    const d = (w.timestamp_ist || "Unknown").split(",")[0].trim();
+    (g[d] = g[d] || []).push(w);
   });
 
-  box.innerHTML = Object.keys(groups).map((date, i) => `
+  box.innerHTML = Object.keys(g).map(date => `
     <div class="dg">
-      <div class="dg-head open" onclick="togGroup(this)">
+      <div class="dg-head" onclick="togGroup(this)">
         <div class="dg-left">
           <span class="dg-date">${date}</span>
-          <span class="dg-count">${groups[date].length} record${groups[date].length!==1?"s":""}</span>
+          <span class="dg-count">${g[date].length} record${g[date].length!==1?"s":""}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <button class="btn btn-export" onclick="event.stopPropagation();exportCSV('${date}')">Export CSV</button>
           <span class="dg-chev">▼</span>
         </div>
       </div>
-      <div class="dg-body open">${groups[date].map(weatherCard).join("")}</div>
+      <div class="dg-body">
+        ${g[date].map(w => weatherCard(w)).join("")}
+      </div>
     </div>`).join("");
 }
 
 function weatherCard(w) {
   const time = (w.timestamp_ist||"").split(",")[1]?.trim() || "—";
-  const {bg,color,border} = aqiStyle(w.aqi);
+  const {bg,col,bdr} = aqiStyle(w.aqi);
 
+  // All fields in detail grid
   const cells =
-    cell("Firebase ID", w._id||"—", "mono", true) +
+    `<div class="dcell id-cell"><div class="dc-lbl">Firebase ID</div><div class="dc-val mono">${w._id||"—"}</div></div>` +
     secHead("Weather readings") +
-    wcell("Temperature",      w.temp_c,          "°C")  +
-    wcell("Feels like",       w.feels_like_c,    "°C")  +
-    wcell("Humidity",         w.humidity,        "%")   +
-    wcell("Wind speed",       w.wind_kmh,        "km/h")+
-    wcell("Pressure",         w.pressure_hpa,    "hPa") +
-    wcell("Visibility",       w.visibility_km,   "km")  +
-    wcell("PM2.5",            w.pm25,            "µg/m³")+
-    wcell("AQI",              w.aqi,             "")    +
-    wcell("AQI status",       w.aqi_status,      "")    +
-    wcell("Condition",        w.condition,       "")    +
-    (w.consensus_temp     !== undefined ? wcell("Consensus temp",     w.consensus_temp,     "°C") : "") +
-    (w.consensus_humidity !== undefined ? wcell("Consensus humidity", w.consensus_humidity, "%")  : "") +
+    wdc("Temperature",      w.temp_c,         "°C") +
+    wdc("Feels like",       w.feels_like_c,   "°C") +
+    wdc("Humidity",         w.humidity,       "%") +
+    wdc("Wind speed",       w.wind_kmh,       "km/h") +
+    wdc("Pressure",         w.pressure_hpa,   "hPa") +
+    wdc("Visibility",       w.visibility_km,  "km") +
+    wdc("PM2.5",            w.pm25,           "µg/m³") +
+    wdc("AQI",              w.aqi,            "") +
+    wdc("AQI status",       w.aqi_status,     "") +
+    wdc("Condition",        w.condition,      "") +
+    (w.consensus_temp      != null ? wdc("Consensus temp",     w.consensus_temp,     "°C") : "") +
+    (w.consensus_humidity  != null ? wdc("Consensus humidity", w.consensus_humidity, "%")  : "") +
     secHead("Timestamps") +
-    wcell("Time IST",  (w.timestamp_ist||"—").split(",")[1]?.trim() || w.timestamp_ist, "") +
-    wcell("Date IST",  (w.timestamp_ist||"—").split(",")[0]?.trim(), "")  +
-    wcell("Timestamp UTC", w.timestamp_utc, "");
+    wdc("Date IST",         (w.timestamp_ist||"—").split(",")[0]?.trim(), "") +
+    wdc("Time IST",         time, "") +
+    wdc("Timestamp UTC",    w.timestamp_utc, "");
 
   return `
-    <div class="rc open" onclick="this.classList.toggle('open')">
-      <div class="rc-head">
-        <span class="aqi-badge" style="background:${bg};color:${color};border:1px solid ${border}">
-          <span class="aqi-dot" style="background:${color}"></span>AQI ${w.aqi??"—"}
-        </span>
-        <span class="rc-sum"><b>${w.temp_c??"—"}°C</b> · Feels ${w.feels_like_c??"—"}°C · <span class="dim">${w.condition??"—"} · ${w.aqi_status??"—"}</span></span>
-        <span class="rc-time">${time}</span>
-        <span class="rc-chev">▼</span>
+    <div class="ec">
+      <div class="ec-head" onclick="togEntry(this)">
+        <div class="ec-left">
+          <span class="aqi-pill" style="background:${bg};color:${col};border:1px solid ${bdr}">
+            <span class="aqi-dot" style="background:${col}"></span>AQI ${w.aqi??"—"}
+          </span>
+          <span class="ec-time">${time}</span>
+          <span class="ec-preview"><b>${w.temp_c??"—"}°C</b> · Feels ${w.feels_like_c??"—"}°C · <span class="dim">${w.condition??"—"} · ${w.aqi_status??"—"} · Humidity ${w.humidity??"—"}% · Wind ${w.wind_kmh??"—"} km/h</span></span>
+        </div>
+        <div class="ec-right">
+          <span class="ec-chev">▼</span>
+        </div>
       </div>
-      <div class="rc-body"><div class="dgrid">${cells}</div></div>
+      <div class="ec-body">
+        <div class="dgrid">${cells}</div>
+      </div>
     </div>`;
 }
 
-/* ── TOGGLE ── */
-function togGroup(header) {
-  header.classList.toggle("open");
-  header.nextElementSibling.classList.toggle("open");
-}
-window.togGroup = togGroup;
-
-/* ── CSV EXPORT ── */
+/* ── CSV ── */
 window.exportCSV = function(date) {
   const rows = weatherData.filter(w => (w.timestamp_ist||"").startsWith(date));
   if (!rows.length) return;
-  const keys = ["_id","timestamp_ist","timestamp_utc","temp_c","feels_like_c","humidity",
-                "wind_kmh","pressure_hpa","visibility_km","pm25","aqi","aqi_status",
-                "condition","consensus_temp","consensus_humidity"];
+  const keys = ["_id","timestamp_ist","timestamp_utc","temp_c","feels_like_c",
+                "humidity","wind_kmh","pressure_hpa","visibility_km","pm25",
+                "aqi","aqi_status","condition","consensus_temp","consensus_humidity"];
   const csv = [keys.join(","), ...rows.map(r => keys.map(k => JSON.stringify(r[k]??'')).join(","))].join("\n");
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download = `weather_${date.replace(/\//g,"-")}.csv`;
   a.click();
 };
 
 /* ── CELL BUILDERS ── */
-function cell(label, val, cls="", idRow=false) {
-  return `<div class="dcell${idRow?" id-row":""}">
+function dc(label, val, cls="") {
+  return `<div class="dcell">
     <div class="dc-lbl">${label}</div>
     <div class="dc-val${cls?" "+cls:""}">${val??'—'}</div>
   </div>`;
 }
 
-function wcell(label, val, unit) {
-  const u = unit && val!=null && val!==undefined
-    ? `<span style="font-size:11px;color:var(--t3);margin-left:2px;font-weight:400">${unit}</span>` : "";
+function wdc(label, val, unit) {
+  const u = unit ? `<span style="font-size:11px;color:var(--t3);margin-left:2px;font-weight:400">${unit}</span>` : "";
   return `<div class="dcell">
     <div class="dc-lbl">${label}</div>
     <div class="dc-val">${val??'—'}${u}</div>
@@ -499,22 +538,21 @@ function wcell(label, val, unit) {
 }
 
 function secHead(label) {
-  return `<div class="dcell sec-head"><span class="sec-head-txt">${label}</span></div>`;
+  return `<div class="dcell sec-cell"><span class="sec-lbl">${label}</span></div>`;
 }
 
-function blinkChip(val) {
-  const on = val === true || val === "true";
-  return on ? `<span class="bchip bc-on">● ON</span>` : `<span class="bchip bc-off">○ OFF</span>`;
+function bchip(val) {
+  return (val===true||val==="true")
+    ? `<span class="bchip bc-on">● ON</span>`
+    : `<span class="bchip bc-off">○ OFF</span>`;
 }
 
-function trunc(s, n) { return s && s.length > n ? s.slice(0,n)+"…" : (s||""); }
-
-/* ── AQI HELPERS ── */
+/* ── AQI ── */
 function aqiStyle(a) {
-  if (!a||a<=50)  return {bg:"#f0fdf4",color:"#16a34a",border:"#bbf7d0"};
-  if (a<=100)     return {bg:"#fffbeb",color:"#d97706",border:"#fde68a"};
-  if (a<=150)     return {bg:"#fff7ed",color:"#ea580c",border:"#fed7aa"};
-  return               {bg:"#fef2f2",color:"#dc2626",border:"#fecaca"};
+  if (!a||a<=50)  return {bg:"#f0fdf4",col:"#16a34a",bdr:"#bbf7d0"};
+  if (a<=100)     return {bg:"#fffbeb",col:"#d97706",bdr:"#fde68a"};
+  if (a<=150)     return {bg:"#fff7ed",col:"#ea580c",bdr:"#fed7aa"};
+  return               {bg:"#fef2f2",col:"#dc2626",bdr:"#fecaca"};
 }
 function aqiColor(a) {
   if (!a||a<=50) return "#16a34a";
