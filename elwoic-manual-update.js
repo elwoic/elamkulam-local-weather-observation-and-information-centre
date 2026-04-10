@@ -8,16 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoEl = document.getElementById("alert-info");
   const timeEl = document.getElementById("alert-timestamp");
 
-  /* 1. START LOADING STATE */
+  /* 1. START UNIVERSAL LOADING STATE */
+  const loadingHtml = `<div class="loading-text"><span class="blink">●</span> Connecting...</div>`;
+  
   if (panel) {
-    panel.style.display = "block"; // Make sure it's visible
-    // We put the loading message inside the manual element area temporarily
-    manualEl.innerHTML = `
-      <div class="loading-text">
-        <span class="blink">●</span> Connecting to database...
-      </div>`;
-    preEl.textContent = ""; 
-    infoEl.textContent = "";
+    panel.style.display = "block";
+    manualEl.innerHTML = loadingHtml;
+    preEl.innerHTML = loadingHtml;
+    infoEl.innerHTML = loadingHtml;
   }
 
   const firebaseConfig = {
@@ -32,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = getApps().find(a => a.name === "alertsApp") || initializeApp(firebaseConfig, "alertsApp");
   const db = getDatabase(app);
-  const reportsQuery = ref(db, "/"); // Adjusted to match your data structure
+  const reportsQuery = ref(db, "/");
 
   function dateOnlyTs(ddmmyyyy) {
     if (!ddmmyyyy) return NaN;
@@ -43,25 +41,24 @@ document.addEventListener("DOMContentLoaded", () => {
   onValue(reportsQuery, (snapshot) => {
     const data = snapshot.val();
     
-    // If database is completely empty, hide and stop
-    if (!data) {
-      panel.style.display = "none";
-      return;
-    }
+    // Reset classes and clear loading state
+    [manualEl, preEl, infoEl].forEach(el => {
+        el.innerHTML = ""; 
+        el.classList.remove("blink");
+        el.style.color = "";
+    });
+
+    // Set Default "No Data" Text
+    manualEl.textContent = "No updates available at this time";
+    preEl.textContent = "No updates scheduled";
+    infoEl.textContent = "No general information";
+
+    if (!data) return; // Keep the default text if DB is empty
 
     const now = new Date();
     const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-    let hasManual = false;
-    let hasPre = false;
-    let hasInfo = false;
-
-    // 2. CLEAR LOADING STATE BEFORE PROCESSING
-    manualEl.innerHTML = "";
-    manualEl.classList.remove("blink");
-    preEl.classList.remove("blink");
-    manualEl.style.color = "";
-    preEl.style.color = "";
+    let hasActualManual = false;
 
     /* ── MANUAL UPDATE LOGIC ── */
     if (data.manualUpdate) {
@@ -69,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!Number.isNaN(manualTs) && manualTs === todayTs && data.manualUpdate.text) {
         manualEl.textContent = data.manualUpdate.text;
         manualEl.style.color = "red";
-        hasManual = true;
+        hasActualManual = true;
         if (data.manualUpdate.blink) manualEl.classList.add("blink");
       }
     }
@@ -79,16 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const preTs = dateOnlyTs(data.preUpdate.date);
       if (!Number.isNaN(preTs) && data.preUpdate.text) {
         if (preTs === todayTs) {
-          if (!hasManual) {
+          // If no manual update today, use pre-update as the current alert
+          if (!hasActualManual) {
             manualEl.textContent = data.preUpdate.text;
             manualEl.style.color = "red";
-            hasManual = true;
             if (data.preUpdate.blink) manualEl.classList.add("blink");
           }
         } else if (todayTs < preTs) {
+          // It's a future scheduled update
           preEl.textContent = data.preUpdate.text;
           preEl.style.color = "#f1c40f";
-          hasPre = true;
           if (data.preUpdate.blink) preEl.classList.add("blink");
         }
       }
@@ -97,15 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ── INFO LOGIC ── */
     if (data.info && data.info.text) {
       infoEl.textContent = data.info.text;
-      hasInfo = true;
     }
 
-    /* 3. FINAL VISIBILITY CHECK */
-    // If ANY of the three categories have data, show the panel. Otherwise, hide it.
-    const shouldShow = hasManual || hasPre || hasInfo;
-    panel.style.display = shouldShow ? "block" : "none";
-
-    if (shouldShow && data.lastUpdated) {
+    /* ── TIMESTAMP ── */
+    if (data.lastUpdated) {
       timeEl.textContent = "Last updated: " + data.lastUpdated;
     } else {
       timeEl.textContent = "";
