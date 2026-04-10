@@ -271,7 +271,7 @@ const weatherConfig = {
     databaseURL: "https://report-20d26-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-const adminApp = initializeApp(config, "adminApp");
+const adminApp = initializeApp(config, "adminAuthApp");
 const weatherApp = initializeApp(weatherConfig, "weatherApp");
 const auth = getAuth(adminApp);
 const adminDb = getDatabase(adminApp);
