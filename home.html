@@ -194,13 +194,50 @@
      min-height: 50px; /* Prevents layout jumping */
     }
 
-    .loading-text {
-  font-size: 14px;
+   /* Better Loading Animation */
+.loading-text {
+  font-size: 13px;
   color: var(--navy);
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding: 5px 0;
+}
+
+/* The Spinner Container */
+.spinner-wrapper {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The Two Rounded Arrows (The Circle) */
+.spinner-ring {
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
+  border-top-color: var(--navy);
+  border-bottom-color: var(--navy);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* The Stationary Center Dot */
+.spinner-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: var(--navy);
+  border-radius: 50%;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
     .dot-pulse {
