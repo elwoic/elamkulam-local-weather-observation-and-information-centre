@@ -9,14 +9,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const timeEl = document.getElementById("alert-timestamp");
 
   /* 1. START UNIVERSAL LOADING STATE */
-  const loadingHtml = `<div class="loading-text"><span class="blink">●</span> Connecting...</div>`;
-  
-  if (panel) {
-    panel.style.display = "block";
-    manualEl.innerHTML = loadingHtml;
-    preEl.innerHTML = loadingHtml;
-    infoEl.innerHTML = loadingHtml;
-  }
+  /* 1. START UNIVERSAL LOADING STATE */
+const loadingHtml = `
+  <div class="loading-text">
+    <div class="spinner-wrapper">
+      <div class="spinner-ring"></div>
+      <div class="spinner-dot"></div>
+    </div>
+    <span>Connecting to database...</span>
+  </div>`;
+
+if (panel) {
+  panel.style.display = "block";
+  manualEl.innerHTML = loadingHtml;
+  preEl.innerHTML = loadingHtml;
+  infoEl.innerHTML = loadingHtml;
+}  
 
   const firebaseConfig = {
     apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
@@ -38,69 +46,60 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(y, m - 1, d).setHours(0, 0, 0, 0);
   }
 
-  onValue(reportsQuery, (snapshot) => {
-    const data = snapshot.val();
-    
-    // Reset classes and clear loading state
-    [manualEl, preEl, infoEl].forEach(el => {
-        el.innerHTML = ""; 
-        el.classList.remove("blink");
-        el.style.color = "";
-    });
+ onValue(reportsQuery, (snapshot) => {
+  const data = snapshot.val();
+  
+  // 1. Instantly clear the spinners
+  [manualEl, preEl, infoEl].forEach(el => {
+    el.innerHTML = ""; 
+    el.classList.remove("blink");
+    el.style.color = "";
+  });
 
-    // Set Default "No Data" Text
-    manualEl.textContent = "No updates available at this time";
-    preEl.textContent = "No updates scheduled";
-    infoEl.textContent = "No general information";
+  // 2. Set the "Default" text (this shows if data is missing or expired)
+  manualEl.textContent = "No updates available at this time";
+  preEl.textContent = "No updates scheduled";
+  infoEl.textContent = "No general information";
 
-    if (!data) return; // Keep the default text if DB is empty
+  if (!data) return;
 
-    const now = new Date();
-    const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const now = new Date();
+  const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  let hasActualManual = false;
 
-    let hasActualManual = false;
-
-    /* ── MANUAL UPDATE LOGIC ── */
-    if (data.manualUpdate) {
-      const manualTs = dateOnlyTs(data.manualUpdate.date);
-      if (!Number.isNaN(manualTs) && manualTs === todayTs && data.manualUpdate.text) {
-        manualEl.textContent = data.manualUpdate.text;
-        manualEl.style.color = "red";
-        hasActualManual = true;
-        if (data.manualUpdate.blink) manualEl.classList.add("blink");
-      }
+  // 3. Process Manual Updates
+  if (data.manualUpdate) {
+    const manualTs = dateOnlyTs(data.manualUpdate.date);
+    if (!Number.isNaN(manualTs) && manualTs === todayTs && data.manualUpdate.text) {
+      manualEl.textContent = data.manualUpdate.text;
+      manualEl.style.color = "red";
+      hasActualManual = true;
+      if (data.manualUpdate.blink) manualEl.classList.add("blink");
     }
+  }
 
-    /* ── PRE UPDATE LOGIC ── */
-    if (data.preUpdate) {
-      const preTs = dateOnlyTs(data.preUpdate.date);
-      if (!Number.isNaN(preTs) && data.preUpdate.text) {
-        if (preTs === todayTs) {
-          // If no manual update today, use pre-update as the current alert
-          if (!hasActualManual) {
-            manualEl.textContent = data.preUpdate.text;
-            manualEl.style.color = "red";
-            if (data.preUpdate.blink) manualEl.classList.add("blink");
-          }
-        } else if (todayTs < preTs) {
-          // It's a future scheduled update
+  // 4. Process Pre-Updates
+  if (data.preUpdate) {
+    const preTs = dateOnlyTs(data.preUpdate.date);
+    if (!Number.isNaN(preTs) && data.preUpdate.text) {
+      if (preTs === todayTs && !hasActualManual) {
+          manualEl.textContent = data.preUpdate.text;
+          manualEl.style.color = "red";
+          if (data.preUpdate.blink) manualEl.classList.add("blink");
+      } else if (todayTs < preTs) {
           preEl.textContent = data.preUpdate.text;
           preEl.style.color = "#f1c40f";
           if (data.preUpdate.blink) preEl.classList.add("blink");
-        }
       }
     }
+  }
 
-    /* ── INFO LOGIC ── */
-    if (data.info && data.info.text) {
-      infoEl.textContent = data.info.text;
-    }
+  // 5. Process Info
+  if (data.info && data.info.text) {
+    infoEl.textContent = data.info.text;
+  }
 
-    /* ── TIMESTAMP ── */
-    if (data.lastUpdated) {
-      timeEl.textContent = "Last updated: " + data.lastUpdated;
-    } else {
-      timeEl.textContent = "";
-    }
-  });
+  // 6. Timestamp
+  timeEl.textContent = data.lastUpdated ? "Last updated: " + data.lastUpdated : "";
+});
 });
