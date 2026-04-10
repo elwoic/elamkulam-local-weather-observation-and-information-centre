@@ -1,145 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ELWOIC Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ELWOIC | Secure Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
 
-<style>
-body {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  background:#0f172a;
-  color:white;
-  font-family:system-ui;
-}
+    <style>
+        :root {
+            --gov-navy: #1a237e;
+            --accent-gold: #ffab00;
+            --white: #ffffff;
+            --bg: #f1f5f9;
+            --border: #cbd5e1;
+        }
 
-.box {
-  background:#020617;
-  padding:30px;
-  border-radius:12px;
-  width:300px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-}
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+        }
 
-input, button {
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:6px;
-  border:none;
-}
+        .login-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-top: 5px solid var(--accent-gold);
+            text-align: center;
+        }
 
-button {
-  background:#2563eb;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
+        .gov-logo-text {
+            font-family: 'Merriweather', serif;
+            color: var(--gov-navy);
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
 
-button:disabled {
-  opacity:.6;
-  cursor:not-allowed;
-}
+        .sub-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            display: block;
+        }
 
-.error {
-  margin-top:10px;
-  color:#f87171;
-  font-size:.85rem;
-}
-</style>
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gov-navy);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--gov-navy);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--gov-navy);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover { background: #0d47a1; }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        #err {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #fff1f2;
+            color: #be123c;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h2>🔐 ELWOIC Access</h2>
-  <input id="email" type="email" placeholder="Email" autocomplete="username">
-  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-  <button id="loginBtn">Login</button>
-  <div class="error" id="err"></div>
+<div class="login-card">
+    <div class="gov-logo-text">ELWOIC</div>
+    <span class="sub-text">Data Centre Access</span>
+
+    <div class="form-group">
+        <label>Official Email</label>
+        <input id="email" type="email" placeholder="admin@elwoic.in">
+    </div>
+
+    <div class="form-group">
+        <label>Passcode</label>
+        <input id="password" type="password" placeholder="••••••••">
+    </div>
+
+    <button id="loginBtn">Authenticate Access</button>
+    
+    <div id="err"></div>
+
+    <div class="footer-note">
+        Authorized Personnel Only. All access is logged and monitored.<br>
+        Government of Kerala • IT Cell
+    </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔐 ADMIN AUTH PROJECT */
-const adminConfig = {
-  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  authDomain: "administration-protal.firebaseapp.com"
+/* Match the Project ID of your Data Centre */
+const config = {
+    apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
+    authDomain: "administration-protal.firebaseapp.com"
 };
 
-/* Named app to avoid collisions */
-/* ... inside your script module ... */
-
-const app = initializeApp(adminConfig, "adminAuthApp");
+const app = initializeApp(config, "adminAuthApp");
 const auth = getAuth(app);
 
-// REMOVED: setPersistence (It is 'local' by default, no need to await it here)
-
-const emailInput = document.getElementById("email");
-const passInput = document.getElementById("password");
-const errField  = document.getElementById("err");
-const loginBtn  = document.getElementById("loginBtn");
-
-function showError(msg) {
-  errField.textContent = msg;
-  loginBtn.disabled = false;
-}
+const loginBtn = document.getElementById("loginBtn");
+const errField = document.getElementById("err");
 
 function login() {
-  const email = emailInput.value.trim();
-  const password = passInput.value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    showError("Please enter both email and password.");
-    return;
-  }
+    if (!email || !password) {
+        showError("Authentication credentials required.");
+        return;
+    }
 
-  errField.textContent = "Verifying access…";
-  loginBtn.disabled = true;
+    errField.style.display = "none";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Verifying...";
 
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      // SUCCESS
-      window.location.replace("elwoic_data_centre.html");
-    })
-    .catch(err => {
-      console.error("Full Error Object:", err); // Look at your browser console (F12) for this!
-
-      switch (err.code) {
-        case "auth/user-not-found":
-        case "auth/invalid-credential":
-          showError("Invalid email or password.");
-          break;
-        case "auth/operation-not-allowed":
-          showError("Email/Password login is not enabled in Firebase Console.");
-          break;
-        case "auth/too-many-requests":
-          showError("Too many attempts. Try again later.");
-          break;
-        default:
-          // This will show you the exact error if it's something else
-          showError(err.code.replace("auth/", "").replace(/-/g, " "));
-      }
-    });
+    signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+            window.location.replace("elwoic_data_centre.html");
+        })
+        .catch(err => {
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Authenticate Access";
+            showError("Access Denied: " + err.code.replace("auth/", "").replace(/-/g, " "));
+        });
 }
-/* ... rest of your event listeners ... */
 
-/* Button click */
+function showError(msg) {
+    errField.textContent = msg;
+    errField.style.display = "block";
+}
+
 loginBtn.addEventListener("click", login);
-
-/* Enter key support */
-document.addEventListener("keydown", e => {
-  if (e.key === "Enter") login();
-});
+document.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
 </script>
 
 </body>
