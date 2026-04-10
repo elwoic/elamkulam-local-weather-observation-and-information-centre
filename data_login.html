@@ -79,7 +79,7 @@ const adminConfig = {
 /* Named app to avoid collisions */
 /* ... inside your script module ... */
 
-const app = initializeApp(adminConfig, "dcAuth");
+const app = initializeApp(adminConfig, "adminAuthApp");
 const auth = getAuth(app);
 
 // REMOVED: setPersistence (It is 'local' by default, no need to await it here)
