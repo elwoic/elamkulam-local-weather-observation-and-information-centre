@@ -39,53 +39,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const db  = getDatabase(app);
 
   onValue(ref(db, "/"), (snapshot) => {
-    const data = snapshot.val();
+  const data = snapshot.val();
 
-    /* Reset all elements */
-    [manualEl, preEl, infoEl].forEach(el => {
-      if (!el) return;
-      el.innerHTML = "";
-      el.classList.remove("blink");
-      el.style.color = "";
-    });
-
-    /* Default fallback text */
-    if (manualEl) manualEl.textContent = "No updates available at this time";
-    if (preEl)    preEl.textContent    = "No updates scheduled";
-    if (infoEl)   infoEl.textContent   = "No general information";
-    if (timeEl)   timeEl.textContent   = "";
-
-    if (!data) return;
-
-    /* ── MANUAL UPDATE ──
-       Show unconditionally if text exists — no date gating.
-       This matches exactly what the admin portal does. */
-    if (data.manualUpdate && data.manualUpdate.text && manualEl) {
-      manualEl.textContent = data.manualUpdate.text;
-      manualEl.style.color = "red";
-      if (data.manualUpdate.blink === true || data.manualUpdate.blink === "true") {
-        manualEl.classList.add("blink");
-      }
-    }
-
-    /* ── PRE-UPDATE ──
-       Show unconditionally if text exists — no date gating. */
-    if (data.preUpdate && data.preUpdate.text && preEl) {
-      preEl.textContent = data.preUpdate.text;
-      preEl.style.color = "#f1c40f";
-      if (data.preUpdate.blink === true || data.preUpdate.blink === "true") {
-        preEl.classList.add("blink");
-      }
-    }
-
-    /* ── GENERAL INFO ── */
-    if (data.info && data.info.text && infoEl) {
-      infoEl.textContent = data.info.text;
-    }
-
-    /* ── TIMESTAMP ── */
-    if (timeEl && data.lastUpdated) {
-      timeEl.textContent = "Last updated: " + data.lastUpdated;
-    }
+  // Reset
+  [manualEl, preEl, infoEl].forEach(el => {
+    if (!el) return;
+    el.innerHTML = "";
+    el.classList.remove("blink");
+    el.style.color = "";
   });
+
+  if (timeEl) timeEl.textContent = "";
+
+  let hasAny = false;
+
+  // Manual update
+  if (data?.manualUpdate?.text && manualEl) {
+    manualEl.textContent = data.manualUpdate.text;
+    manualEl.style.color = "red";
+    if (data.manualUpdate.blink === true || data.manualUpdate.blink === "true")
+      manualEl.classList.add("blink");
+    hasAny = true;
+  } else if (manualEl) {
+    manualEl.textContent = "No updates available at this time";
+  }
+
+  // Pre-update
+  if (data?.preUpdate?.text && preEl) {
+    preEl.textContent = data.preUpdate.text;
+    preEl.style.color = "#f1c40f";
+    if (data.preUpdate.blink === true || data.preUpdate.blink === "true")
+      preEl.classList.add("blink");
+    hasAny = true;
+  } else if (preEl) {
+    preEl.textContent = "No updates scheduled";
+  }
+
+  // Info
+  if (data?.info?.text && infoEl) {
+    infoEl.textContent = data.info.text;
+    hasAny = true;
+  } else if (infoEl) {
+    infoEl.textContent = "No general information";
+  }
+
+  // Timestamp
+  if (timeEl && data?.lastUpdated) {
+    timeEl.textContent = "Last updated: " + data.lastUpdated;
+  }
+
+  // Hide entire panel only if all three fields are empty
+  if (panel) panel.style.display = hasAny ? "block" : "none";
+});
 });
