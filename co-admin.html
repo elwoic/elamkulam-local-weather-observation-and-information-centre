@@ -5,379 +5,335 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELWOIC | Global Administration</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
 <style>
-:root {
-    --bg-main: #f8fafc;
-    --nav-dark: #0b1220;
-    --accent-blue: #0284c7;
-    --led-green: #22c55e;
-    --led-red: #ef4444;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background-color: var(--bg-main);
+    background: #f1f5f9;
     overflow: hidden;
 }
 
-/* Warning Strip */
-.warning-strip {
-    background: #7f1d1d;
-    color: #fca5a5;
-    text-align: center;
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    padding: 4px;
-    animation: warnFlash 2s infinite;
-    text-transform: uppercase;
-}
-
-/* Header */
 .header-bar {
-    background: linear-gradient(90deg, #0b1220, #0f172a);
+    background: #ffffff;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 25px;
-    height: 85px;
-    position: relative;
-    color: #e2e8f0;
-    border-bottom: 2px solid var(--accent-blue);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    padding: 0 20px;
+    height: 56px;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 20px;
 }
 
-/* Digital subtle scan */
-.header-bar::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,0.01),
-        rgba(255,255,255,0.01) 1px,
-        transparent 1px,
-        transparent 3px
-    );
-    pointer-events: none;
-}
-
-/* Brand */
-.brand-section { display: flex; flex-direction: column; gap: 4px; }
 .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    font-size: 1.2rem;
-    text-shadow: 0 0 10px rgba(2,132,199,0.5);
+    gap: 7px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #0f172a;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Clearance */
-.clearance {
+.brand .material-icons {
+    font-size: 18px;
+    color: #0284c7;
+}
+
+.brand-sub {
     font-size: 9px;
-    color: #22c55e;
-    letter-spacing: 2px;
-}
-
-/* Navigation */
-.nav-group { display: flex; gap: 8px; }
-
-.nav-btn {
-    padding: 8px 16px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
     color: #94a3b8;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: 0.3s;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 1px;
 }
 
-.nav-btn:hover {
-    background: rgba(2, 132, 199, 0.1);
-    color: white;
-    border-color: var(--accent-blue);
-}
-
-.nav-btn.active {
-    background: var(--accent-blue);
-    color: white;
-    box-shadow: 0 0 15px rgba(2,132,199,0.4);
-}
-
-/* Status */
-.status-panel {
+.brand-block {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
+    flex-shrink: 0;
 }
 
-.led-row { display: flex; gap: 12px; align-items: center; }
+.divider {
+    width: 1px;
+    height: 28px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+}
 
-.led-box {
+.nav-group {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    padding: 5px 10px;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    color: #475569;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 9px;
-    font-weight: bold;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.nav-btn .material-icons { font-size: 14px; }
+
+.nav-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.nav-btn.active {
+    background: #0284c7;
+    border-color: #0284c7;
+    color: #ffffff;
+}
+
+.nav-btn.danger {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.nav-btn.danger:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.right-strip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.status-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dot-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
     color: #64748b;
+    font-weight: 500;
 }
 
-.led {
-    width: 7px;
-    height: 7px;
+.dot {
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: #334155;
 }
 
-.led-active {
-    background: var(--led-green);
-    box-shadow: 0 0 6px var(--led-green);
-    animation: pulse 1.5s infinite;
-}
-
-.led-red {
-    background: var(--led-red);
-    box-shadow: 0 0 6px var(--led-red);
-    animation: pulse 1s infinite;
-}
+.dot-online { background: #22c55e; }
+.dot-warn   { background: #f59e0b; }
 
 #digital-clock {
     font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
-    color: #38bdf8;
-    font-weight: bold;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
 }
 
-/* Metrics bar */
-.metrics-bar {
-    background: #0f172a;
+.subbar {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
-    justify-content: center;
-    gap: 40px;
-    font-size: 11px;
+    align-items: center;
+    padding: 0 20px;
+    height: 28px;
+    gap: 24px;
+}
+
+.subbar-metric {
+    font-size: 10px;
     color: #94a3b8;
-    padding: 5px;
-    border-bottom: 1px solid rgba(2,132,199,0.3);
+    display: flex;
+    gap: 5px;
 }
 
-.metric span {
-    color: #38bdf8;
-    font-weight: bold;
+.subbar-metric span {
+    color: #334155;
+    font-weight: 600;
 }
+
+#system-log {
+    font-size: 10px;
+    color: #94a3b8;
+    font-family: monospace;
+    margin-left: auto;
+}
+
 .admin-link {
-    text-align: center;
-    font-size: 11px;
-    margin-top: 4px;
+    font-size: 10px;
+    color: #94a3b8;
 }
-/* Data request entry */
+
 .admin-link a {
-    color: #38bdf8;
+    color: #0284c7;
     text-decoration: none;
-    opacity: 0.6;
-    transition: 0.3s;
 }
 
-.admin-link a:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
-
-/* Animations */
-@keyframes pulse {
-    0%,100% { opacity:1; }
-    50% { opacity:0.3; }
-}
-
-@keyframes warnFlash {
-    0%,100% { background:#7f1d1d; }
-    50% { background:#b91c1c; }
-}
+.admin-link a:hover { text-decoration: underline; }
 
 #content-frame {
     width: 100%;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 84px);
     border: none;
+    background: #f1f5f9;
+}
+
+@keyframes warnFlash {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="warning-strip">Secure Connection Established • Encryption AES-256 Active</div>
-
 <header class="header-bar">
 
-<div class="brand-section">
-    <div class="brand">
-        <span class="material-icons" style="color:#38bdf8">security</span>
-        ELWOIC COMMAND
+    <div class="brand-block">
+        <div class="brand">
+            <span class="material-icons">security</span>
+            ELWOIC COMMAND
+        </div>
+        <div class="brand-sub">Global Control Node v2.05 · Alpha-3</div>
     </div>
-    <div style="font-size:9px;color:#64748b;letter-spacing:2px;">GLOBAL CONTROL NODE v2.05</div>
-    <div class="clearance">CLEARANCE LEVEL: ALPHA-3</div>
-</div>
 
-<nav class="nav-group">
-    <button class="nav-btn active" onclick="loadPage('administration.html', this)">
-        <span class="material-icons">terminal</span> Manual Updates
-    </button>
-    <button class="nav-btn" onclick="loadPage('contact-status.html', this)">
-        <span class="material-icons">radar</span> contact Status
-    </button>
-    <button class="nav-btn" onclick="triggerAlert(this)">
-        <span class="material-icons">warning</span> Alert Mode
-    </button>
-    <button class="nav-btn" onclick="logout()">
-    <span class="material-icons">logout</span> Logout
-</button>
-   <button type="button"
-        onclick="location.href='data_login.html'"
-        class="nav-btn"
-        style="padding:8px 14px; font-size:13px;">
-    <span class="material-icons" style="font-size:16px;">database</span>
-    Data Centre
-</button>
-</nav>
+    <div class="divider"></div>
 
-<div class="status-panel">
-    <div class="led-row">
-        <div class="led-box"><div class="led led-active"></div> SYS</div>
-        <div class="led-box"><div class="led led-active"></div> LINK</div>
-        <div class="led-box"><div class="led led-red"></div> SEC</div>
+    <nav class="nav-group">
+        <button class="nav-btn active" onclick="loadPage('administration.html', this)">
+            <span class="material-icons">terminal</span> Manual Updates
+        </button>
+        <button class="nav-btn" onclick="loadPage('contact-status.html', this)">
+            <span class="material-icons">radar</span> Contact Status
+        </button>
+        <button class="nav-btn" onclick="loadPage('popalertadmin.html', this)">
+            <span class="material-icons">campaign</span> Pop Alert
+        </button>
+        <button class="nav-btn" onclick="loadPage('data_login.html', this)">
+            <span class="material-icons">storage</span> Data Centre
+        </button>
+        <button class="nav-btn" onclick="triggerAlert(this)">
+            <span class="material-icons">warning</span> Alert Mode
+        </button>
+        <button class="nav-btn" onclick="location.href='request_admin_login.html'">
+            <span class="material-icons">manage_accounts</span> Request Access
+        </button>
+        <button class="nav-btn danger" onclick="logout()">
+            <span class="material-icons">logout</span> Logout
+        </button>
+    </nav>
+
+    <div class="right-strip">
+        <div class="status-dots">
+            <div class="dot-item"><div class="dot dot-online"></div> SYS</div>
+            <div class="dot-item"><div class="dot dot-online"></div> LINK</div>
+            <div class="dot-item"><div class="dot dot-warn"></div> SEC</div>
+        </div>
         <div id="digital-clock">00:00:00</div>
     </div>
-    <div id="system-log" style="font-family:monospace;font-size:10px;color:#22c55e;">
-        INITIALIZING...
-    </div>
-</div>
 
 </header>
 
-<div class="metrics-bar">
-    <div class="metric">CPU <span id="cpu-load">12%</span></div>
-    <div class="metric">NET <span id="net-load">98%</span></div>
-    <div class="metric">DB <span>ONLINE</span></div>
-</div>
-<div class="admin-link">
-    <a href="request_admin_login.html">Request Admin Access</a>
+<div class="subbar">
+    <div class="subbar-metric">CPU <span id="cpu-load">12%</span></div>
+    <div class="subbar-metric">NET <span id="net-load">98%</span></div>
+    <div class="subbar-metric">DB <span>Online</span></div>
+    <div id="system-log">INITIALIZING...</div>
+    <div class="admin-link"><a href="request_admin_login.html">Request Admin Access</a></div>
 </div>
 
 <iframe id="content-frame" src="administration.html"></iframe>
 
 <script>
-
-/* Clock */
 function updateClock() {
-    const now = new Date();
     document.getElementById('digital-clock').innerText =
-        now.toLocaleTimeString('en-GB');
+        new Date().toLocaleTimeString('en-GB');
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-/* Navigation */
 function loadPage(fileName, btn) {
     document.getElementById('content-frame').src = fileName;
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById("system-log").innerText =
-        "NAVIGATING TO: " + fileName.toUpperCase();
+    document.getElementById("system-log").innerText = "→ " + fileName.toUpperCase();
 }
 
-/* Random System Logs */
 const logs = [
-    "NODE SYNCED",
-    "SAT LINK ACTIVE",
-    "AQI SENSOR ONLINE",
-    "SERVER RESPONSE OK",
-    "ELAMKULAM NODE LOCKED"
+    "NODE SYNCED", "SAT LINK ACTIVE", "AQI SENSOR ONLINE",
+    "SERVER RESPONSE OK", "ELAMKULAM NODE LOCKED"
 ];
-
 setInterval(() => {
     document.getElementById("system-log").innerText =
-        logs[Math.floor(Math.random()*logs.length)]
-        + " • " + new Date().toLocaleTimeString();
+        logs[Math.floor(Math.random() * logs.length)]
+        + " · " + new Date().toLocaleTimeString();
 }, 4000);
 
-/* Fake Metrics Simulation */
 setInterval(() => {
-    document.getElementById("cpu-load").innerText =
-        Math.floor(Math.random()*40+10) + "%";
-    document.getElementById("net-load").innerText =
-        Math.floor(Math.random()*20+80) + "%";
+    document.getElementById("cpu-load").innerText = Math.floor(Math.random()*40+10) + "%";
+    document.getElementById("net-load").innerText = Math.floor(Math.random()*20+80) + "%";
 }, 3000);
 
-/* Alert Mode */
-function triggerAlert(btn){
-    document.querySelector(".header-bar").style.borderBottom =
-        "2px solid red";
-    document.querySelector(".warning-strip").innerText =
-        "EMERGENCY MODE ACTIVE";
+function triggerAlert(btn) {
+    document.querySelector(".header-bar").style.borderBottom = "1px solid #fca5a5";
+    document.querySelector(".header-bar").style.background = "#fff5f5";
     btn.classList.add("active");
+    btn.style.background = "#dc2626";
+    btn.style.borderColor = "#dc2626";
+    btn.style.color = "#fff";
 }
-
 </script>
-<script type="module">
 
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  signOut 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBgk0xke17yloKn7IyjBTCz1Sr-2FmDQFY",
-  authDomain: "admin-pass.firebaseapp.com",
-  databaseURL: "https://admin-pass-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "admin-pass",
-  storageBucket: "admin-pass.firebasestorage.app",
-  messagingSenderId: "177830174972",
-  appId: "1:177830174972:web:a8be21830ef1b872d63779"
+    apiKey: "AIzaSyBgk0xke17yloKn7IyjBTCz1Sr-2FmDQFY",
+    authDomain: "admin-pass.firebaseapp.com",
+    databaseURL: "https://admin-pass-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "admin-pass",
+    storageBucket: "admin-pass.firebasestorage.app",
+    messagingSenderId: "177830174972",
+    appId: "1:177830174972:web:a8be21830ef1b872d63779"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* Protect Page */
 onAuthStateChanged(auth, (user) => {
-
-    if (!user) {
-        window.location.href = "glo-login.html";
-        return;
-    }
-
-    const allowedEmails = [
-        "aswanthkrishnak822@gmail.com",
-        "elwoicelamkulam@gmail.com"
-    ];
-
-    if (!allowedEmails.includes(user.email)) {
+    if (!user) { window.location.href = "glo-login.html"; return; }
+    const allowed = ["aswanthkrishnak822@gmail.com", "elwoicelamkulam@gmail.com"];
+    if (!allowed.includes(user.email)) {
         alert("ACCESS DENIED: Unauthorized Account");
         signOut(auth);
         window.location.href = "glo-login.html";
     }
-
 });
 
-
-/* Logout Function */
 window.logout = function() {
-    signOut(auth).then(() => {
-        window.location.href = "glo-login.html";
-    });
+    signOut(auth).then(() => { window.location.href = "glo-login.html"; });
 };
-
 </script>
 
 </body>
