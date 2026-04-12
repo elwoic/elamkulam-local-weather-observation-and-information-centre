@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoEl   = document.getElementById("alert-info");
   const timeEl   = document.getElementById("alert-timestamp");
 
-  /* ── LOADING STATE ── */
+  /* ── IMMEDIATE LOADING STATE ── */
   const loadingHtml = `
     <div class="loading-text">
       <div class="spinner-wrapper">
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const app = getApps().find(a => a.name === "alertsApp") || initializeApp(firebaseConfig, "alertsApp");
   const db  = getDatabase(app);
 
-  /* ── DATE HELPER ── */
   function parseDateTs(ddmmyyyy) {
     if (!ddmmyyyy) return NaN;
     const [d, m, y] = ddmmyyyy.split("/").map(Number);
@@ -46,99 +45,92 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   onValue(ref(db, "/"), (snapshot) => {
-    const data = snapshot.val();
-
-    /* Reset all elements */
-    [manualEl, preEl, infoEl].forEach(el => {
-      if (!el) return;
-      el.innerHTML = "";
-      el.classList.remove("blink");
-      el.style.color = "";
-    });
-    if (timeEl) timeEl.textContent = "";
-
-    /* Today at midnight for clean date comparison */
+    const data = snapshot.val() || {};
+    
+    // Midnight today for clean comparison
     const now = new Date();
     const tTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-    /* Individual fill flags — each field is fully independent */
-    let manualFilled = false;
-    let preFilled    = false;
-    let infoFilled   = false;
+    // Data containers for our slots
+    let finalManualText = null; let finalManualBlink = false;
+    let finalPreText    = null; let finalPreBlink    = false;
+    let finalInfoText   = null;
+    let activeUpdatesCount = 0;
 
-    /* ── MANUAL UPDATE ──
-       Rules:
-       - If date is today or future (or no date set) → show
-       - If date is past → expired, skip
-    */
-    if (data?.manualUpdate?.text) {
-      const manualTs  = parseDateTs(data.manualUpdate.date);
-      const isValid   = isNaN(manualTs) || manualTs >= tTs; // no date = always valid
-      if (isValid && manualEl) {
-        manualEl.textContent = data.manualUpdate.text;
-        manualEl.style.color = "red";
-        if (data.manualUpdate.blink === true || data.manualUpdate.blink === "true")
-          manualEl.classList.add("blink");
-        manualFilled = true;
-      }
-    }
-
-    /* ── PRE-UPDATE ──
-       Rules:
-       - Future date → show in pre section
-       - Today's date → promote to manual/current section (only if manual not already filled)
-       - Past date → expired, skip
-    */
-    if (data?.preUpdate?.text) {
+    /* ── 1. CHECK PRE-UPDATE FOR JUMPING ── */
+    if (data.preUpdate?.text?.trim()) {
       const preTs = parseDateTs(data.preUpdate.date);
-
-      if (!isNaN(preTs) && preTs === tTs && !manualFilled) {
-        /* Target date is today — promote to current update slot */
-        if (manualEl) {
-          manualEl.textContent = data.preUpdate.text;
-          manualEl.style.color = "red";
-          if (data.preUpdate.blink === true || data.preUpdate.blink === "true")
-            manualEl.classList.add("blink");
-          manualFilled = true;
-          /* Pre section gets a note that it has been promoted */
-          if (preEl) {
-            preEl.textContent   = "This update has been promoted to Current Update today.";
-            preEl.style.color   = "#f1c40f";
-            preFilled = true;
-          }
-        }
-      } else if (!isNaN(preTs) && preTs > tTs) {
-        /* Future — show in pre section normally */
-        if (preEl) {
-          preEl.textContent = data.preUpdate.text;
-          preEl.style.color = "#f1c40f";
-          if (data.preUpdate.blink === true || data.preUpdate.blink === "true")
-            preEl.classList.add("blink");
-          preFilled = true;
+      if (!isNaN(preTs)) {
+        if (preTs === tTs) {
+          // Target date is today - jump to manual slot
+          finalManualText = data.preUpdate.text;
+          finalManualBlink = (data.preUpdate.blink === true || data.preUpdate.blink === "true");
+        } else if (preTs > tTs) {
+          // Future date - stays in pre slot
+          finalPreText = data.preUpdate.text;
+          finalPreBlink = (data.preUpdate.blink === true || data.preUpdate.blink === "true");
         }
       }
-      /* Past date → expired, both flags stay false */
     }
 
-    /* ── INFO ── */
-    if (data?.info?.text && infoEl) {
-      infoEl.textContent = data.info.text;
-      infoFilled = true;
+    /* ── 2. CHECK MANUAL UPDATE (Overrides Jump) ── */
+    if (data.manualUpdate?.text?.trim()) {
+      const manualTs = parseDateTs(data.manualUpdate.date);
+      if (isNaN(manualTs) || manualTs >= tTs) {
+        // Explicit manual update overrides any jumping pre-update
+        finalManualText = data.manualUpdate.text;
+        finalManualBlink = (data.manualUpdate.blink === true || data.manualUpdate.blink === "true");
+      }
     }
 
-    /* ── DEFAULT TEXT — every field independently ── */
-    if (!manualFilled && manualEl) manualEl.textContent = "No updates available at this time";
-    if (!preFilled    && preEl)    preEl.textContent    = "No updates scheduled";
-    if (!infoFilled   && infoEl)   infoEl.textContent   = "No general information";
+    /* ── 3. CHECK INFO ── */
+    if (data.info?.text?.trim()) {
+      finalInfoText = data.info.text;
+    }
 
-    /* ── TIMESTAMP ── */
-    if (timeEl && data?.lastUpdated) {
+    /* ── 4. RENDER TO DOM ── */
+    if (manualEl) {
+      manualEl.classList.remove("blink");
+      if (finalManualText) {
+        manualEl.textContent = finalManualText;
+        manualEl.style.color = "red";
+        if (finalManualBlink) manualEl.classList.add("blink");
+        activeUpdatesCount++;
+      } else {
+        manualEl.textContent = "No updates available at this time";
+        manualEl.style.color = "";
+      }
+    }
+
+    if (preEl) {
+      preEl.classList.remove("blink");
+      if (finalPreText) {
+        preEl.textContent = finalPreText;
+        preEl.style.color = "#f1c40f";
+        if (finalPreBlink) preEl.classList.add("blink");
+        activeUpdatesCount++;
+      } else {
+        preEl.textContent = "No updates scheduled";
+        preEl.style.color = "";
+      }
+    }
+
+    if (infoEl) {
+      if (finalInfoText) {
+        infoEl.textContent = finalInfoText;
+        activeUpdatesCount++;
+      } else {
+        infoEl.textContent = "No general information";
+      }
+    }
+
+    if (timeEl && data.lastUpdated) {
       timeEl.textContent = "Last updated: " + data.lastUpdated;
     }
 
-    /* ── PANEL VISIBILITY ──
-       Hide entire panel only when ALL three fields have no real data */
-    const hasAny = manualFilled || preFilled || infoFilled;
-    if (panel) panel.style.display = hasAny ? "block" : "none";
+    // Hide panel completely ONLY if there are exactly 0 active updates
+    if (panel) {
+      panel.style.display = (activeUpdatesCount > 0) ? "block" : "none";
+    }
   });
 });
