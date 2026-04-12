@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELWOIC Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --surface-2: #f9f9f8;
+    --border: #e8e8e4;
+    --border-strong: #d4d4ce;
+    --text: #1a1a18;
+    --text-2: #6b6b64;
+    --text-3: #a8a89e;
+    --accent: #1a1a18;
+    --accent-fg: #ffffff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --toggle-on: #1a1a18;
+    --toggle-off: #d4d4ce;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  html { font-size: 15px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2.5rem 1rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .conn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 10px;
+    transition: all 0.3s;
+  }
+
+  .conn-badge.connected {
+    color: var(--green);
+    background: var(--green-bg);
+    border-color: var(--green-border);
+  }
+
+  .conn-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    transition: background 0.3s;
+  }
+
+  .conn-badge.connected .conn-dot {
+    background: var(--green);
+    box-shadow: 0 0 0 2px #bbf7d0;
+  }
+
+  .header p {
+    font-size: 13.5px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .card-body {
+    padding: 18px;
+  }
+
+  /* Visibility toggle card */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .toggle-info .toggle-title {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .toggle-info .toggle-desc {
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+
+  .switch input { display: none; }
+
+  .switch-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 13px;
+    background: var(--toggle-off);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+    pointer-events: none;
+  }
+
+  .switch input:checked ~ .switch-track { background: var(--toggle-on); }
+  .switch input:checked ~ .switch-thumb { transform: translateX(22px); }
+
+  .status-pill {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-top: 4px;
+  }
+
+  .status-pill.visible {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+
+  .status-pill.hidden {
+    background: var(--bg);
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+
+  /* Form fields */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 6px;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--border-strong);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    background: var(--surface);
+  }
+
+  .field textarea {
+    min-height: 96px;
+    line-height: 1.6;
+  }
+
+  .char-count {
+    font-size: 11.5px;
+    color: var(--text-3);
+    text-align: right;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Preview */
+  .preview-box {
+    background: var(--surface-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+
+  .preview-empty {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 13px;
+    padding: 8px 0;
+  }
+
+  .preview-title {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .preview-msg {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  .preview-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .preview-badge.on {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+
+  .preview-badge.off {
+    background: var(--bg);
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+
+  /* Last saved info */
+  .last-saved {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Publish button */
+  .publish-btn {
+    width: 100%;
+    padding: 11px 20px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: -0.1px;
+    margin-bottom: 6px;
+  }
+
+  .publish-btn:hover { opacity: 0.85; }
+  .publish-btn:active { transform: scale(0.99); }
+  .publish-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text);
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 100px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .toast.error {
+    background: var(--red);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0 12px;
+  }
+
+  /* Section separator */
+  .section-sep {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 16px;
+  }
+  .section-sep-line { flex: 1; height: 1px; background: var(--border); }
+  .section-sep-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+
+  /* Alert item rows */
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+  }
+
+  .alert-item input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    padding: 0;
+    min-width: 0;
+  }
+
+  .alert-item input::placeholder { color: var(--text-3); }
+
+  .alert-item input:focus { outline: none; }
+
+  .remove-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-3);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .remove-btn:hover {
+    background: var(--red-bg);
+    border-color: var(--red-border);
+    color: var(--red);
+  }
+
+  .drag-handle {
+    color: var(--text-3);
+    font-size: 13px;
+    cursor: grab;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .add-alert-btn {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .add-alert-btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
+
+  .alerts-empty {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-3);
+    padding: 12px 0 4px;
+  }
+
+  .alert-last-saved {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <h1>ELWOIC admin panel</h1>
+      <div class="conn-badge" id="conn-badge">
+        <span class="conn-dot" id="conn-dot"></span>
+        <span id="conn-text">Connecting</span>
+      </div>
+    </div>
+    <p>Manage popup alerts and official alert ticker. Changes go live instantly.</p>
+  </div>
+
+  <!-- Visibility -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">Visibility</span>
+      <span class="status-pill hidden" id="status-pill">Hidden</span>
+    </div>
+    <div class="card-body">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Show popup on website</div>
+          <div class="toggle-desc">Toggle to show or hide the popup for all visitors.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enabled-toggle">
+          <span class="switch-track"></span>
+          <span class="switch-thumb"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">Content</span>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="popup-title" placeholder="e.g. ⚠️ External Data Service Issue" maxlength="100">
+        <div class="char-count"><span id="title-count">0</span> / 100</div>
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea id="popup-message" placeholder="Type the popup message here..." maxlength="500"></textarea>
+        <div class="char-count"><span id="msg-count">0</span> / 500</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">Preview</span>
+    </div>
+    <div class="card-body">
+      <div class="preview-box" id="preview-box">
+        <div class="preview-empty" id="preview-empty">Fill in the content above to see a preview.</div>
+        <div id="preview-content" style="display:none">
+          <div class="preview-badge off" id="prev-badge">Hidden</div>
+          <div class="preview-title" id="prev-title"></div>
+          <div class="preview-msg" id="prev-msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <button class="publish-btn" id="publish-btn">Publish popup changes</button>
+  <div class="last-saved" id="last-saved"></div>
+
+  <!-- ===== ALERTS SECTION ===== -->
+  <div class="section-sep">
+    <div class="section-sep-line"></div>
+    <div class="section-sep-label">Official alerts ticker</div>
+    <div class="section-sep-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">Alert lines</span>
+      <span style="font-size:12px; color:var(--text-3);">Scrolls top to bottom on site</span>
+    </div>
+    <div class="card-body">
+      <div class="alert-list" id="alert-list"></div>
+      <div class="alerts-empty" id="alerts-empty">No alerts yet. Add one below.</div>
+      <button class="add-alert-btn" id="add-alert-btn">+ Add alert line</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <button class="publish-btn" id="publish-alerts-btn">Publish alert changes</button>
+  <div class="alert-last-saved" id="alert-last-saved"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBiTNKib18UgHd2HQCS0iBpUvo5oBI_7CQ",
+  authDomain: "popalert-335e9.firebaseapp.com",
+  databaseURL: "https://popalert-335e9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "popalert-335e9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const popupRef = db.ref("popup");
+
+const titleInput = document.getElementById("popup-title");
+const msgInput = document.getElementById("popup-message");
+const toggleEl = document.getElementById("enabled-toggle");
+const publishBtn = document.getElementById("publish-btn");
+const connBadge = document.getElementById("conn-badge");
+const connText = document.getElementById("conn-text");
+const statusPill = document.getElementById("status-pill");
+const lastSaved = document.getElementById("last-saved");
+const toast = document.getElementById("toast");
+const titleCount = document.getElementById("title-count");
+const msgCount = document.getElementById("msg-count");
+const prevTitle = document.getElementById("prev-title");
+const prevMsg = document.getElementById("prev-msg");
+const prevBadge = document.getElementById("prev-badge");
+const previewEmpty = document.getElementById("preview-empty");
+const previewContent = document.getElementById("preview-content");
+
+function showToast(msg, isError = false) {
+  toast.textContent = msg;
+  toast.className = "toast" + (isError ? " error" : "") + " show";
+  setTimeout(() => toast.className = "toast" + (isError ? " error" : ""), 2800);
+}
+
+function updatePreview() {
+  const t = titleInput.value.trim();
+  const m = msgInput.value.trim();
+  const on = toggleEl.checked;
+  titleCount.textContent = titleInput.value.length;
+  msgCount.textContent = msgInput.value.length;
+
+  if (!t && !m) {
+    previewEmpty.style.display = "block";
+    previewContent.style.display = "none";
+    return;
+  }
+  previewEmpty.style.display = "none";
+  previewContent.style.display = "block";
+  prevTitle.textContent = t || "—";
+  prevMsg.textContent = m || "—";
+
+  if (on) {
+    prevBadge.textContent = "Visible";
+    prevBadge.className = "preview-badge on";
+  } else {
+    prevBadge.textContent = "Hidden";
+    prevBadge.className = "preview-badge off";
+  }
+}
+
+function updateStatusPill(enabled) {
+  if (enabled) {
+    statusPill.textContent = "Visible";
+    statusPill.className = "status-pill visible";
+  } else {
+    statusPill.textContent = "Hidden";
+    statusPill.className = "status-pill hidden";
+  }
+}
+
+titleInput.addEventListener("input", updatePreview);
+msgInput.addEventListener("input", updatePreview);
+toggleEl.addEventListener("change", () => { updateStatusPill(toggleEl.checked); updatePreview(); });
+
+// Load from Firebase
+popupRef.once("value", snap => {
+  connBadge.classList.add("connected");
+  connText.textContent = "Connected";
+
+  if (snap.exists()) {
+    const d = snap.val();
+    titleInput.value = d.title || "";
+    msgInput.value = d.message || "";
+    toggleEl.checked = !!d.enabled;
+    updateStatusPill(!!d.enabled);
+    if (d.updated_at) {
+      const dt = new Date(d.updated_at);
+      lastSaved.textContent = "Last saved: " + dt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true });
+    }
+  }
+  updatePreview();
+}).catch(() => {
+  connText.textContent = "Failed to connect";
+});
+
+// Publish popup
+publishBtn.addEventListener("click", async () => {
+  const data = {
+    enabled: toggleEl.checked,
+    title: titleInput.value.trim(),
+    message: msgInput.value.trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  publishBtn.disabled = true;
+  publishBtn.textContent = "Publishing...";
+
+  try {
+    await popupRef.set(data);
+    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true });
+    lastSaved.textContent = "Last saved: " + now;
+    showToast("Popup published successfully");
+  } catch (e) {
+    showToast("Error: " + e.message, true);
+  } finally {
+    publishBtn.disabled = false;
+    publishBtn.textContent = "Publish popup changes";
+  }
+});
+
+/* ===== ALERTS SECTION ===== */
+const alertsRef = db.ref("alerts");
+const alertList = document.getElementById("alert-list");
+const alertsEmpty = document.getElementById("alerts-empty");
+const addAlertBtn = document.getElementById("add-alert-btn");
+const publishAlertsBtn = document.getElementById("publish-alerts-btn");
+const alertLastSaved = document.getElementById("alert-last-saved");
+
+function renderAlerts(items) {
+  alertList.innerHTML = "";
+  if (!items || items.length === 0) {
+    alertsEmpty.style.display = "block";
+    return;
+  }
+  alertsEmpty.style.display = "none";
+  items.forEach((text, i) => {
+    const row = document.createElement("div");
+    row.className = "alert-item";
+    row.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <input type="text" value="${text.replace(/"/g,'&quot;')}" placeholder="Alert text..." maxlength="200" data-index="${i}">
+      <button class="remove-btn" data-index="${i}" title="Remove">×</button>
+    `;
+    alertList.appendChild(row);
+  });
+
+  alertList.querySelectorAll(".remove-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      btn.closest(".alert-item").remove();
+      if (alertList.children.length === 0) alertsEmpty.style.display = "block";
+    });
+  });
+}
+
+function getAlertValues() {
+  return Array.from(alertList.querySelectorAll("input"))
+    .map(i => i.value.trim())
+    .filter(v => v.length > 0);
+}
+
+// Load existing alerts
+alertsRef.once("value", snap => {
+  const data = snap.exists() ? snap.val() : [];
+  const items = Array.isArray(data) ? data : Object.values(data);
+  renderAlerts(items);
+  if (snap.exists() && data.updated_at) {
+    const dt = new Date(data.updated_at);
+    alertLastSaved.textContent = "Last saved: " + dt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true });
+  }
+});
+
+addAlertBtn.addEventListener("click", () => {
+  alertsEmpty.style.display = "none";
+  const row = document.createElement("div");
+  row.className = "alert-item";
+  row.innerHTML = `
+    <span class="drag-handle">⠿</span>
+    <input type="text" placeholder="Type alert text here..." maxlength="200">
+    <button class="remove-btn" title="Remove">×</button>
+  `;
+  alertList.appendChild(row);
+  row.querySelector("input").focus();
+  row.querySelector(".remove-btn").addEventListener("click", () => {
+    row.remove();
+    if (alertList.children.length === 0) alertsEmpty.style.display = "block";
+  });
+});
+
+publishAlertsBtn.addEventListener("click", async () => {
+  const items = getAlertValues();
+  publishAlertsBtn.disabled = true;
+  publishAlertsBtn.textContent = "Publishing...";
+  try {
+    await alertsRef.set(items);
+    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true });
+    alertLastSaved.textContent = "Last saved: " + now;
+    showToast("Alerts published successfully");
+  } catch(e) {
+    showToast("Error: " + e.message, true);
+  } finally {
+    publishAlertsBtn.disabled = false;
+    publishAlertsBtn.textContent = "Publish alert changes";
+  }
+});
+</script>
+</body>
+</html>
