@@ -1,89 +1,70 @@
-// imd-marquee.js
+// --- Configuration ---
+const WORKER_URL = "https://imdalert.aswanthkrishnak822.workers.dev";
 
-// Preset alert data
-const alerts = {
-  "2026-04-23": { text: "IMD Alert For Malappuram District: y" },
-  "2026-04-24": { text: "IMD Alert For Malappuram District: y" },
-  "2026-04-25": { text: "IMD Alert For Malappuram District: y" },
-  "2026-04-26": { text: "IMD Alert For Malappuram District: y" },
-  "2026-04-27": { text: "IMD Alert For Malappuram District: y" }
+// Mapping IMD Numerical Codes to readable English text
+const WARNING_MAP = {
+  "1": "Wind",
+  "2": "Heat Wave",
+  "4": "Thunderstorm & Lightning",
+  "8": "Dust Storm",
+  "10": "Heavy Rain",
+  "12": "Very Heavy Rain",
+  "16": "Extremely Heavy Rain"
+  // Add more if you see other codes in the API
 };
 
-// Last updated time (manual)
-const lastUpdated = "2026-04-23 12:09 PM";
+const COLOR_MAP = {
+  "1": { name: "Green", css: "linear-gradient(90deg, #009900, #33cc33)" },
+  "2": { name: "Yellow", css: "linear-gradient(90deg, #ffcc00, #ffee33)" },
+  "3": { name: "Orange", css: "linear-gradient(90deg, #ff6600, #ff9933)" },
+  "4": { name: "Red", css: "linear-gradient(90deg, #cc0000, #ff3333)" }
+};
 
-// Function to update the marquee
-function updateMarquee(marqueeTextEl, marqueeContainerEl) {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  const todayKey = `${yyyy}-${mm}-${dd}`;
-
-  const bgColors = {
-    green: "linear-gradient(90deg, #009900, #33cc33)",
-    yellow: "linear-gradient(90deg, #ffcc00, #ffee33)",
-    orange: "linear-gradient(90deg, #ff6600, #ff9933)",
-    red: "linear-gradient(90deg, #cc0000, #ff3333)",
-    default: "linear-gradient(90deg, #444, #888)"
-  };
-
-  const levelMap = {
-    g: { color: "green", full: "Green" },
-    y: { color: "yellow", full: "Yellow" },
-    o: { color: "orange", full: "Orange" },
-    r: { color: "red", full: "Red" }
-  };
-
-  // Find the latest alert date
-  const alertDates = Object.keys(alerts).sort(); // ascending order
-  const lastAlertDate = alertDates[alertDates.length - 1];
-
-  let displayText;
-  let bgColor;
-
-  if (todayKey in alerts) {
-    // Today has an alert
-    let alertText = alerts[todayKey].text;
-    const shortCode = alertText.slice(-1).toLowerCase();
-    const mapping = levelMap[shortCode] || { color: "default", full: "Unknown" };
-    alertText = alertText.replace(/([oyrg])$/i, mapping.full);
-
-    displayText = `Today ${dd}/${mm}/${yyyy}, ${alertText}  |  Last Updated: ${lastUpdated}`;
-    bgColor = bgColors[mapping.color] || bgColors.default;
-
-  } else if (todayKey > lastAlertDate) {
-    // All preset alert dates are over
-    displayText = `Today ${dd}/${mm}/${yyyy}: IMD alert for Malappuram District is not available`;
-    bgColor = bgColors.default;
-
-  } else {
-    // Date is within preset range but no alert for today
-    displayText = `⚠️ Updated data unavailable for ${dd}/${mm}/${yyyy}.  |  Last Updated: ${lastUpdated}`;
-    bgColor = bgColors.default;
-  }
-
-  // Update marquee
-  marqueeTextEl.textContent = displayText;
-  marqueeContainerEl.style.background = bgColor;
+// Function to decode "4,10" into "Thunderstorm & Lightning, Heavy Rain"
+function decodeWarnings(codeString) {
+  if (!codeString || codeString === "0") return "No Specific Warning";
+  return codeString.split(',')
+    .map(code => WARNING_MAP[code.trim()] || `Warning ${code}`)
+    .join(" & ");
 }
-// ... (existing updateMarquee function code above)
 
-// --- Add this block at the end of imd-marquee.js ---
-// Wait for the DOM to be fully loaded before trying to access the elements
-document.addEventListener('DOMContentLoaded', (event) => {
-    // Get the elements by their IDs
+async function updateMarqueeLive(marqueeTextEl, marqueeContainerEl) {
+  try {
+    const response = await fetch(WORKER_URL);
+    if (!response.ok) throw new Error("Worker Error");
+    
+    const data = await response.json();
+
+    // 1. Get the alert level and colors
+    const colorId = data.Day1_Color;
+    const colorInfo = COLOR_MAP[colorId] || { name: "Unknown", css: "linear-gradient(90deg, #444, #888)" };
+
+    // 2. Decode the warning types (e.g., "4,10")
+    const warningText = decodeWarnings(data.Day_1);
+
+    // 3. Format Date
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
+
+    // 4. Update Marquee UI
+    marqueeTextEl.textContent = `IMD Alert for Malappuram (${dateStr}): ${colorInfo.name} Alert - ${warningText} | Last Updated: ${data.updated_at}`;
+    marqueeContainerEl.style.background = colorInfo.css;
+
+  } catch (error) {
+    console.error("Marquee Fetch Failed:", error);
+    marqueeTextEl.textContent = "⚠️ Weather alert system temporarily unavailable. Check back soon.";
+    marqueeContainerEl.style.background = "linear-gradient(90deg, #333, #555)";
+  }
+}
+
+// --- Initialize ---
+document.addEventListener('DOMContentLoaded', () => {
     const marqueeTextEl = document.getElementById("marqueeText");
     const marqueeContainerEl = document.getElementById("marqueeContainer");
 
-    // Check if the elements exist before calling the function
     if (marqueeTextEl && marqueeContainerEl) {
-        // Call the function to update the marquee
-        updateMarquee(marqueeTextEl, marqueeContainerEl);
-    } else {
-        console.error("Marquee elements not found in the DOM.");
+        // Show a loading message while the bridge wakes up
+        marqueeTextEl.textContent = "Fetching latest IMD weather alerts...";
+        updateMarqueeLive(marqueeTextEl, marqueeContainerEl);
     }
 });
-// Make them available to other JS files
-window.imdAlerts = alerts;
-window.imdLastUpdated = lastUpdated;
