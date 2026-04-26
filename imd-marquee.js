@@ -48,7 +48,7 @@ async function updateMarqueeLive(marqueeTextEl, marqueeContainerEl) {
 
     // 4. Update Marquee UI with Source Credit
     // Added "Source: India Meteorological Department (IMD)" at the end
-    marqueeTextEl.textContent = `IMD Alert for Malappuram (${dateStr}): ${colorInfo.name} Alert - ${warningText} | Last Updated: ${data.updated_at} | Source: India Meteorological Department (IMD)`;
+    marqueeTextEl.textContent = `IMD Alert for Malappuram District ${dateStr}: ${colorInfo.name} Alert - ${warningText} | Last Updated: ${data.updated_at} | Source: India Meteorological Department (IMD)`;
     marqueeContainerEl.style.background = colorInfo.css;
 
   } catch (error) {
