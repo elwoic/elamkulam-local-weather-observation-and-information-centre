@@ -1,454 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Weather Assistant | ELWOIC</title>
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4faff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-        .topbar { background: #00457C; padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; }
-        .topbar h1 { font-size: 1.2rem; margin: 0; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; line-height: 1.4; font-size: 0.95rem; word-wrap: break-word; }
-        .ai { background: #e0f0ff; color: #00315c; align-self: flex-start; border-bottom-left-radius: 2px; }
-        #typingIndicator{
-opacity:0.7;
-font-style:italic;
-animation:blink 1.2s infinite;
-}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ELWOIC —  AI Assitant Weather Reporting</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --sky-top:    #e8f4fd;
+      --sky-mid:    #f0f8ff;
+      --white:      #ffffff;
+      --card:       #ffffff;
+      --border:     #d4e6f5;
+      --border-soft:#e8f0f8;
+      --blue:       #1a6eb5;
+      --blue-soft:  #e8f2fc;
+      --blue-mid:   #3b8fd4;
+      --cyan:       #0891b2;
+      --text:       #1a2e42;
+      --text-mid:   #3d5a78;
+      --muted:      #7a9bb8;
+      --warn-bg:    #fffbeb;
+      --warn-border:#f59e0b;
+      --warn-text:  #92400e;
+      --danger-bg:  #fff1f2;
+      --danger-bdr: #fca5a5;
+      --danger-text:#9f1239;
+      --ok:         #059669;
+      --ok-bg:      #ecfdf5;
+      --radius:     12px;
+      --shadow:     0 2px 12px rgba(26,110,181,0.08);
+      --shadow-lg:  0 8px 32px rgba(26,110,181,0.14);
+    }
 
-@keyframes blink{
-0%{opacity:0.4;}
-50%{opacity:1;}
-100%{opacity:0.4;}
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .user { background: #0073e6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .input-area { background: white; padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; min-height: 60px; }
-        input, select { flex: 1; border: 1px solid #ccc; border-radius: 25px; padding: 12px 20px; outline: none; font-size: 1rem; }
-        button { background: #0073e6; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; }
-        .success-overlay { position: fixed; inset: 0; background: rgba(0,74,128,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .success-card { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
-        .hidden { display: none; }
-    </style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--sky-top) 0%, var(--sky-mid) 60%, #f0eeff 100%);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse 600px 300px at 10% 20%, rgba(255,255,255,0.65) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 200px at 85% 10%, rgba(255,255,255,0.45) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 250px at 60% 80%, rgba(184,219,255,0.25) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; z-index: 10; position: relative;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 10px; }
+    .topbar-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      border-radius: 10px; display: grid; place-items: center;
+      font-size: 1.1rem; box-shadow: 0 2px 8px rgba(26,110,181,0.22);
+    }
+    .topbar-text h1 { font-family:'DM Serif Display',serif; font-size:1rem; color:var(--blue); line-height:1; }
+    .topbar-text p  { font-size:0.62rem; color:var(--muted); margin-top:2px; font-family:'DM Mono',monospace; letter-spacing:0.05em; }
+    .exit-btn {
+      font-size:0.75rem; color:var(--muted); text-decoration:none;
+      border:1px solid var(--border); padding:5px 13px; border-radius:99px;
+      transition:all 0.2s; background:var(--white);
+    }
+    .exit-btn:hover { color:var(--blue); border-color:var(--blue-mid); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      background: rgba(255,255,255,0.7); backdrop-filter:blur(8px);
+      padding: 8px 20px 10px; flex-shrink:0;
+      border-bottom:1px solid var(--border-soft); z-index:9; position:relative;
+    }
+    .progress-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+    .progress-label { font-size:0.63rem; color:var(--muted); font-family:'DM Mono',monospace; letter-spacing:0.06em; text-transform:uppercase; }
+    .draft-badge { font-size:0.6rem; color:var(--ok); font-family:'DM Mono',monospace; letter-spacing:0.04em; opacity:0; transition:opacity 0.4s; }
+    .draft-badge.visible { opacity:1; }
+    .progress-bar { height:4px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .progress-fill {
+      height:100%; background:linear-gradient(90deg,var(--blue),var(--cyan));
+      border-radius:99px; transition:width 0.55s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── CHAT ── */
+    #chat-box {
+      flex:1; overflow-y:auto; padding:18px 16px 10px;
+      display:flex; flex-direction:column; gap:10px;
+      scroll-behavior:smooth; position:relative; z-index:1;
+    }
+    #chat-box::-webkit-scrollbar { width:4px; }
+    #chat-box::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+    #scrollPill {
+      position:sticky; bottom:8px; align-self:center;
+      background:var(--blue); color:#fff; font-size:0.72rem;
+      padding:5px 14px; border-radius:99px; cursor:pointer;
+      box-shadow:var(--shadow); display:none; z-index:5; border:none;
+      font-family:'DM Sans',sans-serif; transition:opacity 0.2s;
+    }
+    #scrollPill.visible { display:block; }
+
+    /* ── MESSAGES ── */
+    .msg {
+      max-width:84%; padding:11px 15px; border-radius:var(--radius);
+      font-size:0.875rem; line-height:1.65;
+      animation:fadeUp 0.28s ease both; position:relative;
+    }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(6px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+    .msg.ai {
+      background:var(--white); border:1px solid var(--border);
+      color:var(--text); align-self:flex-start; border-bottom-left-radius:3px;
+      box-shadow:var(--shadow);
+    }
+    .msg.user {
+      background:linear-gradient(135deg,var(--blue) 0%,var(--blue-mid) 100%);
+      color:#fff; align-self:flex-end; border-bottom-right-radius:3px;
+      box-shadow:0 2px 10px rgba(26,110,181,0.22);
+    }
+    .msg.warn {
+      background:var(--warn-bg); border:1px solid var(--warn-border);
+      color:var(--warn-text); align-self:flex-start;
+      border-bottom-left-radius:3px; max-width:92%;
+    }
+    .msg.danger {
+      background:var(--danger-bg); border:1px solid var(--danger-bdr);
+      color:var(--danger-text); align-self:flex-start;
+      border-bottom-left-radius:3px; max-width:92%;
+    }
+    .msg.system {
+      background:var(--blue-soft); border:1px dashed var(--blue-mid);
+      color:var(--blue); align-self:center; font-size:0.78rem;
+      font-family:'DM Mono',monospace; border-radius:8px;
+      padding:7px 14px; max-width:92%; text-align:center;
+    }
+
+    /* typing dots */
+    .typing-dots { display:inline-flex; gap:4px; align-items:center; padding:3px 0; }
+    .typing-dots span {
+      width:6px; height:6px; border-radius:50%; background:var(--blue-mid);
+      animation:tdot 1.2s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(2){animation-delay:0.18s;}
+    .typing-dots span:nth-child(3){animation-delay:0.36s;}
+    @keyframes tdot {
+      0%,80%,100%{transform:translateY(0);opacity:0.35;}
+      40%{transform:translateY(-4px);opacity:1;}
+    }
+
+    /* ── SUMMARY CARD ── */
+    .summary-card {
+      background:var(--white); border:1px solid var(--border);
+      border-radius:14px; padding:16px 18px;
+      align-self:flex-start; max-width:92%;
+      box-shadow:var(--shadow-lg); animation:fadeUp 0.3s ease both;
+    }
+    .summary-header {
+      display:flex; align-items:center; gap:8px;
+      margin-bottom:14px; padding-bottom:10px;
+      border-bottom:1px solid var(--border-soft);
+    }
+    .summary-header-icon {
+      width:28px; height:28px; background:var(--ok-bg);
+      border-radius:8px; display:grid; place-items:center; font-size:0.9rem;
+    }
+    .summary-header-title { font-family:'DM Serif Display',serif; font-size:0.95rem; color:var(--blue); }
+    .summary-grid { display:grid; grid-template-columns:auto 1fr; gap:5px 12px; font-size:0.82rem; }
+    .sk { color:var(--muted); font-size:0.75rem; padding-top:2px; white-space:nowrap; }
+    .sv { color:var(--text); font-weight:500; }
+    .summary-obs {
+      margin-top:12px; padding:10px 13px;
+      background:linear-gradient(135deg,var(--blue-soft),rgba(8,145,178,0.06));
+      border-left:3px solid var(--blue-mid); border-radius:6px;
+      font-size:0.84rem; color:var(--text-mid); line-height:1.7; font-style:italic;
+    }
+
+    /* ── INPUT AREA ── */
+    .input-area {
+      background:rgba(255,255,255,0.88); backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px); border-top:1px solid var(--border);
+      padding:12px 14px; flex-shrink:0;
+      display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;
+      position:relative; z-index:5;
+    }
+    .input-wrap { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+    .char-counter { font-size:0.62rem; color:var(--muted); font-family:'DM Mono',monospace; text-align:right; padding-right:2px; height:14px; }
+    .char-counter.warn-count { color:var(--warn-border); }
+
+    .inp-field {
+      width:100%; background:var(--white); border:1.5px solid var(--border);
+      border-radius:10px; padding:10px 14px; color:var(--text);
+      font-family:'DM Sans',sans-serif; font-size:0.875rem; outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s; resize:none;
+    }
+    .inp-field:focus { border-color:var(--blue-mid); box-shadow:0 0 0 3px rgba(59,143,212,0.12); }
+    .inp-field.inp-error { border-color:#fca5a5; box-shadow:0 0 0 3px rgba(239,68,68,0.08); }
+    .inp-field::placeholder { color:var(--muted); }
+
+    select.inp-field {
+      cursor:pointer; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a9bb8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+    }
+    select.inp-field option { background:var(--white); color:var(--text); }
+
+    .inline-error { font-size:0.7rem; color:#dc2626; padding-left:4px; min-height:14px; }
+
+    .btn-send {
+      background:linear-gradient(135deg,var(--blue),var(--blue-mid));
+      color:#fff; border:none; padding:10px 16px; border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:600;
+      cursor:pointer; transition:opacity 0.2s, transform 0.1s;
+      flex-shrink:0; align-self:flex-end;
+      box-shadow:0 2px 8px rgba(26,110,181,0.22);
+    }
+    .btn-send:hover{opacity:0.9;} .btn-send:active{transform:scale(0.96);}
+
+    .btn-pill {
+      background:var(--white); border:1.5px solid var(--border);
+      color:var(--text-mid); padding:9px 18px; border-radius:99px;
+      font-family:'DM Sans',sans-serif; font-size:0.84rem; font-weight:500;
+      cursor:pointer; transition:all 0.18s; flex-shrink:0; box-shadow:var(--shadow);
+    }
+    .btn-pill:hover { border-color:var(--blue-mid); color:var(--blue); background:var(--blue-soft); }
+
+    .btn-submit {
+      background:linear-gradient(135deg,var(--ok) 0%,#047857 100%);
+      color:#fff; border:none; padding:11px 24px; border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:700;
+      cursor:pointer; transition:opacity 0.2s, transform 0.1s;
+      box-shadow:0 2px 10px rgba(5,150,105,0.25);
+    }
+    .btn-submit:hover{opacity:0.92;} .btn-submit:active{transform:scale(0.97);}
+
+    .btn-edit-act {
+      background:var(--white); border:1.5px solid var(--warn-border);
+      color:#b45309; padding:11px 20px; border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600;
+      cursor:pointer; transition:all 0.18s;
+    }
+    .btn-edit-act:hover { background:var(--warn-bg); }
+
+    /* ── SUCCESS ── */
+    .success-overlay {
+      position:fixed; inset:0; background:rgba(232,244,253,0.92);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999; backdrop-filter:blur(10px);
+    }
+    .success-card {
+      background:var(--white); border:1px solid var(--border);
+      border-radius:20px; padding:36px 28px; text-align:center;
+      max-width:320px; width:90%; box-shadow:var(--shadow-lg);
+      animation:fadeUp 0.4s ease both;
+    }
+    .success-icon {
+      width:64px; height:64px; background:var(--ok-bg);
+      border:2px solid var(--ok); border-radius:50%;
+      display:grid; place-items:center; font-size:1.8rem; margin:0 auto 14px;
+    }
+    .success-card h3 { font-family:'DM Serif Display',serif; font-size:1.3rem; color:var(--blue); margin-bottom:6px; }
+    .success-card p  { color:var(--muted); font-size:0.82rem; margin-bottom:4px; }
+    .ref-id {
+      font-family:'DM Mono',monospace; font-size:1rem; color:var(--blue);
+      background:var(--blue-soft); border:1px solid var(--border);
+      border-radius:8px; padding:8px 16px; margin:10px 0 18px;
+      display:inline-block; letter-spacing:0.06em;
+    }
+    .success-actions { display:flex; gap:10px; justify-content:center; }
+    .hidden { display:none !important; }
+  </style>
 </head>
 <body>
 
 <div class="topbar">
-    <h1>ELWOIC AI Assistant</h1>
-    <a href="index.html" style="color:white; text-decoration:none; border:1px solid white; padding:4px 10px; border-radius:4px;">Exit</a>
+  <div class="topbar-logo">
+    <div class="topbar-icon">🌦</div>
+    <div class="topbar-text">
+      <h1>ELWOIC</h1>
+      <p>AI Assistant Weather Reporting System</p>
+    </div>
+  </div>
+  
 </div>
 
-<div id="chat-box"></div>
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label" id="progressLabel">Step 1 of 9</span>
+    <span class="draft-badge" id="draftBadge">✓ Draft saved</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div id="chat-box">
+  <button id="scrollPill" onclick="scrollBottom()">↓ New message</button>
+</div>
 
 <div class="input-area" id="inputContainer"></div>
 
 <div id="successModal" class="success-overlay hidden">
-    <div class="success-card">
-        <div style="font-size: 3rem;">✅</div>
-        <h3>Report Filed!</h3>
-        <p id="refDisplay"></p>
-        <button onclick="location.reload()">Submit Another</button>
-<button onclick="location.href='index.html'">Go Home</button>
-
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <h3>Report Filed!</h3>
+    <p>Your reference ID:</p>
+    <div class="ref-id" id="refDisplay">—</div>
+    <p>Keep this for your records.</p>
+    <div class="success-actions">
+      <button class="btn-submit" onclick="location.reload()">New Report</button>
+      <button class="btn-edit-act" onclick="location.href='index.html'">Go Home</button>
     </div>
+  </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, runTransaction }
+                               from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* ══════════════════ CONFIG ══════════════════ */
 const firebaseConfig = {
-  apiKey: "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
+  apiKey:      "AIzaSyASblrFKqSUK6heHly2Bh95EJ_Gqmx0XVQ",
   databaseURL: "https://report-5d8c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "report-5d8c0",
+  projectId:   "report-5d8c0",
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db  = getDatabase(app);
 
-const WORKER_URL = "https://orange-river-4a09.elwoicelamkulam.workers.dev";
+const WORKER_URL    = "https://orange-river-4a09.elwoicelamkulam.workers.dev";
 const FORMSPREE_URL = "https://formspree.io/f/xpqqzknw";
+const DRAFT_KEY     = "elwoic_draft";
+const TOTAL_STEPS   = 9;
 
+/* ══════════════════ STATE ══════════════════ */
 let reportData = {
-  language:'',
-  name:'',
-  email:'',
-  location:'',
-  report_type:'',
-  time:'',
-  show_on_site:'',
-  show_name:'',
-  priority:'normal',
-  observation:''
+  language:'', name:'', email:'', location:'',
+  report_type:'', time:'', show_on_site:'',
+  show_name:'', priority:'normal', observation:''
 };
-
-
 let currentStep = 0;
-let isAIPhase = false;
+let appPhase    = 'collecting';
 
+/* ══════════════════ STEPS ══════════════════ */
 const steps = [
-{
-q:{
-en:"Please choose your preferred language / ഭാഷ തിരഞ്ഞെടുക്കുക",
-ml:"ഭാഷ തിരഞ്ഞെടുക്കുക"
-},
-type:"buttons",
-options:["English","Malayalam"],
-field:"language"
-},
-
-{
-q:{
-en:"What is your Name?",
-ml:"നിങ്ങളുടെ പേര് എന്താണ്?"
-},
-field:"name",
-type:"text"
-},
-
-{
-q:{
-en:"Please provide your Email ID. We will only use it to contact you in the future if needed.",
-ml:"ദയവായി നിങ്ങളുടെ ഇമെയിൽ ഐഡി നൽകുക. ഇത് ആവശ്യമായാൽ ഭാവിയിൽ നിങ്ങളെ ബന്ധപ്പെടാൻ മാത്രമാണ് ഉപയോഗിക്കുന്നത്."
-},
-field:"email",
-type:"text"
-},
-
-{
-q:{
-en:"Which location or ward did you observe this weather condition?(Ward No:/Name)",
-ml:"നിങ്ങൾ കണ്ട കാലാവസ്ഥ സ്ഥിതി ഏത് സ്ഥലത്താണ് അല്ലെങ്കിൽ ഏത് വാർഡിലാണ് ഉണ്ടായത്?(Ward no:/Name)"
-},
-field:"location",
-type:"text"
-},
-
-{
-q:{
-en:"Select Report Type:",
-ml:"റിപ്പോർട്ട് തരം തിരഞ്ഞെടുക്കുക:"
-},
-type:"select",
-options:["General Information","Rainfall","Flood/Water Level","Storm","Lightning","Road Block/Tree Fall","Other"],
-field:"report_type"
-},
-
-{
-q:{
-en:"Time of Event? (Example: 17:00 or Evening)",
-ml:"സംഭവിച്ച സമയം? (ഉദാ: 17:00 അല്ലെങ്കിൽ വൈകുന്നേരം)"
-},
-field:"time",
-type:"text"
-},
-
-{
-q:{
-en:"Do you want to show this on our site?",
-ml:"ഈ റിപ്പോർട്ട് ഞങ്ങളുടെ സൈറ്റിൽ കാണിക്കണോ?"
-},
-type:"buttons",
-options:["yes","no"],
-field:"show_on_site"
-},
-
-{
-q:{
-en:"Show your name publicly?",
-ml:"നിങ്ങളുടെ പേര് പൊതുവായി കാണിക്കണോ?"
-},
-type:"buttons",
-options:["yes","no"],
-field:"show_name"
-}
-
+  {
+    q:{ en:"Please choose your preferred language / ഭാഷ തിരഞ്ഞെടുക്കുക", ml:"ഭാഷ തിരഞ്ഞെടുക്കുക" },
+    type:"buttons", options:["English","Malayalam"], field:"language"
+  },
+  {
+    q:{ en:"What is your full name?", ml:"നിങ്ങളുടെ പൂർണ്ണ പേര് നൽകൂ:" },
+    type:"text", field:"name",
+    ph:{ en:"e.g. Arjun Nair", ml:"ഉദാ: അർജുൻ നായർ" },
+    validate: v => v.trim().length < 2 ? "Name must be at least 2 characters." : null
+  },
+  {
+    q:{ en:"Please provide your email address. Used only to contact you if needed.", ml:"ഇമെയിൽ ഐഡി നൽകൂ. ആവശ്യമെങ്കിൽ ബന്ധപ്പെടാൻ മാത്രം ഉപയോഗിക്കും." },
+    type:"text", field:"email",
+    ph:{ en:"you@example.com", ml:"your@email.com" },
+    validate: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? null : "Please enter a valid email address."
+  },
+  {
+    q:{ en:"Which location or ward did you observe this? (Ward No / Name)", ml:"ഏത് സ്ഥലത്ത് / വാർഡിൽ ഈ കാലാവസ്ഥ കണ്ടു?" },
+    type:"text", field:"location",
+    ph:{ en:"Ward 5 / Elamkulam", ml:"Ward 5 / ഏലംകുളം" },
+    validate: v => v.trim().length < 2 ? "Please enter a valid location." : null
+  },
+  {
+    q:{ en:"Select the type of report:", ml:"റിപ്പോർട്ട് തരം തിരഞ്ഞെടുക്കുക:" },
+    type:"select", field:"report_type",
+    options:["General Information","Rainfall","Flood/Water Level","Storm","Lightning","Road Block/Tree Fall","Other"]
+  },
+  {
+    q:{ en:"When did this happen? (e.g. 17:00 or Evening)", ml:"ഇത് എപ്പോൾ സംഭവിച്ചു? (ഉദാ: 17:00 അല്ലെങ്കിൽ വൈകുന്നേരം)" },
+    type:"text", field:"time",
+    ph:{ en:"17:00 or Evening", ml:"17:00 അല്ലെങ്കിൽ വൈകുന്നേരം" },
+    validate: v => v.trim().length < 2 ? "Please enter the time of event." : null
+  },
+  {
+    q:{ en:"Would you like this report shown publicly on our site?", ml:"ഈ റിപ്പോർട്ട് ഞങ്ങളുടെ സൈറ്റിൽ പൊതുവായി കാണിക്കണോ?" },
+    type:"buttons", options:["Yes","No"], field:"show_on_site"
+  },
+  {
+    q:{ en:"Should your name appear publicly with this report?", ml:"നിങ്ങളുടെ പേർ പൊതുവായി കാണിക്കണോ?" },
+    type:"buttons", options:["Yes","No"], field:"show_name"
+  }
 ];
 
+/* ══════════════════ DRAFT ══════════════════ */
+function saveDraft(){
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ reportData, currentStep }));
+    const b = document.getElementById('draftBadge');
+    b.classList.add('visible');
+    setTimeout(() => b.classList.remove('visible'), 2000);
+  } catch(e){}
+}
+function loadDraft(){
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    if(d && d.currentStep > 0 && d.reportData){ reportData = d.reportData; currentStep = d.currentStep; return true; }
+  } catch(e){}
+  return false;
+}
+function clearDraft(){ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
 
-function aiThinking(callback, delay=900){
-
-const box = document.getElementById("chat-box");
-
-const typing = document.createElement("div");
-typing.className="msg ai";
-typing.id="typingIndicator";
-typing.innerHTML =
-reportData.language==="Malayalam"
-? "AI എഴുതുന്നു..."
-: "AI typing...";
-
-box.appendChild(typing);
-box.scrollTop = box.scrollHeight;
-
-setTimeout(()=>{
-typing.remove();
-callback();
-},delay);
-
+/* ══════════════════ PROGRESS ══════════════════ */
+function updateProgress(step){
+  const pct = Math.round((step / TOTAL_STEPS) * 100);
+  document.getElementById('progressFill').style.width = Math.min(pct,100)+'%';
+  const ml = reportData.language==='Malayalam';
+  document.getElementById('progressLabel').textContent =
+    ml ? `ഘട്ടം ${Math.min(step+1,TOTAL_STEPS)} / ${TOTAL_STEPS}`
+       : `Step ${Math.min(step+1,TOTAL_STEPS)} of ${TOTAL_STEPS}`;
 }
 
-window.handleInput = async function(val){
-    if(!val || val.trim()==="") return;
+/* ══════════════════ CHAT HELPERS ══════════════════ */
+const chatBox = () => document.getElementById('chat-box');
 
-    addMessage(val,"user");
-
-    if(!isAIPhase){
-        const step = steps[currentStep];
-        reportData[step.field] = val;
-        if(step.field==="show_on_site" && val==="yes"){
-            steps.splice(currentStep+1,0,{
-                q:{ en:"Mark as URGENT?", ml:"റിപ്പോർട്ട് അടിയന്തരമാണോ?(നിങ്ങളുടെ റിപ്പോർട്ടിന്റെ സാധുതാപരിശോധന ഉടൻതന്നെ നടത്തുന്നു." },
-                type:"buttons", options:["urgent","normal"], field:"priority"
-            });
-        }
-        currentStep++;
-        if(currentStep < steps.length) showStep(); else startAIPhase();
-
-    } else {
-        // AI PHASE - NO MORE SILENCE
-        aiThinking(async () => {
-            try {
-                const res = await fetch(WORKER_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        text: val, 
-                        collectedData: reportData 
-                    })
-                });
-
-                const data = await res.json();
-                let aiResult = data.result;
-
-                // CLEANER: Remove markdown backticks if AI sent them
-                const cleanJsonMatch = aiResult.match(/\{.*\}/s);
-                
-                if (cleanJsonMatch && aiResult.includes('"complete": true')) {
-                    const parsed = JSON.parse(cleanJsonMatch[0]);
-                    reportData.observation = parsed.corrected;
-                    showReview();
-                } else {
-                    // AI Rejection or plain text feedback
-                    addMessage(aiResult, "ai");
-                    renderInput({type: "text"}); 
-                }
-            } catch (e) {
-    console.error("Full Error Info:", e); // This prints the REAL error to the browser console
-    addMessage("Connection error: " + e.message, "ai");
-    renderInput({type: "text"});
-}
-        }, 1200);
-    }
-};
-function showReview(){
-
-const review = `
-<b>Please review your report:</b><br><br>
-
-Name: ${reportData.name}<br>
-Location: ${reportData.location}<br>
-Report Type: ${reportData.report_type}<br>
-Event Time: ${reportData.time}<br>
-Observation:<br>
-${reportData.observation}<br><br>
-
-Show on site: ${reportData.show_on_site}<br>
-Show name: ${reportData.show_name}<br>
-Priority: ${reportData.priority}<br><br>
-
-Submit this report?
-`;
-
-aiThinking(()=>{
-addMessage(review,"ai");
-});
-
-
-const container = document.getElementById("inputContainer");
-container.innerHTML = "";
-
-const yes = document.createElement("button");
-yes.innerText="Submit";
-yes.onclick=()=>submitToFirebase(reportData);
-
-const no = document.createElement("button");
-no.innerText="Edit";
-no.onclick=()=>editReport();
-
-container.appendChild(yes);
-container.appendChild(no);
-
-}
-function editReport(){
-
-addMessage("Which field do you want to edit? (name, location, time, observation)", "ai");
-
-renderInput({type:"text"});
-
-isEditing=true;
-
+function addMessage(html, type='ai'){
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  div.innerHTML = String(html).replace(/\n/g,'<br>');
+  chatBox().insertBefore(div, document.getElementById('scrollPill'));
+  checkScroll();
+  return div;
 }
 
-function showStep(){
+function showTyping(){
+  const div = document.createElement('div');
+  div.className='msg ai'; div.id='typingMsg';
+  div.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  chatBox().insertBefore(div, document.getElementById('scrollPill'));
+  scrollBottom(); return div;
+}
+function removeTyping(){ document.getElementById('typingMsg')?.remove(); }
 
-const step = steps[currentStep];
-
-const question =
-reportData.language==="Malayalam"
-? step.q.ml
-: step.q.en;
-
-aiThinking(()=>{
-addMessage(question,"ai");
-renderInput(step);
-});
-
+function scrollBottom(){
+  const box = chatBox();
+  box.scrollTo({ top:box.scrollHeight, behavior:'smooth' });
+  document.getElementById('scrollPill').classList.remove('visible');
+}
+function checkScroll(){
+  const box = chatBox();
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 70;
+  if(atBottom) scrollBottom();
+  else document.getElementById('scrollPill').classList.add('visible');
 }
 
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ══════════════════ SUMMARY CARD ══════════════════ */
+function addSummaryCard(data){
+  document.getElementById('summaryCard')?.remove();
+  const ml = reportData.language==='Malayalam';
+  const card = document.createElement('div');
+  card.className='summary-card'; card.id='summaryCard';
+  card.innerHTML=`
+    <div class="summary-header">
+      <div class="summary-header-icon">📋</div>
+      <div class="summary-header-title">${ml?'റിപ്പോർട്ട് സംഗ്രഹം':'Report Summary'}</div>
+    </div>
+    <div class="summary-grid">
+      <span class="sk">${ml?'പേര്':'Name'}</span>              <span class="sv">${esc(data.name)}</span>
+      <span class="sk">${ml?'ഇമെയിൽ':'Email'}</span>           <span class="sv">${esc(data.email)}</span>
+      <span class="sk">${ml?'സ്ഥലം':'Location'}</span>          <span class="sv">${esc(data.location)}</span>
+      <span class="sk">${ml?'തരം':'Report Type'}</span>         <span class="sv">${esc(data.report_type)}</span>
+      <span class="sk">${ml?'സമയം':'Time'}</span>               <span class="sv">${esc(data.time)}</span>
+      <span class="sk">${ml?'സൈറ്റിൽ':'Show on site'}</span>   <span class="sv">${esc(data.show_on_site)}</span>
+      <span class="sk">${ml?'പേര് കാണിക്കണോ':'Show name'}</span><span class="sv">${esc(data.show_name)}</span>
+      <span class="sk">${ml?'മുൻഗണന':'Priority'}</span>         <span class="sv">${esc(data.priority)}</span>
+    </div>
+    <div class="summary-obs">${esc(data.observation)}</div>
+  `;
+  chatBox().insertBefore(card, document.getElementById('scrollPill'));
+  checkScroll();
+}
+
+/* ══════════════════ INPUT RENDERING ══════════════════ */
+function clearInput(){ document.getElementById('inputContainer').innerHTML=''; }
 
 function renderInput(step){
+  clearInput();
+  const c = document.getElementById('inputContainer');
+  const ml = reportData.language==='Malayalam';
 
-const container = document.getElementById("inputContainer");
-container.innerHTML="";
+  if(step.type==='buttons'){
+    step.options.forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='btn-pill'; btn.textContent=opt;
+      btn.onclick=()=>handleCollect(opt);
+      c.appendChild(btn);
+    });
 
-if(step.type==="buttons"){
+  } else if(step.type==='select'){
+    const wrap=document.createElement('div'); wrap.className='input-wrap';
+    const sel=document.createElement('select'); sel.className='inp-field';
+    step.options.forEach(opt=>{ const o=document.createElement('option'); o.value=o.text=opt; sel.appendChild(o); });
+    wrap.appendChild(sel); c.appendChild(wrap);
+    const btn=document.createElement('button'); btn.className='btn-send'; btn.textContent='→';
+    btn.onclick=()=>handleCollect(sel.value); c.appendChild(btn);
 
-step.options.forEach(opt=>{
-const btn=document.createElement("button");
-btn.innerText=opt;
-btn.onclick=()=>handleInput(opt);
-container.appendChild(btn);
-});
+  } else {
+    const wrap=document.createElement('div'); wrap.className='input-wrap';
+    const inp=document.createElement('input'); inp.type='text'; inp.className='inp-field';
+    inp.placeholder=(ml ? step.ph?.ml : step.ph?.en)||(ml?'ഇവിടെ ടൈപ്പ് ചെയ്യൂ...':'Type here...');
+    const err=document.createElement('div'); err.className='inline-error';
 
-}else if(step.type==="select"){
-
-const sel=document.createElement("select");
-sel.id="stepInput";
-
-step.options.forEach(opt=>{
-const o=document.createElement("option");
-o.value=opt;
-o.text=opt;
-sel.appendChild(o);
-});
-
-const btn=document.createElement("button");
-btn.innerText="➔";
-btn.onclick=()=>handleInput(sel.value);
-
-container.appendChild(sel);
-container.appendChild(btn);
-
-}else{
-
-container.innerHTML=
-`<input id="stepInput" type="text" placeholder="Type here..."
-onkeypress="if(event.key==='Enter') handleInput(this.value)">
-<button onclick="handleInput(document.getElementById('stepInput').value)">➔</button>`;
-
-document.getElementById("stepInput").focus();
-
+    const trySubmit=()=>{
+      const e=step.validate?step.validate(inp.value):null;
+      if(e){ err.textContent=e; inp.classList.add('inp-error'); return; }
+      handleCollect(inp.value);
+    };
+    inp.addEventListener('keypress', e=>{ if(e.key==='Enter') trySubmit(); });
+    inp.addEventListener('input',()=>{ err.textContent=''; inp.classList.remove('inp-error'); });
+    wrap.appendChild(inp); wrap.appendChild(err); c.appendChild(wrap);
+    const btn=document.createElement('button'); btn.className='btn-send'; btn.textContent='→';
+    btn.onclick=trySubmit; c.appendChild(btn);
+    setTimeout(()=>inp.focus(),60);
+  }
 }
 
+function renderTextarea(onSubmit, placeholder){
+  clearInput();
+  const c=document.getElementById('inputContainer');
+  const wrap=document.createElement('div'); wrap.className='input-wrap'; wrap.style.flex='1';
+  const counter=document.createElement('div'); counter.className='char-counter';
+  const ta=document.createElement('textarea'); ta.rows=3; ta.className='inp-field'; ta.placeholder=placeholder;
+  ta.addEventListener('input',()=>{
+    const len=ta.value.length; counter.textContent=`${len} chars`;
+    counter.classList.toggle('warn-count',len<20);
+  });
+  ta.addEventListener('keypress',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();onSubmit(ta.value);} });
+  wrap.appendChild(ta); wrap.appendChild(counter); c.appendChild(wrap);
+  const btn=document.createElement('button'); btn.className='btn-send'; btn.style.alignSelf='flex-end'; btn.textContent='→';
+  btn.onclick=()=>onSubmit(ta.value); c.appendChild(btn);
+  setTimeout(()=>ta.focus(),60);
 }
 
-function startAIPhase(){
-
-isAIPhase = true;
-
-const msg =
-reportData.language==="Malayalam"
-? "ഇപ്പോൾ നിങ്ങൾ കണ്ട കാലാവസ്ഥ വിശദീകരിക്കുക."
-: "Now describe the weather you witnessed.";
-
-aiThinking(()=>{
-addMessage(msg,"ai");
-renderInput({type:"text"});
-});
-
-
+function renderFreeInput(onSubmit, placeholder){
+  clearInput();
+  const c=document.getElementById('inputContainer');
+  const inp=document.createElement('input'); inp.type='text'; inp.className='inp-field'; inp.style.flex='1';
+  inp.placeholder=placeholder||'Type here...';
+  inp.addEventListener('keypress',e=>{ if(e.key==='Enter') onSubmit(inp.value); });
+  const btn=document.createElement('button'); btn.className='btn-send'; btn.textContent='→';
+  btn.onclick=()=>onSubmit(inp.value); c.appendChild(inp); c.appendChild(btn);
+  setTimeout(()=>inp.focus(),60);
 }
 
-function addMessage(text,sender){
-
-const div=document.createElement("div");
-div.className=`msg ${sender}`;
-div.innerHTML=text.replace(/\n/g,"<br>");
-
-const box=document.getElementById("chat-box");
-box.appendChild(div);
-
-box.scrollTop=box.scrollHeight;
-
+function renderReviewButtons(){
+  clearInput();
+  const c=document.getElementById('inputContainer');
+  const ml=reportData.language==='Malayalam';
+  const s=document.createElement('button'); s.className='btn-submit';
+  s.textContent=ml?'✓ സമർപ്പിക്കുക':'✓ Submit Report'; s.onclick=()=>submitReport(); c.appendChild(s);
+  const e=document.createElement('button'); e.className='btn-edit-act';
+  e.textContent=ml?'✏ തിരുത്തുക':'✏ Edit'; e.onclick=()=>startEditFlow(); c.appendChild(e);
 }
 
-async function submitToFirebase(data){
+/* ══════════════════ OFF-TOPIC DETECTION ══════════════════ */
+function looksOffTopic(val){
+  const v=val.trim().toLowerCase();
+  if(v.length < 5) return false;
+  // Known form values are never off-topic
+  const formVals=['yes','no','urgent','normal','english','malayalam','rainfall',
+    'storm','lightning','flood','road','general','other','flood/water level',
+    'road block/tree fall'];
+  if(formVals.includes(v)) return false;
+  // Conversational patterns
+  return /^(hi|hello|hey|what|who|why|how|when|where|is |are |can |do |does |will |tell me|help|thanks|thank|okay|ok|sure|what'|explain|i need|i want|i have|can you|could you)/i.test(v);
+}
 
-const now=new Date();
-const datePart=now.toISOString().slice(2,10).replace(/-/g,"");
+/* ══════════════════ STEP FLOW ══════════════════ */
+function showStep(){
+  updateProgress(currentStep);
+  const step=steps[currentStep];
+  const q=reportData.language==='Malayalam'?step.q.ml:step.q.en;
+  const t=showTyping();
+  setTimeout(()=>{ t.remove(); addMessage(q,'ai'); renderInput(step); },700);
+}
 
-const counterRef=ref(db,"report_counter");
+function handleCollect(val){
+  if(!val||!val.trim()) return;
 
-const result=await runTransaction(counterRef,v=>(v||0)+1);
+  // Off-topic interception for free-text inputs only
+  const step=steps[currentStep];
+  if(appPhase==='collecting' && step.type==='text' && looksOffTopic(val)){
+    addMessage(val,'user'); clearInput();
+    handleOffTopic(val,()=>{
+      const t=showTyping();
+      setTimeout(()=>{
+        t.remove();
+        addMessage(reportData.language==='Malayalam'?step.q.ml:step.q.en,'ai');
+        renderInput(step);
+      },500);
+    });
+    return;
+  }
 
-const humanId=`ELW-${datePart}${String(result.snapshot.val()).padStart(3,"0")}`;
+  addMessage(val,'user'); clearInput();
 
-const finalEntry={
-...data,
-humanId,
-timestamp:Date.now(),
-photo_url:"N/A",
-granted_site1:"no",
-granted_site2:"no"
+  // Normalize stored value:
+  // - language field keeps original casing (Malayalam/English) so all === checks work
+  // - other buttons → lowercase for consistent admin panel storage
+  // - text fields → trimmed only
+  const stored = step.field==='language'
+    ? val.trim()
+    : step.type==='buttons' ? val.toLowerCase() : val.trim();
+  reportData[step.field]=stored;
+
+  // Inject priority step after show_on_site=yes
+  if(step.field==='show_on_site' && stored==='yes'){
+    steps.splice(currentStep+1,0,{
+      q:{
+        en:"Mark this as URGENT? Urgent reports get reviewed immediately.",
+        ml:"അടിയന്തര റിപ്പോർട്ടായി ഇടണോ? ഉടൻ പരിശോധന ഉണ്ടാകും."
+      },
+      type:"buttons", options:["Urgent","Normal"], field:"priority"
+    });
+  }
+  if(step.field==='priority') reportData.priority=stored; // 'urgent' or 'normal'
+
+  saveDraft();
+  currentStep++;
+  if(currentStep < steps.length) showStep();
+  else startObservationPhase();
+}
+
+/* ══════════════════ OBSERVATION ══════════════════ */
+function startObservationPhase(){
+  updateProgress(TOTAL_STEPS-1);
+  const ml=reportData.language==='Malayalam';
+  const t=showTyping();
+  setTimeout(()=>{
+    t.remove();
+    addMessage(ml
+      ?'ഇപ്പോൾ നിങ്ങൾ കണ്ട കാലാവസ്ഥ വിശദമായി വിവരിക്കൂ. (Shift+Enter = new line)'
+      :'Now describe the weather condition you witnessed in detail. (Shift+Enter = new line)','ai');
+    renderTextarea(handleObservation,
+      ml?'ഉദാ: 4 മണിക്ക് ശക്തമായ മഴ, റോഡ് വെള്ളത്തിൽ മുങ്ങി...'
+        :'e.g. Heavy rain started at 4pm, the road near school was flooded...');
+  },800);
+}
+
+function handleObservation(val){
+  if(!val||!val.trim()){
+    addMessage(reportData.language==='Malayalam'?'ദയവായി ഒരു വിവരണം നൽകൂ.':'Please enter a description.','danger');
+    return;
+  }
+
+  // Off-topic check even in observation phase
+  if(looksOffTopic(val) && val.trim().length < 30){
+    addMessage(val,'user'); clearInput();
+    handleOffTopic(val,()=>{
+      const ml=reportData.language==='Malayalam';
+      const t=showTyping();
+      setTimeout(()=>{
+        t.remove();
+        addMessage(ml?'നിങ്ങൾ കണ്ടത് ഇനി വിവരിക്കൂ:':'Now please describe the weather you witnessed:','ai');
+        renderTextarea(handleObservation,
+          ml?'ഇവിടെ ടൈപ്പ് ചെയ്യൂ...':'Describe what you saw...');
+      },500);
+    });
+    return;
+  }
+
+  addMessage(val,'user'); clearInput();
+  reportData.observation=val.trim();
+  saveDraft(); runValidation();
+}
+
+/* ══════════════════ OFF-TOPIC HANDLER ══════════════════ */
+async function handleOffTopic(userMsg, afterCallback){
+  const t=showTyping();
+  try {
+    const res=await fetch(WORKER_URL,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ mode:'offtopic', message:userMsg, language:reportData.language })
+    });
+    const data=await res.json();
+    t.remove();
+    addMessage(data.reply||"I'm here to help you file a weather report.",'ai');
+  } catch(e){
+    t.remove();
+    addMessage("Let me get back to your report.",'ai');
+  }
+  if(afterCallback) afterCallback();
+}
+
+/* ══════════════════ AI VALIDATION ══════════════════ */
+async function runValidation(){
+  appPhase='validating';
+  updateProgress(TOTAL_STEPS);
+  const ml=reportData.language==='Malayalam';
+  addMessage(ml?'⏳ AI നിങ്ങളുടെ റിപ്പോർട്ട് പരിശോധിക്കുന്നു...':'⏳ AI is reviewing your report, please wait...','system');
+  const t=showTyping();
+  try {
+    const res=await fetch(WORKER_URL,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ mode:'validate', reportData })
+    });
+    const data=await res.json();
+    t.remove(); handleValidationResult(data);
+  } catch(e){
+    t.remove();
+    addMessage('⚠️ Connection error: '+e.message,'danger');
+    appPhase='collecting';
+    renderTextarea(handleObservation,ml?'വീണ്ടും ശ്രമിക്കൂ...':'Please try again...');
+  }
+}
+
+function handleValidationResult(data){
+  const ml=reportData.language==='Malayalam';
+  if(data.status==='approved'){
+    reportData.observation=data.corrected_observation;
+    if(data.priority) reportData.priority=data.priority;
+    saveDraft(); showReview();
+  } else if(data.status==='rejected'){
+    appPhase='collecting';
+    if(data.warning_message) addMessage('⚠️ '+data.warning_message,'warn');
+    if(data.rejection_reason) addMessage('❌ '+data.rejection_reason,'danger');
+    if(data.bad_field==='observation'&&data.ai_suggestion) addMessage('💡 '+data.ai_suggestion,'ai');
+    const fieldLabel=data.bad_field||'observation';
+    addMessage(ml?`ദയവായി "${fieldLabel}" ശരിയായി നൽകൂ:`:`Please re-enter your "${fieldLabel}":`,'ai');
+    if(fieldLabel==='observation'){
+      renderTextarea(handleObservation,ml?'ഇവിടെ ടൈപ്പ് ചെയ്യൂ...':'Describe what you saw...');
+    } else {
+      renderFreeInput(newVal=>{
+        if(!newVal.trim()) return;
+        addMessage(newVal,'user'); reportData[fieldLabel]=newVal.trim();
+        clearInput(); saveDraft(); runValidation();
+      },ml?'ഇവിടെ ടൈപ്പ് ചെയ്യൂ...':'Type here...');
+    }
+  } else {
+    addMessage(ml?'ഒരു സാങ്കേതിക പ്രശ്നം ഉണ്ടായി. ദയവായി വീണ്ടും ശ്രമിക്കൂ.':'A technical error occurred. Please try again.','danger');
+    renderTextarea(handleObservation,ml?'വിവരണം ടൈപ്പ് ചെയ്യൂ...':'Describe what you saw...');
+  }
+}
+
+/* ══════════════════ REVIEW ══════════════════ */
+function showReview(){
+  appPhase='review';
+  const ml=reportData.language==='Malayalam';
+  addMessage(ml
+    ?'✅ AI റിപ്പോർട്ട് അംഗീകരിച്ചു. സമർപ്പിക്കുന്നതിന് മുൻപ് ഒന്ന് പരിശോധിക്കൂ:'
+    :'✅ AI has approved your report. Please review carefully before submitting:','ai');
+  addSummaryCard(reportData);
+  renderReviewButtons();
+}
+
+/* ══════════════════ EDIT FLOW ══════════════════ */
+const FIELD_MAP={
+  'name':'name','email':'email','location':'location',
+  'report type':'report_type','type':'report_type','report_type':'report_type',
+  'time':'time','observation':'observation','description':'observation',
+  'show on site':'show_on_site','show name':'show_name',
+  'പേര്':'name','ഇമെയിൽ':'email','സ്ഥലം':'location',
+  'സമയം':'time','നിരീക്ഷണം':'observation','വിവരണം':'observation'
 };
 
-await push(ref(db,"weather_reports"),finalEntry);
-
-if(data.priority==="urgent"){
-fetch(FORMSPREE_URL,{
-method:"POST",
-body:JSON.stringify(finalEntry),
-headers:{ "Content-Type":"application/json"}
-});
+function startEditFlow(){
+  appPhase='editing';
+  const ml=reportData.language==='Malayalam';
+  addMessage(ml
+    ?'ഏത് ഫീൽഡ് തിരുത്തണം?\n(name, email, location, time, observation)'
+    :'Which field would you like to edit?\n(name, email, location, time, observation)','ai');
+  renderFreeInput(fieldInput=>{
+    const key=FIELD_MAP[fieldInput.trim().toLowerCase()];
+    if(!key){
+      addMessage(fieldInput,'user');
+      addMessage(ml
+        ?'ആ ഫീൽഡ് കണ്ടെത്താൻ കഴിഞ്ഞില്ല. ഇവ ഉപയോഗിക്കൂ: name, email, location, time, observation'
+        :'Field not recognized. Please type one of: name, email, location, time, observation','danger');
+      startEditFlow(); return;
+    }
+    addMessage(fieldInput,'user'); askNewValue(key);
+  },ml?'ഫീൽഡ് പേര്...':'Field name...');
 }
 
-document.getElementById("refDisplay").innerText="Reference ID: "+humanId;
-document.getElementById("successModal").classList.remove("hidden");
-
+function askNewValue(fieldKey){
+  const ml=reportData.language==='Malayalam';
+  addMessage(ml?`"${fieldKey}" ന്റെ പുതിയ മൂല്യം നൽകൂ:`:`Enter the new value for "${fieldKey}":`,'ai');
+  if(fieldKey==='observation'){
+    renderTextarea(val=>applyEdit(fieldKey,val),ml?'പുതിയ വിവരണം...':'New description...');
+  } else {
+    renderFreeInput(val=>applyEdit(fieldKey,val),ml?'പുതിയ മൂല്യം...':'New value...');
+  }
 }
 
+function applyEdit(fieldKey,newVal){
+  if(!newVal||!newVal.trim()) return;
+  addMessage(newVal,'user'); reportData[fieldKey]=newVal.trim();
+  clearInput(); saveDraft(); runValidation();
+}
+
+/* ══════════════════ SUBMIT ══════════════════ */
+async function submitReport(){
+  clearInput();
+  const ml=reportData.language==='Malayalam';
+  appPhase='submitting';
+  addMessage(ml?'📤 സമർപ്പിക്കുന്നു...':'📤 Submitting your report...','system');
+  try {
+    const now=new Date();
+    const datePart=now.toISOString().slice(2,10).replace(/-/g,'');
+    const counterRef=ref(db,'report_counter');
+    const result=await runTransaction(counterRef,v=>(v||0)+1);
+    const humanId=`ELW-${datePart}${String(result.snapshot.val()).padStart(3,'0')}`;
+
+    // All flags normalised to lowercase before storing — fixes admin panel mismatch
+    const finalEntry={
+      ...reportData,
+      show_on_site: (reportData.show_on_site||'no').toLowerCase(),
+      show_name:    (reportData.show_name||'no').toLowerCase(),
+      priority:     (reportData.priority||'normal').toLowerCase(),
+      humanId,
+      timestamp:    Date.now(),
+      photo_url:    'N/A',
+      granted_site1:'no',
+      granted_site2:'no'
+    };
+
+    await push(ref(db,'weather_reports'), finalEntry);
+
+    // Formspree email — priority is now guaranteed lowercase, so comparison is reliable
+    if(finalEntry.priority==='urgent'){
+      fetch(FORMSPREE_URL,{
+        method:'POST',
+        body:JSON.stringify({
+          subject:`🚨 URGENT Weather Report — ${finalEntry.humanId}`,
+          name:     finalEntry.name,
+          email:    finalEntry.email,
+          location: finalEntry.location,
+          type:     finalEntry.report_type,
+          time:     finalEntry.time,
+          observation:finalEntry.observation,
+          ref:      finalEntry.humanId
+        }),
+        headers:{'Content-Type':'application/json','Accept':'application/json'}
+      });
+    }
+
+    clearDraft();
+    document.getElementById('refDisplay').textContent=humanId;
+    document.getElementById('successModal').classList.remove('hidden');
+  } catch(e){
+    addMessage('❌ Submit failed: '+e.message,'danger');
+    appPhase='review'; renderReviewButtons();
+  }
+}
+
+/* ══════════════════ BOOT ══════════════════ */
 const greetings=[
-"Welcome! I am your AI Weather Assistant.",
-"Hi! Let's file your weather report.",
-"Hello! I'm here to help."
+  "Welcome! I'm your ELWOIC Weather Assistant. 🌤",
+  "Hello! Let's file your weather report together. 🌧",
+  "Hi there! I'll help you submit your weather observation. ⛈"
 ];
-
-// First greeting
-addMessage(greetings[Math.floor(Math.random()*greetings.length)],"ai");
-
-// Second message (your explanation)
+addMessage(greetings[Math.floor(Math.random()*greetings.length)],'ai');
 setTimeout(()=>{
+  addMessage(`<b>Share Your Weather Observation</b><br><br>
+നിങ്ങൾ കണ്ട കാലാവസ്ഥ ഞങ്ങളുമായി പങ്കുവയ്ക്കൂ — ഈ വിവരം സമൂഹത്തിന് ഉപകാരപ്രദമാകും.<br><br>
+<a href="report-rule.html" style="color:var(--blue);font-weight:500;">📖 Reporting guidelines →</a>`,'ai');
+},500);
 
-addMessage(`
-<b>Share Your Weather Observation</b>
+const hasDraft=loadDraft();
+if(hasDraft&&currentStep>0){
+  setTimeout(()=>{
+    const ml=reportData.language==='Malayalam';
 
-നിങ്ങൾ കാണുന്ന കാലാവസ്ഥ സ്ഥിതി ഞങ്ങളുമായി പങ്കുവയ്ക്കുന്നതിലൂടെ ഈ വിവരങ്ങൾ മറ്റുള്ളവരിലേക്കും പങ്കുവയ്ക്കാനുള്ള വഴി ഞങ്ങൾ ഒരുക്കുന്നു.
-നിങ്ങൾ അനുമതി നൽകുകയാണെങ്കിൽ നിങ്ങളുടെ പേരും പരാമർശിക്കുന്നു.
+    // Show the draft info message
+    addMessage(ml
+      ?`📝 ഒരു സേവ് ചെയ്ത ഡ്രാഫ്റ്റ് കണ്ടെത്തി (ഘട്ടം ${currentStep+1} വരെ പൂർത്തിയായി). തുടരണോ?`
+      :`📝 We found a saved draft (completed up to step ${currentStep+1}). What would you like to do?`
+    ,'system');
 
-<a href="report-rule.html" style="color:#0066cc;text-decoration:underline;">
-റിപോർട്ട് സമർപ്പിക്കേണ്ടതിനെ കുറിച്ച് കൂടുതൽ അറിയുവാൻ ഇവിടെ തൊടുക
-</a>
-`,"ai");
+    // Render the two choice buttons
+    clearInput();
+    const c=document.getElementById('inputContainer');
 
-},600);
+    const contBtn=document.createElement('button');
+    contBtn.className='btn-submit';
+    contBtn.textContent=ml?'▶ തുടരുക':'▶ Continue Draft';
+    contBtn.onclick=()=>{
+      addMessage(ml?'▶ തുടരുക':'▶ Continue Draft','user');
+      clearInput();
+      setTimeout(showStep,500);
+    };
 
+    const freshBtn=document.createElement('button');
+    freshBtn.className='btn-edit-act';
+    freshBtn.textContent=ml?'✕ പുതിയത് തുടങ്ങുക':'✕ Start Fresh';
+    freshBtn.onclick=()=>{
+      addMessage(ml?'✕ പുതിയത് തുടങ്ങുക':'✕ Start Fresh','user');
+      clearDraft();
+      // Reset state completely
+      reportData={ language:'',name:'',email:'',location:'',report_type:'',time:'',show_on_site:'',show_name:'',priority:'normal',observation:'' };
+      currentStep=0;
+      appPhase='collecting';
+      clearInput();
+      setTimeout(showStep,500);
+    };
 
-// Then start questions
-setTimeout(showStep,1600);
-
+    c.appendChild(contBtn);
+    c.appendChild(freshBtn);
+  },1200);
+} else {
+  setTimeout(showStep,1400);
+}
 </script>
-
 </body>
 </html>
