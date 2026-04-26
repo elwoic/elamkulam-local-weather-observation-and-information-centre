@@ -46,13 +46,14 @@ async function updateMarqueeLive(marqueeTextEl, marqueeContainerEl) {
     const today = new Date();
     const dateStr = today.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
 
-    // 4. Update Marquee UI
-    marqueeTextEl.textContent = `IMD Alert for Malappuram (${dateStr}): ${colorInfo.name} Alert - ${warningText} | Last Updated: ${data.updated_at}`;
+    // 4. Update Marquee UI with Source Credit
+    // Added "Source: India Meteorological Department (IMD)" at the end
+    marqueeTextEl.textContent = `IMD Alert for Malappuram (${dateStr}): ${colorInfo.name} Alert - ${warningText} | Last Updated: ${data.updated_at} | Source: India Meteorological Department (IMD)`;
     marqueeContainerEl.style.background = colorInfo.css;
 
   } catch (error) {
     console.error("Marquee Fetch Failed:", error);
-    marqueeTextEl.textContent = "⚠️ Weather alert system temporarily unavailable. Check back soon.";
+    marqueeTextEl.textContent = "⚠️ Weather alert system temporarily unavailable. | Source: IMD";
     marqueeContainerEl.style.background = "linear-gradient(90deg, #333, #555)";
   }
 }
