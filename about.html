@@ -810,32 +810,64 @@ if (window.top === window.self) {
     </div>
   </div>
 
-  <!-- DATA SOURCES -->
-  <h2 class="sec-head">Data Sources &amp; Partners</h2>
+ <h2 class="sec-head">Data Sources &amp; Partners</h2>
 
-  <div class="card">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64C12.11 5.56 12 5.14 12 5c0-1.1.9-2 2-2zm6 17H8V8h12v12z"/></svg>
-      Official Data Sources &amp; Partners
+<div class="card">
+  <div class="card-head">
+    <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64C12.11 5.56 12 5.14 12 5c0-1.1.9-2 2-2zm6 17H8V8h12v12z"/></svg>
+    Official Data Sources &amp; Partners
+  </div>
+  <div class="card-body">
+    <p class="sources-text">
+  ELWOIC operates as a <b>Community-Led Observation Centre</b>. Our real-time data is captured by a professional <b>Ecowitt Weather Station</b> installed locally to provide ground-level accuracy for Elamkulam. This infrastructure is dedicated to public safety and is supplemented by official IMD Kerala alerts and AirGradient air quality monitoring.
+</p>
+    
+    <div class="sources-grid">
+      <div class="source-item">
+        <div class="source-icon" style="background:#dbeafe;">📡</div>
+        <div class="source-name">Ecowitt</div>
+        <div class="source-desc">Live Local Sensor</div>
+      </div>
+      
+      <div class="source-item">
+        <div class="source-icon" style="background:#dcfce7;">🇮🇳</div>
+        <div class="source-name">IMD Kerala</div>
+        <div class="source-desc">Official alerts &amp; forecasts</div>
+      </div>
+      
+      <div class="source-item">
+        <div class="source-icon" style="background:#fef9c3;">🌤️</div>
+        <div class="source-name">OpenWeather</div>
+        <div class="source-desc">Global current data</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-icon" style="background:#ffedd5;">🎯</div>
+        <div class="source-name">AccuWeather</div>
+        <div class="source-desc">Radar &amp; daily reports</div>
+      </div>
+      
+      <div class="source-item">
+        <div class="source-icon" style="background:#cffafe;">🌬️</div>
+        <div class="source-name">Windy</div>
+        <div class="source-desc">Rain tracking &amp; models</div>
+      </div>
+      
+      <div class="source-item">
+        <div class="source-icon" style="background:#ede9fe;">💜</div>
+        <div class="source-name">AirGradient</div>
+        <div class="source-desc">Local air quality sensor</div>
+      </div>
     </div>
-    <div class="card-body">
-      <p class="sources-text">Our data is aggregated from multiple trusted sources including Open-Meteo forecast models, Windy weather visualisation, professional weather APIs, and local environmental sensors. Air quality is measured locally using an AirGradient monitoring device.</p>
-      <div class="sources-grid">
-        <div class="source-item"><div class="source-icon" style="background:#fef9c3;">🌤️</div><div class="source-name">OpenWeatherMap</div><div class="source-desc">Global API &amp; current data</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#dcfce7;">🇮🇳</div><div class="source-name">IMD Kerala</div><div class="source-desc">Official alerts &amp; forecasts</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#ffedd5;">🎯</div><div class="source-name">AccuWeather</div><div class="source-desc">Radar &amp; daily reports</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#dbeafe;">📈</div><div class="source-name">Open-Meteo</div><div class="source-desc">Open-source hourly models</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#cffafe;">🌬️</div><div class="source-name">Windy</div><div class="source-desc">Rain tracking &amp; wind models</div></div>
-        <div class="source-item"><div class="source-icon" style="background:#ede9fe;">💜</div><div class="source-name">AirGradient</div><div class="source-desc">Local air quality sensor</div></div>
-      </div>
-      <div class="source-btns">
-        <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
-        <a href="https://www.accuweather.com/" target="_blank" rel="noopener" class="source-btn btn-orange">AccuWeather</a>
-        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener" class="source-btn btn-green">IMD Kerala</a>
-        <a href="https://www.airgradient.com/" target="_blank" rel="noopener" class="source-btn btn-purple">AirGradient</a>
-      </div>
+    
+    <div class="source-btns">
+      <a href="https://www.ecowitt.com" target="_blank" rel="noopener" class="source-btn" style="background:#0056b3; color:white;">Ecowitt Official</a>
+      <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener" class="source-btn btn-green">IMD Kerala</a>
+      <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
+      <a href="https://www.airgradient.com/" target="_blank" rel="noopener" class="source-btn btn-purple">AirGradient</a>
     </div>
   </div>
+</div>
 
   <!-- SUPPORT -->
   <h2 class="sec-head" id="support-project">Support This Community Project</h2>
