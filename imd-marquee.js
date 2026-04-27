@@ -12,10 +12,10 @@ const WARNING_MAP = {
 
 // Standard IMD Color Mapping
 const COLOR_MAP = {
-  "1": { name: "Green", css: "linear-gradient(90deg, #1d976c, #93f9b9)" }, // Green
-  "3": { name: "Yellow", css: "linear-gradient(90deg, #f7971e, #ffd200)" }, // Yellow
-  "4": { name: "Orange", css: "linear-gradient(90deg, #f46b45, #eea849)" }, // Orange
-  "5": { name: "Red",    css: "linear-gradient(90deg, #cb2d3e, #ef473a)" }  // Red
+  "1": { name: "Green (No Warning)", css: "linear-gradient(90deg, #1d976c, #93f9b9)" },
+  "3": { name: "Yellow alert( Be Aware)", css: "linear-gradient(90deg, #f7971e, #ffd200)" },
+  "4": { name: "Orange alert( Be Prepared)", css: "linear-gradient(90deg, #f46b45, #eea849)" },
+  "5": { name: "Red alert( Take Action)",    css: "linear-gradient(90deg, #cb2d3e, #ef473a)" }
 };
 
 function decodeWarnings(codeString) {
@@ -36,24 +36,14 @@ async function updateMarqueeLive() {
     if (data.error) throw new Error(data.error);
 
     const colorId = data.Day1_Color;
+    // Get the exact text you wanted like "Yellow alert( Be Aware)"
     const colorInfo = COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
     const warningText = decodeWarnings(data.Day_1);
     
-    // Check for serious upcoming weather (Orange/Red) on other days
-    let upcomingNote = "";
-    if (data.Day5_Color === "4" || data.Day5_Color === "5") {
-      upcomingNote = ` | ⚠️ Notice: ${COLOR_MAP[data.Day5_Color].name} alert issued for later this week.`;
-    }
+    const dateStr = new Date().toLocaleDateString('en-GB'); // 27/04/2026
 
-    const dateStr = new Date().toLocaleDateString('en-GB');
-
-    // Final Display String
-    marqueeTextEl.innerHTML = `
-      <strong>IMD MALAPPURAM ALERT (${dateStr}):</strong> 
-      ${colorInfo.name.toUpperCase()} ALERT - ${warningText}${upcomingNote} 
-      <small>(Last Updated: ${data.updated_at})</small> 
-      | Source: India Meteorological Department
-    `;
+    // --- YOUR EXACT EXPECTED FORMAT ---
+    marqueeTextEl.textContent = `IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} ${warningText} | Last Updated: ${data.updated_at} | Source: India Meteorological Department (IMD)`;
     
     marqueeContainerEl.style.background = colorInfo.css;
 
