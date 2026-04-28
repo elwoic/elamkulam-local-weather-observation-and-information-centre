@@ -1,5 +1,8 @@
 const WORKER_URL = "https://imdalert.aswanthkrishnak822.workers.dev";
 
+// Prevent multiple refresh timers
+let refreshScheduled = false;
+
 // Standard IMD Code Decodes
 const WARNING_MAP = {
   "1": "Very Heavy Rain",
@@ -13,16 +16,23 @@ const WARNING_MAP = {
 // Standard IMD Color Mapping
 const COLOR_MAP = {
   "1": { name: "Green (No Warning)", css: "linear-gradient(90deg, #1d976c, #93f9b9)" },
-  "3": { name: "Yellow alert( Be Aware)", css: "linear-gradient(90deg, #f7971e, #ffd200)" },
-  "4": { name: "Orange alert( Be Prepared)", css: "linear-gradient(90deg, #f46b45, #eea849)" },
-  "5": { name: "Red alert( Take Action)",    css: "linear-gradient(90deg, #cb2d3e, #ef473a)" }
+  "3": { name: "Yellow alert (Be Aware)", css: "linear-gradient(90deg, #f7971e, #ffd200)" },
+  "4": { name: "Orange alert (Be Prepared)", css: "linear-gradient(90deg, #f46b45, #eea849)" },
+  "5": { name: "Red alert (Take Action)", css: "linear-gradient(90deg, #cb2d3e, #ef473a)" }
 };
 
 function decodeWarnings(codeString) {
   if (!codeString || codeString === "0") return "No Specific Warning";
-  return codeString.split(',')
+  return codeString
+    .split(',')
     .map(code => WARNING_MAP[code.trim()] || `Weather Event ${code}`)
     .join(" & ");
+}
+
+function formatDateSafe(dateStr) {
+  if (!dateStr) return "Unknown date";
+  const d = new Date(dateStr);
+  return isNaN(d) ? "Unknown date" : d.toLocaleDateString('en-GB');
 }
 
 async function updateMarqueeLive() {
@@ -31,27 +41,62 @@ async function updateMarqueeLive() {
 
   try {
     const response = await fetch(WORKER_URL);
+
+    if (!response.ok) throw new Error("Network response failed");
+
     const data = await response.json();
 
     if (data.error) throw new Error(data.error);
 
     const colorId = data.Day1_Color;
-    // Get the exact text you wanted like "Yellow alert( Be Aware)"
     const colorInfo = COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
     const warningText = decodeWarnings(data.Day_1);
-    
-    const dateStr = new Date().toLocaleDateString('en-GB'); // 27/04/2026
 
-    // --- YOUR EXACT EXPECTED FORMAT ---
-    marqueeTextEl.textContent = `IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} ${warningText} | Last Updated: ${data.updated_at} | Source: India Meteorological Department (IMD)`;
-    
+    // Safe date
+    const dateStr = formatDateSafe(data.Date);
+
+    // Prefix builder
+    const prefixParts = [];
+
+    if (data.stale) {
+      prefixParts.push("⚠️ Showing previous day's alert.");
+    }
+
+    if (data.updating) {
+      prefixParts.push("🔄 Updating latest IMD data...");
+    }
+
+    if (data.error_mode) {
+      prefixParts.push("⚠️ Using backup data.");
+    }
+
+    const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
+
+    // Final marquee text
+    marqueeTextEl.textContent =
+      `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} ${warningText} | Last Updated: ${data.updated_at || "N/A"} | Source: India Meteorological Department (IMD)`;
+
+    // Background styling
     marqueeContainerEl.style.background = colorInfo.css;
+
+    // Auto-refresh only once if updating
+    if (data.updating && !refreshScheduled) {
+      refreshScheduled = true;
+      setTimeout(() => {
+        refreshScheduled = false;
+        updateMarqueeLive();
+      }, 30000);
+    }
 
   } catch (error) {
     console.error("ELWOIC IMD Fetch Error:", error);
-    marqueeTextEl.textContent = "⚠️ IMD Alert System currently offline. Please check official IMD channels.";
+
+    marqueeTextEl.textContent =
+      "⚠️ IMD Alert System currently unavailable. Please check official IMD channels.";
+
     marqueeContainerEl.style.background = "#222";
   }
 }
 
+// Initial load
 document.addEventListener('DOMContentLoaded', updateMarqueeLive);
