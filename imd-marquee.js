@@ -6,6 +6,7 @@ let refreshScheduled = false;
 // Standard IMD Code Decodes
 const WARNING_MAP = {
   "1": "Very Heavy Rain",
+  "2": "Heavy Rain", 
   "4": "Thunderstorm & Lightning",
   "8": "Gusty Winds",
   "10": "Heavy Rain",
@@ -33,7 +34,6 @@ const COLOR_MAP = {
   }
 };
 
-// Decode IMD warning codes
 function decodeWarnings(codeString) {
   if (!codeString || codeString === "0") {
     return "No Specific Warning";
@@ -45,151 +45,77 @@ function decodeWarnings(codeString) {
     .join(" & ");
 }
 
-// Safe date formatter
-function formatDateSafe(dateStr) {
-  if (!dateStr) return "Unknown date";
-
-  const d = new Date(dateStr);
-
-  if (isNaN(d)) return "Unknown date";
-
-  return d.toLocaleDateString("en-GB");
-}
-
-// Get IST date object
 function getISTDate() {
-  // This creates a string "YYYY-MM-DD" based on India's current date
   const indiaDateStr = new Date().toLocaleDateString('en-US', {
     timeZone: 'Asia/Kolkata',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
   });
-  return new Date(indiaDateStr); // Returns a Date object set to 00:00:00 of India's current date
+  return new Date(indiaDateStr);
 }
 
-// Main updater
 async function updateMarqueeLive() {
-
   const marqueeTextEl = document.getElementById("marqueeText");
   const marqueeContainerEl = document.getElementById("marqueeContainer");
 
   try {
-
     const response = await fetch(WORKER_URL);
-
-    if (!response.ok) {
-      throw new Error("Network response failed");
-    }
+    if (!response.ok) throw new Error("Network response failed");
 
     const data = await response.json();
+    if (data.error) throw new Error(data.error);
 
-    if (data.error) {
-      throw new Error(data.error);
-    }
-
-    // -----------------------------
-    // IMD DAY CALCULATION LOGIC
-    // -----------------------------
-
-    // IMD bulletin base date
+    // --- FIX: Logic Cleaned Up (Removed Duplicate baseDate) ---
+    const todayIST = getISTDate(); 
+    
+    // Convert IMD bulletin date string to object
     const baseDate = new Date(data.Date);
+    baseDate.setHours(0, 0, 0, 0);
 
-    // Today's IST date
-  
-// 1. Get Today's Date in IST (Corrected)
-const todayIST = getISTDate(); 
+    // Calculate difference (0 = Today, 1 = Tomorrow, etc.)
+    let diffDays = Math.round((todayIST - baseDate) / (1000 * 60 * 60 * 24));
 
-// 2. IMD bulletin base date (assuming data.Date is "YYYY-MM-DD")
-const baseDate = new Date(data.Date);
-baseDate.setHours(0, 0, 0, 0);
+    if (diffDays < 0) diffDays = 0;
+    if (diffDays > 4) diffDays = 4;
 
-// 3. Difference in days
-let diffDays = Math.round((todayIST - baseDate) / (1000 * 60 * 60 * 24));
-
-// 4. Boundary checks
-if (diffDays < 0) diffDays = 0;
-if (diffDays > 4) diffDays = 4;
-
-
-    // Dynamic day selection
     const warningKey = `Day_${diffDays + 1}`;
     const colorKey = `Day${diffDays + 1}_Color`;
 
-    // Selected warning + color
     const warningText = decodeWarnings(data[warningKey]);
-
     const colorId = data[colorKey];
+    const colorInfo = COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
 
-    const colorInfo =
-      COLOR_MAP[colorId] || {
-        name: "Unknown",
-        css: "#333"
-      };
-
-    // Today's display date
     const dateStr = todayIST.toLocaleDateString("en-GB");
 
-    // -----------------------------
-    // STATUS PREFIXES
-    // -----------------------------
-
+    // --- Status Prefixes ---
     const prefixParts = [];
+    if (data.stale) prefixParts.push("⚠️ Showing previous IMD bulletin.");
+    if (data.updating) prefixParts.push("🔄 Updating latest IMD data...");
+    if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
 
-    if (data.stale) {
-      prefixParts.push("⚠️ Showing previous IMD bulletin.");
-    }
+    const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
 
-    if (data.updating) {
-      prefixParts.push("🔄 Updating latest IMD data...");
-    }
-
-    if (data.error_mode) {
-      prefixParts.push("⚠️ Using backup data.");
-    }
-
-    const prefix =
-      prefixParts.length
-        ? prefixParts.join(" ") + " "
-        : "";
-
-    // -----------------------------
-    // FINAL TEXT
-    // -----------------------------
-
+    // --- Output ---
     marqueeTextEl.textContent =
       `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} ${warningText} | Last Updated: ${data.updated_at || "N/A"} | Source: India Meteorological Department (IMD)`;
 
-    // Background color
     marqueeContainerEl.style.background = colorInfo.css;
 
-    // -----------------------------
-    // AUTO REFRESH
-    // -----------------------------
-
+    // --- Auto Refresh ---
     if (data.updating && !refreshScheduled) {
-
       refreshScheduled = true;
-
       setTimeout(() => {
-
         refreshScheduled = false;
-
         updateMarqueeLive();
-
       }, 30000);
     }
 
   } catch (error) {
-
     console.error("ELWOIC IMD Fetch Error:", error);
-
-    marqueeTextEl.textContent =
-      "⚠️ IMD Alert System currently unavailable. Please check official IMD channels.";
-
+    marqueeTextEl.textContent = "⚠️ IMD Alert System currently unavailable. Please check official IMD channels.";
     marqueeContainerEl.style.background = "#222";
   }
 }
 
-// Initial load
 document.addEventListener("DOMContentLoaded", updateMarqueeLive);
