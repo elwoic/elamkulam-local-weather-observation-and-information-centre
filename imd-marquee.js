@@ -58,8 +58,14 @@ function formatDateSafe(dateStr) {
 
 // Get IST date object
 function getISTDate() {
-  const now = new Date();
-  return new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  // This creates a string "YYYY-MM-DD" based on India's current date
+  const indiaDateStr = new Date().toLocaleDateString('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  return new Date(indiaDateStr); // Returns a Date object set to 00:00:00 of India's current date
 }
 
 // Main updater
@@ -90,20 +96,21 @@ async function updateMarqueeLive() {
     const baseDate = new Date(data.Date);
 
     // Today's IST date
-    const todayIST = getISTDate();
+  
+// 1. Get Today's Date in IST (Corrected)
+const todayIST = getISTDate(); 
 
-    // Remove time
-    baseDate.setHours(0, 0, 0, 0);
-    todayIST.setHours(0, 0, 0, 0);
+// 2. IMD bulletin base date (assuming data.Date is "YYYY-MM-DD")
+const baseDate = new Date(data.Date);
+baseDate.setHours(0, 0, 0, 0);
 
-    // Difference in days
-    let diffDays = Math.floor(
-      (todayIST - baseDate) / (1000 * 60 * 60 * 24)
-    );
+// 3. Difference in days
+let diffDays = Math.round((todayIST - baseDate) / (1000 * 60 * 60 * 24));
 
-    // Safety limits
-    if (diffDays < 0) diffDays = 0;
-    if (diffDays > 4) diffDays = 4;
+// 4. Boundary checks
+if (diffDays < 0) diffDays = 0;
+if (diffDays > 4) diffDays = 4;
+
 
     // Dynamic day selection
     const warningKey = `Day_${diffDays + 1}`;
