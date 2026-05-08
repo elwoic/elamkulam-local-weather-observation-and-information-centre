@@ -193,7 +193,7 @@
 <header class="gov-header">
     <div class="gov-brand">
         <h1>ELWOIC Admin Centre</h1>
-        <small>Government of Kerala • Information Technology Cell</small>
+        <small>Government of ELWOIC • Information Technology Cell</small>
     </div>
     <button class="logout-btn" onclick="logout()">Secure Logout</button>
 </header>
@@ -251,7 +251,17 @@ onValue(ref(adminDb, "grant_history"), snap => {
 });
 
 onValue(ref(weatherDb, "weather_logs"), snap => {
-    const data = Object.values(snap.val() || {}).reverse();
+
+    const raw = snap.val() || {};
+
+    let data = [];
+
+    Object.values(raw).forEach(dayGroup => {
+        data.push(...Object.values(dayGroup));
+    });
+
+    data.reverse();
+
     renderGroupedLogs(data, "section-weather", "weather", "timestamp_ist");
 });
 
