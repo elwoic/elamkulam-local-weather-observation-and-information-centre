@@ -1370,29 +1370,60 @@ const omH = omRes ? omRes.hourly.relativehumidity_2m[new Date().getHours()] : ow
 
 /* --- 4. Charting Logic (With Interaction) --- */
 function loadFirebaseTempChart() {
-    const logsRef = ref(db, "weather_logs");
-    onValue(logsRef, (snapshot) => {
-        if (!snapshot.exists()) return;
-        let data = Object.values(snapshot.val());
-        data.sort((a, b) => new Date(a.timestamp_utc) - new Date(b.timestamp_utc));
-        const now = new Date();
-        const last12h = data.filter(d => (now - new Date(d.timestamp_utc)) <= 12 * 60 * 60 * 1000);
-        const buckets = {};
-        last12h.forEach(d => {
-            const date = new Date(d.timestamp_utc);
-            let roundedMin = date.getMinutes() < 30 ? 0 : 30;
-            const slot = new Date(date);
-            slot.setMinutes(roundedMin, 0, 0);
-            buckets[slot.toISOString()] = d.temp_c;
-        });
-        const sortedKeys = Object.keys(buckets).sort();
-        drawChart(sortedKeys.map(k => {
-            const d = new Date(k);
-            return d.toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit', hour12: false });
-        }), sortedKeys.map(k => buckets[k]));
-    });
-}
 
+    const weatherConfig = {
+        apiKey: "AIzaSyCp9n2WVKEktfYVEmEpXGg8ehpwd6yCYxo",
+        authDomain: "weather-report-2026.firebaseapp.com",
+        databaseURL: "https://weather-report-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "weather-report-2026"
+    };
+
+    const weatherApp = initializeApp(weatherConfig, "weatherChartApp");
+    const weatherDb = getDatabase(weatherApp);
+
+    const now = new Date();
+
+    const yearMonth =
+        now.getFullYear() +
+        "-" +
+        String(now.getMonth() + 1).padStart(2, "0");
+
+    const date =
+        String(now.getDate()).padStart(2, "0");
+
+    const logsRef = ref(
+        weatherDb,
+        `weather/${yearMonth}/${date}`
+    );
+
+    onValue(logsRef, (snapshot) => {
+
+        if (!snapshot.exists()) return;
+
+        const raw = snapshot.val();
+
+        let labels = [];
+        let temps = [];
+
+        Object.keys(raw).sort().forEach(hour => {
+
+            Object.keys(raw[hour]).sort().forEach(minute => {
+
+                const item = raw[hour][minute];
+
+                labels.push(`${hour}:${minute}`);
+                temps.push(item.outdoor_temp);
+
+            });
+
+        });
+
+        drawChart(labels, temps);
+
+    });
+
+}
+    
 function drawChart(times, temps) {
     const canvas = document.getElementById("trendChart");
     if (!canvas) return;
