@@ -728,9 +728,9 @@ if (window.top === window.self) {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Avg Temp (°C)</th>
+              <th>Min / Max Temp (°C)</th>
               <th>Max Wind (km/h)</th>
-              <th>Pressure (hPa)</th>
+              <th>Min / Max Pressure (hPa)</th>
               <th>Rainfall (mm)</th>
             </tr>
           </thead>
@@ -921,45 +921,264 @@ if (window.top === window.self) {
 
 <!-- ── 3. Historical Weather ── -->
 <script>
-const HIST_LAT = 10.908, HIST_LON = 76.229;
+const DB_URL =
+  "https://days-records-5bf68-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+const RAIN_API =
+  "https://history-table-data.aswanthkrishnak822.workers.dev/history";
 
 async function loadHistory(days, btn) {
-  document.querySelectorAll(".hist-btn").forEach(b => b.classList.remove("active"));
+
+  document.querySelectorAll(".hist-btn")
+    .forEach(b => b.classList.remove("active"));
+
   if (btn) btn.classList.add("active");
 
-  const loadEl  = document.getElementById("hist-loading");
+  const loadEl = document.getElementById("hist-loading");
   const tableEl = document.getElementById("hist-table");
-  loadEl.style.display  = "block";
+  const body = document.getElementById("hist-body");
+
+  loadEl.style.display = "block";
   tableEl.style.display = "none";
+  body.innerHTML = "";
 
-  const end = new Date(), start = new Date();
-  start.setDate(end.getDate() - (days - 1));
+  // ── FETCH RAIN HISTORY FROM WORKER ──
+  let rainMap = {};
 
-  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${HIST_LAT}&longitude=${HIST_LON}`
-            + `&start_date=${start.toISOString().split("T")[0]}&end_date=${end.toISOString().split("T")[0]}`
-            + `&daily=temperature_2m_mean,pressure_msl_mean,precipitation_sum,windspeed_10m_max`
-            + `&timezone=Asia/Kolkata`;
   try {
-    const D    = (await fetch(url).then(r => r.json())).daily;
-    const body = document.getElementById("hist-body");
-    body.innerHTML = "";
-    D.time.forEach((t, i) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${t}</td>
-        <td>${D.temperature_2m_mean[i] ?? "—"}°C</td>
-        <td>${D.windspeed_10m_max[i] ?? "—"} km/h</td>
-        <td>${D.pressure_msl_mean ? (D.pressure_msl_mean[i] ?? "—") : "—"} hPa</td>
-        <td>${D.precipitation_sum[i] ?? "—"} mm</td>`;
-      body.appendChild(row);
+
+    const rainRes = await fetch(RAIN_API);
+    const rainData = await rainRes.json();
+
+    rainData.forEach(item => {
+      rainMap[item.date] = item.rain_mm;
     });
-    loadEl.style.display  = "none";
-    tableEl.style.display = "table";
-  } catch(e) {
-    loadEl.textContent = "Failed to load historical data.";
+
+  } catch (e) {
+    console.log("Rain API failed");
   }
+
+  let results = [];
+  const now = new Date();
+
+  // ── LOAD FIREBASE WEATHER DATA ──
+  for (let i = 0; i < days; i++) {
+
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+
+    const istDate = new Date(
+      d.toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata"
+      })
+    );
+
+    const year = istDate.getFullYear();
+    const month = String(
+      istDate.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+      istDate.getDate()
+    ).padStart(2, "0");
+
+    const firebaseUrl =
+      `${DB_URL}/weather/${year}-${month}/${day}.json`;
+
+    try {
+
+      const res = await fetch(firebaseUrl);
+      const data = await res.json();
+
+      const row = processDayDataSafe(istDate, data);
+
+      // ── ADD RAIN FROM KV WORKER ──
+      const rainKey = `${year}-${month}-${day}`;
+
+      row.totalRain =
+        rainMap[rainKey] != null
+          ? Number(rainMap[rainKey]).toFixed(1)
+          : "0.0";
+
+      results.push(row);
+
+    } catch (e) {
+
+      results.push(emptyRow(istDate));
+
+    }
+  }
+
+  results.sort((a, b) => b.timestamp - a.timestamp);
+
+  if (results.length === 0) {
+
+    body.innerHTML =
+      `<tr><td colspan="5">No data available</td></tr>`;
+
+  } else {
+
+    results.forEach(row => {
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${row.date}</td>
+
+        <td>
+          <span style="color:#4a90e2">
+            ${row.minTemp}
+          </span>
+          /
+          <span style="color:#e74c3c">
+            ${row.maxTemp}
+          </span>
+          °C
+        </td>
+
+        <td>${row.maxWind} km/h</td>
+
+        <td>
+          ${row.minPress}
+          /
+          ${row.maxPress}
+          hPa
+        </td>
+
+        <td>${row.totalRain} mm</td>
+      `;
+
+      body.appendChild(tr);
+
+    });
+  }
+
+  loadEl.style.display = "none";
+  tableEl.style.display = "table";
 }
-loadHistory(7, document.querySelector(".hist-btn.active"));
+
+function processDayDataSafe(dateObj, dayData) {
+
+  let temps = [];
+  let pressures = [];
+  let winds = [];
+
+  if (!dayData || typeof dayData !== "object") {
+    return emptyRow(dateObj);
+  }
+
+  Object.values(dayData).forEach(hourNode => {
+
+    if (!hourNode || typeof hourNode !== "object")
+      return;
+
+    Object.values(hourNode).forEach(node => {
+
+      if (!node || typeof node !== "object")
+        return;
+
+      // DIRECT ENTRY
+      if ("outdoor_temp" in node) {
+
+        if (node.outdoor_temp != null)
+          temps.push(Number(node.outdoor_temp));
+
+        if (node.pressure_relative != null)
+          pressures.push(Number(node.pressure_relative));
+
+        if (node.wind_speed != null)
+          winds.push(Number(node.wind_speed));
+      }
+
+      // NESTED ENTRY
+      else {
+
+        Object.values(node).forEach(entry => {
+
+          if (!entry || typeof entry !== "object")
+            return;
+
+          if (entry.outdoor_temp != null)
+            temps.push(Number(entry.outdoor_temp));
+
+          if (entry.pressure_relative != null)
+            pressures.push(Number(entry.pressure_relative));
+
+          if (entry.wind_speed != null)
+            winds.push(Number(entry.wind_speed));
+
+        });
+      }
+    });
+  });
+
+  return {
+
+    date: dateObj.toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short"
+      }
+    ),
+
+    timestamp: dateObj.getTime(),
+
+    minTemp: temps.length
+      ? Math.min(...temps).toFixed(1)
+      : "—",
+
+    maxTemp: temps.length
+      ? Math.max(...temps).toFixed(1)
+      : "—",
+
+    minPress: pressures.length
+      ? Math.min(...pressures).toFixed(1)
+      : "—",
+
+    maxPress: pressures.length
+      ? Math.max(...pressures).toFixed(1)
+      : "—",
+
+    maxWind: winds.length
+      ? Math.max(...winds).toFixed(1)
+      : "0.0",
+
+    totalRain: "0.0"
+  };
+}
+
+function emptyRow(dateObj) {
+
+  return {
+
+    date: dateObj.toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short"
+      }
+    ),
+
+    timestamp: dateObj.getTime(),
+
+    minTemp: "—",
+    maxTemp: "—",
+
+    minPress: "—",
+    maxPress: "—",
+
+    maxWind: "0.0",
+
+    totalRain: "0.0"
+  };
+}
+
+// INIT
+loadHistory(
+  7,
+  document.querySelector(".hist-btn.active")
+);
 </script>
 
 
