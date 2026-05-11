@@ -1265,107 +1265,94 @@ const getRealisticFeelsLike = (t, rh, apiFeels) => {
 /* --- 3. Primary Data Fetch & UI Update --- */
 async function loadWeatherSnapshot() {
     try {
-       const [workerRes, owRes, omRes, fcRes] = await Promise.all([
-    fetch(API_URL).then(r=>r.json()).catch(()=>null),
-    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()).catch(()=>null),
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m&timezone=Asia/Kolkata`).then(r=>r.json()).catch(()=>null),
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`).then(r=>r.json()).catch(()=>null)
-]);
 
-// Stop only if the critical sources failed
-if (!owRes || !workerRes) {
-    console.error("Critical weather sources failed, skipping update.");
-    return;
-}
+        const workerRes = await fetch(API_URL)
+            .then(r => r.json())
+            .catch(() => null);
 
-const localT = owRes.main.temp;
-const localH = workerRes.rhum_corrected;
-const pm25Val = workerRes.pm02_corrected;
-const aqiVal = pm25ToAQI(pm25Val);
-const visibilityKm = parseFloat((owRes.visibility/1000).toFixed(1));
-const realFeels = getRealisticFeelsLike(localT, localH, owRes.main.feels_like);
+        if (!workerRes) {
+            console.error("ELWOIC Worker failed");
+            return;
+        }
 
-// omRes fallback — if Open-Meteo is down, use only OpenWeather wind
-const avgWind = omRes
-    ? ((owRes.wind.speed * 3.6 + omRes.current_weather.windspeed) / 2).toFixed(1)
-    : (owRes.wind.speed * 3.6).toFixed(1);
+        const data = workerRes;
 
-// omH fallback
-const omH = omRes ? omRes.hourly.relativehumidity_2m[new Date().getHours()] : owRes.main.humidity;
-      
-        // Update Dashboard Main IDs
+        // ---------------------------
+        // DIRECT MAPPING (NO MORE 3 APIs)
+        // ---------------------------
+        const localT = data.temperature.outdoor;
+        const localH = data.humidity.outdoor;
+
+        const realFeels = data.temperature.feels_like_outdoor;
+
+        const wind = data.wind;
+        const pressure = data.pressure;
+
+        const rain = data.rain;
+
         const updates = {
-            "temp": localT.toFixed(1),
-            "humidity": localH,
-            "feels": realFeels,
-            "visibility": visibilityKm,
-            "wind": avgWind,
-            "om-temp": omRes
-    ? ((owRes.main.temp + omRes.current_weather.temperature) / 2).toFixed(1)
-    : owRes.main.temp.toFixed(1),
-            "om-humidity": Math.round((owRes.main.humidity + omH)/2),
-            "pressure": owRes.main.pressure,
-            "condition": owRes.weather[0].main,
-            "last-updated": new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit"})
+            "temp": localT?.toFixed?.(1) ?? "--",
+            "humidity": localH ?? "--",
+            "feels": realFeels ?? "--",
+            "wind": wind?.speed ?? "--",
+
+            "pressure": pressure?.relative_hpa ?? "--",
+
+            "last-updated": new Date().toLocaleTimeString("en-IN", {
+                timeZone: "Asia/Kolkata",
+                hour: "2-digit",
+                minute: "2-digit"
+            })
         };
 
         Object.keys(updates).forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.textContent = updates[id];
+            if (el) el.textContent = updates[id];
         });
 
-        // Update Marquees
-        if(document.getElementById("weather-marquee-1")) {
-            document.getElementById("weather-marquee-1").textContent = 
-                `Elamkulam Now: ${localT.toFixed(1)}°C (Feels like ${realFeels}°C), ${owRes.weather[0].description}, Humidity: ${localH}%, Wind: ${avgWind} km/h`;
-        }
-        if(document.getElementById("weather-marquee-2") && fcRes.list) {
-            const currentFc = fcRes.list[0];
-            document.getElementById("weather-marquee-2").textContent = 
-                `24-Hour Outlook: ${currentFc.main.temp.toFixed(1)}°C, ${currentFc.weather[0].description}`;
+        // ---------------------------
+        // MARQUEE
+        // ---------------------------
+        if (document.getElementById("weather-marquee-1")) {
+            document.getElementById("weather-marquee-1").textContent =
+                `Elamkulam Now: ${localT}°C (Feels ${realFeels}°C), Humidity: ${localH}%, Wind: ${wind.speed} km/h`;
         }
 
-        // Update Table
-        if(document.getElementById("weather-table-body")) {
-            document.getElementById("weather-table-body").innerHTML = `
-                <tr>
-                    <td>Local Station</td>
-                    <td>${localT.toFixed(1)} °C</td>
-                    <td>${localH} %</td>
-                    <td>${(owRes.wind.speed).toFixed(1)} m/s</td>
-                    <td>${owRes.weather[0].description}</td>
-                </tr>
-            `;
-        }
-
-        // Update Extra Details
-        if(document.getElementById("extraWeather")) {
+        // ---------------------------
+        // EXTRA DETAILS
+        // ---------------------------
+        if (document.getElementById("extraWeather")) {
             document.getElementById("extraWeather").innerHTML = `
                 <div class="details-item"><span>🌡️ Feels like:</span><span>${realFeels}°C</span></div>
-                <div class="details-item"><span>🌬️ Wind:</span><span>${avgWind} km/h</span></div>
-                <div class="details-item"><span>💧 Pressure:</span><span>${owRes.main.pressure} hPa</span></div>
-                <div class="details-item"><span>☀️ Sunrise:</span><span>${new Date(owRes.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
-                <div class="details-item"><span>🌙 Sunset:</span><span>${new Date(owRes.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+                <div class="details-item"><span>🌬️ Wind:</span><span>${wind.speed} km/h</span></div>
+                <div class="details-item"><span>🌪️ Gust:</span><span>${wind.gust} km/h</span></div>
+                <div class="details-item"><span>🧭 Direction:</span><span>${wind.direction}°</span></div>
+                <div class="details-item"><span>💧 Pressure:</span><span>${pressure.relative_hpa} hPa</span></div>
+                <div class="details-item"><span>🌧️ Rain:</span><span>${rain.daily_mm} mm</span></div>
             `;
         }
 
+        // ---------------------------
+        // LOG DATA (UPDATED)
+        // ---------------------------
         currentLogData = {
             temp_c: localT,
             humidity: localH,
-            pm25: pm25Val,
-            feels_like_c: parseFloat(realFeels),
-            aqi: aqiVal,
-            aqi_status: getAQIStatus(aqiVal),
-            pressure_hpa: owRes.main.pressure,
-            wind_kmh: parseFloat(avgWind),
-            visibility_km: visibilityKm,
-            condition: owRes.weather[0].main,
-            timestamp_utc: new Date().toISOString(),
-            timestamp_ist: new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})
+            feels_like_c: realFeels,
+            pressure_hpa: pressure?.relative_hpa,
+            wind_kmh: wind?.speed,
+            rain_mm: rain?.daily_mm,
+            timestamp_utc: new Date().toISOString()
         };
 
-        window.lastWeatherMeta = { cloudPercent: owRes.clouds?.all || 0, visibilityKm, humidity: localH, temperature: localT };
-    } catch(err){ console.error("Snapshot Error:", err); }
+        window.lastWeatherMeta = {
+            temperature: localT,
+            humidity: localH
+        };
+
+    } catch (err) {
+        console.error("Snapshot Error:", err);
+    }
 }
 
 /* --- 4. Charting Logic (With Interaction) --- */
