@@ -339,81 +339,269 @@
     .imd-note a { color: var(--blue); text-decoration: none; }
     .imd-note a:hover { text-decoration: underline; }
 
-    /* ============================================================
-       WEATHER DASHBOARD (replaces iframe w-dashboard.html)
-    ============================================================ */
-    .wd-title {
-      text-align: center;
-      font-family: 'Noto Sans Malayalam', var(--font-sans);
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 14px;
-    }
-    .wd-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 9px;
-    }
-    @media (max-width: 640px) {
-      .wd-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    .wd-box {
-      background: #f7fafd;
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      text-align: center;
-      padding: 10px 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 68px;
-    }
-    .wd-box.primary   { border-top: 3px solid var(--blue); }
-    .wd-box.secondary { border-top: 3px solid var(--gold); }
-    .wd-box.success   { border-top: 3px solid var(--green); cursor: pointer; }
-    .wd-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 3px;
-    }
-    .wd-val {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.1;
-    }
-    .wd-unit { font-size: 11px; color: var(--text-muted); }
-    .wd-sub  { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-    .wd-updated {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 12px;
-    }
-    #log-status { font-size: 11px; text-align: center; color: var(--green); font-weight: 600; margin-top: 6px; }
-    /* condition modal */
-    .cond-modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none; align-items: center; justify-content: center; z-index: 9999;
-    }
-    .cond-modal-box {
-      background: #fff; width: 90%; max-width: 360px;
-      border-radius: 14px; padding: 20px; text-align: center;
-      border-top: 4px solid var(--navy);
-    }
-    .cond-modal-box h3 { font-family: var(--font-serif); color: var(--navy); margin-bottom: 10px; }
-    .cond-modal-box p  { font-size: 14px; color: var(--text-mid); line-height: 1.6; }
-    .cond-modal-box button {
-      margin-top: 14px; background: var(--navy); color: #fff;
-      border: none; padding: 8px 22px; border-radius: 20px; cursor: pointer; font-size: 13px;
-    }
+     
+   /* ============================================================
+   WEATHER WIDGET — REDESIGNED
+   Drop this block into your <style> section
+   ============================================================ */
 
+.wx-widget {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #dde3ec;
+  background: #fff;
+  font-family: 'Noto Sans Malayalam', sans-serif;
+}
+
+/* ── HERO ── */
+.wx-hero {
+  position: relative;
+  padding: 26px 22px 20px;
+  background: linear-gradient(135deg, #1a6fa8 0%, #2d9cdb 55%, #7ec8e3 100%);
+  color: #fff;
+  transition: background 1.4s ease;
+}
+.wx-hero-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin: 0 0 12px;
+}
+.wx-hero-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.wx-temp-block {}
+.wx-temp-main {
+  font-size: 68px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -3px;
+}
+.wx-temp-main sup {
+  font-size: 26px;
+  font-weight: 400;
+  opacity: 0.8;
+  letter-spacing: 0;
+  vertical-align: super;
+}
+.wx-feels {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 6px;
+}
+.wx-hero-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wx-hero-right span {
+  font-size: 13px;
+  opacity: 0.85;
+}
+.wx-hero-right .wx-updated {
+  font-size: 10.5px;
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+/* condition badge */
+.wx-condition-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wx-condition-badge:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+/* ── STAT STRIP ── */
+.wx-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #e0e8f0;
+}
+.wx-stat {
+  padding: 13px 8px 11px;
+  text-align: center;
+  border-right: 1px solid #e0e8f0;
+  background: #fff;
+  transition: background 0.15s;
+}
+.wx-stat:last-child {
+  border-right: none;
+}
+.wx-stat.clickable {
+  cursor: pointer;
+}
+.wx-stat.clickable:hover {
+  background: #f4f8ff;
+}
+.wx-stat.clickable.gold:hover {
+  background: #fffbf0;
+}
+.wx-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #8a97aa;
+  margin-bottom: 5px;
+}
+.wx-stat-val {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1a2233;
+  line-height: 1.1;
+}
+.wx-stat-sub {
+  font-size: 9.5px;
+  color: #8a97aa;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+.wx-stat-hint {
+  font-size: 9px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+.wx-stat-hint.blue  { color: #2d9cdb; }
+.wx-stat-hint.gold  { color: #c89010; }
+
+/* ── FOOTER ── */
+.wx-footer {
+  padding: 7px 16px;
+  text-align: center;
+  border-top: 1px solid #e0e8f0;
+  background: #fafbfd;
+}
+.wx-footer p {
+  font-size: 10px;
+  color: #aab0bb;
+  margin: 0;
+}
+.wx-footer a {
+  color: #2d9cdb;
+  text-decoration: none;
+}
+.wx-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── MODAL ── */
+.wx-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+.wx-modal-overlay.open {
+  display: flex;
+}
+.wx-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 320px;
+  max-width: 92vw;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+  animation: wxSlideUp 0.22s ease;
+}
+@keyframes wxSlideUp {
+  from { opacity:0; transform: translateY(16px); }
+  to   { opacity:1; transform: translateY(0);    }
+}
+.wx-modal-head {
+  padding: 18px 20px 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #1a6fa8, #2d9cdb);
+}
+.wx-modal-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Noto Sans Malayalam', sans-serif;
+}
+.wx-modal-body {
+  padding: 4px 20px 8px;
+  max-height: 58vh;
+  overflow-y: auto;
+}
+.wx-modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f3f7;
+  font-size: 13.5px;
+}
+.wx-modal-row:last-child { border-bottom: none; }
+.wx-modal-row .lbl { color: #6b7a8d; }
+.wx-modal-row .val { font-weight: 700; color: #1a2233; }
+.wx-modal-note {
+  font-size: 11px;
+  color: #aaa;
+  text-align: center;
+  padding: 6px 0 10px;
+}
+.wx-modal-foot {
+  padding: 12px 20px;
+  border-top: 1px solid #eef1f5;
+}
+.wx-modal-foot button {
+  width: 100%;
+  background: #1a6fa8;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.wx-modal-foot button:hover { background: #155d8f; }
+
+/* modal head themes */
+.wx-modal-head.wind      { background: linear-gradient(135deg, #1a5276, #2980b9); }
+.wx-modal-head.indoor    { background: linear-gradient(135deg, #7d5a00, #c89010); }
+.wx-modal-head.condition { background: linear-gradient(135deg, #145a32, #1e8449); }
+
+/* hero theme variants */
+.wx-hero.sunny  { background: linear-gradient(135deg, #c0550a 0%, #e8820c 45%, #f5c842 100%); }
+.wx-hero.partial{ background: linear-gradient(135deg, #1a6fa8 0%, #2d9cdb 55%, #7ec8e3 100%); }
+.wx-hero.cloudy { background: linear-gradient(135deg, #3d4f63 0%, #5f7284 50%, #8fa0af 100%); }
+.wx-hero.rain   { background: linear-gradient(135deg, #122c45 0%, #1e4976 50%, #2e6ea6 100%); }
+.wx-hero.night  { background: linear-gradient(135deg, #0b1624 0%, #162438 50%, #233852 100%); }
+
+@media (max-width: 500px) {
+  .wx-temp-main { font-size: 52px; }
+  .wx-strip { grid-template-columns: repeat(2, 1fr); }
+  .wx-stat:nth-child(2) { border-right: none; }
+  .wx-stat:nth-child(3) { border-top: 1px solid #e0e8f0; }
+}
     /* ============================================================
        OPENWEATHER TABLE
     ============================================================ */
@@ -822,76 +1010,112 @@ Coordinates: 10.908°N, 76.229°E
 </p>
   </div>
   
-
-  <!-- ══════════════════════════════════════
- 
+<!-- ══════════════════════════════════════
  ROW 1: Live Conditions + OW Forecast
- 
- ══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <h2 class="sec-head">Current Weather — Elamkulam</h2>
 <div class="grid-6040">
-  <!-- LEFT: Weather Dashboard (was w-dashboard.html iframe) -->
   <div class="card">
     <div class="card-head">
       <svg viewBox="0 0 24 24">
-        <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z" />
+        <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
       </svg>
       Live Conditions
     </div>
-    <div class="card-body">
-      <p class="wd-title">🌦 ഏലംകുളം കാലാവസ്ഥ — ക്ഷണം</p>
-      <div class="wd-grid">
-        <div class="wd-box primary">
-          <div class="wd-label">താപനില</div>
-          <div class="wd-val"><span id="temp">--</span><span class="wd-unit"> °C</span></div>
-        </div>
-        <div class="wd-box primary">
-          <div class="wd-label">ആർദ്രത</div>
-          <div class="wd-val"><span id="humidity">--</span><span class="wd-unit"> %</span></div>
-        </div>
-        <div class="wd-box">
-          <div class="wd-label">Feels Like</div>
-          <div class="wd-val"><span id="feels">--</span><span class="wd-unit"> °C</span></div>
-        </div>
-        <div class="wd-box">
-          <div class="wd-label">Visibility</div>
-          <div class="wd-val"><span id="visibility">--</span><span class="wd-unit"> km</span></div>
-        </div>
-        <div class="wd-box">
-          <div class="wd-label">കാറ്റ്</div>
-          <div class="wd-val"><span id="wind">--</span></div>
-          <div class="wd-sub" id="wind-detail">--</div>
-        </div>
-        <div class="wd-box secondary" id="indoor-box">
-          <div class="wd-label">Indoor Climate</div>
-          <div class="wd-val">
-            <span id="indoor-temp">--</span>°C
+        <!-- ── HERO ── -->
+    <div class="wx-hero partial" id="wd-hero">
+ 
+      <div class="wx-condition-badge" id="wd-condition-box">
+        <span id="wd-condition">Loading…</span>
+      </div>
+ 
+      <p class="wx-hero-label">🌦 ഏലംകുളം കാലാവസ്ഥ</p>
+ 
+      <div class="wx-hero-body">
+        <div class="wx-temp-block">
+          <div class="wx-temp-main">
+            <span id="wd-temp">--</span><sup>°C</sup>
           </div>
-          <div class="wd-sub">
-            <span id="indoor-humidity">--</span>% | <span id="indoor-feels">--</span>°C
+          <div class="wx-feels">
+            Feels like <span id="wd-feels">--</span>°C
           </div>
         </div>
-        <div class="wd-box secondary" id="atm-box">
-          <div class="wd-label">Atmosphere</div>
-          <div class="wd-val">
-            <span id="pressure">--</span> hPa
-          </div>
-          <div class="wd-sub">
-            UVI: <span id="uvi">--</span> | Solar: <span id="solar">--</span>
-          </div>
-        </div>
-        <div class="wd-box success" id="condition-box" title="Click for details">
-          <div class="wd-label">Condition</div>
-          <div class="wd-val" id="condition" style="font-size:13px;">Loading…</div>
-          <div class="wd-sub">Tap for info</div>
+ 
+        <div class="wx-hero-right">
+          <span>💧 <span id="wd-humidity">--</span>% humidity</span>
+          <span>👁 <span id="wd-visibility">--</span> km visibility</span>
+          <span class="wx-updated">Updated <span id="wd-last-updated">--</span></span>
         </div>
       </div>
-      <p class="wd-updated" id="secret-trigger">Last updated: <span id="last-updated">--</span></p>
-      <p style="font-size:10.5px;color:var(--text-muted);margin-top:6px;text-align:center;">
-        Data powered by <a href="https://www.airgradient.com/" target="_blank" style="color:var(--blue);">AirGradient</a> © 2026, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color:var(--blue);">CC BY-SA 4.0</a>
+ 
+    </div><!-- /hero -->
+ 
+    <!-- ── STAT STRIP ── -->
+    <div class="wx-strip">
+ 
+      <div class="wx-stat clickable" id="wd-wind-box">
+        <div class="wx-stat-label">കാറ്റ്</div>
+        <div class="wx-stat-val"><span id="wd-wind">--</span></div>
+        <div class="wx-stat-sub" id="wd-wind-detail">--</div>
+        <div class="wx-stat-hint blue">tap for details</div>
+      </div>
+ 
+      <div class="wx-stat clickable gold" id="wd-indoor-box">
+        <div class="wx-stat-label">Indoor</div>
+        <div class="wx-stat-val"><span id="wd-indoor-temp">--</span>°</div>
+        <div class="wx-stat-sub">
+          <span id="wd-indoor-humidity">--</span>% &middot; <span id="wd-indoor-feels">--</span>°C
+        </div>
+        <div class="wx-stat-hint gold">tap for details</div>
+      </div>
+ 
+      <div class="wx-stat">
+        <div class="wx-stat-label">Pressure</div>
+        <div class="wx-stat-val"><span id="wd-pressure">--</span></div>
+        <div class="wx-stat-sub">hPa</div>
+      </div>
+ 
+      <div class="wx-stat">
+        <div class="wx-stat-label">UV &middot; Solar</div>
+        <div class="wx-stat-val"><span id="wd-uvi">--</span></div>
+        <div class="wx-stat-sub"><span id="wd-solar">--</span> W/m²</div>
+      </div>
+ 
+    </div><!-- /strip -->
+ 
+    <!-- ── FOOTER ── -->
+    <div class="wx-footer">
+      <p>
+        Data: <a href="https://www.ecowitt.com/shop/homePage" target="_blank">Ecowitt</a> © 2026 · Source
+        <a href="" target="_blank">Ecowitt Weather Station- ELWOIC</a>
       </p>
     </div>
+ 
+  </div><!-- /wx-widget -->
+ 
+  <!-- ── MODAL ── -->
+  <div class="wx-modal-overlay" id="wd-modal">
+    <div class="wx-modal-box">
+      <div class="wx-modal-head" id="wd-modal-head">
+        <h3 id="wd-modal-title"></h3>
+      </div>
+      <div class="wx-modal-body" id="wd-modal-body"></div>
+      <div class="wx-modal-foot">
+        <button id="wd-modal-ok">OK</button>
+      </div>
+    </div>
   </div>
+
+  
+ 
+<div id="wd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:99999;">
+  <div style="background:#fff;padding:22px;border-radius:14px;width:310px;max-width:92vw;font-family:sans-serif;line-height:1.7;">
+    <div id="wd-modal-body"></div>
+    <button id="wd-modal-ok" style="margin-top:14px;background:#0073e6;color:#fff;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;display:block;width:100%;">OK</button>
+  </div>
+  </div>
+ 
+
     <!-- RIGHT: OpenWeather Forecast Table -->
     <div class="card">
       <div class="card-head">
@@ -928,7 +1152,6 @@ Coordinates: 10.908°N, 76.229°E
     </div>
 
   </div>
-
   <!-- ══════════════════════════════════════
        ROW 2: Radar (constrained, centered)
   ══════════════════════════════════════ -->
@@ -1218,228 +1441,215 @@ Coordinates: 10.908°N, 76.229°E
   <script type="module" src="elwoic-manual-update.js"></script>
   <script type="module" src="aqi.js"></script>
 
-
- <script type="module">
-
-const API_URL =
-"https://elwoi-dashboar-parameters.bold-waterfall-0d01.workers.dev/";
-
-/* ---------------------------
-   FETCH + UPDATE
---------------------------- */
-async function update() {
-  try {
-    const [workerRes, oldRes] = await Promise.all([
-      fetch(API_URL).then(r => r.json()).catch(() => null),
-
-      fetch("https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric")
-        .then(r => r.json())
-        .catch(() => null)
-    ]);
-
-    if (!workerRes) return;
-
-    /* ---------------------------
-       CORE DATA (WORKER)
-    --------------------------- */
-    const t = workerRes.temperature?.outdoor;
-    const h = workerRes.humidity?.outdoor;
-    const feels = workerRes.temperature?.feels_like_outdoor;
-
-    const indoorT = workerRes.temperature?.indoor;
-    const indoorH = workerRes.humidity?.indoor;
-    const indoorFeels = workerRes.temperature?.feels_like_indoor;
-
-    const wind = workerRes.wind || {};
-
-    /* ✅ PRESSURE FIX (ABSOLUTE FIRST) */
-    const pressureAbs = workerRes.pressure?.absolute_hpa;
-    const pressureRel = workerRes.pressure?.relative_hpa;
-
-    const uvi = workerRes.uvi;
-    const solar = workerRes.solar;
-    const rain = workerRes.rain?.rate_mm_hr ?? 0;
-
-    /* ---------------------------
-       VISIBILITY (OLD SOURCE ONLY)
-    --------------------------- */
-    const visibilityKm = oldRes?.visibility
-      ? (oldRes.visibility / 1000).toFixed(1)
-      : "--";
-
-    /* ---------------------------
-       WIND MALAYALAM
-    --------------------------- */
-    const dirMap = (deg) => {
-      if (deg >= 337 || deg < 23) return "വടക്ക്";
-      if (deg < 68) return "വടക്കുകിഴക്ക്";
-      if (deg < 113) return "കിഴക്ക്";
-      if (deg < 158) return "തെക്കുകിഴക്ക്";
-      if (deg < 203) return "തെക്ക്";
-      if (deg < 248) return "തെക്കുപടിഞ്ഞാറ്";
-      if (deg < 293) return "പടിഞ്ഞാറ്";
-      return "വടക്കുപടിഞ്ഞാറ്";
-    };
-
-    const windText = `${wind.speed ?? 0} km/h`;
-    const windDetail = `ഗസ്റ്റ്: ${wind.gust ?? 0} km/h | ദിശ: ${dirMap(wind.direction)}`;
-
-    /* ---------------------------
-       CONDITION ENGINE (FIXED PRIORITY)
-    --------------------------- */
-    let conditionMalayalam = "";
-
-    if (rain > 0) {
-      conditionMalayalam = "🌧 മഴ പെയ്യുന്നു";
-    } 
-    else if (solar > 200 && uvi > 4) {
-      conditionMalayalam = "☀️ തെളിഞ്ഞ ആകാശം";
-    } 
-    else if (solar > 50) {
-      conditionMalayalam = "🌤 ഭാഗികമായി മേഘാവൃതം";
-    } 
-    else {
-      conditionMalayalam = "☁️ മേഘാവൃതം";
-    }
-
-    /* ---------------------------
-       UI UPDATE
-    --------------------------- */
-
-    document.getElementById("temp").textContent = t ?? "--";
-    document.getElementById("humidity").textContent = h ?? "--";
-    document.getElementById("feels").textContent = feels ?? "--";
-
-    document.getElementById("visibility").textContent = visibilityKm;
-
-    document.getElementById("wind").textContent = windText;
-    document.getElementById("wind-detail").textContent = windDetail;
-
-    /* ✔ ABSOLUTE PRESSURE PRIMARY */
-    document.getElementById("pressure").textContent = pressureAbs ?? "--";
-
-    document.getElementById("uvi").textContent = uvi ?? "--";
-    document.getElementById("solar").textContent = solar ?? "--";
-
-    /* ✔ CONDITION FIX */
-    document.getElementById("condition").textContent = conditionMalayalam;
-
-    /* ---------------------------
-       INDOOR BOX
-    --------------------------- */
-    document.getElementById("indoor-temp").textContent = indoorT ?? "--";
-    document.getElementById("indoor-humidity").textContent = indoorH ?? "--";
-    document.getElementById("indoor-feels").textContent = indoorFeels ?? "--";
-
-    const indoorBox = document.getElementById("indoor-box");
-    indoorBox.style.cursor = "pointer";
-
-    indoorBox.onclick = () => {
-      showModal(`
-        <h3>Indoor Climate</h3>
-        <p>നിങ്ങൾ ഒരു കോൺക്രീറ്റ് കെട്ടിടത്തിനകത്ത് ഉള്ള അന്തരീക്ഷം</p>
-        <div>🌡 Temperature: ${indoorT}°C</div>
-        <div>🌫 Feels like: ${indoorFeels}°C</div>
-        <div>💧 Humidity: ${indoorH}%</div>
-      `);
-    };
-
-    /* ---------------------------
-       CONDITION MODAL
-    --------------------------- */
-    document.getElementById("condition-box").onclick = () => {
-      showModal(`
-        <h3>കാലാവസ്ഥ വിശദീകരണം</h3>
-        <div>UVI: ${uvi}</div>
-        <div>Solar: ${solar}</div>
-        <div>Rain rate: ${rain} mm/hr</div>
-        <div>Pressure (Abs): ${pressureAbs} hPa</div>
-        <div>Pressure (Rel): ${pressureRel} hPa</div>
-        <hr/>
-        <div>${conditionMalayalam}</div>
-        <p style="margin-top:10px;font-size:12px;">
-        Worker + sensor fusion analysis
-        </p>
-      `);
-    };
-
-const now = new Date();
-
-document.getElementById("last-updated").textContent =
-  now.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-    /* ---------------------------
-       MODAL SYSTEM
-    --------------------------- */
-    function showModal(html) {
-      let modal = document.getElementById("wx-modal");
-
-      if (!modal) {
-        modal = document.createElement("div");
-        modal.id = "wx-modal";
-
-        modal.innerHTML = `
-          <div class="wx-box">
-            <div id="wx-content"></div>
-            <button onclick="document.getElementById('wx-modal').style.display='none'">
-              Close
-            </button>
-          </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        const style = document.createElement("style");
-        style.innerHTML = `
-          #wx-modal{
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.5);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:99999;
-          }
-          .wx-box{
-            background:#fff;
-            padding:20px;
-            border-radius:14px;
-            width:320px;
-            font-family:sans-serif;
-          }
-          .wx-box h3{color:#0073e6;margin-top:0}
-          .wx-box button{
-            margin-top:10px;
-            background:#0073e6;
-            color:#fff;
-            border:none;
-            padding:6px 12px;
-            border-radius:8px;
-            cursor:pointer;
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
-      document.getElementById("wx-content").innerHTML = html;
-      modal.style.display = "flex";
-    }
-
-  } catch (e) {
-    console.error(e);
+<script>
+var _wd_attempts = 0;
+function _wd_init() {
+  var windBox   = document.getElementById("wd-wind-box");
+  var indoorBox = document.getElementById("wd-indoor-box");
+  var condBox   = document.getElementById("wd-condition-box");
+  var modal     = document.getElementById("wd-modal");
+  var modalBody = document.getElementById("wd-modal-body");
+  var modalHead = document.getElementById("wd-modal-head");
+  var modalTitle= document.getElementById("wd-modal-title");
+  var modalOk   = document.getElementById("wd-modal-ok");
+  var hero      = document.getElementById("wd-hero");
+ 
+  if (!windBox || !indoorBox || !modal || !hero) {
+    _wd_attempts++;
+    if (_wd_attempts < 60) { setTimeout(_wd_init, 100); }
+    return;
   }
+ 
+  var API_URL  = "https://elwoi-dashboar-parameters.bold-waterfall-0d01.workers.dev/";
+  var WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
+  var OW_URL   = "https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric";
+ 
+  var HERO_THEMES = ["sunny","partial","cloudy","rain","night"];
+ 
+  var latestWind      = null;
+  var latestCondition = "";
+  var latestMain      = {};
+ 
+  /* ── modal ── */
+  modalOk.onclick = function() {
+    modal.classList.remove("open");
+  };
+  modal.onclick = function(e) {
+    if (e.target === modal) modal.classList.remove("open");
+  };
+ 
+  function showModal(title, bodyHtml, headClass) {
+    modalTitle.textContent = title;
+    modalHead.className = "wx-modal-head " + (headClass || "");
+    modalBody.innerHTML = bodyHtml;
+    modal.classList.add("open");
+  }
+ 
+  function mrow(icon, label, val) {
+    return "<div class='wx-modal-row'>" +
+      "<span class='lbl'>" + icon + " " + label + "</span>" +
+      "<span class='val'>" + val + "</span></div>";
+  }
+ 
+  /* ── direction → malayalam ── */
+  function dirML(deg) {
+    var d = ((deg % 360) + 360) % 360;
+    if (d >= 337 || d < 23)  return "വടക്ക്";
+    if (d < 68)              return "വടക്കുകിഴക്ക്";
+    if (d < 113)             return "കിഴക്ക്";
+    if (d < 158)             return "തെക്കുകിഴക്ക്";
+    if (d < 203)             return "തെക്ക്";
+    if (d < 248)             return "തെക്കുപടിഞ്ഞാറ്";
+    if (d < 293)             return "പടിഞ്ഞാറ്";
+    return "വടക്കുപടിഞ്ഞാറ്";
+  }
+ 
+  /* ── condition ── */
+  function getCondition(rain, solar, uvi, hour) {
+    var isDay = hour >= 6 && hour < 19;
+    if (rain > 0)                        return { text:"🌧 മഴ പെയ്യുന്നു",       key:"rain"    };
+    if (isDay && solar > 200 && uvi > 4) return { text:"☀️ തെളിഞ്ഞ ആകാശം",    key:"sunny"   };
+    if (isDay && solar > 50)             return { text:"🌤 ഭാഗികമായി മേഘാവൃതം", key:"partial" };
+    if (isDay)                           return { text:"☁️ മേഘാവൃതം",            key:"cloudy"  };
+    return                                      { text:"🌙 രാത്രി ആകാശം",       key:"night"   };
+  }
+ 
+  /* ── click handlers ── */
+  windBox.onclick = function() {
+    if (!latestWind) {
+      showModal("കാറ്റ്", "<div class='wx-modal-note'>ഡേറ്റ ലോഡ് ആകുന്നു...</div>", "wind");
+      return;
+    }
+    var lw = latestWind;
+    showModal(
+      "💨 കാറ്റ് — വിശദ വിവരങ്ങൾ",
+      mrow("🌬","ഇപ്പോഴത്തെ വേഗത",              lw.speed + " " + lw.speedUnit) +
+      mrow("🧭","ദിശ",                           lw.mlDir + " (" + lw.dirComp + ", " + lw.dirDeg + "°)") +
+      mrow("💨","ഇപ്പോഴത്തെ ഗസ്റ്റ്",            lw.gust + " " + lw.gustUnit) +
+      mrow("📈","ഇന്ന് ഏറ്റവും ഉയർന്ന ഗസ്റ്റ്",  lw.dayGust + " " + lw.dayGustU) +
+      "<div class='wx-modal-note'>⏰ " + lw.dayGustAt + "</div>" +
+      mrow("🌀","Beaufort " + lw.bftForce,       lw.bftDesc) +
+      mrow("📊","10 മിനിറ്റ് ശരാശരി ദിശ",        lw.avg10Comp + " (" + lw.avg10Deg + "°)"),
+      "wind"
+    );
+  };
+ 
+  indoorBox.onclick = function() {
+    var m = latestMain;
+    showModal(
+      "🏠 Indoor Climate",
+      "<div class='wx-modal-note' style='text-align:left;padding-top:10px;color:#888;font-size:12px;'>കോൺക്രീറ്റ് കെട്ടിടത്തിനകത്ത് ഉള്ള അന്തരീക്ഷം</div>" +
+      mrow("🌡","Temperature",  (m.indoorT     != null ? m.indoorT     : "--") + "°C") +
+      mrow("🌫","Feels like",   (m.indoorFeels != null ? m.indoorFeels : "--") + "°C") +
+      mrow("💧","Humidity",     (m.indoorH     != null ? m.indoorH     : "--") + "%"),
+      "indoor"
+    );
+  };
+ 
+  condBox.onclick = function() {
+    var m = latestMain;
+    showModal(
+      "🌤 കാലാവസ്ഥ വിശദീകരണം",
+      mrow("☀️","UVI",            m.uvi         != null ? m.uvi         : "--") +
+      mrow("🔆","Solar",          (m.solar      != null ? m.solar       : "--") + " W/m²") +
+      mrow("🌧","Rain rate",      (m.rain       || 0)                   + " mm/hr") +
+      mrow("📊","Pressure (Abs)", (m.pressureAbs || "--")               + " hPa") +
+      mrow("📊","Pressure (Rel)", (m.pressureRel || "--")               + " hPa") +
+      "<div style='margin:12px 0 4px;padding:10px;background:#f0f7ff;border-radius:8px;text-align:center;font-size:13px;font-weight:700;color:#1a2233;'>" + latestCondition + "</div>" +
+      "<div class='wx-modal-note'>Sensor fusion · updated every 60s</div>",
+      "condition"
+    );
+  };
+ 
+  /* ── fetch wind ── */
+  function updateWind() {
+    fetch(WIND_URL, { cache: "no-store" })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data || !data.wind) return;
+        var w = data.wind;
+        var speed     = (w.speed     && w.speed.value     != null) ? w.speed.value                    : 0;
+        var speedUnit = (w.speed     && w.speed.unit)               ? w.speed.unit                     : "km/h";
+        var gust      = (w.gust      && w.gust.value      != null) ? w.gust.value                     : 0;
+        var gustUnit  = (w.gust      && w.gust.unit)                ? w.gust.unit                      : "km/h";
+        var dirDeg    = (w.direction && w.direction.degrees != null)? w.direction.degrees              : 0;
+        var dirComp   = (w.direction && w.direction.compass)        ? w.direction.compass              : "N";
+        var bftForce  = (w.speed     && w.speed.beaufort)           ? w.speed.beaufort.force           : 0;
+        var bftDesc   = (w.speed     && w.speed.beaufort)           ? w.speed.beaufort.description     : "Calm";
+        var avg10Comp = (w.avg_10min && w.avg_10min.direction_compass)         ? w.avg_10min.direction_compass   : "--";
+        var avg10Deg  = (w.avg_10min && w.avg_10min.direction_degrees != null) ? w.avg_10min.direction_degrees   : "--";
+        var dayGust   = (w.daily_max_gust && w.daily_max_gust.value != null)   ? w.daily_max_gust.value         : "--";
+        var dayGustU  = (w.daily_max_gust && w.daily_max_gust.unit)            ? w.daily_max_gust.unit          : "km/h";
+        var dayGustAt = (w.daily_max_gust && w.daily_max_gust.observed_at)     ? w.daily_max_gust.observed_at   : "--";
+        var ml        = dirML(dirDeg);
+ 
+        document.getElementById("wd-wind").textContent        = speed + " " + speedUnit;
+        document.getElementById("wd-wind-detail").textContent = "Gust " + gust + " " + gustUnit + " · " + ml;
+ 
+        latestWind = { speed:speed, speedUnit:speedUnit, gust:gust, gustUnit:gustUnit,
+                       dirDeg:dirDeg, dirComp:dirComp, mlDir:ml,
+                       bftForce:bftForce, bftDesc:bftDesc,
+                       avg10Comp:avg10Comp, avg10Deg:avg10Deg,
+                       dayGust:dayGust, dayGustU:dayGustU, dayGustAt:dayGustAt };
+      })
+      .catch(function(e) { console.error("Wind fetch failed:", e); });
+  }
+ 
+  /* ── fetch main ── */
+  function updateMain() {
+    Promise.all([
+      fetch(API_URL, { cache:"no-store" }).then(function(r){return r.json();}).catch(function(){return null;}),
+      fetch(OW_URL,  { cache:"no-store" }).then(function(r){return r.json();}).catch(function(){return null;})
+    ]).then(function(res) {
+      var w = res[0], o = res[1];
+      if (!w) return;
+ 
+      var t           = w.temperature ? w.temperature.outdoor            : null;
+      var h           = w.humidity    ? w.humidity.outdoor               : null;
+      var feels       = w.temperature ? w.temperature.feels_like_outdoor : null;
+      var indoorT     = w.temperature ? w.temperature.indoor             : null;
+      var indoorH     = w.humidity    ? w.humidity.indoor                : null;
+      var indoorFeels = w.temperature ? w.temperature.feels_like_indoor  : null;
+      var pressureAbs = w.pressure    ? w.pressure.absolute_hpa          : null;
+      var pressureRel = w.pressure    ? w.pressure.relative_hpa          : null;
+      var uvi         = w.uvi   != null ? w.uvi   : null;
+      var solar       = w.solar != null ? w.solar : null;
+      var rain        = (w.rain && w.rain.rate_mm_hr != null) ? w.rain.rate_mm_hr : 0;
+      var vis         = (o && o.visibility) ? (o.visibility / 1000).toFixed(1) : "--";
+ 
+      var now  = new Date();
+      var cond = getCondition(rain, solar, uvi, now.getHours());
+      latestCondition = cond.text;
+      latestMain = { indoorT:indoorT, indoorH:indoorH, indoorFeels:indoorFeels,
+                     pressureAbs:pressureAbs, pressureRel:pressureRel,
+                     uvi:uvi, solar:solar, rain:rain };
+ 
+      document.getElementById("wd-temp").textContent            = t           != null ? t           : "--";
+      document.getElementById("wd-humidity").textContent        = h           != null ? h           : "--";
+      document.getElementById("wd-feels").textContent           = feels       != null ? feels       : "--";
+      document.getElementById("wd-visibility").textContent      = vis;
+      document.getElementById("wd-pressure").textContent        = pressureAbs != null ? pressureAbs : "--";
+      document.getElementById("wd-uvi").textContent             = uvi         != null ? uvi         : "--";
+      document.getElementById("wd-solar").textContent           = solar       != null ? solar       : "--";
+      document.getElementById("wd-condition").textContent       = cond.text;
+      document.getElementById("wd-indoor-temp").textContent     = indoorT     != null ? indoorT     : "--";
+      document.getElementById("wd-indoor-humidity").textContent = indoorH     != null ? indoorH     : "--";
+      document.getElementById("wd-indoor-feels").textContent    = indoorFeels != null ? indoorFeels : "--";
+      document.getElementById("wd-last-updated").textContent    =
+        now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
+ 
+      /* swap hero theme class */
+      hero.className = "wx-hero " + cond.key;
+ 
+    }).catch(function(e){ console.error("Main fetch failed:", e); });
+  }
+ 
+  updateWind();
+  updateMain();
+  setInterval(updateWind, 60000);
+  setInterval(updateMain, 60000);
 }
-
-/* ---------------------------
-   INIT (1 MIN REFRESH FIX)
---------------------------- */
-document.addEventListener("DOMContentLoaded", () => {
-  update();
-  setInterval(update, 60000); // ✅ 1 minute refresh
-});
-
+_wd_init();
 </script>
 <script type="module">
 
