@@ -1,4 +1,4 @@
-// table.js
+ // table.js
 
 const lat     = 10.9081;
 const lon     = 76.2296;
@@ -6,6 +6,9 @@ const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
 const API_URL  = "https://elwoi-dashboar-parameters.bold-waterfall-0d01.workers.dev/";
 const WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
+
+// Fetch options — always bypass cache for live station data
+const LIVE = { cache: "no-store" };
 
 /* =============================================================
    RAIN TREND TRACKER
@@ -23,7 +26,6 @@ function trackRain(rate) {
 
 function isRainTrending() {
     if (rainHistory.length < RAIN_HISTORY_SIZE) return false;
-    // All readings > 0 and each >= the one before it
     return rainHistory.every((v, i) =>
         i === 0 ? v > 0 : v >= rainHistory[i - 1] && v > 0
     );
@@ -87,14 +89,23 @@ function setEl(id, val) {
     if (el) el.textContent = val ?? "--";
 }
 
+function formatTime(date) {
+    return date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+}
+
 /* =============================================================
    NOW COLUMN  (index 0) — station workers
 ============================================================= */
 async function loadNowFromStation(owmCurrentData) {
     try {
         const [stationRes, windRes] = await Promise.all([
-            fetch(API_URL).then(r => r.json()).catch(() => null),
-            fetch(WIND_URL).then(r => r.json()).catch(() => null)
+            fetch(API_URL,  LIVE).then(r => r.json()).catch(() => null),
+            fetch(WIND_URL, LIVE).then(r => r.json()).catch(() => null)
         ]);
 
         if (!stationRes) {
@@ -118,9 +129,14 @@ async function loadNowFromStation(owmCurrentData) {
         // --- Wind (from WIND_URL) ---
         const wind      = windRes?.wind || {};
         const windSpeed = wind?.speed?.value ?? 0;
-        const windComp  = wind?.direction?.compass ?? "--";
+        const windGust  = wind?.gust?.value  ?? 0;
+        const windComp  = wind?.direction?.compass           ?? "--";
+        const avg10Comp = wind?.avg_10min?.direction_compass ?? "--";
         const beaufort  = wind?.speed?.beaufort?.description ?? "";
-        setEl("owWind0", `${windSpeed} km/h (${windComp}) — ${beaufort}`);
+
+        setEl("owWind0",
+            `${windSpeed} km/h ${windComp} | Gust: ${windGust} km/h | Avg dir: ${avg10Comp} — ${beaufort}`
+        );
 
         // --- Visibility from OWM ---
         const vis = owmCurrentData?.visibility
@@ -139,7 +155,6 @@ async function loadNowFromStation(owmCurrentData) {
 
         let cond;
 
-        // Rain takes priority over everything — sensor confirms or trend confirms
         if (rain > 0 || trending) {
             const label = (trending && rain === 0)
                 ? "Rain Starting"
@@ -149,7 +164,6 @@ async function loadNowFromStation(owmCurrentData) {
         } else if (isDaytime()) {
             cond = conditionFromStation(uvi, solar, rain);
 
-            // Cross-check: station says dry but OWM says rain → trust OWM
             if (!cond.isRain && owmCurrentData) {
                 const owmMain = owmCurrentData.weather?.[0]?.main ?? "";
                 if (owmMain.includes("Rain") || owmMain.includes("Drizzle") || owmMain.includes("Thunderstorm")) {
@@ -158,7 +172,6 @@ async function loadNowFromStation(owmCurrentData) {
             }
 
         } else {
-            // Night: OWM is primary
             if (owmCurrentData) {
                 cond = conditionFromOWM(
                     owmCurrentData.weather?.[0]?.description ?? "",
@@ -171,6 +184,13 @@ async function loadNowFromStation(owmCurrentData) {
 
         setEl("owCond0", `${cond.icon} ${cond.text}`);
         displayRainStatus("owRainBox0", cond.isRain, cond.isRain ? "Raining" : "Dry");
+
+        // --- Last updated time ---
+        const stationTs = stationRes?.timestamp;
+        const updatedAt = stationTs
+            ? formatTime(new Date(stationTs))
+            : formatTime(new Date());
+        setEl("stationLastUpdated", `🕐 Last updated: ${updatedAt}`);
 
     } catch (e) {
         console.error("Station fetch error:", e);
