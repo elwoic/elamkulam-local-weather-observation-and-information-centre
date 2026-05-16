@@ -1244,8 +1244,9 @@ async function loadHistory(days, btn) {
   tableEl.style.display = "none";
   body.innerHTML = "";
 
-  // ── FETCH RAIN HISTORY FROM WORKER ──
+  // ── FETCH RAIN + GUST HISTORY FROM WORKER ──
   let rainMap = {};
+  let gustMap = {};
 
   try {
 
@@ -1254,10 +1255,11 @@ async function loadHistory(days, btn) {
 
     rainData.forEach(item => {
       rainMap[item.date] = item.rain_mm;
+      if (item.gust_kmh != null) gustMap[item.date] = item.gust_kmh;
     });
 
   } catch (e) {
-    console.log("Rain API failed");
+    console.log("Rain/gust API failed");
   }
 
   let results = [];
@@ -1294,13 +1296,19 @@ async function loadHistory(days, btn) {
 
       const row = processDayDataSafe(istDate, data);
 
-      // ── ADD RAIN FROM KV WORKER ──
       const rainKey = `${year}-${month}-${day}`;
 
+      // ── RAIN FROM KV ──
       row.totalRain =
         rainMap[rainKey] != null
           ? Number(rainMap[rainKey]).toFixed(1)
           : "0.0";
+
+      // ── MAX GUST FROM KV (overrides Firebase wind) ──
+      row.maxWind =
+        gustMap[rainKey] != null
+          ? Number(gustMap[rainKey]).toFixed(1)
+          : row.maxWind;
 
       results.push(row);
 
@@ -1482,7 +1490,6 @@ loadHistory(
   document.querySelector(".hist-btn.active")
 );
 </script>
-
 
 <!-- ── 4. Activity Recommendations ── -->
 <script>
