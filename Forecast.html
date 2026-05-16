@@ -159,137 +159,282 @@
     /* ============================================================
        MODERN CURRENT CONDITIONS WIDGET
     ============================================================ */
-    .cw-shell {
-      background: linear-gradient(145deg, #0d3d6e 0%, #1a5490 60%, #1e6eb5 100%);
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      color: #fff;
-      box-shadow: var(--shadow);
-    }
-    .cw-shell::before {
-      content: '';
-      position: absolute;
-      top: -60px; right: -60px;
-      width: 220px; height: 220px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      pointer-events: none;
-    }
-    .cw-shell::after {
-      content: '';
-      position: absolute;
-      bottom: -40px; left: -40px;
-      width: 160px; height: 160px;
-      border-radius: 50%;
-      background: rgba(201,162,39,0.09);
-      pointer-events: none;
-    }
-    .cw-hero {
-      padding: 24px 24px 18px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-    .cw-location {
-      font-size: 10.5px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 8px;
-    }
-    .cw-big-temp {
-      font-family: var(--font-serif);
-      font-size: 68px;
-      font-weight: 700;
-      line-height: 1;
-      color: #fff;
-    }
-    .cw-big-temp sup {
-      font-size: 26px;
-      font-weight: 400;
-      vertical-align: super;
-      color: rgba(255,255,255,0.65);
-    }
-    .cw-condition-text {
-      font-size: 15px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 8px;
-      font-weight: 500;
-    }
-    .cw-hero-right { text-align: right; }
-    .cw-feels-label {
-      font-size: 11px;
-      color: rgba(255,255,255,0.45);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 4px;
-    }
-    .cw-feels-val {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .cw-time-badge {
-      display: inline-block;
-      margin-top: 12px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 20px;
-      padding: 5px 13px;
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-    }
-    /* Gold divider */
-    .cw-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.45), transparent);
-      margin: 0 24px;
-      position: relative;
-      z-index: 1;
-    }
-    /* Stats row */
-    .cw-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      position: relative;
-      z-index: 1;
-    }
-    .cw-stat {
-      padding: 16px 20px;
-      border-right: 1px solid rgba(255,255,255,0.07);
-    }
-    .cw-stat:last-child { border-right: none; }
-    .cw-stat-icon  { font-size: 20px; margin-bottom: 4px; opacity: 0.8; }
-    .cw-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
-    .cw-stat-val   { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.1; }
-    .cw-stat-unit  { font-size: 11px; color: rgba(255,255,255,0.4); }
-    /* Footer */
-    .cw-footer {
-      background: rgba(0,0,0,0.18);
-      padding: 8px 24px;
-      font-size: 11px;
-      color: rgba(255,255,255,0.35);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-    }
-    .cw-footer a { color: rgba(255,255,255,0.45); text-decoration: none; }
-    .cw-footer a:hover { color: #fff; }
-
-    @media (max-width: 500px) {
-      .cw-big-temp { font-size: 50px; }
-      .cw-stats    { grid-template-columns: repeat(2, 1fr); }
-      .cw-stat:nth-child(2) { border-right: none; }
-      .cw-stat:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.07); grid-column: 1 / -1; }
-    }
+  /* ══════════════════════════════════════
+     CURRENT CONDITIONS CARD
+  ══════════════════════════════════════ */
+  .cw-shell {
+    background: linear-gradient(145deg, #0d3d6e 0%, #1a5490 60%, #1e6eb5 100%);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .cw-shell::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+  }
+  .cw-shell::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(201,162,39,0.09);
+    pointer-events: none;
+  }
+ 
+  .cw-hero {
+    padding: 24px 24px 18px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .cw-location {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+  .cw-big-temp {
+    font-family: var(--font-serif);
+    font-size: 68px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+  }
+  .cw-big-temp sup {
+    font-size: 26px;
+    font-weight: 400;
+    vertical-align: super;
+    color: rgba(255,255,255,0.65);
+  }
+  .cw-condition-text {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .cw-hero-right { text-align: right; }
+  .cw-feels-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .cw-feels-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .cw-time-badge {
+    display: inline-block;
+    margin-top: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+ 
+  .cw-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,162,39,0.45), transparent);
+    margin: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .cw-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: relative;
+    z-index: 1;
+  }
+  .cw-stat {
+    padding: 16px 14px;
+    border-right: 1px solid rgba(255,255,255,0.07);
+  }
+  .cw-stat:last-child { border-right: none; }
+  .cw-stat-icon  { font-size: 18px; margin-bottom: 4px; opacity: 0.8; }
+  .cw-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+  .cw-stat-val   { font-size: 18px; font-weight: 700; color: #fff; line-height: 1.1; }
+  .cw-stat-unit  { font-size: 11px; color: rgba(255,255,255,0.4); }
+ 
+  .cw-footer {
+    background: rgba(0,0,0,0.18);
+    padding: 8px 24px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .cw-footer a { color: rgba(255,255,255,0.45); text-decoration: none; }
+  .cw-footer a:hover { color: #fff; }
+ 
+  /* ══════════════════════════════════════
+     WIND DETAIL BAR
+  ══════════════════════════════════════ */
+  .wind-bar {
+    background: linear-gradient(135deg, #0a2d52 0%, #0f3d6e 100%);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow);
+  }
+  .wind-bar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    flex-shrink: 0;
+  }
+  .wind-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: #fff;
+  }
+  .wind-pill-val {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .wind-pill-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+  }
+  .wind-sep {
+    width: 1px;
+    height: 30px;
+    background: rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  .wind-beaufort {
+    display: inline-block;
+    background: rgba(201,162,39,0.2);
+    border: 1px solid rgba(201,162,39,0.35);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #e8bf5a;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+ 
+  /* ══════════════════════════════════════
+     OUTLOOK CARDS (Current / 3h / 6h)
+  ══════════════════════════════════════ */
+  .outlook-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .outlook-card {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .outlook-card-head {
+    padding: 10px 14px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .oc-now  .outlook-card-head { background: linear-gradient(135deg, #1a5490, #1e6eb5); }
+  .oc-3h   .outlook-card-head { background: linear-gradient(135deg, #124070, #1a5490); }
+  .oc-6h   .outlook-card-head { background: linear-gradient(135deg, #0d3050, #124070); }
+ 
+  .outlook-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+  .outlook-icon { font-size: 18px; opacity: 0.7; }
+  .outlook-body {
+    background: rgba(13,45,80,0.92);
+    padding: 12px 14px;
+    flex: 1;
+  }
+  .outlook-text {
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.75);
+    font-weight: 400;
+  }
+ 
+  /* ── Confidence badge ── */
+  .conf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+  }
+  .conf-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+    display: inline-block;
+  }
+  .conf-dot.mod { background: #ffb300; }
+  .conf-dot.low { background: #e53935; }
+ 
+  /* ── Error state ── */
+  .cw-error {
+    padding: 12px 24px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+  }
+ 
+  @media (max-width: 680px) {
+    .cw-big-temp { font-size: 50px; }
+    .cw-stats { grid-template-columns: repeat(2, 1fr); }
+    .cw-stat:nth-child(2) { border-right: none; }
+    .cw-stat:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.07); }
+    .cw-stat:nth-child(4) { border-top: 1px solid rgba(255,255,255,0.07); border-right: none; }
+    .outlook-grid { grid-template-columns: 1fr; }
+    .wind-bar { gap: 14px; }
+  }
 
     /* ============================================================
        IMD BOX
@@ -570,54 +715,125 @@ if (window.top === window.self) {
     <div class="page-banner-badge">10.908°N &nbsp;76.229°E</div>
   </div>
 
-
   <!-- ══════════════════════════════════════
        ROW 1 — Modern Current Conditions
   ══════════════════════════════════════ -->
-  <h2 class="sec-head">Current Conditions</h2>
-
-  <div class="grid-6040">
-
-    <!-- Modern weather card -->
-    <div class="cw-shell">
-      <div class="cw-hero">
-        <div>
-          <div class="cw-location">📍 Elamkulam, Kerala, India</div>
-          <div class="cw-big-temp"><span id="cw-temp">--</span><sup>°C</sup></div>
-          <div class="cw-condition-text" id="cw-condition">Loading weather…</div>
-        </div>
-        <div class="cw-hero-right">
-          <div class="cw-feels-label">Feels Like</div>
-          <div class="cw-feels-val" id="cw-feels">--°C</div>
-          <div class="cw-time-badge" id="cw-updated">Updating…</div>
-        </div>
-      </div>
-
-      <div class="cw-divider"></div>
-
-      <div class="cw-stats">
-        <div class="cw-stat">
-          <div class="cw-stat-icon">💧</div>
-          <div class="cw-stat-label">Humidity</div>
-          <div class="cw-stat-val"><span id="cw-humidity">--</span><span class="cw-stat-unit"> %</span></div>
-        </div>
-        <div class="cw-stat">
-          <div class="cw-stat-icon">💨</div>
-          <div class="cw-stat-label">Wind Speed</div>
-          <div class="cw-stat-val"><span id="cw-wind">--</span><span class="cw-stat-unit"> km/h</span></div>
-        </div>
-        <div class="cw-stat">
-          <div class="cw-stat-icon">👁</div>
-          <div class="cw-stat-label">Visibility</div>
-          <div class="cw-stat-val"><span id="cw-visibility">--</span><span class="cw-stat-unit"> km</span></div>
-        </div>
-      </div>
-
-      <div class="cw-footer">
-        <span>Powered by <a href="https://openweathermap.org/" target="_blank" rel="noopener">OpenWeatherMap</a></span>
-        <span>Updates every 10 min</span>
+ <h2 class="sec-head">Current Conditions</h2>
+ 
+<!-- ── MAIN CURRENT CONDITIONS CARD ── -->
+<div class="cw-shell">
+  <div class="cw-hero">
+    <div>
+      <div class="cw-location">📍 Elamkulam, Kerala, India</div>
+      <div class="cw-big-temp"><span id="cw-temp">--</span><sup>°C</sup></div>
+      <div class="cw-condition-text" id="cw-condition">Loading weather…</div>
+    </div>
+    <div class="cw-hero-right">
+      <div class="cw-feels-label">Feels Like</div>
+      <div class="cw-feels-val" id="cw-feels">--°C</div>
+      <div class="cw-time-badge" id="cw-updated">Updating…</div>
+    </div>
+  </div>
+  <div class="cw-divider"></div>
+  <div class="cw-stats">
+    <div class="cw-stat">
+      <div class="cw-stat-icon">💧</div>
+      <div class="cw-stat-label">Humidity</div>
+      <div class="cw-stat-val"><span id="cw-humidity">--</span><span class="cw-stat-unit"> %</span></div>
+    </div>
+    <div class="cw-stat">
+      <div class="cw-stat-icon">☀️</div>
+      <div class="cw-stat-label">Solar</div>
+      <div class="cw-stat-val"><span id="cw-solar">--</span><span class="cw-stat-unit"> W/m²</span></div>
+    </div>
+    <div class="cw-stat">
+      <div class="cw-stat-icon">🌡️</div>
+      <div class="cw-stat-label">Dew Point</div>
+      <div class="cw-stat-val"><span id="cw-dew">--</span><span class="cw-stat-unit"> °C</span></div>
+    </div>
+    <div class="cw-stat">
+      <div class="cw-stat-icon">🌧️</div>
+      <div class="cw-stat-label">Rain Today</div>
+      <div class="cw-stat-val"><span id="cw-rain">--</span><span class="cw-stat-unit"> mm</span></div>
+    </div>
+  </div>
+  <div class="cw-footer">
+    <span>Station: Elamkulam AWS · <a href="https://fine-boa-53.elwoicelamkulam.deno.net/" target="_blank" rel="noopener">Live data</a></span>
+    <span id="cw-updated-footer">Updates every 10 min</span>
+  </div>
+</div>
+ 
+<!-- ── WIND DETAIL BAR ── -->
+<div class="wind-bar">
+  <span class="wind-bar-label">💨 Wind</span>
+  <div class="wind-pill">
+    <span class="wind-pill-val"><span id="w-speed">--</span> <span style="font-size:12px;color:rgba(255,255,255,0.4)">km/h</span></span>
+    <span class="wind-pill-sub">Speed</span>
+  </div>
+  <div class="wind-sep"></div>
+  <div class="wind-pill">
+    <span class="wind-pill-val"><span id="w-gust">--</span> <span style="font-size:12px;color:rgba(255,255,255,0.4)">km/h</span></span>
+    <span class="wind-pill-sub">Gust</span>
+  </div>
+  <div class="wind-sep"></div>
+  <div class="wind-pill">
+    <span class="wind-pill-val"><span id="w-dir">--</span></span>
+    <span class="wind-pill-sub">Direction</span>
+  </div>
+  <div class="wind-sep"></div>
+  <div class="wind-pill">
+    <span class="wind-pill-val"><span id="w-avg-dir">--</span></span>
+    <span class="wind-pill-sub">10-min avg</span>
+  </div>
+  <div class="wind-sep"></div>
+  <span class="wind-beaufort" id="w-beaufort">--</span>
+  <div class="wind-pill" style="margin-left:auto;">
+    <span class="wind-pill-val"><span id="w-daily-max">--</span> <span style="font-size:12px;color:rgba(255,255,255,0.4)">km/h</span></span>
+    <span class="wind-pill-sub">Day max gust</span>
+  </div>
+</div>
+ 
+<!-- ── OUTLOOK PANELS ── -->
+<h2 class="sec-head">Atmospheric Outlook</h2>
+<div class="outlook-grid">
+ 
+  <!-- NOW -->
+  <div class="outlook-card oc-now">
+    <div class="outlook-card-head">
+      <span class="outlook-label">Now</span>
+      <span class="outlook-icon">🌤</span>
+    </div>
+    <div class="outlook-body">
+      <div class="outlook-text" id="oc-current">Loading…</div>
+      <div class="conf-badge" id="oc-conf-now" style="display:none">
+        <span class="conf-dot" id="oc-dot-now"></span>
+        <span id="oc-conf-now-text"></span>
       </div>
     </div>
+  </div>
+ 
+  <!-- NEXT 1–3 h -->
+  <div class="outlook-card oc-3h">
+    <div class="outlook-card-head">
+      <span class="outlook-label">Next 1–3 hrs</span>
+      <span class="outlook-icon">🌥</span>
+    </div>
+    <div class="outlook-body">
+      <div class="outlook-text" id="oc-3h">Loading…</div>
+    </div>
+  </div>
+ 
+  <!-- NEXT 3–6 h -->
+  <div class="outlook-card oc-6h">
+    <div class="outlook-card-head">
+      <span class="outlook-label">Next 3–6 hrs</span>
+      <span class="outlook-icon">🌦</span>
+    </div>
+    <div class="outlook-body">
+      <div class="outlook-text" id="oc-6h">Loading…</div>
+    </div>
+  </div>
+ </div>
 
     <!-- Right column -->
     <div style="display:flex; flex-direction:column; gap:16px;">
@@ -627,7 +843,6 @@ if (window.top === window.self) {
         <div class="imd-box-left">
           <h3>🇮🇳 IMD Kerala Alert</h3>
           <p>Met Centre Thiruvananthapuram<br>Official District-wise Warnings</p>
-          <p class="imd-box-time" id="imd-time">Checking…</p>
         </div>
         <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
            target="_blank" rel="noopener" class="btn-imd">Open Alert ↗</a>
@@ -802,45 +1017,124 @@ if (window.top === window.self) {
 
 
 <!-- ── 1. OpenWeatherMap — Modern Current Conditions ── -->
+<!-- ── 1. OpenWeatherMap — Modern Current Conditions ── -->
 <script>
-(function(){
-  const OW_KEY = "ca13a2cbdc07e7613b6af82cff262295";
-  const LAT = 10.9081, LON = 76.2296;
-
-  async function loadWeather() {
+(function () {
+ 
+  const STATION_URL    = "https://fine-boa-53.elwoicelamkulam.deno.net/";
+  const WIND_URL       = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
+  const OUTLOOK_URL    = "https://elwoic-atmosphere-controller.elwoicelamkulam.workers.dev/";
+ 
+  function tstamp() {
+    return new Date().toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
+    });
+  }
+ 
+  /* ── Dew-point approximation (Magnus formula) ── */
+  function dewPoint(tempC, rh) {
+    const a = 17.27, b = 237.7;
+    const alpha = (a * tempC) / (b + tempC) + Math.log(rh / 100);
+    return (b * alpha) / (a - alpha);
+  }
+ 
+  /* ── Load station data ── */
+  async function loadStation() {
     try {
-      const res  = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_KEY}&units=metric`);
+      const res  = await fetch(STATION_URL);
       const data = await res.json();
-      const desc = data.weather[0].description;
-
-      document.getElementById("cw-temp").textContent       = data.main.temp.toFixed(1);
-      document.getElementById("cw-feels").textContent      = data.main.feels_like.toFixed(1) + "°C";
-      document.getElementById("cw-condition").textContent  = desc.charAt(0).toUpperCase() + desc.slice(1);
-      document.getElementById("cw-humidity").textContent   = data.main.humidity;
-      document.getElementById("cw-wind").textContent       = (data.wind.speed * 3.6).toFixed(1);
-      document.getElementById("cw-visibility").textContent = (data.visibility / 1000).toFixed(1);
-      document.getElementById("cw-updated").textContent    = "Updated " + new Date().toLocaleTimeString("en-IN", {
-        timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
-      });
-    } catch(e) {
+ 
+      const temp = data.temperature.outdoor;
+      const hum  = data.humidity.outdoor;
+      const dew  = dewPoint(temp, hum);
+      const feels = data.temperature.feels_like_outdoor;
+ 
+      document.getElementById("cw-temp").textContent      = temp.toFixed(1);
+      document.getElementById("cw-feels").textContent     = feels.toFixed(1) + "°C";
+      document.getElementById("cw-humidity").textContent  = hum;
+      document.getElementById("cw-solar").textContent     = Math.round(data.solar);
+      document.getElementById("cw-dew").textContent       = dew.toFixed(1);
+      document.getElementById("cw-rain").textContent      = data.rain.daily_mm.toFixed(1);
+      document.getElementById("cw-updated").textContent   = "Updated " + tstamp();
+      document.getElementById("cw-updated-footer").textContent = "Updated " + tstamp();
+    } catch (e) {
       document.getElementById("cw-condition").textContent = "Data unavailable";
       document.getElementById("cw-updated").textContent   = "Update error";
     }
   }
-  loadWeather();
-  setInterval(loadWeather, 600000);
-
-  // IMD timestamp
-  const imdEl = document.getElementById("imd-time");
-  if (imdEl) {
-    imdEl.textContent = "Loaded: " + new Date().toLocaleString("en-IN", {
-      timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit",
-      hour12:true, day:"numeric", month:"short", year:"numeric"
-    });
+ 
+  /* ── Load wind data ── */
+  async function loadWind() {
+    try {
+      const res  = await fetch(WIND_URL);
+      const data = await res.json();
+      const w    = data.wind;
+ 
+      document.getElementById("w-speed").textContent     = w.speed.value.toFixed(1);
+      document.getElementById("w-gust").textContent      = w.gust.value.toFixed(1);
+      document.getElementById("w-dir").textContent       = w.direction.compass + " " + w.direction.degrees + "°";
+      document.getElementById("w-avg-dir").textContent   = w.avg_10min.direction_compass + " " + w.avg_10min.direction_degrees + "°";
+      document.getElementById("w-beaufort").textContent  = "Bf " + w.speed.beaufort.force + " · " + w.speed.beaufort.description;
+      document.getElementById("w-daily-max").textContent = w.daily_max_gust.value.toFixed(1);
+    } catch (e) {
+      document.getElementById("w-beaufort").textContent = "Wind data unavailable";
+    }
   }
+ 
+  /* ── Load atmospheric outlook ── */
+  async function loadOutlook() {
+    try {
+      const res  = await fetch(OUTLOOK_URL);
+      const data = await res.json();
+      const fc   = data.forecast;
+      const snap = fc.snapshot;
+ 
+      /* Current condition sentence + update main condition text */
+      const condEl = document.getElementById("cw-condition");
+      if (fc.current_condition) {
+        /* Show first ~12 words as a short condition label */
+        const words = fc.current_condition.split(" ");
+        condEl.textContent = words.slice(0, 10).join(" ") + (words.length > 10 ? "…" : "");
+      }
+ 
+      /* Full current condition text in the outlook panel */
+      document.getElementById("oc-current").textContent = fc.current_condition || "—";
+      document.getElementById("oc-3h").textContent      = fc.outlook_1_3h     || "—";
+      document.getElementById("oc-6h").textContent      = fc.outlook_3_6h     || "—";
+ 
+      /* Confidence badge */
+      const conf    = data.controller.winnerConfidence || 0;
+      const confEl  = document.getElementById("oc-conf-now");
+      const dotEl   = document.getElementById("oc-dot-now");
+      const textEl  = document.getElementById("oc-conf-now-text");
+      if (conf) {
+        confEl.style.display = "inline-flex";
+        textEl.textContent   = conf + "% confidence · " + (data.controller.selectedFamily || "").replace(/_/g, " ");
+        dotEl.className      = "conf-dot" + (conf >= 80 ? "" : conf >= 60 ? " mod" : " low");
+      }
+ 
+      /* Also update feels-like from snapshot if more accurate */
+      if (snap && snap.feels) {
+        document.getElementById("cw-feels").textContent = snap.feels.toFixed(1) + "°C";
+      }
+ 
+    } catch (e) {
+      document.getElementById("oc-current").textContent = "Outlook unavailable";
+      document.getElementById("oc-3h").textContent      = "—";
+      document.getElementById("oc-6h").textContent      = "—";
+    }
+  }
+ 
+  /* ── Boot ── */
+  async function refresh() {
+    await Promise.all([loadStation(), loadWind(), loadOutlook()]);
+  }
+ 
+  refresh();
+  setInterval(refresh, 600_000); /* 10-minute refresh */
+ 
 })();
 </script>
-
 
 <!-- ── 2. Open-Meteo — Hourly & 7-day ── -->
 <script>
