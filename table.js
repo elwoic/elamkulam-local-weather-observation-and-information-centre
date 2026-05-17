@@ -4,7 +4,7 @@ const lat     = 10.9081;
 const lon     = 76.2296;
 const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
-const API_URL  = "https://elwoi-dashboar-parameters.bold-waterfall-0d01.workers.dev/";
+const API_URL  = "https://elwoic-dashboard-for-table.bold-waterfall-0d01.workers.dev/";
 const WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
 
 // Fetch options — always bypass cache for live station data
