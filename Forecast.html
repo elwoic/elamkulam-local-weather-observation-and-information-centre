@@ -439,39 +439,203 @@
     /* ============================================================
        IMD BOX
     ============================================================ */
-    .imd-box {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      box-shadow: var(--shadow);
-    }
-    .imd-box-left h3 {
-      font-family: var(--font-serif);
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    .imd-box-left p  { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
-    .imd-box-time    { font-size: 10.5px; color: rgba(255,255,255,0.38); margin-top: 6px; }
-    .btn-imd {
-      display: inline-block;
-      padding: 10px 18px;
-      background: var(--gold);
-      color: var(--navy);
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      border-radius: 6px;
-      white-space: nowrap;
-      transition: background 0.15s;
-    }
-    .btn-imd:hover { background: var(--gold-dim); color: #fff; }
+      /* ---- IMD BOX ---- */
+  .imd-box {
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+ 
+  .imd-box-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+ 
+  .imd-box-header h3 {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 3px;
+  }
+ 
+  .imd-box-header p {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.5);
+    margin: 0;
+    line-height: 1.5;
+  }
+ 
+  .imd-updated {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 5px;
+  }
+ 
+  .btn-imd {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 14px;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+ 
+  .btn-imd:hover { background: var(--gold-dim); color: #fff; }
+ 
+  /* ---- DAY TABS ---- */
+  .imd-days {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+ 
+  .imd-days::-webkit-scrollbar { display: none; }
+ 
+  .imd-day-btn {
+    flex: 1 0 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 6px 10px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    transition: background 0.12s;
+    position: relative;
+  }
+ 
+  .imd-day-btn:last-child { border-right: none; }
+ 
+  .imd-day-btn:hover { background: rgba(255,255,255,0.05); }
+ 
+  .imd-day-btn.active { background: rgba(255,255,255,0.08); }
+ 
+  .imd-day-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+  }
+ 
+  .imd-day-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+ 
+  .imd-day-btn.active .imd-day-label,
+  .imd-day-label.today {
+    color: var(--gold);
+  }
+ 
+  .imd-color-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.12s;
+  }
+ 
+  .imd-day-btn.active .imd-color-dot {
+    border-color: rgba(255,255,255,0.4);
+  }
+ 
+  .imd-day-date {
+    font-size: 10px;
+    color: rgba(255,255,255,0.28);
+  }
+ 
+  /* dot colors */
+  .dot-1 { background: #22c55e; }
+  .dot-3 { background: #eab308; }
+  .dot-4 { background: #f97316; }
+  .dot-5 { background: #ef4444; }
+  .dot-x { background: rgba(255,255,255,0.15); }
+ 
+  /* ---- DETAIL PANEL ---- */
+  .imd-detail {
+    padding: 14px 20px 16px;
+    min-height: 72px;
+  }
+ 
+  .imd-detail-top {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 10px;
+  }
+ 
+  .imd-alert-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+ 
+  .imd-alert-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+ 
+  .imd-alert-date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.38);
+    margin-left: auto;
+  }
+ 
+  .imd-warning-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+ 
+  .imd-warning-tag {
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+ 
+  /* ---- STATUS BAR ---- */
+  .imd-status-bar {
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.3);
+    padding: 6px 20px;
+    background: rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: none;
+  }
+ 
+  /* ---- LOADING ---- */
+  .imd-loading-row {
+    padding: 18px 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+  }
 
     /* Kerala widget card */
     .kerala-widget-card {
@@ -839,14 +1003,32 @@ if (window.top === window.self) {
     <div style="display:flex; flex-direction:column; gap:16px;">
 
       <!-- IMD Alert -->
-      <div class="imd-box">
-        <div class="imd-box-left">
-          <h3>🇮🇳 IMD Kerala Alert</h3>
-          <p>Met Centre Thiruvananthapuram<br>Official District-wise Warnings</p>
-        </div>
-        <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
-           target="_blank" rel="noopener" class="btn-imd">Open Alert ↗</a>
-      </div>
+      <!-- IMD BOX HTML -->
+<div class="imd-box">
+ 
+  <!-- Header -->
+  <div class="imd-box-header">
+    <div class="imd-box-left">
+      <h3>&#127470;&#127475; IMD Kerala Alert</h3>
+      <p>Met Centre Thiruvananthapuram<br>Official District-wise Warnings — Malappuram</p>
+      <div class="imd-updated" id="imdUpdatedAt">Loading...</div>
+    </div>
+    <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
+       target="_blank" rel="noopener" class="btn-imd">Open IMD ↗</a>
+  </div>
+ 
+  <!-- Day tabs -->
+  <div class="imd-days" id="imdDays" role="tablist">
+    <div class="imd-loading-row">Loading forecast...</div>
+  </div>
+ 
+  <!-- Detail panel -->
+  <div class="imd-detail" id="imdDetail" role="tabpanel"></div>
+ 
+  <!-- Status bar (stale / updating / cache notices) -->
+  <div class="imd-status-bar" id="imdStatusBar"></div>
+ 
+</div>
 
       <!-- Kerala 7-day weatherwidget.io -->
       <div class="kerala-widget-card">
@@ -1015,6 +1197,167 @@ if (window.top === window.self) {
 <script src="imd-marquee.js"></script>
 <script type="module" src="elamkulam-forecast.js"></script>
 
+<!-- IMD BOX SCRIPT -->
+<script>
+(function () {
+ 
+  const WORKER_URL = "https://imdalert.aswanthkrishnak822.workers.dev";
+ 
+  const WARNING_MAP = {
+    "1":  "Very heavy rain",
+    "2":  "Heavy rain",
+    "4":  "Thunderstorm & lightning",
+    "8":  "Gusty winds",
+    "10": "Heavy rain",
+    "12": "Extremely heavy rain",
+    "16": "Squall"
+  };
+ 
+  const COLOR_META = {
+    "1": { name: "Green — No warning",         hex: "#22c55e", dot: "dot-1" },
+    "3": { name: "Yellow alert — Be aware",     hex: "#eab308", dot: "dot-3" },
+    "4": { name: "Orange alert — Be prepared",  hex: "#f97316", dot: "dot-4" },
+    "5": { name: "Red alert — Take action",     hex: "#ef4444", dot: "dot-5" }
+  };
+ 
+  function decodeWarnings(codeStr) {
+    if (!codeStr || codeStr === "0") return ["No specific warning"];
+    return codeStr.split(",").map(function (c) {
+      return WARNING_MAP[c.trim()] || ("Weather event " + c.trim());
+    });
+  }
+ 
+  function getISTDate() {
+    var s = new Date().toLocaleDateString("en-US", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric", month: "2-digit", day: "2-digit"
+    });
+    return new Date(s);
+  }
+ 
+  function offsetDate(baseDate, days) {
+    var d = new Date(baseDate);
+    d.setDate(d.getDate() + days);
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  }
+ 
+  var imdData = null;
+  var refreshScheduled = false;
+ 
+  function renderDays(todayDiff) {
+    var container = document.getElementById("imdDays");
+    var html = "";
+    var base = new Date(imdData.Date);
+    base.setHours(0, 0, 0, 0);
+ 
+    for (var i = 0; i < 5; i++) {
+      var colorId = imdData["Day" + (i + 1) + "_Color"] || "1";
+      var meta = COLOR_META[colorId] || { dot: "dot-x", hex: "#888" };
+      var isToday = i === todayDiff;
+      var isActive = isToday ? "active" : "";
+      var labelClass = isToday ? "imd-day-label today" : "imd-day-label";
+      var labelText = isToday ? "Today" : offsetDate(base, i);
+ 
+      html += '<button class="imd-day-btn ' + isActive + '"'
+            + ' role="tab" aria-selected="' + isToday + '"'
+            + ' data-day="' + i + '"'
+            + ' onclick="window._imdSelect(' + i + ')">'
+            + '<span class="' + labelClass + '">' + labelText + '</span>'
+            + '<div class="imd-color-dot ' + meta.dot + '"></div>'
+            + '<span class="imd-day-date">' + offsetDate(base, i) + '</span>'
+            + '</button>';
+    }
+ 
+    container.innerHTML = html;
+    renderDetail(todayDiff);
+  }
+ 
+  window._imdSelect = function (i) {
+    document.querySelectorAll(".imd-day-btn").forEach(function (btn, idx) {
+      btn.classList.toggle("active", idx === i);
+      btn.setAttribute("aria-selected", idx === i);
+    });
+    renderDetail(i);
+  };
+ 
+  function renderDetail(i) {
+    var detail = document.getElementById("imdDetail");
+    var colorId = imdData["Day" + (i + 1) + "_Color"] || "1";
+    var meta = COLOR_META[colorId] || { name: "Unknown", hex: "#888", dot: "dot-x" };
+    var warnings = decodeWarnings(imdData["Day_" + (i + 1)]);
+    var base = new Date(imdData.Date);
+    base.setHours(0, 0, 0, 0);
+    var dateLabel = offsetDate(base, i);
+ 
+    var tags = warnings.map(function (w) {
+      return '<span class="imd-warning-tag">' + w + '</span>';
+    }).join("");
+ 
+    detail.innerHTML =
+      '<div class="imd-detail-top">'
+      + '<div class="imd-alert-dot" style="background:' + meta.hex + ';"></div>'
+      + '<span class="imd-alert-name">' + meta.name + '</span>'
+      + '<span class="imd-alert-date">' + dateLabel + '</span>'
+      + '</div>'
+      + '<div class="imd-warning-tags">' + tags + '</div>';
+  }
+ 
+  async function loadIMD() {
+    try {
+      var res = await fetch(WORKER_URL);
+      if (!res.ok) throw new Error("fetch failed");
+      imdData = await res.json();
+ 
+      // Updated at
+      var upEl = document.getElementById("imdUpdatedAt");
+      upEl.textContent = "System updated: " + (imdData.updated_at || "N/A");
+ 
+      // Diff
+      var todayIST = getISTDate();
+      var base = new Date(imdData.Date);
+      base.setHours(0, 0, 0, 0);
+      var diff = Math.round((todayIST - base) / 86400000);
+      if (diff < 0) diff = 0;
+      if (diff > 4) diff = 4;
+ 
+      renderDays(diff);
+ 
+      // Status bar
+      var statusEl = document.getElementById("imdStatusBar");
+      var parts = [];
+      if (imdData.stale)      parts.push("⚠ Showing previous bulletin");
+      if (imdData.updating)   parts.push("🔄 Updating latest data...");
+      if (imdData.error_mode) parts.push("⚠ Using backup data");
+      if (imdData.is_cached)  parts.push("Served from cache · " + (imdData.fetch_period || ""));
+      if (parts.length) {
+        statusEl.style.display = "block";
+        statusEl.textContent = parts.join("  ·  ");
+      }
+ 
+      // Auto-refresh if updating in background
+      if (imdData.updating && !refreshScheduled) {
+        refreshScheduled = true;
+        setTimeout(function () {
+          refreshScheduled = false;
+          loadIMD();
+        }, 30000);
+      }
+ 
+    } catch (e) {
+      document.getElementById("imdDays").innerHTML =
+        '<div class="imd-loading-row">⚠ Could not load IMD data. Please check official IMD channels.</div>';
+      document.getElementById("imdDetail").innerHTML = "";
+    }
+  }
+ 
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadIMD);
+  } else {
+    loadIMD();
+  }
+ 
+})();
+</script>
 
 <!-- ── 1. OpenWeatherMap — Modern Current Conditions ── -->
 <!-- ── 1. OpenWeatherMap — Modern Current Conditions ── -->
