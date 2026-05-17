@@ -8,7 +8,7 @@ const lat     = 10.9081;
 const lon     = 76.2296;
 const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
-const API_URL  = "https://fine-boa-53.elwoicelamkulam.deno.net/";
+const API_URL  = "https://elwoic-weather-dash.bold-waterfall-0d01.workers.dev/";
 const WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
 
 const OW_KEY = OWM_KEY;
