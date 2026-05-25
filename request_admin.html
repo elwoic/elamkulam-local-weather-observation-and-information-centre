@@ -4,34 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELWOIC Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #0e1117;
-  --surface:  #161b25;
-  --surface2: #1e2535;
-  --border:   #2a3348;
-  --text:     #e2e8f0;
-  --muted:    #64748b;
-  --accent:   #3b82f6;
-  --green:    #22c55e;
-  --red:      #ef4444;
-  --orange:   #f97316;
-  --blue:     #3b82f6;
-  --mono:     'IBM Plex Mono', monospace;
-  --sans:     'IBM Plex Sans', sans-serif;
+  --bg:        #f7f8fa;
+  --surface:   #ffffff;
+  --surface2:  #f1f3f7;
+  --border:    #dde2ec;
+  --border2:   #c8d0e0;
+  --text:      #1a2236;
+  --muted:     #7a8aaa;
+  --accent:    #1d4ed8;
+  --green:     #16a34a;
+  --red:       #dc2626;
+  --orange:    #d97706;
+  --blue:      #1d4ed8;
+  --teal:      #0891b2;
+  --mono:      'IBM Plex Mono', monospace;
+  --serif:     'Source Serif 4', Georgia, serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--sans);
+  font-family: var(--serif);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
 }
 
-/* ── LOGIN ──────────────────────────────────────────── */
+/* ── LOGIN ─────────────────────────────────────── */
 #loginScreen {
   display: flex;
   align-items: center;
@@ -41,31 +43,40 @@ body {
 }
 
 .login-box {
-  width: 360px;
+  width: 380px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 40px;
+  padding: 48px 40px;
   text-align: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
 }
 
-.login-box h1 {
+.login-logo {
   font-family: var(--mono);
-  font-size: 28px;
-  letter-spacing: 4px;
-  color: #fff;
-  margin-bottom: 6px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  color: var(--text);
+  margin-bottom: 4px;
 }
 
-.login-box p {
+.login-sub {
   font-size: 11px;
   color: var(--muted);
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 32px;
+  margin-bottom: 10px;
 }
 
-.login-box input {
+.login-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 auto 32px;
+}
+
+.login-box input[type="password"] {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg);
@@ -78,63 +89,70 @@ body {
   outline: none;
   transition: border-color 0.2s;
 }
+.login-box input[type="password"]:focus { border-color: var(--accent); }
 
-.login-box input:focus { border-color: var(--accent); }
-
-.login-box button {
+.login-box .login-btn {
   width: 100%;
   padding: 12px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 6px;
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 1px;
   transition: background 0.2s;
 }
-
-.login-box button:hover { background: #2563eb; }
+.login-box .login-btn:hover { background: #1e40af; }
 
 .login-error {
   color: var(--red);
   font-size: 12px;
-  margin-top: 10px;
+  margin-top: 12px;
   display: none;
 }
 
-/* ── MAIN APP ────────────────────────────────────────── */
+/* ── APP ───────────────────────────────────────── */
 #appScreen { display: none; }
 
 .topbar {
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
+  border-bottom: 2px solid var(--border);
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 60px;
 }
+
+.topbar-left { display: flex; align-items: center; gap: 16px; }
 
 .topbar-title {
   font-family: var(--mono);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 3px;
-  color: #fff;
+  letter-spacing: 4px;
+  color: var(--text);
+}
+
+.topbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
 }
 
 .topbar-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
-  margin-top: 2px;
+  letter-spacing: 0.5px;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat-chip {
@@ -145,74 +163,73 @@ body {
   font-family: var(--mono);
 }
 
-.chip-pending  { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
-.chip-approved { background: rgba(34,197,94,0.15);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
-.chip-rejected { background: rgba(239,68,68,0.15);  color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
+.chip-pending  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.chip-approved { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+.chip-rejected { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
 
 .logout-btn {
-  padding: 6px 14px;
+  padding: 6px 16px;
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   border-radius: 6px;
   color: var(--muted);
   font-size: 12px;
   cursor: pointer;
-  font-family: var(--sans);
+  font-family: var(--serif);
   transition: all 0.2s;
 }
 .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
-.main { padding: 24px 28px; }
+.main { padding: 28px 32px; }
 
-/* ── CONTROLS ────────────────────────────────────────── */
+/* ── CONTROLS ──────────────────────────────────── */
 .controls {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.controls input, .controls select {
+.controls input,
+.controls select {
   padding: 9px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 13px;
   outline: none;
   transition: border-color 0.2s;
 }
-
-.controls input { flex: 1; min-width: 200px; }
-.controls input:focus, .controls select:focus { border-color: var(--accent); }
-.controls select option { background: var(--surface2); }
+.controls input { flex: 1; min-width: 220px; }
+.controls input:focus,
+.controls select:focus { border-color: var(--accent); }
 
 .refresh-btn {
   padding: 9px 16px;
-  background: var(--surface2);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  color: var(--text);
+  color: var(--muted);
   font-size: 13px;
   cursor: pointer;
-  font-family: var(--sans);
+  font-family: var(--serif);
   transition: all 0.2s;
 }
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── TABLE ───────────────────────────────────────────── */
+/* ── TABLE ─────────────────────────────────────── */
 .table-wrap {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+table { width: 100%; border-collapse: collapse; }
 
 thead tr {
   background: var(--surface2);
@@ -220,7 +237,7 @@ thead tr {
 }
 
 th {
-  padding: 12px 16px;
+  padding: 11px 16px;
   text-align: left;
   font-size: 10px;
   font-weight: 600;
@@ -232,31 +249,21 @@ th {
 
 tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
+  transition: background 0.12s;
 }
-
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--surface2); }
+tbody tr:hover { background: #f5f7ff; }
 
 td {
-  padding: 13px 16px;
+  padding: 12px 16px;
   font-size: 13px;
   vertical-align: middle;
 }
 
-.td-id {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-}
+.td-id   { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.td-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
-.td-date {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* Status badges */
+/* Badges */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -267,13 +274,12 @@ td {
   text-transform: uppercase;
   font-family: var(--mono);
 }
+.badge-Pending          { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.badge-approved         { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+.badge-approved_pending { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
+.badge-rejected         { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
 
-.badge-pending         { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
-.badge-approved        { background: rgba(34,197,94,0.15);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
-.badge-approved_pending{ background: rgba(59,130,246,0.15); color: var(--blue);   border: 1px solid rgba(59,130,246,0.3); }
-.badge-rejected        { background: rgba(239,68,68,0.15);  color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
-
-/* Action buttons */
+/* Buttons */
 .btn {
   padding: 5px 12px;
   border: none;
@@ -281,34 +287,33 @@ td {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  font-family: var(--sans);
+  font-family: var(--serif);
   transition: opacity 0.15s;
   margin-right: 4px;
 }
-.btn:hover { opacity: 0.85; }
+.btn:hover { opacity: 0.82; }
 .btn-view   { background: var(--accent); color: #fff; }
-.btn-delete { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+.btn-delete { background: transparent; color: var(--muted); border: 1px solid var(--border); }
 .btn-delete:hover { color: var(--red); border-color: var(--red); opacity: 1; }
 
 .empty-row td {
   text-align: center;
-  padding: 40px;
+  padding: 48px;
   color: var(--muted);
   font-size: 13px;
 }
 
-/* ── MODAL ───────────────────────────────────────────── */
+/* ── MODAL ─────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(10,20,40,0.45);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
 }
-
 .modal-overlay.open { display: flex; }
 
 .modal {
@@ -316,24 +321,28 @@ td {
   border: 1px solid var(--border);
   border-radius: 12px;
   width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
+  max-width: 580px;
+  max-height: 92vh;
   overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.14);
 }
 
 .modal-header {
-  padding: 20px 24px 16px;
+  padding: 18px 24px 14px;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--surface2);
+  border-radius: 12px 12px 0 0;
 }
 
 .modal-header h3 {
   font-family: var(--mono);
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #fff;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--text);
+  text-transform: uppercase;
 }
 
 .modal-close {
@@ -343,11 +352,10 @@ td {
   font-size: 20px;
   cursor: pointer;
   line-height: 1;
-  padding: 0 4px;
 }
 .modal-close:hover { color: var(--text); }
 
-.modal-body { padding: 20px 24px; }
+.modal-body { padding: 22px 24px; }
 
 .detail-grid {
   display: grid;
@@ -362,19 +370,12 @@ td {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   font-family: var(--mono);
 }
+.detail-item span { font-size: 13px; color: var(--text); }
 
-.detail-item span {
-  font-size: 13px;
-  color: var(--text);
-}
-
-.detail-full {
-  margin-bottom: 14px;
-}
-
+.detail-full { margin-bottom: 14px; }
 .detail-full label {
   display: block;
   font-size: 10px;
@@ -385,14 +386,8 @@ td {
   font-family: var(--mono);
 }
 
-.detail-full span {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.6;
-}
-
 .detail-box {
-  background: var(--bg);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 14px;
@@ -401,11 +396,7 @@ td {
   line-height: 1.6;
 }
 
-.divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 16px 0;
-}
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
 .modal-actions {
   display: flex;
@@ -414,89 +405,123 @@ td {
   margin-top: 16px;
 }
 
-.btn-approve { background: var(--green);  color: #fff; padding: 8px 18px; font-size: 12px; }
-.btn-reject  { background: var(--red);    color: #fff; padding: 8px 18px; font-size: 12px; }
-.btn-cancel  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); padding: 8px 18px; font-size: 12px; }
+.btn-approve      { background: var(--green);  color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reject       { background: var(--red);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-datasent     { background: var(--teal);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reopen       { background: var(--orange); color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-cancel       { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); padding: 9px 20px; font-size: 12px; border-radius: 6px; }
 
-/* Reply modal */
-.reply-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
+/* Reply modal specific */
+.reply-section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-bottom: 6px;
+  display: block;
 }
 
-.reply-option input[type="checkbox"] { margin-top: 2px; accent-color: var(--accent); }
-.reply-option label { font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.5; }
-
-.reply-textarea {
+.reply-input {
   width: 100%;
-  height: 140px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
-  font-family: var(--sans);
+  font-family: var(--serif);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.reply-input:focus { border-color: var(--accent); }
+
+.reply-textarea {
+  width: 100%;
+  height: 130px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--serif);
   font-size: 13px;
   line-height: 1.6;
   resize: vertical;
   outline: none;
+  margin-bottom: 6px;
 }
 .reply-textarea:focus { border-color: var(--accent); }
 
-/* Loading */
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: var(--muted);
-  font-size: 13px;
-  font-family: var(--mono);
+.pending-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
 }
+.pending-option input[type="checkbox"] { margin-top: 2px; accent-color: var(--accent); }
+.pending-option label { font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.5; }
+
+/* Confirm overlay */
+.confirm-box {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.confirm-box p { font-size: 13px; color: #7c2d12; line-height: 1.6; }
 
 /* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  padding: 12px 20px;
+  padding: 12px 22px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   z-index: 9999;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px);
   transition: all 0.3s;
   pointer-events: none;
+  font-family: var(--serif);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-success { background: var(--green); color: #fff; }
 .toast-error   { background: var(--red);   color: #fff; }
+.toast-warn    { background: var(--orange); color: #fff; }
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN ─────────────────────────────────────────── -->
+<!-- ── LOGIN ──────────────────────────────────────────── -->
 <div id="loginScreen">
   <div class="login-box">
-    <h1>ELWOIC</h1>
-    <p>Admin Panel</p>
-    <input type="password" id="passwordInput" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
-    <button onclick="login()">Sign In</button>
+    <div class="login-logo">ELWOIC</div>
+    <div class="login-sub">Admin Panel</div>
+    <div class="login-divider"></div>
+    <input type="password" id="passwordInput" placeholder="Enter password"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="login-btn" onclick="login()">Sign In</button>
     <div class="login-error" id="loginError">Incorrect password. Try again.</div>
   </div>
 </div>
 
-<!-- ── APP ───────────────────────────────────────────── -->
+<!-- ── APP ────────────────────────────────────────────── -->
 <div id="appScreen">
 
   <div class="topbar">
-    <div>
+    <div class="topbar-left">
       <div class="topbar-title">ELWOIC</div>
+      <div class="topbar-sep"></div>
       <div class="topbar-sub">Data Request Admin Panel</div>
     </div>
     <div class="topbar-right">
@@ -508,7 +533,6 @@ td {
   </div>
 
   <div class="main">
-
     <div class="controls">
       <input type="text" id="search" placeholder="Search name, email or request ID…" oninput="render()">
       <select id="filterStatus" onchange="render()">
@@ -544,7 +568,6 @@ td {
         </tbody>
       </table>
     </div>
-
   </div>
 </div>
 
@@ -552,7 +575,7 @@ td {
 <div class="modal-overlay" id="viewOverlay">
   <div class="modal">
     <div class="modal-header">
-      <h3>REQUEST DETAILS</h3>
+      <h3>Request Details</h3>
       <button class="modal-close" onclick="closeModal('viewOverlay')">×</button>
     </div>
     <div class="modal-body" id="viewBody"></div>
@@ -563,17 +586,39 @@ td {
 <div class="modal-overlay" id="replyOverlay">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="replyTitle">SEND REPLY</h3>
+      <h3 id="replyTitle">Send Reply</h3>
       <button class="modal-close" onclick="closeModal('replyOverlay')">×</button>
     </div>
     <div class="modal-body">
-      <div class="reply-option" id="pendingOption" style="display:none;">
-        <input type="checkbox" id="dataPendingCheck">
-        <label for="dataPendingCheck"><strong>Data not ready yet</strong><br>Notify the user that request is approved but data is still being processed.</label>
+
+      <!-- Confirm warning for status change (shown when needed) -->
+      <div class="confirm-box" id="confirmWarning" style="display:none;">
+        <p id="confirmWarningText"></p>
       </div>
+
+      <!-- Pending option (approve only) -->
+      <div class="pending-option" id="pendingOption" style="display:none;">
+        <input type="checkbox" id="dataPendingCheck">
+        <label for="dataPendingCheck">
+          <strong>Data not ready yet</strong><br>
+          Notify user that request is approved but data is still being processed.
+        </label>
+      </div>
+
+      <!-- Status message (shown to user as headline) -->
+      <label class="reply-section-label">Status Message <span style="color:#888;font-size:10px;">(shown prominently in email)</span></label>
+      <input type="text" class="reply-input" id="statusMessageInput" placeholder="e.g. Your request has been approved.">
+
+      <!-- Final status line -->
+      <label class="reply-section-label">Final Status Line <span style="color:#888;font-size:10px;">(shown in summary table)</span></label>
+      <input type="text" class="reply-input" id="finalStatusInput" placeholder="e.g. Approved — Data will be sent by 27 May 2026">
+
+      <!-- Main message body -->
+      <label class="reply-section-label">Message Body</label>
       <textarea class="reply-textarea" id="replyText"></textarea>
+
       <div class="modal-actions">
-        <button class="btn btn-approve" onclick="sendReply()">Send &amp; Update Status</button>
+        <button class="btn btn-approve" id="sendBtn" onclick="sendReply()">Send &amp; Update</button>
         <button class="btn btn-cancel"  onclick="closeModal('replyOverlay')">Cancel</button>
       </div>
     </div>
@@ -585,10 +630,10 @@ td {
 
 <script>
 // ── Config ────────────────────────────────────────────
-const ADMIN_PASSWORD  = "YOUR_ADMIN_PASSWORD";   // ← change this
-const WORKER_URL      = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev"; // ← change this
+const ADMIN_PASSWORD  = "YOUR_ADMIN_PASSWORD";
+const WORKER_URL      = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
 const EMAILJS_SERVICE = "service_qpz7vpz";
-const EMAILJS_TEMPLATE= "template_gejp4qq";      // ← your reply template ID
+const EMAILJS_TEMPLATE= "template_gejp4qq";
 const EMAILJS_KEY     = "Bd-no1cWjcYLmCKIW";
 
 // ── Auth ──────────────────────────────────────────────
@@ -609,15 +654,12 @@ function logout() {
   location.reload();
 }
 
-// Check session on load
 window.addEventListener("load", () => {
   if (sessionStorage.getItem("elwoic_admin") === "1") {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appScreen").style.display   = "block";
     loadRequests();
   }
-
-  // EmailJS
   emailjs.init(EMAILJS_KEY);
 });
 
@@ -639,7 +681,7 @@ async function loadRequests() {
 
 function updateStats() {
   document.getElementById("statPending").textContent  = allData.filter(d => d.status === "Pending").length  + " Pending";
-  document.getElementById("statApproved").textContent = allData.filter(d => d.status === "approved").length + " Approved";
+  document.getElementById("statApproved").textContent = allData.filter(d => d.status === "approved" || d.status === "approved_pending").length + " Approved";
   document.getElementById("statRejected").textContent = allData.filter(d => d.status === "rejected").length + " Rejected";
 }
 
@@ -650,9 +692,9 @@ function render() {
 
   let data = allData.filter(d => {
     const matchStatus = status === "all" || d.status === status;
-    const matchSearch = (d.name         || "").toLowerCase().includes(search) ||
-                        (d.email        || "").toLowerCase().includes(search) ||
-                        (d.request_id   || "").toLowerCase().includes(search);
+    const matchSearch = (d.name       || "").toLowerCase().includes(search) ||
+                        (d.email      || "").toLowerCase().includes(search) ||
+                        (d.request_id || "").toLowerCase().includes(search);
     return matchStatus && matchSearch;
   });
 
@@ -667,9 +709,18 @@ function render() {
     return;
   }
 
+  const statusLabels = {
+    "Pending":          "Pending",
+    "approved":         "Approved",
+    "approved_pending": "Appr. Pending",
+    "rejected":         "Rejected"
+  };
+
   body.innerHTML = data.map(d => {
-    const date = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—";
-    const statusLabel = d.status === "approved_pending" ? "Appr. Pending" : d.status;
+    const date  = d.created_at
+      ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
+      : "—";
+    const label = statusLabels[d.status] || d.status;
     return `
     <tr>
       <td class="td-id">${d.request_id || "—"}</td>
@@ -677,10 +728,10 @@ function render() {
       <td>${d.email || "—"}</td>
       <td>${d.purpose_category || "—"}</td>
       <td class="td-date">${date}</td>
-      <td><span class="badge badge-${d.status}">${statusLabel}</span></td>
+      <td><span class="badge badge-${d.status}">${label}</span></td>
       <td>
-        <button class="btn btn-view"   onclick="viewRequest('${d.id}')">View</button>
-        <button class="btn btn-delete" onclick="deleteRequest('${d.id}')">Delete</button>
+        <button class="btn btn-view"   onclick="viewRequest(${d.id})">View</button>
+        <button class="btn btn-delete" onclick="deleteRequest(${d.id})">Delete</button>
       </td>
     </tr>`;
   }).join("");
@@ -693,6 +744,27 @@ function viewRequest(id) {
   current = d;
 
   const date = d.created_at ? new Date(d.created_at).toLocaleString("en-IN") : "—";
+
+  // Smart action buttons based on current status
+  let actionBtns = "";
+
+  if (d.status === "Pending") {
+    actionBtns = `
+      <button class="btn btn-approve" onclick="openReply('approved')">Approve</button>
+      <button class="btn btn-reject"  onclick="openReply('rejected')">Reject</button>`;
+
+  } else if (d.status === "approved_pending") {
+    actionBtns = `
+      <button class="btn btn-datasent" onclick="openReply('mark_sent')">Mark Data Sent</button>
+      <button class="btn btn-reject"   onclick="openReply('reject_from_approved')">Reject</button>`;
+
+  } else if (d.status === "approved") {
+    actionBtns = `<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">✓ Completed — no further action needed</span>`;
+
+  } else if (d.status === "rejected") {
+    actionBtns = `
+      <button class="btn btn-reopen" onclick="openReply('reopen')">Re-open Request</button>`;
+  }
 
   document.getElementById("viewBody").innerHTML = `
     <div class="detail-grid">
@@ -720,58 +792,96 @@ function viewRequest(id) {
     <div class="detail-full" style="margin-top:12px;"><label>Additional Details</label><div class="detail-box">${d.additional_details || "None"}</div></div>
     <hr class="divider">
     <div class="modal-actions">
-      <button class="btn btn-approve" onclick="openReply('approved')">Approve</button>
-      <button class="btn btn-reject"  onclick="openReply('rejected')">Reject</button>
-      <button class="btn btn-cancel"  onclick="closeModal('viewOverlay')">Close</button>
-    </div>
-  `;
+      ${actionBtns}
+      <button class="btn btn-cancel" onclick="closeModal('viewOverlay')">Close</button>
+    </div>`;
 
   openModal("viewOverlay");
 }
 
 // ── Reply ─────────────────────────────────────────────
-function openReply(status) {
-  window.replyStatus = status;
+function openReply(action) {
+  window.replyAction = action;
   const d = current;
 
-  document.getElementById("replyTitle").textContent = status === "approved" ? "APPROVE REQUEST" : "REJECT REQUEST";
-  document.getElementById("pendingOption").style.display = status === "approved" ? "flex" : "none";
-  document.getElementById("dataPendingCheck").checked = false;
+  // Reset fields
+  document.getElementById("confirmWarning").style.display  = "none";
+  document.getElementById("pendingOption").style.display   = "none";
+  document.getElementById("dataPendingCheck").checked      = false;
 
-  const defaultMsg = status === "approved"
-    ? `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for the parameters: ${d.parameters} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`
-    : `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have any questions, please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+  // Set defaults based on action
+  if (action === "approved") {
+    document.getElementById("replyTitle").textContent        = "Approve Request";
+    document.getElementById("pendingOption").style.display   = "flex";
+    document.getElementById("statusMessageInput").value      = "Your data request has been Approved.";
+    document.getElementById("finalStatusInput").value        = "Approved — Data will be sent shortly.";
+    document.getElementById("replyText").value               =
+      `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for: ${d.parameters} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
-  document.getElementById("replyText").value = defaultMsg;
+  } else if (action === "mark_sent") {
+    document.getElementById("replyTitle").textContent        = "Mark Data as Sent";
+    document.getElementById("statusMessageInput").value      = "Your requested data has been sent.";
+    document.getElementById("finalStatusInput").value        = "Approved — Data Sent";
+    document.getElementById("replyText").value               =
+      `Dear ${d.name},\n\nThe data for your request (${d.request_id}) has been processed and sent to you.\n\nPlease check your email for the attached data.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+
+  } else if (action === "rejected") {
+    document.getElementById("replyTitle").textContent        = "Reject Request";
+    document.getElementById("statusMessageInput").value      = "Your data request could not be approved at this time.";
+    document.getElementById("finalStatusInput").value        = "Rejected";
+    document.getElementById("replyText").value               =
+      `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have any questions, please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+
+  } else if (action === "reject_from_approved") {
+    document.getElementById("replyTitle").textContent = "Reject Approved Request";
+    document.getElementById("confirmWarning").style.display = "block";
+    document.getElementById("confirmWarningText").textContent =
+      "⚠️ This request was already approved. Rejecting it will notify the user that the approval has been withdrawn. Please provide a clear reason in the message below.";
+    document.getElementById("statusMessageInput").value = "Your approved request has been withdrawn.";
+    document.getElementById("finalStatusInput").value   = "Rejected — Approval Withdrawn";
+    document.getElementById("replyText").value          =
+      `Dear ${d.name},\n\nWe regret to inform you that your previously approved request (${d.request_id}) has been withdrawn due to the following reason:\n\n[Please state the reason here]\n\nWe apologise for the inconvenience. Please contact us at info@elwoic.in for further clarification.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+
+  } else if (action === "reopen") {
+    document.getElementById("replyTitle").textContent = "Re-open Rejected Request";
+    document.getElementById("confirmWarning").style.display = "block";
+    document.getElementById("confirmWarningText").textContent =
+      "ℹ️ This will change the status back to Pending and notify the user that their request is being reconsidered.";
+    document.getElementById("statusMessageInput").value = "Your data request is being reconsidered.";
+    document.getElementById("finalStatusInput").value   = "Re-opened — Under Review";
+    document.getElementById("replyText").value          =
+      `Dear ${d.name},\n\nWe would like to inform you that your previously rejected request (${d.request_id}) is being reconsidered.\n\nWe will update you once a decision has been made.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+  }
+
   closeModal("viewOverlay");
   openModal("replyOverlay");
 }
 
 async function sendReply() {
-  const d          = current;
-  const msg        = document.getElementById("replyText").value.trim();
-  const isPending  = document.getElementById("dataPendingCheck").checked;
-  const baseStatus = window.replyStatus;
+  const d             = current;
+  const action        = window.replyAction;
+  const msg           = document.getElementById("replyText").value.trim();
+  const statusMsg     = document.getElementById("statusMessageInput").value.trim();
+  const finalStatus   = document.getElementById("finalStatusInput").value.trim();
+  const isPending     = document.getElementById("dataPendingCheck").checked;
 
-  let finalStatus, statusMessage, themeColor;
+  let newStatus, themeColor;
 
-  if (baseStatus === "approved") {
-    if (isPending) {
-      finalStatus   = "approved_pending";
-      statusMessage = "Your data request has been APPROVED. The data is currently being processed and will be sent to you shortly.";
-      themeColor    = "#1a6bbf";
-    } else {
-      finalStatus   = "approved";
-      statusMessage = "Your data request has been APPROVED and is provided below.";
-      themeColor    = "#16a34a";
-    }
-  } else {
-    finalStatus   = "rejected";
-    statusMessage = "Your data request has been REVIEWED and unfortunately could not be approved at this time.";
-    themeColor    = "#dc2626";
+  if (action === "approved") {
+    newStatus  = isPending ? "approved_pending" : "approved";
+    themeColor = isPending ? "#1d4ed8" : "#16a34a";
+  } else if (action === "mark_sent") {
+    newStatus  = "approved";
+    themeColor = "#16a34a";
+  } else if (action === "rejected" || action === "reject_from_approved") {
+    newStatus  = "rejected";
+    themeColor = "#dc2626";
+  } else if (action === "reopen") {
+    newStatus  = "Pending";
+    themeColor = "#d97706";
   }
 
-  // Send email via EmailJS
+  // Send email
   try {
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
       to_email:       d.email,
@@ -780,7 +890,8 @@ async function sendReply() {
       parameters:     d.parameters,
       type:           d.type,
       message:        msg,
-      status_message: statusMessage,
+      status_message: statusMsg,
+      final_status:   finalStatus,
       theme_color:    themeColor
     });
   } catch (err) {
@@ -788,22 +899,21 @@ async function sendReply() {
     return;
   }
 
-  // Update status in Supabase via Worker
+  // Update Supabase
   try {
     await fetch(`${WORKER_URL}/update`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id: d.id, status: finalStatus })
+      body:    JSON.stringify({ id: d.id, status: newStatus })
     });
 
-    // Update local data
     const idx = allData.findIndex(x => x.id == d.id);
-    if (idx !== -1) allData[idx].status = finalStatus;
+    if (idx !== -1) allData[idx].status = newStatus;
 
     updateStats();
     render();
     closeModal("replyOverlay");
-    showToast("Reply sent. Status updated to: " + finalStatus, "success");
+    showToast("Reply sent. Status → " + newStatus, "success");
 
   } catch (err) {
     showToast("Status update failed", "error");
@@ -812,7 +922,7 @@ async function sendReply() {
 
 // ── Delete ────────────────────────────────────────────
 async function deleteRequest(id) {
-  if (!confirm("Delete this request permanently?")) return;
+  if (!confirm("Permanently delete this request?")) return;
   try {
     await fetch(`${WORKER_URL}/delete`, {
       method:  "POST",
@@ -828,21 +938,18 @@ async function deleteRequest(id) {
   }
 }
 
-// ── Modal helpers ─────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
-// ── Toast ─────────────────────────────────────────────
 function showToast(msg, type = "success") {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.className = `toast toast-${type} show`;
-  setTimeout(() => t.classList.remove("show"), 3000);
+  setTimeout(() => t.classList.remove("show"), 3200);
 }
 </script>
 
-<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 </body>
 </html>
