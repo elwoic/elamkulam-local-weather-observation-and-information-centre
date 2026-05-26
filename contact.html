@@ -1181,7 +1181,7 @@ window.closeNoteModal = () => {
       btn.innerHTML        = '<span class="material-icons">hourglass_empty</span> Sending…';
       statusText.innerText = "Submitting…";
 
-      const res = await fetch("YOUR_WORKER_URL", {
+      const res = await fetch("https://elwoic-massages.bold-waterfall-0d01.workers.dev", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
