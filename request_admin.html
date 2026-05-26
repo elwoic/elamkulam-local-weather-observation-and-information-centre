@@ -76,7 +76,7 @@ body {
   margin: 0 auto 32px;
 }
 
-.login-box input[type="password"] {
+.login-box input {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg);
@@ -85,11 +85,11 @@ body {
   color: var(--text);
   font-family: var(--mono);
   font-size: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   outline: none;
   transition: border-color 0.2s;
 }
-.login-box input[type="password"]:focus { border-color: var(--accent); }
+.login-box input:focus { border-color: var(--accent); }
 
 .login-box .login-btn {
   width: 100%;
@@ -104,8 +104,10 @@ body {
   cursor: pointer;
   letter-spacing: 1px;
   transition: background 0.2s;
+  margin-top: 4px;
 }
-.login-box .login-btn:hover { background: #1e40af; }
+.login-box .login-btn:hover    { background: #1e40af; }
+.login-box .login-btn:disabled { background: #93c5fd; cursor: not-allowed; }
 
 .login-error {
   color: var(--red);
@@ -137,23 +139,11 @@ body {
   color: var(--text);
 }
 
-.topbar-sep {
-  width: 1px;
-  height: 20px;
-  background: var(--border);
-}
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
 
-.topbar-sub {
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.5px;
-}
+.topbar-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
 .stat-chip {
   padding: 4px 12px;
@@ -182,7 +172,6 @@ body {
 
 .main { padding: 28px 32px; }
 
-/* ── CONTROLS ──────────────────────────────────── */
 .controls {
   display: flex;
   gap: 10px;
@@ -220,7 +209,6 @@ body {
 }
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── TABLE ─────────────────────────────────────── */
 .table-wrap {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -231,10 +219,7 @@ body {
 
 table { width: 100%; border-collapse: collapse; }
 
-thead tr {
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-}
+thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
 
 th {
   padding: 11px 16px;
@@ -247,23 +232,15 @@ th {
   font-family: var(--mono);
 }
 
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.12s;
-}
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: #f5f7ff; }
 
-td {
-  padding: 12px 16px;
-  font-size: 13px;
-  vertical-align: middle;
-}
+td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 
 .td-id   { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .td-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
-/* Badges */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -279,7 +256,6 @@ td {
 .badge-approved_pending { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
 .badge-rejected         { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
 
-/* Buttons */
 .btn {
   padding: 5px 12px;
   border: none;
@@ -296,14 +272,8 @@ td {
 .btn-delete { background: transparent; color: var(--muted); border: 1px solid var(--border); }
 .btn-delete:hover { color: var(--red); border-color: var(--red); opacity: 1; }
 
-.empty-row td {
-  text-align: center;
-  padding: 48px;
-  color: var(--muted);
-  font-size: 13px;
-}
+.empty-row td { text-align: center; padding: 48px; color: var(--muted); font-size: 13px; }
 
-/* ── MODAL ─────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -398,20 +368,14 @@ td {
 
 .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
-.modal-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
+.modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 
-.btn-approve      { background: var(--green);  color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-reject       { background: var(--red);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-datasent     { background: var(--teal);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-reopen       { background: var(--orange); color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-cancel       { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-approve  { background: var(--green);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reject   { background: var(--red);      color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-datasent { background: var(--teal);     color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reopen   { background: var(--orange);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-cancel   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); padding: 9px 20px; font-size: 12px; border-radius: 6px; }
 
-/* Reply modal specific */
 .reply-section-label {
   font-size: 10px;
   text-transform: uppercase;
@@ -467,7 +431,6 @@ td {
 .pending-option input[type="checkbox"] { margin-top: 2px; accent-color: var(--accent); }
 .pending-option label { font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.5; }
 
-/* Confirm overlay */
 .confirm-box {
   background: #fff7ed;
   border: 1px solid #fed7aa;
@@ -477,7 +440,6 @@ td {
 }
 .confirm-box p { font-size: 13px; color: #7c2d12; line-height: 1.6; }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -508,16 +470,17 @@ td {
     <div class="login-logo">ELWOIC</div>
     <div class="login-sub">Admin Panel</div>
     <div class="login-divider"></div>
-    <input type="password" id="passwordInput" placeholder="Enter password"
+    <input type="text"     id="usernameInput" placeholder="Username"
            onkeydown="if(event.key==='Enter') login()">
-    <button class="login-btn" onclick="login()">Sign In</button>
-    <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+    <input type="password" id="passwordInput" placeholder="Password"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="login-btn" id="loginBtn" onclick="login()">Sign In</button>
+    <div class="login-error" id="loginError">Incorrect username or password.</div>
   </div>
 </div>
 
 <!-- ── APP ────────────────────────────────────────────── -->
 <div id="appScreen">
-
   <div class="topbar">
     <div class="topbar-left">
       <div class="topbar-title">ELWOIC</div>
@@ -590,13 +553,9 @@ td {
       <button class="modal-close" onclick="closeModal('replyOverlay')">×</button>
     </div>
     <div class="modal-body">
-
-      <!-- Confirm warning for status change (shown when needed) -->
       <div class="confirm-box" id="confirmWarning" style="display:none;">
         <p id="confirmWarningText"></p>
       </div>
-
-      <!-- Pending option (approve only) -->
       <div class="pending-option" id="pendingOption" style="display:none;">
         <input type="checkbox" id="dataPendingCheck">
         <label for="dataPendingCheck">
@@ -604,58 +563,84 @@ td {
           Notify user that request is approved but data is still being processed.
         </label>
       </div>
-
-      <!-- Status message (shown to user as headline) -->
       <label class="reply-section-label">Status Message <span style="color:#888;font-size:10px;">(shown prominently in email)</span></label>
       <input type="text" class="reply-input" id="statusMessageInput" placeholder="e.g. Your request has been approved.">
-
-      <!-- Final status line -->
       <label class="reply-section-label">Final Status Line <span style="color:#888;font-size:10px;">(shown in summary table)</span></label>
       <input type="text" class="reply-input" id="finalStatusInput" placeholder="e.g. Approved — Data will be sent by 27 May 2026">
-
-      <!-- Main message body -->
       <label class="reply-section-label">Message Body</label>
       <textarea class="reply-textarea" id="replyText"></textarea>
-
       <div class="modal-actions">
-        <button class="btn btn-approve" id="sendBtn" onclick="sendReply()">Send &amp; Update</button>
+        <button class="btn btn-approve" onclick="sendReply()">Send &amp; Update</button>
         <button class="btn btn-cancel"  onclick="closeModal('replyOverlay')">Cancel</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── TOAST ──────────────────────────────────────────── -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ── Config ────────────────────────────────────────────
-const ADMIN_PASSWORD  = "YOUR_ADMIN_PASSWORD";
-const WORKER_URL      = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
-const EMAILJS_SERVICE = "service_qpz7vpz";
-const EMAILJS_TEMPLATE= "template_gejp4qq";
-const EMAILJS_KEY     = "Bd-no1cWjcYLmCKIW";
+const WORKER_URL       = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
+const EMAILJS_SERVICE  = "service_qpz7vpz";
+const EMAILJS_TEMPLATE = "template_gejp4qq";
+const EMAILJS_KEY      = "Bd-no1cWjcYLmCKIW";
+
+// ── Session token (stored in sessionStorage after login) ──
+function getToken() { return sessionStorage.getItem("elwoic_token"); }
 
 // ── Auth ──────────────────────────────────────────────
-function login() {
-  const pw = document.getElementById("passwordInput").value;
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem("elwoic_admin", "1");
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("appScreen").style.display   = "block";
-    loadRequests();
-  } else {
-    document.getElementById("loginError").style.display = "block";
+async function login() {
+  const username = document.getElementById("usernameInput").value.trim();
+  const password = document.getElementById("passwordInput").value;
+  const btn      = document.getElementById("loginBtn");
+  const errEl    = document.getElementById("loginError");
+
+  if (!username || !password) {
+    errEl.textContent = "Please enter both username and password.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = "Signing in…";
+  errEl.style.display = "none";
+
+  try {
+    const res  = await fetch(`${WORKER_URL}/login`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      sessionStorage.setItem("elwoic_token", data.token);
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("appScreen").style.display   = "block";
+      loadRequests();
+    } else {
+      errEl.textContent   = "Incorrect username or password.";
+      errEl.style.display = "block";
+    }
+
+  } catch (err) {
+    errEl.textContent   = "Connection failed. Please try again.";
+    errEl.style.display = "block";
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = "Sign In";
   }
 }
 
 function logout() {
-  sessionStorage.removeItem("elwoic_admin");
+  sessionStorage.removeItem("elwoic_token");
   location.reload();
 }
 
 window.addEventListener("load", () => {
-  if (sessionStorage.getItem("elwoic_admin") === "1") {
+  if (getToken()) {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appScreen").style.display   = "block";
     loadRequests();
@@ -663,24 +648,41 @@ window.addEventListener("load", () => {
   emailjs.init(EMAILJS_KEY);
 });
 
+// ── Authenticated fetch helper ────────────────────────
+async function authFetch(url, options = {}) {
+  const headers = {
+    "Content-Type":  "application/json",
+    "X-Admin-Token": getToken(),
+    ...(options.headers || {})
+  };
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401) {
+    showToast("Session expired. Please log in again.", "error");
+    setTimeout(() => logout(), 2000);
+    throw new Error("Unauthorised");
+  }
+  return res;
+}
+
 // ── Data ──────────────────────────────────────────────
 let allData = [];
 let current = {};
 
 async function loadRequests() {
   try {
-    const res  = await fetch(`${WORKER_URL}/requests`);
+    const res  = await authFetch(`${WORKER_URL}/requests`);
     const data = await res.json();
     allData = data;
     updateStats();
     render();
   } catch (err) {
-    showToast("Failed to load requests", "error");
+    if (err.message !== "Unauthorised")
+      showToast("Failed to load requests", "error");
   }
 }
 
 function updateStats() {
-  document.getElementById("statPending").textContent  = allData.filter(d => d.status === "Pending").length  + " Pending";
+  document.getElementById("statPending").textContent  = allData.filter(d => d.status === "Pending").length + " Pending";
   document.getElementById("statApproved").textContent = allData.filter(d => d.status === "approved" || d.status === "approved_pending").length + " Approved";
   document.getElementById("statRejected").textContent = allData.filter(d => d.status === "rejected").length + " Rejected";
 }
@@ -710,10 +712,8 @@ function render() {
   }
 
   const statusLabels = {
-    "Pending":          "Pending",
-    "approved":         "Approved",
-    "approved_pending": "Appr. Pending",
-    "rejected":         "Rejected"
+    "Pending": "Pending", "approved": "Approved",
+    "approved_pending": "Appr. Pending", "rejected": "Rejected"
   };
 
   body.innerHTML = data.map(d => {
@@ -745,25 +745,19 @@ function viewRequest(id) {
 
   const date = d.created_at ? new Date(d.created_at).toLocaleString("en-IN") : "—";
 
-  // Smart action buttons based on current status
   let actionBtns = "";
-
   if (d.status === "Pending") {
     actionBtns = `
       <button class="btn btn-approve" onclick="openReply('approved')">Approve</button>
       <button class="btn btn-reject"  onclick="openReply('rejected')">Reject</button>`;
-
   } else if (d.status === "approved_pending") {
     actionBtns = `
       <button class="btn btn-datasent" onclick="openReply('mark_sent')">Mark Data Sent</button>
       <button class="btn btn-reject"   onclick="openReply('reject_from_approved')">Reject</button>`;
-
   } else if (d.status === "approved") {
     actionBtns = `<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">✓ Completed — no further action needed</span>`;
-
   } else if (d.status === "rejected") {
-    actionBtns = `
-      <button class="btn btn-reopen" onclick="openReply('reopen')">Re-open Request</button>`;
+    actionBtns = `<button class="btn btn-reopen" onclick="openReply('reopen')">Re-open Request</button>`;
   }
 
   document.getElementById("viewBody").innerHTML = `
@@ -804,47 +798,45 @@ function openReply(action) {
   window.replyAction = action;
   const d = current;
 
-  // Reset fields
-  document.getElementById("confirmWarning").style.display  = "none";
-  document.getElementById("pendingOption").style.display   = "none";
-  document.getElementById("dataPendingCheck").checked      = false;
+  document.getElementById("confirmWarning").style.display = "none";
+  document.getElementById("pendingOption").style.display  = "none";
+  document.getElementById("dataPendingCheck").checked     = false;
 
-  // Set defaults based on action
   if (action === "approved") {
-    document.getElementById("replyTitle").textContent        = "Approve Request";
-    document.getElementById("pendingOption").style.display   = "flex";
-    document.getElementById("statusMessageInput").value      = "Your data request has been Approved.";
-    document.getElementById("finalStatusInput").value        = "Approved — Data will be sent shortly.";
-    document.getElementById("replyText").value               =
+    document.getElementById("replyTitle").textContent      = "Approve Request";
+    document.getElementById("pendingOption").style.display = "flex";
+    document.getElementById("statusMessageInput").value    = "Your data request has been Approved.";
+    document.getElementById("finalStatusInput").value      = "Approved — Data will be sent shortly.";
+    document.getElementById("replyText").value             =
       `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for: ${d.parameters} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
   } else if (action === "mark_sent") {
-    document.getElementById("replyTitle").textContent        = "Mark Data as Sent";
-    document.getElementById("statusMessageInput").value      = "Your requested data has been sent.";
-    document.getElementById("finalStatusInput").value        = "Approved — Data Sent";
-    document.getElementById("replyText").value               =
+    document.getElementById("replyTitle").textContent   = "Mark Data as Sent";
+    document.getElementById("statusMessageInput").value = "Your requested data has been sent.";
+    document.getElementById("finalStatusInput").value   = "Approved — Data Sent";
+    document.getElementById("replyText").value          =
       `Dear ${d.name},\n\nThe data for your request (${d.request_id}) has been processed and sent to you.\n\nPlease check your email for the attached data.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
   } else if (action === "rejected") {
-    document.getElementById("replyTitle").textContent        = "Reject Request";
-    document.getElementById("statusMessageInput").value      = "Your data request could not be approved at this time.";
-    document.getElementById("finalStatusInput").value        = "Rejected";
-    document.getElementById("replyText").value               =
+    document.getElementById("replyTitle").textContent   = "Reject Request";
+    document.getElementById("statusMessageInput").value = "Your data request could not be approved at this time.";
+    document.getElementById("finalStatusInput").value   = "Rejected";
+    document.getElementById("replyText").value          =
       `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have any questions, please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
   } else if (action === "reject_from_approved") {
-    document.getElementById("replyTitle").textContent = "Reject Approved Request";
-    document.getElementById("confirmWarning").style.display = "block";
-    document.getElementById("confirmWarningText").textContent =
-      "⚠️ This request was already approved. Rejecting it will notify the user that the approval has been withdrawn. Please provide a clear reason in the message below.";
+    document.getElementById("replyTitle").textContent                = "Reject Approved Request";
+    document.getElementById("confirmWarning").style.display          = "block";
+    document.getElementById("confirmWarningText").textContent        =
+      "⚠️ This request was already approved. Rejecting it will notify the user that the approval has been withdrawn.";
     document.getElementById("statusMessageInput").value = "Your approved request has been withdrawn.";
     document.getElementById("finalStatusInput").value   = "Rejected — Approval Withdrawn";
     document.getElementById("replyText").value          =
-      `Dear ${d.name},\n\nWe regret to inform you that your previously approved request (${d.request_id}) has been withdrawn due to the following reason:\n\n[Please state the reason here]\n\nWe apologise for the inconvenience. Please contact us at info@elwoic.in for further clarification.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+      `Dear ${d.name},\n\nWe regret to inform you that your previously approved request (${d.request_id}) has been withdrawn.\n\n[Please state the reason here]\n\nWe apologise for the inconvenience. Please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
   } else if (action === "reopen") {
-    document.getElementById("replyTitle").textContent = "Re-open Rejected Request";
-    document.getElementById("confirmWarning").style.display = "block";
+    document.getElementById("replyTitle").textContent         = "Re-open Rejected Request";
+    document.getElementById("confirmWarning").style.display   = "block";
     document.getElementById("confirmWarningText").textContent =
       "ℹ️ This will change the status back to Pending and notify the user that their request is being reconsidered.";
     document.getElementById("statusMessageInput").value = "Your data request is being reconsidered.";
@@ -858,12 +850,12 @@ function openReply(action) {
 }
 
 async function sendReply() {
-  const d             = current;
-  const action        = window.replyAction;
-  const msg           = document.getElementById("replyText").value.trim();
-  const statusMsg     = document.getElementById("statusMessageInput").value.trim();
-  const finalStatus   = document.getElementById("finalStatusInput").value.trim();
-  const isPending     = document.getElementById("dataPendingCheck").checked;
+  const d           = current;
+  const action      = window.replyAction;
+  const msg         = document.getElementById("replyText").value.trim();
+  const statusMsg   = document.getElementById("statusMessageInput").value.trim();
+  const finalStatus = document.getElementById("finalStatusInput").value.trim();
+  const isPending   = document.getElementById("dataPendingCheck").checked;
 
   let newStatus, themeColor;
 
@@ -871,40 +863,29 @@ async function sendReply() {
     newStatus  = isPending ? "approved_pending" : "approved";
     themeColor = isPending ? "#1d4ed8" : "#16a34a";
   } else if (action === "mark_sent") {
-    newStatus  = "approved";
-    themeColor = "#16a34a";
+    newStatus = "approved"; themeColor = "#16a34a";
   } else if (action === "rejected" || action === "reject_from_approved") {
-    newStatus  = "rejected";
-    themeColor = "#dc2626";
+    newStatus = "rejected"; themeColor = "#dc2626";
   } else if (action === "reopen") {
-    newStatus  = "Pending";
-    themeColor = "#d97706";
+    newStatus = "Pending"; themeColor = "#d97706";
   }
 
-  // Send email
   try {
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-      to_email:       d.email,
-      name:           d.name,
-      requestId:      d.request_id,
-      parameters:     d.parameters,
-      type:           d.type,
-      message:        msg,
-      status_message: statusMsg,
-      final_status:   finalStatus,
-      theme_color:    themeColor
+      to_email: d.email, name: d.name, requestId: d.request_id,
+      parameters: d.parameters, type: d.type,
+      message: msg, status_message: statusMsg,
+      final_status: finalStatus, theme_color: themeColor
     });
   } catch (err) {
     showToast("Email failed to send", "error");
     return;
   }
 
-  // Update Supabase
   try {
-    await fetch(`${WORKER_URL}/update`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id: d.id, status: newStatus })
+    await authFetch(`${WORKER_URL}/update`, {
+      method: "POST",
+      body:   JSON.stringify({ id: d.id, status: newStatus })
     });
 
     const idx = allData.findIndex(x => x.id == d.id);
@@ -916,7 +897,8 @@ async function sendReply() {
     showToast("Reply sent. Status → " + newStatus, "success");
 
   } catch (err) {
-    showToast("Status update failed", "error");
+    if (err.message !== "Unauthorised")
+      showToast("Status update failed", "error");
   }
 }
 
@@ -924,21 +906,20 @@ async function sendReply() {
 async function deleteRequest(id) {
   if (!confirm("Permanently delete this request?")) return;
   try {
-    await fetch(`${WORKER_URL}/delete`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id })
+    await authFetch(`${WORKER_URL}/delete`, {
+      method: "POST",
+      body:   JSON.stringify({ id })
     });
     allData = allData.filter(x => x.id != id);
     updateStats();
     render();
     showToast("Request deleted", "success");
   } catch (err) {
-    showToast("Delete failed", "error");
+    if (err.message !== "Unauthorised")
+      showToast("Delete failed", "error");
   }
 }
 
-// ── Helpers ───────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
