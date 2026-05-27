@@ -204,9 +204,14 @@
                 <strong>${esc(item.name)}</strong> —
                 <a href="mailto:${esc(item.email)}" class="text-blue-600 hover:underline">${esc(item.email)}</a>
               </p>
-              <p class="text-xs mt-1">Status: <span class="font-semibold">${statusLabel(item.status)}</span>
-                ${repliedAt ? `<span class="text-slate-400 ml-2">· Replied ${repliedAt}</span>` : ""}
-              </p>
+              <p class="text-xs mt-1 text-slate-500 space-y-0.5">
+  Status: <span class="font-semibold text-slate-700">${statusLabel(item.status)}</span>
+  <br>
+  ${item.created_at  ? `📥 <span class="text-slate-400">Received: ${new Date(item.created_at).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})}</span><br>` : ""}
+  ${item.seen_at     ? `👁 <span class="text-slate-400">Seen: ${new Date(item.seen_at).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})}</span><br>` : ""}
+  ${item.replied_at  ? `✅ <span class="text-slate-400">Replied: ${new Date(item.replied_at).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})}</span><br>` : ""}
+  ${item.closed_at   ? `🔒 <span class="text-slate-400">Closed: ${new Date(item.closed_at).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})}</span>` : ""}
+</p>
             </div>
             <!-- Action buttons top-right -->
             <div class="flex flex-col gap-1.5 flex-shrink-0">
@@ -259,17 +264,23 @@
 
       // CLOSE / REOPEN
       card.querySelector(".closeBtn").onclick = async () => {
-        await apiFetch("PATCH", "/messages/" + item.id, { closed: !isClosed });
-        await loadMessages();
-        setStatus(isClosed ? "Case reopened." : "Case closed.", "success");
-      };
+  await apiFetch("PATCH", "/messages/" + item.id, { 
+    closed: !isClosed,
+    closed_at: isClosed ? null : new Date().toISOString()
+  });
+  await loadMessages();
+  setStatus(isClosed ? "Case reopened." : "Case closed.", "success");
+};
 
       // MARK SEEN
       card.querySelector(".markSeenBtn").onclick = async () => {
-        if (isClosed || item.status === "seen" || item.status === "replied") return;
-        await apiFetch("PATCH", "/messages/" + item.id, { status: "seen" });
-        await loadMessages();
-      };
+  if (isClosed || item.status === "seen" || item.status === "replied") return;
+  await apiFetch("PATCH", "/messages/" + item.id, { 
+    status: "seen", 
+    seen_at: new Date().toISOString() 
+  });
+  await loadMessages();
+};
 
       // MARK REPLIED
       card.querySelector(".markRepliedBtn").onclick = async () => {
