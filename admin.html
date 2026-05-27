@@ -1,326 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ELWOIC — Admin Messages</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm border border-slate-200">
+    <h2 class="text-2xl font-bold text-blue-900 mb-1">Admin Login</h2>
+    <p class="text-xs text-slate-400 mb-6">ELWOIC Messages Portal</p>
+    <div id="loginError" class="hidden mb-4 p-3 rounded bg-red-50 text-red-700 text-sm"></div>
+    <div class="mb-4">
+      <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Username</label>
+      <input id="loginUsername" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Username" />
+    </div>
+    <div class="mb-6">
+      <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Password</label>
+      <input id="loginPassword" type="password" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Password" />
+    </div>
+    <button id="loginBtn" onclick="doLogin()" class="w-full bg-blue-900 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition">Login</button>
+  </div>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="adminScreen" class="hidden">
 
   <!-- HEADER -->
   <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
     <div class="container mx-auto flex items-center justify-between">
       <div>
         <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Messages</h1>
-        <p class="text-xs opacity-80">Realtime message viewer</p>
+        <p class="text-xs opacity-70">Supabase · Realtime viewer</p>
       </div>
-      <div class="space-x-2">
-        <button id="exportBtn" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm hidden">
-          Export CSV
-        </button>
-        <span id="countBadge" class="inline-block bg-white text-blue-900 px-3 py-1 rounded hidden"></span>
-        <button onclick="logout()" class="px-3 py-2 bg-red-600 text-white rounded shadow-sm">Logout</button>
+      <div class="flex items-center gap-2">
+        <button id="exportBtn" onclick="exportCSV()" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm font-semibold hidden">Export CSV</button>
+        <span id="countBadge" class="hidden bg-white text-blue-900 px-3 py-1 rounded text-sm font-semibold"></span>
+        <button onclick="doLogout()" class="px-3 py-2 bg-red-600 text-white rounded shadow-sm text-sm">Logout</button>
       </div>
     </div>
   </header>
 
   <!-- MAIN -->
   <main class="container mx-auto px-4 py-8">
-    <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">
-      Initializing...
-    </div>
+    <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Loading…</div>
 
-    <div id="controls" class="mb-4 hidden">
-      <input id="filterInput" placeholder="Filter by name/email/subject..." class="p-2 border rounded w-full md:w-1/2" />
+    <div class="mb-4">
+      <input id="filterInput" oninput="applyFilter()" placeholder="Filter by name / email / subject / ref number…"
+        class="p-2 border rounded w-full md:w-1/2 text-sm" />
     </div>
 
     <div id="messagesList" class="space-y-4"></div>
-
     <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
-      <p class="text-gray-600">No messages yet.</p>
+      <p class="text-gray-500">No messages found.</p>
     </div>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="text-center text-sm text-gray-500 py-6">
-    Admin panel — protected by Firebase Auth.
-  </footer>
-
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-
-//---------------------------- Firebase Config ----------------------------
-const firebaseConfig = {
-  apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
-  authDomain: "elwoic.firebaseapp.com",
-  databaseURL: "https://elwoic-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "elwoic",
-  storageBucket: "elwoic.firebasestorage.app",
-  messagingSenderId: "597873791800",
-  appId: "1:597873791800:web:d78dd1d5c3005b2ec8e7cd",
-  measurementId: "G-0KZS7RPGKK"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-emailjs.init("Bd-no1cWjcYLmCKIW");
-
-// DOM elements
-const statusEl = document.getElementById('status');
-const messagesList = document.getElementById('messagesList');
-const emptyEl = document.getElementById('empty');
-const exportBtn = document.getElementById('exportBtn');
-const countBadge = document.getElementById('countBadge');
-const controls = document.getElementById('controls');
-const filterInput = document.getElementById('filterInput');
-
-let currentData = [];
-
-//---------------------------- Auth Check ----------------------------
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    location.href = "login.html"; // redirect if not logged in
-  } else {
-    controls.classList.remove("hidden");
-    startListening();
-  }
-});
-
-//---------------------------- Logout ----------------------------
-window.logout = () => {
-  signOut(auth).then(() => location.href="login.html");
-};
-
-//---------------------------- Status Helper ----------------------------
-function setStatus(text, type = "info") {
-  statusEl.textContent = text;
-  statusEl.className = "mb-4 p-3 rounded text-sm";
-  if (type === "info") statusEl.classList.add("bg-blue-100", "text-blue-800");
-  if (type === "success") statusEl.classList.add("bg-green-100", "text-green-800");
-  if (type === "error") statusEl.classList.add("bg-red-100", "text-red-800");
-}
-
-//---------------------------- Firebase Listener ----------------------------
-function startListening() {
-  setStatus("Connecting to Firebase...");
-  const msgsRef = ref(db, "messages");
-
-  onValue(msgsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data) {
-      currentData = [];
-      messagesList.innerHTML = "";
-      emptyEl.classList.remove("hidden");
-      exportBtn.classList.add("hidden");
-      countBadge.classList.add("hidden");
-      setStatus("No messages found.", "info");
-      return;
-    }
-
-    currentData = Object.entries(data).map(([key, v]) => {
-  // 🔥 Auto set "received" if no status
-  if (!v.status) {
-    update(ref(db, "messages/" + key), {
-      status: "received"
-    });
-    v.status = "received";
-  }
-  return { key, ...v };
-});
-    currentData.sort((a,b) => (b.timestamp||0)-(a.timestamp||0));
-    render(currentData);
-    setStatus(`Loaded ${currentData.length} message(s).`, "success");
-    exportBtn.classList.remove("hidden");
-    countBadge.classList.remove("hidden");
-    countBadge.textContent = `${currentData.length} messages`;
-  });
-}
-
-//---------------------------- Render Messages ----------------------------
-function render(list) {
-  messagesList.innerHTML = "";
-  if (list.length === 0) {
-    emptyEl.classList.remove("hidden");
-    return;
-  }
-  emptyEl.classList.add("hidden");
-
-  list.forEach(item => {
-    const d = item.timestamp ? new Date(item.timestamp).toLocaleString() : "";
-    const card = document.createElement("div");
-    card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 border-blue-600";
-
-    card.innerHTML = `
-  <div class="flex justify-between items-start gap-4">
-    <div class="flex-1">
-      <h3 class="text-lg font-semibold text-slate-800">
-        ${escape(item.subject)}
-      </h3>
-
-      <p class="text-xs mt-1 text-blue-700 font-medium">
-        Topic: ${escape(item.questionType || "Not specified")}
-      </p>
-
-      <p class="text-xs mt-1 text-gray-500">
-        Reference #: <strong>${escape(item.refNumber || "N/A")}</strong>
-      </p>
-
-      <span class="text-xs text-slate-500">${d}</span>
-
-      <p class="text-sm text-slate-600 mt-1">
-        <strong>${escape(item.name)}</strong> —
-        <a href="mailto:${escape(item.email)}" class="text-blue-700">${escape(item.email)}</a>
-      </p>
-<p class="text-xs mt-1">
-  Status: <span class="statusBadge font-semibold">${getStatusLabel(item.status)}</span>
-</p>
-
-      <p class="mt-3 text-slate-800 whitespace-pre-wrap">${escape(item.message)}</p>
-
-      <!-- ✅ Reply Box -->
-      <textarea class="replyBox mt-4 w-full border p-2 rounded" placeholder="Type your reply..."></textarea>
-
-      <button class="sendReplyBtn mt-2 px-3 py-2 bg-green-600 text-white rounded text-sm">
-        Send Reply
-      </button>
-      <div class="mt-3 flex gap-2">
-  <button class="markSeenBtn px-3 py-1 bg-yellow-500 text-white rounded text-xs ${item.status === 'seen' || item.status === 'replied' ? 'opacity-50 cursor-not-allowed' : ''}">
-  Mark Seen
-</button>
-
-<button class="markRepliedBtn px-3 py-1 bg-blue-600 text-white rounded text-xs ${item.status === 'replied' ? 'opacity-50 cursor-not-allowed' : ''}">
-  Mark Replied
-</button>
+  <footer class="text-center text-xs text-gray-400 py-6">Admin panel — ELWOIC · Supabase backend</footer>
 </div>
 
-    </div>
+<script>
+  const WORKER = "https://elwoic-admin-massages.bold-waterfall-0d01.workers.dev";
+  emailjs.init("Bd-no1cWjcYLmCKIW");
 
-    <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm">Delete</button>
-  </div>
-`;
+  let token       = null;
+  let currentData = [];
 
-    // DELETE
-card.querySelector(".deleteBtn").onclick = async () => {
-  if (confirm("Delete this message?")) {
-    await remove(ref(db, "messages/" + item.key));
-    setStatus("Message deleted.", "success");
-  }
-};
+  // ── LOGIN ──────────────────────────────────────────────────
+  async function doLogin() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    const errEl    = document.getElementById("loginError");
+    const btn      = document.getElementById("loginBtn");
 
-// ✅ Mark Seen
-card.querySelector(".markSeenBtn").onclick = async () => {
-  if (item.status === "seen" || item.status === "replied") return;
+    if (!username || !password) { showLoginError("Enter username and password."); return; }
 
-  await update(ref(db, "messages/" + item.key), {
-    status: "seen"
-  });
+    btn.disabled   = true;
+    btn.textContent = "Logging in…";
 
-  setStatus("Marked as seen.", "success");
-};
+    try {
+      const res  = await fetch(WORKER + "/login", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
 
-// ✅ Mark Replied
-card.querySelector(".markRepliedBtn").onclick = async () => {
-  if (item.status === "replied") return;
-
-  await update(ref(db, "messages/" + item.key), {
-    status: "replied"
-  });
-
-  setStatus("Marked as replied.", "success");
-};
-
-// ✅ Send Reply
-card.querySelector(".sendReplyBtn").onclick = () => {
-  const replyText = card.querySelector(".replyBox").value.trim();
-
-  if (!replyText) {
-    alert("Reply cannot be empty.");
-    return;
+      token = data.token;
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("adminScreen").classList.remove("hidden");
+      loadMessages();
+    } catch (err) {
+      showLoginError(err.message);
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "Login";
+    }
   }
 
-  const templateParams = {
-    to_name: item.name,
-    to_email: item.email,
-    message: replyText,
-    subject: item.subject,
-    refNumber: item.refNumber || "N/A"
-  };
+  function showLoginError(msg) {
+    const el = document.getElementById("loginError");
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
 
-  emailjs.send("service_qpz7vpz", "template_gejp4qq", templateParams)
-    .then(async () => {
-  setStatus("Reply sent successfully!", "success");
-  card.querySelector(".replyBox").value = "";
+  function doLogout() {
+    token = null;
+    currentData = [];
+    document.getElementById("adminScreen").classList.add("hidden");
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("loginError").classList.add("hidden");
+  }
 
-  await update(ref(db, "messages/" + item.key), {
-    status: "replied"
-  });
-})
-
-    .catch((err) => {
-      console.error(err);
-      setStatus("Failed to send reply.", "error");
+  // Allow Enter key on password field
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("loginPassword").addEventListener("keydown", e => {
+      if (e.key === "Enter") doLogin();
     });
-};
-
-    messagesList.appendChild(card);
   });
-}
 
-//---------------------------- Filter ----------------------------
-filterInput.addEventListener("input", () => {
-  const q = filterInput.value.toLowerCase();
-  const filtered = currentData.filter(m =>
-    (m.name||"").toLowerCase().includes(q) ||
-    (m.email||"").toLowerCase().includes(q) ||
-    (m.subject||"").toLowerCase().includes(q) ||
-    (m.message||"").toLowerCase().includes(q) ||
-    (m.questionType||"").toLowerCase().includes(q) ||
-    (m.refNumber||"").toLowerCase().includes(q) // <-- added refNumber search
-  );
-  render(filtered);
-});
+  // ── LOAD MESSAGES ──────────────────────────────────────────
+  async function loadMessages() {
+    setStatus("Loading messages…", "info");
+    try {
+      const res  = await fetch(WORKER + "/messages", {
+        headers: { "Authorization": "Bearer " + token },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to load");
 
-//---------------------------- CSV Export ----------------------------
-exportBtn.onclick = () => {
-  if (currentData.length === 0) {
-    alert("No messages to export.");
-    return;
+      currentData = data;
+      render(currentData);
+      setStatus(`Loaded ${currentData.length} message(s).`, "success");
+      document.getElementById("exportBtn").classList.remove("hidden");
+      document.getElementById("countBadge").classList.remove("hidden");
+      document.getElementById("countBadge").textContent = `${currentData.length} messages`;
+    } catch (err) {
+      setStatus("Error: " + err.message, "error");
+    }
   }
-  const header = "key,timestamp,name,email,topic,subject,message\n";
-const rows = currentData.map(x => 
-  `"${x.key}","${x.timestamp}","${x.refNumber || ""}","${x.name}","${x.email}","${x.questionType || ""}","${x.subject}","${x.message.replace(/"/g,'""')}"`
-).join("\n");
-  const blob = new Blob([header + rows], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "elwoic_messages.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function getStatusLabel(status) {
-  if (status === "received") return "📥 Received";
-  if (status === "seen") return "👁 Seen";
-  if (status === "replied") return "✅ Replied";
-  return "🆕 Pending";
-}
 
-if (window.parent !== window) {
-  window.parent.postMessage({ page: "admin.html" }, "*");
-}
+  // ── RENDER ─────────────────────────────────────────────────
+  function render(list) {
+    const container = document.getElementById("messagesList");
+    const emptyEl   = document.getElementById("empty");
+    container.innerHTML = "";
 
-//---------------------------- Escape HTML ----------------------------
-function escape(s) {
-  if (!s) return "";
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+    if (!list.length) { emptyEl.classList.remove("hidden"); return; }
+    emptyEl.classList.add("hidden");
+
+    list.forEach(item => {
+      const d    = item.created_at ? new Date(item.created_at).toLocaleString() : "";
+      const card = document.createElement("div");
+      card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 " + statusBorderColor(item.status);
+
+      card.innerHTML = `
+        <div class="flex justify-between items-start gap-4">
+          <div class="flex-1">
+            <h3 class="text-base font-semibold text-slate-800">${esc(item.subject)}</h3>
+            <p class="text-xs mt-1 text-blue-700 font-medium">Topic: ${esc(item.question_type || "Not specified")}</p>
+            <p class="text-xs mt-1 text-gray-500">Ref #: <strong>${esc(item.ref_number || "N/A")}</strong></p>
+            <p class="text-xs text-slate-400">${d}</p>
+            <p class="text-sm text-slate-600 mt-1">
+              <strong>${esc(item.name)}</strong> —
+              <a href="mailto:${esc(item.email)}" class="text-blue-700">${esc(item.email)}</a>
+            </p>
+            <p class="text-xs mt-1">Status: <span class="font-semibold">${statusLabel(item.status)}</span></p>
+            <p class="mt-3 text-slate-800 whitespace-pre-wrap text-sm">${esc(item.message)}</p>
+
+            <textarea class="replyBox mt-4 w-full border p-2 rounded text-sm" rows="3"
+              placeholder="Type your reply…">${esc(item.reply_text || "")}</textarea>
+            <button class="sendReplyBtn mt-2 px-3 py-2 bg-green-600 text-white rounded text-sm font-semibold hover:bg-green-700">Send Reply</button>
+
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="markSeenBtn px-3 py-1 bg-yellow-500 text-white rounded text-xs font-semibold hover:bg-yellow-600
+                ${item.status === "seen" || item.status === "replied" ? "opacity-40 cursor-not-allowed" : ""}">
+                Mark Seen
+              </button>
+              <button class="markRepliedBtn px-3 py-1 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700
+                ${item.status === "replied" ? "opacity-40 cursor-not-allowed" : ""}">
+                Mark Replied
+              </button>
+              <button class="refreshBtn px-3 py-1 bg-slate-200 text-slate-700 rounded text-xs font-semibold hover:bg-slate-300">
+                ↻ Refresh
+              </button>
+            </div>
+          </div>
+          <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm font-semibold hover:bg-red-700 flex-shrink-0">Delete</button>
+        </div>
+      `;
+
+      // DELETE
+      card.querySelector(".deleteBtn").onclick = async () => {
+        if (!confirm("Delete this message?")) return;
+        await apiFetch("DELETE", "/messages/" + item.id);
+        await loadMessages();
+        setStatus("Message deleted.", "success");
+      };
+
+      // MARK SEEN
+      card.querySelector(".markSeenBtn").onclick = async () => {
+        if (item.status === "seen" || item.status === "replied") return;
+        await apiFetch("PATCH", "/messages/" + item.id, { status: "seen" });
+        await loadMessages();
+      };
+
+      // MARK REPLIED
+      card.querySelector(".markRepliedBtn").onclick = async () => {
+        if (item.status === "replied") return;
+        await apiFetch("PATCH", "/messages/" + item.id, { status: "replied", replied_at: new Date().toISOString() });
+        await loadMessages();
+      };
+
+      // REFRESH
+      card.querySelector(".refreshBtn").onclick = () => loadMessages();
+
+      // SEND REPLY
+      card.querySelector(".sendReplyBtn").onclick = async () => {
+        const replyText = card.querySelector(".replyBox").value.trim();
+        if (!replyText) { alert("Reply cannot be empty."); return; }
+
+        try {
+          await emailjs.send("service_qpz7vpz", "template_gejp4qq", {
+            to_name:   item.name,
+            to_email:  item.email,
+            message:   replyText,
+            subject:   item.subject,
+            refNumber: item.ref_number || "N/A",
+          });
+
+          await apiFetch("PATCH", "/messages/" + item.id, {
+            status:      "replied",
+            reply_text:  replyText,
+            replied_at:  new Date().toISOString(),
+          });
+
+          setStatus("Reply sent!", "success");
+          await loadMessages();
+        } catch (err) {
+          console.error(err);
+          setStatus("Failed to send reply: " + err.message, "error");
+        }
+      };
+
+      container.appendChild(card);
+    });
+  }
+
+  // ── FILTER ─────────────────────────────────────────────────
+  function applyFilter() {
+    const q        = document.getElementById("filterInput").value.toLowerCase();
+    const filtered = currentData.filter(m =>
+      (m.name         || "").toLowerCase().includes(q) ||
+      (m.email        || "").toLowerCase().includes(q) ||
+      (m.subject      || "").toLowerCase().includes(q) ||
+      (m.message      || "").toLowerCase().includes(q) ||
+      (m.question_type|| "").toLowerCase().includes(q) ||
+      (m.ref_number   || "").toLowerCase().includes(q)
+    );
+    render(filtered);
+  }
+
+  // ── CSV EXPORT ─────────────────────────────────────────────
+  function exportCSV() {
+    if (!currentData.length) { alert("No messages to export."); return; }
+    const header = "id,ref_number,created_at,name,email,question_type,subject,message,status\n";
+    const rows   = currentData.map(x =>
+      `"${x.id}","${x.ref_number}","${x.created_at}","${x.name}","${x.email}","${x.question_type||""}","${x.subject}","${(x.message||"").replace(/"/g,'""')}","${x.status}"`
+    ).join("\n");
+    const blob = new Blob([header + rows], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "elwoic_messages.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── HELPERS ────────────────────────────────────────────────
+  async function apiFetch(method, path, body = null) {
+    const opts = {
+      method,
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type":  "application/json",
+      },
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res  = await fetch(WORKER + path, opts);
+    return res.json().catch(() => ({}));
+  }
+
+  function setStatus(text, type = "info") {
+    const el = document.getElementById("status");
+    el.textContent = text;
+    el.className   = "mb-4 p-3 rounded text-sm";
+    if (type === "info")    el.classList.add("bg-blue-100",  "text-blue-800");
+    if (type === "success") el.classList.add("bg-green-100", "text-green-800");
+    if (type === "error")   el.classList.add("bg-red-100",   "text-red-800");
+  }
+
+  function statusLabel(s) {
+    if (s === "received") return "📥 Received";
+    if (s === "seen")     return "👁 Seen";
+    if (s === "replied")  return "✅ Replied";
+    return "🆕 Pending";
+  }
+
+  function statusBorderColor(s) {
+    if (s === "replied")  return "border-green-500";
+    if (s === "seen")     return "border-yellow-400";
+    if (s === "received") return "border-blue-500";
+    return "border-gray-300";
+  }
+
+  function esc(s) {
+    if (!s) return "";
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ page: "admin.html" }, "*");
+  }
 </script>
-
 </body>
 </html>
