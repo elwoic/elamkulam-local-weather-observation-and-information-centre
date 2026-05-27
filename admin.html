@@ -5,58 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ELWOIC — Admin Messages</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans">
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center">
   <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm border border-slate-200">
-    <h2 class="text-2xl font-bold text-blue-900 mb-1">Admin Login</h2>
-    <p class="text-xs text-slate-400 mb-6">ELWOIC Messages Portal</p>
-    <div id="loginError" class="hidden mb-4 p-3 rounded bg-red-50 text-red-700 text-sm"></div>
+    <div class="text-center mb-6">
+      <p class="text-xs font-bold tracking-widest text-amber-600 uppercase mb-1">ELWOIC</p>
+      <h2 class="text-2xl font-bold text-blue-900">Admin Login</h2>
+      <p class="text-xs text-slate-400 mt-1">Messages Portal</p>
+    </div>
+    <div id="loginError" class="hidden mb-4 p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200"></div>
     <div class="mb-4">
       <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Username</label>
-      <input id="loginUsername" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Username" />
+      <input id="loginUsername" type="text" autocomplete="username"
+        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Username" />
     </div>
     <div class="mb-6">
       <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Password</label>
-      <input id="loginPassword" type="password" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Password" />
+      <input id="loginPassword" type="password" autocomplete="current-password"
+        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Password" />
     </div>
-    <button id="loginBtn" onclick="doLogin()" class="w-full bg-blue-900 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition">Login</button>
+    <button id="loginBtn" onclick="doLogin()"
+      class="w-full bg-blue-900 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition text-sm">
+      Login
+    </button>
   </div>
 </div>
 
 <!-- ADMIN SCREEN -->
 <div id="adminScreen" class="hidden">
 
-  <!-- HEADER -->
   <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-10">
     <div class="container mx-auto flex items-center justify-between">
       <div>
-        <h1 class="text-lg md:text-2xl font-bold">ELWOIC Admin: Messages</h1>
-        <p class="text-xs opacity-70">Supabase · Realtime viewer</p>
+        <h1 class="text-lg md:text-xl font-bold">ELWOIC Admin: Messages</h1>
+        <p class="text-xs opacity-60">Supabase backend</p>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="exportBtn" onclick="exportCSV()" class="px-3 py-2 bg-white text-blue-900 rounded shadow-sm text-sm font-semibold hidden">Export CSV</button>
-        <span id="countBadge" class="hidden bg-white text-blue-900 px-3 py-1 rounded text-sm font-semibold"></span>
-        <button onclick="doLogout()" class="px-3 py-2 bg-red-600 text-white rounded shadow-sm text-sm">Logout</button>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="loadMessages()" class="px-3 py-1.5 bg-white/10 border border-white/20 text-white rounded text-xs font-semibold hover:bg-white/20">↻ Refresh</button>
+        <button id="exportBtn" onclick="exportCSV()" class="px-3 py-1.5 bg-white text-blue-900 rounded text-xs font-semibold hidden">Export CSV</button>
+        <span id="countBadge" class="hidden bg-white/20 text-white px-3 py-1 rounded text-xs font-semibold"></span>
+        <button onclick="doLogout()" class="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700">Logout</button>
       </div>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="container mx-auto px-4 py-8">
+  <main class="container mx-auto px-4 py-6">
     <div id="status" class="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800">Loading…</div>
 
-    <div class="mb-4">
-      <input id="filterInput" oninput="applyFilter()" placeholder="Filter by name / email / subject / ref number…"
-        class="p-2 border rounded w-full md:w-1/2 text-sm" />
+    <!-- Filter + view toggle -->
+    <div class="mb-4 flex flex-wrap gap-3 items-center">
+      <input id="filterInput" oninput="applyFilter()" placeholder="Filter by name / email / subject / ref…"
+        class="p-2 border rounded text-sm flex-1 min-w-48" />
+      <div class="flex gap-2">
+        <button onclick="setView('all')"    id="viewAll"    class="viewBtn px-3 py-1.5 rounded text-xs font-semibold bg-blue-900 text-white">All</button>
+        <button onclick="setView('open')"   id="viewOpen"   class="viewBtn px-3 py-1.5 rounded text-xs font-semibold bg-slate-200 text-slate-700">Open</button>
+        <button onclick="setView('closed')" id="viewClosed" class="viewBtn px-3 py-1.5 rounded text-xs font-semibold bg-slate-200 text-slate-700">Closed</button>
+      </div>
     </div>
 
     <div id="messagesList" class="space-y-4"></div>
-    <div id="empty" class="hidden text-center p-8 bg-white rounded shadow border-dashed border-2 border-gray-300">
-      <p class="text-gray-500">No messages found.</p>
+    <div id="empty" class="hidden text-center p-10 bg-white rounded-lg shadow border-dashed border-2 border-gray-300">
+      <p class="text-gray-400 text-sm">No messages found.</p>
     </div>
   </main>
 
@@ -65,85 +77,95 @@
 
 <script>
   const WORKER = "https://elwoic-admin-massages.bold-waterfall-0d01.workers.dev";
-  emailjs.init("Bd-no1cWjcYLmCKIW");
 
   let token       = null;
   let currentData = [];
+  let currentView = "all";
 
   // ── LOGIN ──────────────────────────────────────────────────
   async function doLogin() {
     const username = document.getElementById("loginUsername").value.trim();
     const password = document.getElementById("loginPassword").value.trim();
-    const errEl    = document.getElementById("loginError");
     const btn      = document.getElementById("loginBtn");
-
     if (!username || !password) { showLoginError("Enter username and password."); return; }
-
-    btn.disabled   = true;
-    btn.textContent = "Logging in…";
-
+    btn.disabled = true; btn.textContent = "Logging in…";
     try {
       const res  = await fetch(WORKER + "/login", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ username, password }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
-
       token = data.token;
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("adminScreen").classList.remove("hidden");
       loadMessages();
-    } catch (err) {
-      showLoginError(err.message);
-    } finally {
-      btn.disabled    = false;
-      btn.textContent = "Login";
-    }
+    } catch (err) { showLoginError(err.message); }
+    finally { btn.disabled = false; btn.textContent = "Login"; }
   }
 
   function showLoginError(msg) {
     const el = document.getElementById("loginError");
-    el.textContent = msg;
-    el.classList.remove("hidden");
+    el.textContent = msg; el.classList.remove("hidden");
   }
 
   function doLogout() {
-    token = null;
-    currentData = [];
+    token = null; currentData = [];
     document.getElementById("adminScreen").classList.add("hidden");
     document.getElementById("loginScreen").classList.remove("hidden");
     document.getElementById("loginPassword").value = "";
     document.getElementById("loginError").classList.add("hidden");
   }
 
-  // Allow Enter key on password field
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginPassword").addEventListener("keydown", e => {
       if (e.key === "Enter") doLogin();
     });
   });
 
-  // ── LOAD MESSAGES ──────────────────────────────────────────
+  // ── LOAD ───────────────────────────────────────────────────
   async function loadMessages() {
-    setStatus("Loading messages…", "info");
+    setStatus("Loading…", "info");
     try {
-      const res  = await fetch(WORKER + "/messages", {
-        headers: { "Authorization": "Bearer " + token },
-      });
+      const res  = await fetch(WORKER + "/messages", { headers: { "Authorization": "Bearer " + token } });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load");
-
       currentData = data;
-      render(currentData);
-      setStatus(`Loaded ${currentData.length} message(s).`, "success");
+      applyFilter();
+      const total = currentData.length;
+      setStatus(`Loaded ${total} message(s).`, "success");
       document.getElementById("exportBtn").classList.remove("hidden");
       document.getElementById("countBadge").classList.remove("hidden");
-      document.getElementById("countBadge").textContent = `${currentData.length} messages`;
-    } catch (err) {
-      setStatus("Error: " + err.message, "error");
-    }
+      document.getElementById("countBadge").textContent = `${total} total`;
+    } catch (err) { setStatus("Error: " + err.message, "error"); }
+  }
+
+  // ── VIEW TOGGLE ────────────────────────────────────────────
+  function setView(v) {
+    currentView = v;
+    document.querySelectorAll(".viewBtn").forEach(b => {
+      b.className = "viewBtn px-3 py-1.5 rounded text-xs font-semibold bg-slate-200 text-slate-700";
+    });
+    const active = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
+    if (active) active.className = "viewBtn px-3 py-1.5 rounded text-xs font-semibold bg-blue-900 text-white";
+    applyFilter();
+  }
+
+  // ── FILTER ─────────────────────────────────────────────────
+  function applyFilter() {
+    const q = document.getElementById("filterInput").value.toLowerCase();
+    let list = currentData;
+    if (currentView === "open")   list = list.filter(m => !m.closed);
+    if (currentView === "closed") list = list.filter(m => m.closed);
+    if (q) list = list.filter(m =>
+      (m.name||"").toLowerCase().includes(q) ||
+      (m.email||"").toLowerCase().includes(q) ||
+      (m.subject||"").toLowerCase().includes(q) ||
+      (m.message||"").toLowerCase().includes(q) ||
+      (m.question_type||"").toLowerCase().includes(q) ||
+      (m.ref_number||"").toLowerCase().includes(q)
+    );
+    render(list);
   }
 
   // ── RENDER ─────────────────────────────────────────────────
@@ -151,101 +173,126 @@
     const container = document.getElementById("messagesList");
     const emptyEl   = document.getElementById("empty");
     container.innerHTML = "";
-
     if (!list.length) { emptyEl.classList.remove("hidden"); return; }
     emptyEl.classList.add("hidden");
 
     list.forEach(item => {
-      const d    = item.created_at ? new Date(item.created_at).toLocaleString() : "";
-      const card = document.createElement("div");
-      card.className = "bg-white p-4 md:p-6 rounded-lg shadow border-l-4 " + statusBorderColor(item.status);
+      const isClosed  = !!item.closed;
+      const d         = item.created_at ? new Date(item.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : "";
+      const repliedAt = item.replied_at ? new Date(item.replied_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : null;
+      const card      = document.createElement("div");
+
+      card.className = "bg-white rounded-lg shadow border-l-4 overflow-hidden transition-opacity "
+        + (isClosed ? "opacity-60 " : "")
+        + statusBorderColor(item.status);
 
       card.innerHTML = `
-        <div class="flex justify-between items-start gap-4">
-          <div class="flex-1">
-            <h3 class="text-base font-semibold text-slate-800">${esc(item.subject)}</h3>
-            <p class="text-xs mt-1 text-blue-700 font-medium">Topic: ${esc(item.question_type || "Not specified")}</p>
-            <p class="text-xs mt-1 text-gray-500">Ref #: <strong>${esc(item.ref_number || "N/A")}</strong></p>
-            <p class="text-xs text-slate-400">${d}</p>
-            <p class="text-sm text-slate-600 mt-1">
-              <strong>${esc(item.name)}</strong> —
-              <a href="mailto:${esc(item.email)}" class="text-blue-700">${esc(item.email)}</a>
-            </p>
-            <p class="text-xs mt-1">Status: <span class="font-semibold">${statusLabel(item.status)}</span></p>
-            <p class="mt-3 text-slate-800 whitespace-pre-wrap text-sm">${esc(item.message)}</p>
-
-            <textarea class="replyBox mt-4 w-full border p-2 rounded text-sm" rows="3"
-              placeholder="Type your reply…">${esc(item.reply_text || "")}</textarea>
-            <button class="sendReplyBtn mt-2 px-3 py-2 bg-green-600 text-white rounded text-sm font-semibold hover:bg-green-700">Send Reply</button>
-
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button class="markSeenBtn px-3 py-1 bg-yellow-500 text-white rounded text-xs font-semibold hover:bg-yellow-600
-                ${item.status === "seen" || item.status === "replied" ? "opacity-40 cursor-not-allowed" : ""}">
-                Mark Seen
-              </button>
-              <button class="markRepliedBtn px-3 py-1 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700
-                ${item.status === "replied" ? "opacity-40 cursor-not-allowed" : ""}">
-                Mark Replied
-              </button>
-              <button class="refreshBtn px-3 py-1 bg-slate-200 text-slate-700 rounded text-xs font-semibold hover:bg-slate-300">
-                ↻ Refresh
+        <div class="p-4 md:p-5">
+          <!-- Top row -->
+          <div class="flex justify-between items-start gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-sm font-bold text-slate-800 truncate">${esc(item.subject)}</h3>
+                ${isClosed ? '<span class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded font-semibold">🔒 Closed</span>' : ''}
+              </div>
+              <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                <span class="text-xs text-blue-700 font-medium">${esc(item.question_type || "General")}</span>
+                <span class="text-xs text-slate-400">Ref: <strong class="text-slate-600">${esc(item.ref_number || "N/A")}</strong></span>
+                <span class="text-xs text-slate-400">${d}</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-1.5">
+                <strong>${esc(item.name)}</strong> —
+                <a href="mailto:${esc(item.email)}" class="text-blue-600 hover:underline">${esc(item.email)}</a>
+              </p>
+              <p class="text-xs mt-1">Status: <span class="font-semibold">${statusLabel(item.status)}</span>
+                ${repliedAt ? `<span class="text-slate-400 ml-2">· Replied ${repliedAt}</span>` : ""}
+              </p>
+            </div>
+            <!-- Action buttons top-right -->
+            <div class="flex flex-col gap-1.5 flex-shrink-0">
+              <button class="deleteBtn px-3 py-1.5 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 ${isClosed ? 'opacity-40 cursor-not-allowed' : ''}">Delete</button>
+              <button class="closeBtn px-3 py-1.5 rounded text-xs font-semibold ${isClosed ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-slate-700 text-white hover:bg-slate-900'}">
+                ${isClosed ? '🔓 Reopen' : '🔒 Close'}
               </button>
             </div>
           </div>
-          <button class="deleteBtn px-3 py-2 bg-red-600 text-white rounded text-sm font-semibold hover:bg-red-700 flex-shrink-0">Delete</button>
+
+          <!-- Message body -->
+          <div class="mt-3 bg-slate-50 rounded p-3 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed border border-slate-100">${esc(item.message)}</div>
+
+          <!-- Previous reply -->
+          ${item.reply_text ? `
+          <div class="mt-3 bg-green-50 border border-green-200 rounded p-3">
+            <p class="text-xs font-semibold text-green-700 mb-1">✅ Previous Reply</p>
+            <p class="text-sm text-slate-700 whitespace-pre-wrap">${esc(item.reply_text)}</p>
+          </div>` : ""}
+
+          <!-- Reply box -->
+          <div class="replySection mt-4 ${isClosed ? 'opacity-40 pointer-events-none' : ''}">
+            <textarea class="replyBox w-full border rounded p-2.5 text-sm resize-y" rows="3"
+              placeholder="Type your reply…" ${isClosed ? 'disabled' : ''}></textarea>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button class="sendReplyBtn px-4 py-1.5 bg-green-600 text-white rounded text-sm font-semibold hover:bg-green-700 ${isClosed ? 'cursor-not-allowed' : ''}">
+                📧 Send Reply
+              </button>
+              <button class="markSeenBtn px-3 py-1.5 rounded text-xs font-semibold
+                ${item.status === 'seen' || item.status === 'replied' || isClosed ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600'}">
+                👁 Mark Seen
+              </button>
+              <button class="markRepliedBtn px-3 py-1.5 rounded text-xs font-semibold
+                ${item.status === 'replied' || isClosed ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}">
+                ✅ Mark Replied
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
       // DELETE
       card.querySelector(".deleteBtn").onclick = async () => {
-        if (!confirm("Delete this message?")) return;
+        if (isClosed) return;
+        if (!confirm("Delete this message permanently?")) return;
         await apiFetch("DELETE", "/messages/" + item.id);
         await loadMessages();
         setStatus("Message deleted.", "success");
       };
 
+      // CLOSE / REOPEN
+      card.querySelector(".closeBtn").onclick = async () => {
+        await apiFetch("PATCH", "/messages/" + item.id, { closed: !isClosed });
+        await loadMessages();
+        setStatus(isClosed ? "Case reopened." : "Case closed.", "success");
+      };
+
       // MARK SEEN
       card.querySelector(".markSeenBtn").onclick = async () => {
-        if (item.status === "seen" || item.status === "replied") return;
+        if (isClosed || item.status === "seen" || item.status === "replied") return;
         await apiFetch("PATCH", "/messages/" + item.id, { status: "seen" });
         await loadMessages();
       };
 
       // MARK REPLIED
       card.querySelector(".markRepliedBtn").onclick = async () => {
-        if (item.status === "replied") return;
+        if (isClosed || item.status === "replied") return;
         await apiFetch("PATCH", "/messages/" + item.id, { status: "replied", replied_at: new Date().toISOString() });
         await loadMessages();
       };
 
-      // REFRESH
-      card.querySelector(".refreshBtn").onclick = () => loadMessages();
-
       // SEND REPLY
       card.querySelector(".sendReplyBtn").onclick = async () => {
+        if (isClosed) return;
         const replyText = card.querySelector(".replyBox").value.trim();
         if (!replyText) { alert("Reply cannot be empty."); return; }
-
+        const btn = card.querySelector(".sendReplyBtn");
+        btn.disabled = true; btn.textContent = "Sending…";
         try {
-          await emailjs.send("service_qpz7vpz", "template_gejp4qq", {
-            to_name:   item.name,
-            to_email:  item.email,
-            message:   replyText,
-            subject:   item.subject,
-            refNumber: item.ref_number || "N/A",
-          });
-
-          await apiFetch("PATCH", "/messages/" + item.id, {
-            status:      "replied",
-            reply_text:  replyText,
-            replied_at:  new Date().toISOString(),
-          });
-
-          setStatus("Reply sent!", "success");
+          const res = await apiFetch("POST", "/reply/" + item.id, { reply_text: replyText });
+          if (res.error) throw new Error(res.error);
+          setStatus("Reply sent successfully!", "success");
           await loadMessages();
         } catch (err) {
-          console.error(err);
-          setStatus("Failed to send reply: " + err.message, "error");
+          setStatus("Failed: " + err.message, "error");
+          btn.disabled = false; btn.textContent = "📧 Send Reply";
         }
       };
 
@@ -253,26 +300,12 @@
     });
   }
 
-  // ── FILTER ─────────────────────────────────────────────────
-  function applyFilter() {
-    const q        = document.getElementById("filterInput").value.toLowerCase();
-    const filtered = currentData.filter(m =>
-      (m.name         || "").toLowerCase().includes(q) ||
-      (m.email        || "").toLowerCase().includes(q) ||
-      (m.subject      || "").toLowerCase().includes(q) ||
-      (m.message      || "").toLowerCase().includes(q) ||
-      (m.question_type|| "").toLowerCase().includes(q) ||
-      (m.ref_number   || "").toLowerCase().includes(q)
-    );
-    render(filtered);
-  }
-
   // ── CSV EXPORT ─────────────────────────────────────────────
   function exportCSV() {
     if (!currentData.length) { alert("No messages to export."); return; }
-    const header = "id,ref_number,created_at,name,email,question_type,subject,message,status\n";
+    const header = "id,ref_number,created_at,name,email,question_type,subject,message,status,closed\n";
     const rows   = currentData.map(x =>
-      `"${x.id}","${x.ref_number}","${x.created_at}","${x.name}","${x.email}","${x.question_type||""}","${x.subject}","${(x.message||"").replace(/"/g,'""')}","${x.status}"`
+      `"${x.id}","${x.ref_number}","${x.created_at}","${x.name}","${x.email}","${x.question_type||""}","${x.subject}","${(x.message||"").replace(/"/g,'""')}","${x.status}","${x.closed||false}"`
     ).join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
     const url  = URL.createObjectURL(blob);
@@ -285,13 +318,10 @@
   async function apiFetch(method, path, body = null) {
     const opts = {
       method,
-      headers: {
-        "Authorization": "Bearer " + token,
-        "Content-Type":  "application/json",
-      },
+      headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
     };
     if (body) opts.body = JSON.stringify(body);
-    const res  = await fetch(WORKER + path, opts);
+    const res = await fetch(WORKER + path, opts);
     return res.json().catch(() => ({}));
   }
 
