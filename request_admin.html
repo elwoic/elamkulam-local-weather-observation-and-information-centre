@@ -20,6 +20,7 @@
   --orange:    #d97706;
   --blue:      #1d4ed8;
   --teal:      #0891b2;
+  --purple:    #7c3aed;
   --mono:      'IBM Plex Mono', monospace;
   --serif:     'Source Serif 4', Georgia, serif;
 }
@@ -251,10 +252,11 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
   text-transform: uppercase;
   font-family: var(--mono);
 }
-.badge-Pending          { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-.badge-approved         { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
-.badge-approved_pending { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
-.badge-rejected         { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+.badge-Pending               { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.badge-approved              { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+.badge-approved_pending      { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
+.badge-rejected              { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+.badge-verification_failed   { background: #fae8ff; color: #581c87; border: 1px solid #d8b4fe; }
 
 .btn {
   padding: 5px 12px;
@@ -274,6 +276,50 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 
 .empty-row td { text-align: center; padding: 48px; color: var(--muted); font-size: 13px; }
 
+/* ── PIPELINE (admin view) ───────────────────────── */
+.admin-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.pipeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.pipeline-item.done    { background: #f0fdf4; border-color: #86efac; }
+.pipeline-item.active  { background: #eff6ff; border-color: #93c5fd; }
+.pipeline-item.failed  { background: #fdf2f8; border-color: #d8b4fe; }
+
+.pipeline-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pipeline-dot.done    { background: #16a34a; color: #fff; }
+.pipeline-dot.active  { background: #1d4ed8; color: #fff; }
+.pipeline-dot.failed  { background: #7c3aed; color: #fff; }
+.pipeline-dot.waiting { background: var(--border2); color: var(--muted); }
+
+.pipeline-label  { font-size: 12px; font-weight: 600; font-family: var(--mono); }
+.pipeline-sub    { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.pipeline-ts     { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+
+/* ── MODAL ──────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -291,7 +337,7 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
   border: 1px solid var(--border);
   border-radius: 12px;
   width: 100%;
-  max-width: 580px;
+  max-width: 600px;
   max-height: 92vh;
   overflow-y: auto;
   box-shadow: 0 8px 40px rgba(0,0,0,0.14);
@@ -370,11 +416,14 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 
 .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 
-.btn-approve  { background: var(--green);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-reject   { background: var(--red);      color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-datasent { background: var(--teal);     color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-reopen   { background: var(--orange);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
-.btn-cancel   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-approve        { background: var(--green);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reject         { background: var(--red);      color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-datasent       { background: var(--teal);     color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-reopen         { background: var(--orange);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-verify         { background: var(--green);    color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-verifyfail     { background: var(--purple);   color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-datastored     { background: #0891b2;          color: #fff; padding: 9px 20px; font-size: 12px; border-radius: 6px; }
+.btn-cancel         { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); padding: 9px 20px; font-size: 12px; border-radius: 6px; }
 
 .reply-section-label {
   font-size: 10px;
@@ -440,6 +489,26 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 }
 .confirm-box p { font-size: 13px; color: #7c2d12; line-height: 1.6; }
 
+.info-box {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.info-box p { font-size: 13px; color: #14532d; line-height: 1.6; }
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
 .toast {
   position: fixed;
   bottom: 24px;
@@ -460,6 +529,22 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 .toast-success { background: var(--green); color: #fff; }
 .toast-error   { background: var(--red);   color: #fff; }
 .toast-warn    { background: var(--orange); color: #fff; }
+
+/* Verify fail reason inline */
+#verifyFailReason {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+#verifyFailReason:focus { border-color: var(--purple); }
 </style>
 </head>
 <body>
@@ -503,6 +588,7 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
         <option value="Pending">Pending</option>
         <option value="approved">Approved</option>
         <option value="approved_pending">Approved (Data Pending)</option>
+        <option value="verification_failed">Verification Failed</option>
         <option value="rejected">Rejected</option>
       </select>
       <select id="sortBy" onchange="render()">
@@ -523,11 +609,12 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
             <th>Category</th>
             <th>Submitted</th>
             <th>Status</th>
+            <th>Pipeline</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr class="empty-row"><td colspan="7">Loading requests…</td></tr>
+          <tr class="empty-row"><td colspan="8">Loading requests…</td></tr>
         </tbody>
       </table>
     </div>
@@ -542,6 +629,63 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
       <button class="modal-close" onclick="closeModal('viewOverlay')">×</button>
     </div>
     <div class="modal-body" id="viewBody"></div>
+  </div>
+</div>
+
+<!-- ── VERIFY MODAL ───────────────────────────────────── -->
+<div class="modal-overlay" id="verifyOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="verifyTitle">Verify Request</h3>
+      <button class="modal-close" onclick="closeModal('verifyOverlay')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="verifyPassSection">
+        <div class="info-box">
+          <p>✅ Mark this request as <strong>verified</strong>. The applicant's identity and details have been checked. The request will remain in Pending status but the verification stage will be marked as complete in the tracking portal.</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-verify" onclick="submitVerify('pass')">Mark as Verified</button>
+          <button class="btn btn-cancel" onclick="closeModal('verifyOverlay')">Cancel</button>
+        </div>
+      </div>
+      <div id="verifyFailSection" style="display:none;">
+        <div class="confirm-box">
+          <p>⚠️ Mark this request as <strong>verification failed</strong>. The applicant will be notified that their identity or details could not be verified.</p>
+        </div>
+        <label class="reply-section-label">Reason for Verification Failure <span style="color:#888;font-size:10px;">(shown to applicant)</span></label>
+        <input type="text" id="verifyFailReason" placeholder="e.g. Identity documents not matching, incomplete details…">
+        <label class="reply-section-label">Status Message</label>
+        <input type="text" class="reply-input" id="vfStatusMsg" placeholder="e.g. Your request could not be verified.">
+        <label class="reply-section-label">Message Body</label>
+        <textarea class="reply-textarea" id="vfReplyText"></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-verifyfail" onclick="submitVerify('fail')">Send & Mark Failed</button>
+          <button class="btn btn-cancel" onclick="closeModal('verifyOverlay')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DATA STORED MODAL ──────────────────────────────── -->
+<div class="modal-overlay" id="dataStoredOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Mark Data as Stored</h3>
+      <button class="modal-close" onclick="closeModal('dataStoredOverlay')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        <p>📦 Confirm that the requested data has been <strong>located, reviewed, and stored in the system</strong>. This will mark the Processing and Data Prep stages as complete in the tracking portal. The request status will stay as <em>Approved (Data Pending)</em> until you mark it as sent.</p>
+      </div>
+      <label class="reply-section-label">Storage Reference / Notes <span style="color:#888;font-size:10px;">(internal only, not shown to applicant)</span></label>
+      <input type="text" class="reply-input" id="dataStoredNote" placeholder="e.g. Stored in Supabase bucket /elwoic/2026/req-001, folder confirmed">
+      <div class="modal-actions">
+        <button class="btn btn-datastored" onclick="submitDataStored()">Confirm Data Stored</button>
+        <button class="btn btn-cancel" onclick="closeModal('dataStoredOverlay')">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -560,7 +704,7 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
         <input type="checkbox" id="dataPendingCheck">
         <label for="dataPendingCheck">
           <strong>Data not ready yet</strong><br>
-          Notify user that request is approved but data is still being processed.
+          Notify user that request is approved but data is still being processed. You can mark data stored and sent separately later.
         </label>
       </div>
       <label class="reply-section-label">Status Message <span style="color:#888;font-size:10px;">(shown prominently in email)</span></label>
@@ -586,7 +730,7 @@ const EMAILJS_SERVICE  = "service_qpz7vpz";
 const EMAILJS_TEMPLATE = "template_gejp4qq";
 const EMAILJS_KEY      = "Bd-no1cWjcYLmCKIW";
 
-// ── Session token (stored in sessionStorage after login) ──
+// ── Session token ─────────────────────────────────────
 function getToken() { return sessionStorage.getItem("elwoic_token"); }
 
 // ── Auth ──────────────────────────────────────────────
@@ -597,7 +741,7 @@ async function login() {
   const errEl    = document.getElementById("loginError");
 
   if (!username || !password) {
-    errEl.textContent = "Please enter both username and password.";
+    errEl.textContent   = "Please enter both username and password.";
     errEl.style.display = "block";
     return;
   }
@@ -612,9 +756,7 @@ async function login() {
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ username, password })
     });
-
     const data = await res.json();
-
     if (res.ok && data.success) {
       sessionStorage.setItem("elwoic_token", data.token);
       document.getElementById("loginScreen").style.display = "none";
@@ -624,7 +766,6 @@ async function login() {
       errEl.textContent   = "Incorrect username or password.";
       errEl.style.display = "block";
     }
-
   } catch (err) {
     errEl.textContent   = "Connection failed. Please try again.";
     errEl.style.display = "block";
@@ -672,7 +813,7 @@ async function loadRequests() {
   try {
     const res  = await authFetch(`${WORKER_URL}/requests`);
     const data = await res.json();
-    allData = data;
+    allData    = data;
     updateStats();
     render();
   } catch (err) {
@@ -682,9 +823,26 @@ async function loadRequests() {
 }
 
 function updateStats() {
-  document.getElementById("statPending").textContent  = allData.filter(d => d.status === "Pending").length + " Pending";
+  document.getElementById("statPending").textContent  = allData.filter(d => d.status === "Pending" || d.status === "verification_failed").length + " Pending";
   document.getElementById("statApproved").textContent = allData.filter(d => d.status === "approved" || d.status === "approved_pending").length + " Approved";
   document.getElementById("statRejected").textContent = allData.filter(d => d.status === "rejected").length + " Rejected";
+}
+
+// ── Pipeline mini-indicator for table ────────────────
+function getPipelineMini(d) {
+  const stages = [
+    { key: "admin",    done: true,                                     icon: "✓" },
+    { key: "verify",   done: !!d.verified_at,                          icon: d.verification_failed_reason ? "✕" : "✓", fail: !!d.verification_failed_reason },
+    { key: "process",  done: !!d.data_stored_at,                       icon: "✓" },
+    { key: "dataprep", done: !!d.data_stored_at,                       icon: "✓" },
+    { key: "delivery", done: d.status === "approved" && !!d.data_sent_at, icon: "✓" }
+  ];
+  return stages.map((s, i) => {
+    const bg = s.fail ? "#7c3aed" : s.done ? "#16a34a" : "#d1d5db";
+    const color = (s.done || s.fail) ? "#fff" : "#6b7280";
+    const label = s.done || s.fail ? s.icon : (i + 1).toString();
+    return `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${bg};color:${color};font-size:9px;font-weight:700;">${label}</span>`;
+  }).join('<span style="font-size:8px;color:#d1d5db;margin:0 1px;">—</span>');
 }
 
 function render() {
@@ -707,13 +865,16 @@ function render() {
   const body = document.getElementById("tableBody");
 
   if (data.length === 0) {
-    body.innerHTML = `<tr class="empty-row"><td colspan="7">No requests found.</td></tr>`;
+    body.innerHTML = `<tr class="empty-row"><td colspan="8">No requests found.</td></tr>`;
     return;
   }
 
   const statusLabels = {
-    "Pending": "Pending", "approved": "Approved",
-    "approved_pending": "Appr. Pending", "rejected": "Rejected"
+    "Pending":             "Pending",
+    "approved":            "Approved",
+    "approved_pending":    "Appr. Pending",
+    "rejected":            "Rejected",
+    "verification_failed": "Verif. Failed"
   };
 
   body.innerHTML = data.map(d => {
@@ -729,6 +890,7 @@ function render() {
       <td>${d.purpose_category || "—"}</td>
       <td class="td-date">${date}</td>
       <td><span class="badge badge-${d.status}">${label}</span></td>
+      <td>${getPipelineMini(d)}</td>
       <td>
         <button class="btn btn-view"   onclick="viewRequest(${d.id})">View</button>
         <button class="btn btn-delete" onclick="deleteRequest(${d.id})">Delete</button>
@@ -738,6 +900,79 @@ function render() {
 }
 
 // ── View ──────────────────────────────────────────────
+function formatTs(ts) {
+  if (!ts) return null;
+  return new Date(ts).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true
+  }) + " IST";
+}
+
+function buildPipelineView(d) {
+  const stages = [
+    {
+      label:  "Administration",
+      sub:    "Request received & logged",
+      ts:     d.created_at,
+      done:   true,
+      active: false,
+      failed: false
+    },
+    {
+      label:  "Verification",
+      sub:    d.verification_failed_reason
+                ? `Failed: ${d.verification_failed_reason}`
+                : d.verified_at
+                  ? "Identity & details verified"
+                  : "Identity & details to be checked",
+      ts:     d.verified_at || null,
+      done:   !!d.verified_at && !d.verification_failed_reason,
+      active: !d.verified_at && !d.verification_failed_reason && d.status === "Pending",
+      failed: !!d.verification_failed_reason
+    },
+    {
+      label:  "Processing",
+      sub:    d.data_stored_at ? "Data located & stored in system" : "Data to be located & reviewed",
+      ts:     d.data_stored_at || null,
+      done:   !!d.data_stored_at,
+      active: !d.data_stored_at && d.status === "approved_pending",
+      failed: false
+    },
+    {
+      label:  "Data Prep",
+      sub:    d.data_stored_at ? "Data compiled & formatted" : "Data to be compiled & formatted",
+      ts:     d.data_stored_at || null,
+      done:   !!d.data_stored_at,
+      active: false,
+      failed: false
+    },
+    {
+      label:  "Delivery",
+      sub:    d.data_sent_at ? "Data sent to applicant email" : "Data to be sent",
+      ts:     d.data_sent_at || null,
+      done:   d.status === "approved" && !!d.data_sent_at,
+      active: d.status === "approved_pending" && !!d.data_stored_at,
+      failed: false
+    }
+  ];
+
+  return `<div class="admin-pipeline">` + stages.map(s => {
+    const stateClass = s.failed ? "failed" : s.done ? "done" : s.active ? "active" : "";
+    const dotClass   = s.failed ? "failed" : s.done ? "done" : s.active ? "active" : "waiting";
+    const icon       = s.failed ? "✕" : s.done ? "✓" : s.active ? "…" : "○";
+    return `
+    <div class="pipeline-item ${stateClass}">
+      <div class="pipeline-dot ${dotClass}">${icon}</div>
+      <div>
+        <div class="pipeline-label">${s.label}</div>
+        <div class="pipeline-sub">${s.sub}</div>
+        ${s.ts ? `<div class="pipeline-ts">🕐 ${formatTs(s.ts)}</div>` : ""}
+      </div>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
 function viewRequest(id) {
   const d = allData.find(x => x.id == id);
   if (!d) return;
@@ -745,17 +980,36 @@ function viewRequest(id) {
 
   const date = d.created_at ? new Date(d.created_at).toLocaleString("en-IN") : "—";
 
+  // Build action buttons based on current status & pipeline stage
   let actionBtns = "";
-  if (d.status === "Pending") {
-    actionBtns = `
+
+  if (d.status === "Pending" || d.status === "verification_failed") {
+    // Verification actions (only if not yet verified)
+    if (!d.verified_at && !d.verification_failed_reason) {
+      actionBtns += `
+        <button class="btn btn-verify"     onclick="openVerify('pass')">✓ Mark Verified</button>
+        <button class="btn btn-verifyfail" onclick="openVerify('fail')">✕ Verification Failed</button>`;
+    } else if (d.verified_at && !d.verification_failed_reason) {
+      actionBtns += `<span style="font-size:11px;color:var(--green);font-family:var(--mono);margin-right:10px;">✓ Verified</span>`;
+    }
+    actionBtns += `
       <button class="btn btn-approve" onclick="openReply('approved')">Approve</button>
       <button class="btn btn-reject"  onclick="openReply('rejected')">Reject</button>`;
+
   } else if (d.status === "approved_pending") {
-    actionBtns = `
-      <button class="btn btn-datasent" onclick="openReply('mark_sent')">Mark Data Sent</button>
+    // Data storage action (only if not yet stored)
+    if (!d.data_stored_at) {
+      actionBtns += `<button class="btn btn-datastored" onclick="openDataStored()">📦 Mark Data Stored</button>`;
+    } else {
+      actionBtns += `<span style="font-size:11px;color:var(--teal);font-family:var(--mono);margin-right:10px;">📦 Data Stored</span>`;
+    }
+    actionBtns += `
+      <button class="btn btn-datasent" onclick="openReply('mark_sent')">✉ Mark Data Sent</button>
       <button class="btn btn-reject"   onclick="openReply('reject_from_approved')">Reject</button>`;
+
   } else if (d.status === "approved") {
     actionBtns = `<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">✓ Completed — no further action needed</span>`;
+
   } else if (d.status === "rejected") {
     actionBtns = `<button class="btn btn-reopen" onclick="openReply('reopen')">Re-open Request</button>`;
   }
@@ -784,6 +1038,11 @@ function viewRequest(id) {
       <div class="detail-item"><label>To Date</label><span>${d.to_date || "—"}</span></div>
     </div>
     <div class="detail-full" style="margin-top:12px;"><label>Additional Details</label><div class="detail-box">${d.additional_details || "None"}</div></div>
+
+    <hr class="divider">
+    <div class="section-title">Request Pipeline</div>
+    ${buildPipelineView(d)}
+
     <hr class="divider">
     <div class="modal-actions">
       ${actionBtns}
@@ -791,6 +1050,128 @@ function viewRequest(id) {
     </div>`;
 
   openModal("viewOverlay");
+}
+
+// ── Verify ─────────────────────────────────────────────
+function openVerify(type) {
+  const d = current;
+  if (type === "pass") {
+    document.getElementById("verifyTitle").textContent     = "Mark Request as Verified";
+    document.getElementById("verifyPassSection").style.display = "block";
+    document.getElementById("verifyFailSection").style.display = "none";
+  } else {
+    document.getElementById("verifyTitle").textContent     = "Verification Failed";
+    document.getElementById("verifyPassSection").style.display = "none";
+    document.getElementById("verifyFailSection").style.display = "block";
+    document.getElementById("verifyFailReason").value      = "";
+    document.getElementById("vfStatusMsg").value           = "Your request verification was unsuccessful.";
+    document.getElementById("vfReplyText").value           =
+      `Dear ${d.name},\n\nWe were unable to verify the details submitted with your data request (${d.request_id}).\n\n[Please specify the reason here]\n\nPlease re-submit with the correct information or contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+  }
+  window.verifyType = type;
+  closeModal("viewOverlay");
+  openModal("verifyOverlay");
+}
+
+async function submitVerify(type) {
+  const d = current;
+  const now = new Date().toISOString();
+
+  if (type === "pass") {
+    // Just update DB with verified_at timestamp, no email
+    try {
+      await authFetch(`${WORKER_URL}/update`, {
+        method: "POST",
+        body:   JSON.stringify({ id: d.id, verified_at: now })
+      });
+      const idx = allData.findIndex(x => x.id == d.id);
+      if (idx !== -1) allData[idx].verified_at = now;
+      updateStats();
+      render();
+      closeModal("verifyOverlay");
+      showToast("Request marked as verified ✓", "success");
+    } catch (err) {
+      if (err.message !== "Unauthorised") showToast("Update failed", "error");
+    }
+
+  } else {
+    const reason = document.getElementById("verifyFailReason").value.trim();
+    const statusMsg = document.getElementById("vfStatusMsg").value.trim();
+    const msg       = document.getElementById("vfReplyText").value.trim();
+    if (!reason) { showToast("Please enter a reason for failure", "warn"); return; }
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        to_email: d.email, name: d.name, requestId: d.request_id,
+        parameters: d.parameters, type: d.type,
+        message: msg, status_message: statusMsg,
+        final_status: `Verification Failed — ${reason}`,
+        theme_color: "#7c3aed"
+      });
+    } catch (err) {
+      showToast("Email failed to send", "error");
+      return;
+    }
+
+    try {
+      await authFetch(`${WORKER_URL}/update`, {
+        method: "POST",
+        body:   JSON.stringify({
+          id: d.id,
+          status: "verification_failed",
+          verification_failed_reason: reason,
+          verified_at: now
+        })
+      });
+      const idx = allData.findIndex(x => x.id == d.id);
+      if (idx !== -1) {
+        allData[idx].status                     = "verification_failed";
+        allData[idx].verification_failed_reason = reason;
+        allData[idx].verified_at                = now;
+      }
+      updateStats();
+      render();
+      closeModal("verifyOverlay");
+      showToast("Marked as verification failed. Email sent.", "warn");
+    } catch (err) {
+      if (err.message !== "Unauthorised") showToast("Status update failed", "error");
+    }
+  }
+}
+
+// ── Data Stored ────────────────────────────────────────
+function openDataStored() {
+  document.getElementById("dataStoredNote").value = "";
+  closeModal("viewOverlay");
+  openModal("dataStoredOverlay");
+}
+
+async function submitDataStored() {
+  const d    = current;
+  const note = document.getElementById("dataStoredNote").value.trim();
+  const now  = new Date().toISOString();
+
+  try {
+    await authFetch(`${WORKER_URL}/update`, {
+      method: "POST",
+      body:   JSON.stringify({
+        id: d.id,
+        data_stored_at:   now,
+        data_stored_note: note
+      })
+    });
+    const idx = allData.findIndex(x => x.id == d.id);
+    if (idx !== -1) {
+      allData[idx].data_stored_at   = now;
+      allData[idx].data_stored_note = note;
+    }
+    updateStats();
+    render();
+    closeModal("dataStoredOverlay");
+    showToast("Data marked as stored ✓ — Processing & Data Prep stages complete", "success");
+  } catch (err) {
+    if (err.message !== "Unauthorised") showToast("Update failed", "error");
+  }
 }
 
 // ── Reply ─────────────────────────────────────────────
@@ -856,18 +1237,29 @@ async function sendReply() {
   const statusMsg   = document.getElementById("statusMessageInput").value.trim();
   const finalStatus = document.getElementById("finalStatusInput").value.trim();
   const isPending   = document.getElementById("dataPendingCheck").checked;
+  const now         = new Date().toISOString();
 
-  let newStatus, themeColor;
+  let newStatus, themeColor, extraFields = {};
 
   if (action === "approved") {
     newStatus  = isPending ? "approved_pending" : "approved";
     themeColor = isPending ? "#1d4ed8" : "#16a34a";
+    extraFields.approved_at = now;
+    if (!isPending) extraFields.data_sent_at = now;
+
   } else if (action === "mark_sent") {
-    newStatus = "approved"; themeColor = "#16a34a";
+    newStatus = "approved";
+    themeColor = "#16a34a";
+    extraFields.data_sent_at = now;
+
   } else if (action === "rejected" || action === "reject_from_approved") {
-    newStatus = "rejected"; themeColor = "#dc2626";
+    newStatus = "rejected";
+    themeColor = "#dc2626";
+    extraFields.rejected_at = now;
+
   } else if (action === "reopen") {
-    newStatus = "Pending"; themeColor = "#d97706";
+    newStatus = "Pending";
+    themeColor = "#d97706";
   }
 
   try {
@@ -885,11 +1277,14 @@ async function sendReply() {
   try {
     await authFetch(`${WORKER_URL}/update`, {
       method: "POST",
-      body:   JSON.stringify({ id: d.id, status: newStatus })
+      body:   JSON.stringify({ id: d.id, status: newStatus, ...extraFields })
     });
 
     const idx = allData.findIndex(x => x.id == d.id);
-    if (idx !== -1) allData[idx].status = newStatus;
+    if (idx !== -1) {
+      allData[idx].status = newStatus;
+      Object.assign(allData[idx], extraFields);
+    }
 
     updateStats();
     render();
