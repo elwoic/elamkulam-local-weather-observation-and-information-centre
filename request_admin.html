@@ -369,7 +369,7 @@ function render(){
   const body=document.getElementById("tBody");
   if(!data.length){body.innerHTML='<tr class="empty-row"><td colspan="8">No requests found.</td></tr>';return;}
 
-  const lbl={Pending:"Pending",approved:"Approved",approved_pending:"Appr. Pending",rejected:"Rejected",verification_failed:"Verif. Failed"};
+  const lbl={Pending:"Pending",viewed:"Viewed",approved:"Approved",approved_pending:"Appr. Pending",rejected:"Rejected",verification_failed:"Verif. Failed"};
   body.innerHTML=data.map(d=>{
     const dt=d.created_at?new Date(d.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
     const badge=d.case_closed_at?"closed":d.status;
@@ -473,16 +473,26 @@ function buildPipeline(d){
 }
 
 /* ── VIEW REQUEST ── */
+/* ── VIEW REQUEST ── */
 async function viewReq(id){
   const d=allData.find(x=>x.id==id);
   if(!d) return;
   cur=d;
 
-  // Auto-mark as seen (fire and forget)
-  if(!d.seen_at){
-    af(`${W}/seen`,{method:"POST",body:JSON.stringify({id:d.id})})
-      .then(()=>{ patchLocal(d.id,{seen_at:new Date().toISOString()}); updateStats(); render(); })
-      .catch(()=>{});
+  // If it's a brand new request, instantly mark status as viewed locally and in database
+  if(d.status === "Pending" && !d.seen_at){
+    const now = new Date().toISOString();
+    
+    // 1. Update frontend instantly
+    patchLocal(d.id, { status: "viewed", seen_at: now });
+    updateStats();
+    render();
+
+    // 2. Sync to Supabase via Worker
+    af(`${W}/update`, {
+      method: "POST",
+      body: JSON.stringify({ id: d.id, status: "viewed", seen_at: now })
+    }).catch(e => console.error("Failed to update status to viewed:", e));
   }
 
   const isClosed    = !!d.case_closed_at;
@@ -493,7 +503,8 @@ async function viewReq(id){
   const hasVerified = !!d.verified_at && !hasVFail;
   const hasPrep     = !!d.data_prep_at;
   const hasPrepData = !!(d.prepared_data||"").trim();
-  const isPending   = d.status==="Pending"||d.status==="verification_failed";
+  // Updated to include 'viewed' as a pending state
+  const isPending   = d.status==="Pending"||d.status==="viewed"||d.status==="verification_failed";
 
   /* Build action buttons based on current stage */
   let btns="";
@@ -526,7 +537,7 @@ async function viewReq(id){
     }
     btns+=`
       <button class="abtn abtn-blue"  onclick="openEmail('approve')">Approve</button>
-      <button class="abtn abtn-red"   onclick="openEmail('reject')">Reject</button>`;
+      <button class="abtn abtn-red"    onclick="openEmail('reject')">Reject</button>`;
   }
 
   document.getElementById("viewTitle").textContent=`Request — ${d.request_id||""}`;
@@ -575,7 +586,6 @@ async function viewReq(id){
 
   openM("oView");
 }
-
 /* ── MARK VERIFIED ── */
 async function markVerified(){
   const d=cur; const now=new Date().toISOString();
