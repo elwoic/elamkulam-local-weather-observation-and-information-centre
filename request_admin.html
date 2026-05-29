@@ -7,198 +7,192 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:      #f7f8fa;
-  --surface: #ffffff;
-  --sf2:     #f1f3f7;
-  --border:  #dde2ec;
-  --border2: #c8d0e0;
-  --text:    #1a2236;
-  --muted:   #7a8aaa;
-  --accent:  #1d4ed8;
-  --green:   #16a34a;
-  --red:     #dc2626;
-  --orange:  #d97706;
-  --teal:    #0891b2;
-  --purple:  #7c3aed;
-  --mono:    'IBM Plex Mono', monospace;
-  --serif:   'Source Serif 4', Georgia, serif;
+  --bg:#f7f8fa; --surface:#fff; --sf2:#f1f3f7; --border:#dde2ec; --border2:#c8d0e0;
+  --text:#1a2236; --muted:#7a8aaa; --accent:#1d4ed8; --green:#16a34a; --red:#dc2626;
+  --orange:#d97706; --teal:#0891b2; --purple:#7c3aed;
+  --mono:'IBM Plex Mono',monospace; --serif:'Source Serif 4',Georgia,serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--serif); background: var(--bg); color: var(--text); min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--serif);background:var(--bg);color:var(--text);min-height:100vh;}
 
 /* LOGIN */
-#loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; }
-.login-box { width:380px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:48px 40px; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,.07); }
-.login-logo { font-family:var(--mono); font-size:30px; font-weight:600; letter-spacing:5px; margin-bottom:4px; }
-.login-sub  { font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
-.login-div  { width:40px; height:2px; background:var(--accent); margin:0 auto 32px; }
-.login-box input { width:100%; padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:var(--mono); font-size:14px; margin-bottom:12px; outline:none; transition:border-color .2s; }
-.login-box input:focus { border-color:var(--accent); }
-.login-btn { width:100%; padding:12px; background:var(--accent); color:#fff; border:none; border-radius:6px; font-family:var(--serif); font-size:14px; font-weight:600; cursor:pointer; letter-spacing:1px; transition:background .2s; margin-top:4px; }
-.login-btn:hover { background:#1e40af; }
-.login-btn:disabled { background:#93c5fd; cursor:not-allowed; }
-.login-err { color:var(--red); font-size:12px; margin-top:12px; display:none; }
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.login-box{width:380px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px 40px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.07);}
+.login-logo{font-family:var(--mono);font-size:28px;font-weight:600;letter-spacing:5px;margin-bottom:4px;}
+.login-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.login-div{width:40px;height:2px;background:var(--accent);margin:0 auto 28px;}
+.login-box input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:13px;margin-bottom:10px;outline:none;transition:border-color .2s;}
+.login-box input:focus{border-color:var(--accent);}
+.login-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:var(--serif);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:4px;}
+.login-btn:hover{background:#1e40af;} .login-btn:disabled{background:#93c5fd;cursor:not-allowed;}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;display:none;}
 
-/* APP */
-#appScreen { display:none; }
-.topbar { background:var(--surface); border-bottom:2px solid var(--border); padding:0 32px; display:flex; align-items:center; justify-content:space-between; height:60px; }
-.topbar-left { display:flex; align-items:center; gap:16px; }
-.topbar-title { font-family:var(--mono); font-size:16px; font-weight:600; letter-spacing:4px; }
-.topbar-sep { width:1px; height:20px; background:var(--border); }
-.topbar-sub { font-size:12px; color:var(--muted); letter-spacing:.5px; }
-.topbar-right { display:flex; align-items:center; gap:10px; }
-.stat-chip { padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; font-family:var(--mono); }
-.chip-p { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
-.chip-a { background:#dcfce7; color:#14532d; border:1px solid #86efac; }
-.chip-r { background:#fee2e2; color:#7f1d1d; border:1px solid #fca5a5; }
-.logout-btn { padding:6px 16px; background:transparent; border:1px solid var(--border2); border-radius:6px; color:var(--muted); font-size:12px; cursor:pointer; font-family:var(--serif); transition:all .2s; }
-.logout-btn:hover { border-color:var(--red); color:var(--red); }
-.main { padding:28px 32px; }
-.controls { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
-.controls input, .controls select { padding:9px 14px; background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:var(--serif); font-size:13px; outline:none; transition:border-color .2s; }
-.controls input { flex:1; min-width:220px; }
-.controls input:focus, .controls select:focus { border-color:var(--accent); }
-.refresh-btn { padding:9px 16px; background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--muted); font-size:13px; cursor:pointer; font-family:var(--serif); transition:all .2s; }
-.refresh-btn:hover { border-color:var(--accent); color:var(--accent); }
-.table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.04); }
-table { width:100%; border-collapse:collapse; }
-thead tr { background:var(--sf2); border-bottom:1px solid var(--border); }
-th { padding:11px 16px; text-align:left; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); font-family:var(--mono); }
-tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
-tbody tr:last-child { border-bottom:none; }
-tbody tr:hover { background:#f5f7ff; }
-td { padding:12px 16px; font-size:13px; vertical-align:middle; }
-.td-id   { font-family:var(--mono); font-size:11px; color:var(--muted); }
-.td-date { font-family:var(--mono); font-size:11px; color:var(--muted); }
-.badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; font-family:var(--mono); }
-.badge-Pending             { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
-.badge-approved            { background:#dcfce7; color:#14532d; border:1px solid #86efac; }
-.badge-approved_pending    { background:#dbeafe; color:#1e3a8a; border:1px solid #93c5fd; }
-.badge-rejected            { background:#fee2e2; color:#7f1d1d; border:1px solid #fca5a5; }
-.badge-verification_failed { background:#fae8ff; color:#581c87; border:1px solid #d8b4fe; }
-.btn { padding:5px 12px; border:none; border-radius:5px; font-size:11px; font-weight:600; cursor:pointer; font-family:var(--serif); transition:opacity .15s; margin-right:4px; }
-.btn:hover { opacity:.82; }
-.btn-view   { background:var(--accent); color:#fff; }
-.btn-del    { background:transparent; color:var(--muted); border:1px solid var(--border); }
-.btn-del:hover { color:var(--red); border-color:var(--red); opacity:1; }
-.empty-row td { text-align:center; padding:48px; color:var(--muted); font-size:13px; }
+/* TOPBAR */
+#appScreen{display:none;}
+.topbar{background:var(--surface);border-bottom:2px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-logo{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:4px;}
+.tb-sep{width:1px;height:18px;background:var(--border);}
+.tb-sub{font-size:12px;color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.chip{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);}
+.chip-p{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.chip-a{background:#dcfce7;color:#14532d;border:1px solid #86efac;}
+.chip-r{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5;}
+.logout-btn{padding:6px 14px;background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
 
-/* MODAL */
-.overlay { position:fixed; inset:0; background:rgba(10,20,40,.45); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
-.overlay.open { display:flex; }
-.modal { background:var(--surface); border:1px solid var(--border); border-radius:12px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.14); }
-.modal-wide { max-width:820px; }
-.modal-med  { max-width:620px; }
-.modal-head { padding:18px 28px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--sf2); border-radius:12px 12px 0 0; }
-.modal-head h3 { font-family:var(--mono); font-size:12px; letter-spacing:2px; color:var(--text); text-transform:uppercase; }
-.modal-x { background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1; padding:0; }
-.modal-x:hover { color:var(--text); }
-.modal-body { padding:24px 28px; }
+/* MAIN TABLE */
+.main{padding:24px 28px;}
+.controls{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.controls input,.controls select{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;outline:none;transition:border-color .2s;}
+.controls input{flex:1;min-width:200px;} .controls input:focus,.controls select:focus{border-color:var(--accent);}
+.refresh-btn{padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:13px;cursor:pointer;transition:all .2s;}
+.refresh-btn:hover{border-color:var(--accent);color:var(--accent);}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.04);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--sf2);border-bottom:1px solid var(--border);}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:var(--mono);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+tbody tr:last-child{border-bottom:none;} tbody tr:hover{background:#f5f7ff;}
+td{padding:11px 14px;font-size:13px;vertical-align:middle;}
+.td-id{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.td-date{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono);}
+.badge-Pending{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.badge-approved{background:#dcfce7;color:#14532d;border:1px solid #86efac;}
+.badge-approved_pending{background:#dbeafe;color:#1e3a8a;border:1px solid #93c5fd;}
+.badge-rejected{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5;}
+.badge-verification_failed{background:#fae8ff;color:#581c87;border:1px solid #d8b4fe;}
+.badge-closed{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;}
+.btn{padding:5px 11px;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--serif);transition:opacity .15s;margin-right:3px;}
+.btn:hover{opacity:.82;}
+.btn-view{background:var(--accent);color:#fff;}
+.btn-del{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-del:hover{color:var(--red);border-color:var(--red);opacity:1;}
+.empty-row td{text-align:center;padding:48px;color:var(--muted);font-size:13px;}
 
-/* DETAIL GRID */
-.detail-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px; }
-.detail-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
-.d-item label { display:block; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:3px; font-family:var(--mono); }
-.d-item span  { font-size:13px; color:var(--text); word-break:break-word; }
-.d-full { margin-bottom:14px; }
-.d-full label { display:block; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:4px; font-family:var(--mono); }
-.d-box { background:var(--sf2); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--text); line-height:1.6; white-space:pre-wrap; word-break:break-word; }
-.divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(10,20,40,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 8px 48px rgba(0,0,0,.16);}
+.modal-wide{max-width:860px;} .modal-med{max-width:580px;}
+.mhead{padding:16px 24px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--sf2);border-radius:12px 12px 0 0;position:sticky;top:0;z-index:10;}
+.mhead h3{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text);text-transform:uppercase;}
+.mx{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0;}
+.mx:hover{color:var(--text);}
+.mbody{padding:22px 24px;}
 
-/* PIPELINE (admin detail view) */
-.pipe-wrap { display:flex; flex-direction:column; gap:6px; margin:12px 0; }
-.pipe-item { display:flex; align-items:flex-start; gap:12px; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--sf2); }
-.pipe-item.done   { background:#f0fdf4; border-color:#86efac; }
-.pipe-item.active { background:#eff6ff; border-color:#93c5fd; }
-.pipe-item.error  { background:#fdf4ff; border-color:#d8b4fe; }
-.pipe-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; margin-top:1px; }
-.pipe-dot.done   { background:var(--green);  color:#fff; }
-.pipe-dot.active { background:var(--accent); color:#fff; }
-.pipe-dot.error  { background:var(--purple); color:#fff; }
-.pipe-dot.wait   { background:var(--border2); color:var(--muted); }
-.pipe-label { font-size:12px; font-weight:600; font-family:var(--mono); margin-bottom:2px; }
-.pipe-sub   { font-size:11px; color:var(--muted); line-height:1.5; }
-.pipe-ts    { font-size:10px; color:var(--muted); font-family:var(--mono); margin-top:3px; }
+/* DETAIL LAYOUT (2 col main + pipeline) */
+.view-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
+.view-left{min-width:0;}
+.view-right{border-left:1px solid var(--border);padding-left:20px;}
+.dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.dg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.di label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;font-family:var(--mono);}
+.di span{font-size:13px;color:var(--text);word-break:break-word;}
+.df{margin-bottom:13px;}
+.df label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-family:var(--mono);}
+.dbox{background:var(--sf2);border:1px solid var(--border);border-radius:6px;padding:9px 13px;font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.sec-hdr{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;}
 
-/* ACTIONS */
-.actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
-.btn-approve  { background:var(--green);  color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-reject   { background:var(--red);    color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-datasent { background:var(--teal);   color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-reopen   { background:var(--orange); color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-verify   { background:var(--green);  color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-vfail    { background:var(--purple); color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-store    { background:var(--teal);   color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-cancel   { background:var(--sf2); color:var(--muted); border:1px solid var(--border2); padding:9px 20px; font-size:12px; border-radius:6px; }
-.btn-savedata { background:#0f766e; color:#fff; padding:9px 20px; font-size:12px; border-radius:6px; }
+/* PIPELINE (right column) */
+.pipeline{display:flex;flex-direction:column;gap:0;}
+.pipe-step{display:flex;gap:10px;position:relative;padding-bottom:0;}
+.pipe-step:not(:last-child) .pipe-body{padding-bottom:16px;}
+.pipe-step:not(:last-child)::before{content:'';position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--border);}
+.pipe-step.done::before{background:#86efac;}
+.pipe-step.error::before{background:#d8b4fe;}
+.pipe-step.skipped::before{background:#e2e8f0;}
+.pipe-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;z-index:1;}
+.pipe-dot.done{background:var(--green);color:#fff;}
+.pipe-dot.active{background:var(--accent);color:#fff;}
+.pipe-dot.error{background:var(--purple);color:#fff;}
+.pipe-dot.skipped{background:#94a3b8;color:#fff;}
+.pipe-dot.wait{background:var(--border2);color:var(--muted);}
+.pipe-body{flex:1;}
+.pipe-label{font-size:12px;font-weight:600;font-family:var(--mono);line-height:1.3;}
+.pipe-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.pipe-ts{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:3px;}
+
+/* ACTION BUTTONS */
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;}
+.abtn{padding:8px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--serif);transition:opacity .15s;}
+.abtn:hover{opacity:.85;}
+.abtn-green{background:var(--green);color:#fff;}
+.abtn-red{background:var(--red);color:#fff;}
+.abtn-blue{background:var(--accent);color:#fff;}
+.abtn-teal{background:var(--teal);color:#fff;}
+.abtn-purple{background:var(--purple);color:#fff;}
+.abtn-orange{background:var(--orange);color:#fff;}
+.abtn-gray{background:#475569;color:#fff;}
+.abtn-outline{background:var(--sf2);color:var(--muted);border:1px solid var(--border2);}
 
 /* FORM ELEMENTS */
-.sec-label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-family:var(--mono); margin-bottom:6px; display:block; margin-top:14px; }
-.inp { width:100%; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:var(--serif); font-size:13px; outline:none; transition:border-color .2s; }
-.inp:focus { border-color:var(--accent); }
-.ta { width:100%; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:var(--serif); font-size:13px; line-height:1.6; resize:vertical; outline:none; }
-.ta:focus { border-color:var(--accent); }
-.ta-data { height:160px; font-family:var(--mono); font-size:12px; }
-.ta-reply { height:130px; }
-.info-box    { background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:14px 16px; margin-bottom:14px; font-size:13px; color:#14532d; line-height:1.6; }
-.warn-box    { background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:14px 16px; margin-bottom:14px; }
-.warn-box p  { font-size:13px; color:#7c2d12; line-height:1.6; }
-.pend-opt    { display:flex; align-items:flex-start; gap:10px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:12px 14px; margin-top:12px; }
-.pend-opt input { margin-top:2px; accent-color:var(--accent); }
-.pend-opt label { font-size:13px; color:var(--text); cursor:pointer; line-height:1.5; }
-.section-hdr { font-family:var(--mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:12px; }
-.saved-tag { display:inline-block; background:#dcfce7; color:#14532d; border:1px solid #86efac; border-radius:4px; font-size:10px; font-family:var(--mono); padding:2px 8px; margin-left:8px; vertical-align:middle; }
+.slabel{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--mono);margin-bottom:5px;margin-top:13px;display:block;}
+.slabel:first-child{margin-top:0;}
+.sinp{width:100%;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;outline:none;transition:border-color .2s;}
+.sinp:focus{border-color:var(--accent);}
+.sta{width:100%;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;line-height:1.6;resize:vertical;outline:none;}
+.sta:focus{border-color:var(--accent);}
+.sta-data{height:150px;font-family:var(--mono);font-size:12px;}
+.sta-reply{height:130px;}
+.info-box{background:#f0fdf4;border:1px solid #86efac;border-radius:7px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#14532d;line-height:1.6;}
+.warn-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:12px 14px;margin-bottom:12px;}
+.warn-box p{font-size:13px;color:#7c2d12;line-height:1.6;}
+.pend-opt{display:flex;align-items:flex-start;gap:9px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:11px 13px;margin-top:10px;}
+.pend-opt input{margin-top:2px;accent-color:var(--accent);}
+.pend-opt label{font-size:13px;color:var(--text);cursor:pointer;line-height:1.5;}
+.saved-tag{display:inline-block;background:#dcfce7;color:#14532d;border:1px solid #86efac;border-radius:4px;font-size:9px;font-family:var(--mono);padding:1px 7px;margin-left:7px;vertical-align:middle;}
 
 /* TOAST */
-.toast { position:fixed; bottom:24px; right:24px; padding:12px 22px; border-radius:8px; font-size:13px; font-weight:600; z-index:9999; opacity:0; transform:translateY(8px); transition:all .3s; pointer-events:none; font-family:var(--serif); box-shadow:0 4px 16px rgba(0,0,0,.12); }
-.toast.show { opacity:1; transform:translateY(0); }
-.toast-s { background:var(--green);  color:#fff; }
-.toast-e { background:var(--red);    color:#fff; }
-.toast-w { background:var(--orange); color:#fff; }
+.toast{position:fixed;bottom:22px;right:22px;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;font-family:var(--serif);box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.toast.show{opacity:1;transform:translateY(0);}
+.t-s{background:var(--green);color:#fff;} .t-e{background:var(--red);color:#fff;} .t-w{background:var(--orange);color:#fff;}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">ELWOIC</div>
     <div class="login-sub">Admin Panel</div>
     <div class="login-div"></div>
-    <input type="text"     id="uname" placeholder="Username" onkeydown="if(event.key==='Enter')login()">
+    <input type="text" id="uname" placeholder="Username" onkeydown="if(event.key==='Enter')login()">
     <input type="password" id="upass" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
     <button class="login-btn" id="loginBtn" onclick="login()">Sign In</button>
-    <div class="login-err" id="loginErr">Incorrect username or password.</div>
+    <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="appScreen">
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-title">ELWOIC</div>
-      <div class="topbar-sep"></div>
-      <div class="topbar-sub">Data Request Admin Panel</div>
+    <div class="tb-left">
+      <div class="tb-logo">ELWOIC</div>
+      <div class="tb-sep"></div>
+      <div class="tb-sub">Data Request Admin</div>
     </div>
-    <div class="topbar-right">
-      <span class="stat-chip chip-p" id="statP">— Pending</span>
-      <span class="stat-chip chip-a" id="statA">— Approved</span>
-      <span class="stat-chip chip-r" id="statR">— Rejected</span>
+    <div class="tb-right">
+      <span class="chip chip-p" id="statP">— Pending</span>
+      <span class="chip chip-a" id="statA">— Approved</span>
+      <span class="chip chip-r" id="statR">— Rejected</span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
   <div class="main">
     <div class="controls">
       <input type="text" id="srch" placeholder="Search name, email or request ID…" oninput="render()">
-      <select id="fltStatus" onchange="render()">
+      <select id="fltS" onchange="render()">
         <option value="all">All Status</option>
         <option value="Pending">Pending</option>
-        <option value="approved">Approved</option>
-        <option value="approved_pending">Approved (Data Pending)</option>
         <option value="verification_failed">Verification Failed</option>
+        <option value="approved_pending">Approved (Pending)</option>
+        <option value="approved">Approved</option>
         <option value="rejected">Rejected</option>
+        <option value="closed">Closed</option>
       </select>
-      <select id="fltSort" onchange="render()">
+      <select id="fltO" onchange="render()">
         <option value="latest">Latest First</option>
         <option value="oldest">Oldest First</option>
         <option value="pending">Pending First</option>
@@ -207,116 +201,71 @@ td { padding:12px 16px; font-size:13px; vertical-align:middle; }
     </div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Request ID</th><th>Name</th><th>Email</th><th>Category</th>
-            <th>Submitted</th><th>Status</th><th>Pipeline</th><th>Actions</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>Request ID</th><th>Name</th><th>Email</th><th>Category</th>
+          <th>Submitted</th><th>Status</th><th>Stage</th><th>Actions</th>
+        </tr></thead>
         <tbody id="tBody"><tr class="empty-row"><td colspan="8">Loading…</td></tr></tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     VIEW MODAL (wide)
-════════════════════════════════════════════════ -->
+<!-- VIEW MODAL -->
 <div class="overlay" id="oView">
   <div class="modal modal-wide">
-    <div class="modal-head">
-      <h3>Request Details</h3>
-      <button class="modal-x" onclick="closeM('oView')">×</button>
+    <div class="mhead">
+      <h3 id="viewTitle">Request Details</h3>
+      <button class="mx" onclick="closeM('oView')">×</button>
     </div>
-    <div class="modal-body" id="viewBody"></div>
+    <div class="mbody" id="viewBody"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     VERIFY MODAL
-════════════════════════════════════════════════ -->
-<div class="overlay" id="oVerify">
+<!-- EMAIL MODAL -->
+<div class="overlay" id="oEmail">
   <div class="modal modal-med">
-    <div class="modal-head">
-      <h3 id="verifyTitle">Verify Request</h3>
-      <button class="modal-x" onclick="closeM('oVerify')">×</button>
+    <div class="mhead">
+      <h3 id="emailTitle">Send Email</h3>
+      <button class="mx" onclick="closeM('oEmail')">×</button>
     </div>
-    <div class="modal-body">
-      <!-- PASS -->
-      <div id="vPassSec">
-        <div class="info-box">✅ Mark this request as <strong>verified</strong>. Identity and details have been confirmed. The request stays Pending but the Verification stage will show as complete with a timestamp in the tracking portal.</div>
-        <div class="actions">
-          <button class="btn btn-verify" onclick="submitVerify('pass')">Mark as Verified</button>
-          <button class="btn btn-cancel" onclick="closeM('oVerify')">Cancel</button>
-        </div>
-      </div>
-      <!-- FAIL -->
-      <div id="vFailSec" style="display:none">
-        <div class="warn-box"><p>⚠️ Verification could not be completed. The applicant will be notified with the reason you provide below.</p></div>
-        <label class="sec-label">Reason for Verification Failure <span style="color:#999;font-size:10px;">(stored in database & shown to applicant)</span></label>
-        <input class="inp" id="vfReason" placeholder="e.g. Identity documents do not match, incomplete address details…" style="margin-bottom:0;">
-        <label class="sec-label">Status Message <span style="color:#999;font-size:10px;">(headline in email)</span></label>
-        <input class="inp" id="vfStatusMsg" style="margin-bottom:0;">
-        <label class="sec-label">Final Status Line</label>
-        <input class="inp" id="vfFinalStatus" style="margin-bottom:0;">
-        <label class="sec-label">Message Body</label>
-        <textarea class="ta ta-reply" id="vfBody"></textarea>
-        <div class="actions" style="margin-top:12px;">
-          <button class="btn btn-vfail" onclick="submitVerify('fail')">Send & Mark Failed</button>
-          <button class="btn btn-cancel" onclick="closeM('oVerify')">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════
-     DATA PREP MODAL
-════════════════════════════════════════════════ -->
-<div class="overlay" id="oDataPrep">
-  <div class="modal modal-med">
-    <div class="modal-head">
-      <h3>Data Prep — Write &amp; Save Prepared Data</h3>
-      <button class="modal-x" onclick="closeM('oDataPrep')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="info-box">📝 Write or paste the prepared data below. Saving will store it in the database and mark the <strong>Processing</strong> and <strong>Data Prep</strong> stages as complete. When you later click <em>Reply with Data</em>, this content will auto-fill the reply email body.</div>
-      <label class="sec-label">Storage / Location Reference <span style="color:#999;font-size:10px;">(internal only)</span></label>
-      <input class="inp" id="dpNote" placeholder="e.g. Supabase bucket /elwoic/2026/req-001" style="margin-bottom:0;">
-      <label class="sec-label">Prepared Data <span style="color:#999;font-size:10px;">(will auto-fill in reply email)</span></label>
-      <textarea class="ta ta-data" id="dpData" placeholder="Enter the prepared data content here — tables, values, descriptions, links, etc."></textarea>
-      <div class="actions" style="margin-top:8px;">
-        <button class="btn btn-savedata" onclick="submitDataPrep()">💾 Save Prepared Data</button>
-        <button class="btn btn-cancel"   onclick="closeM('oDataPrep')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════
-     REPLY MODAL
-════════════════════════════════════════════════ -->
-<div class="overlay" id="oReply">
-  <div class="modal modal-med">
-    <div class="modal-head">
-      <h3 id="replyTitle">Send Reply</h3>
-      <button class="modal-x" onclick="closeM('oReply')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="warn-box" id="replyWarn" style="display:none"><p id="replyWarnText"></p></div>
+    <div class="mbody">
+      <div class="warn-box" id="emailWarn" style="display:none"><p id="emailWarnText"></p></div>
       <div class="pend-opt" id="pendOpt" style="display:none">
         <input type="checkbox" id="pendCheck">
-        <label for="pendCheck"><strong>Data not ready yet</strong><br>Approve the request but mark data as pending — you'll send the actual data in a separate email later.</label>
+        <label for="pendCheck"><strong>Data not ready yet</strong><br>
+          Approve the request but mark data as still pending — you'll send the data in a later email.</label>
       </div>
-      <label class="sec-label">Status Message <span style="color:#999;font-size:10px;">(email headline)</span></label>
-      <input class="inp" id="rStatusMsg" style="margin-bottom:0;">
-      <label class="sec-label">Final Status Line <span style="color:#999;font-size:10px;">(tracking summary)</span></label>
-      <input class="inp" id="rFinalStatus" style="margin-bottom:0;">
-      <label class="sec-label">Message Body</label>
-      <textarea class="ta ta-reply" id="rBody"></textarea>
+      <label class="slabel">Status Message <span style="color:#aaa;font-size:10px;">(email headline)</span></label>
+      <input class="sinp" id="eStatusMsg">
+      <label class="slabel">Final Status Line <span style="color:#aaa;font-size:10px;">(tracking summary)</span></label>
+      <input class="sinp" id="eFinalStatus">
+      <label class="slabel">Message Body</label>
+      <textarea class="sta sta-reply" id="eBody"></textarea>
       <div class="actions" style="margin-top:12px;">
-        <button class="btn btn-approve" onclick="sendReply()">Send &amp; Update</button>
-        <button class="btn btn-cancel"  onclick="closeM('oReply')">Cancel</button>
+        <button class="abtn abtn-green" onclick="sendEmail()">Send &amp; Update</button>
+        <button class="abtn abtn-outline" onclick="closeM('oEmail')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATA PREP MODAL -->
+<div class="overlay" id="oDataPrep">
+  <div class="modal modal-med">
+    <div class="mhead">
+      <h3>Prepare &amp; Save Data</h3>
+      <button class="mx" onclick="closeM('oDataPrep')">×</button>
+    </div>
+    <div class="mbody">
+      <div class="info-box">📝 Write the prepared data below. Saving stores it in Supabase and marks Processing &amp; Data Prep as complete. After saving, the email draft will open automatically with this data pre-filled.</div>
+      <label class="slabel">Internal Reference <span style="color:#aaa;font-size:10px;">(not shown to user)</span></label>
+      <input class="sinp" id="dpNote" placeholder="e.g. Supabase bucket /elwoic/2026/req-001">
+      <label class="slabel">Prepared Data <span style="color:#aaa;font-size:10px;">(auto-fills reply email)</span></label>
+      <textarea class="sta sta-data" id="dpData" placeholder="Paste or write the data here…"></textarea>
+      <div class="actions" style="margin-top:10px;">
+        <button class="abtn abtn-teal" onclick="submitDataPrep()">💾 Save &amp; Open Email Draft</button>
+        <button class="abtn abtn-outline" onclick="closeM('oDataPrep')">Cancel</button>
       </div>
     </div>
   </div>
@@ -325,10 +274,10 @@ td { padding:12px 16px; font-size:13px; vertical-align:middle; }
 <div class="toast" id="toast"></div>
 
 <script>
-const WORKER_URL       = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
-const EMAILJS_SERVICE  = "service_qpz7vpz";
-const EMAILJS_TEMPLATE = "template_gejp4qq";
-const EMAILJS_KEY      = "Bd-no1cWjcYLmCKIW";
+const W = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
+const EJS_SVC = "service_qpz7vpz";
+const EJS_TPL = "template_gejp4qq";
+const EJS_KEY = "Bd-no1cWjcYLmCKIW";
 
 let allData = [], cur = {};
 
@@ -343,19 +292,19 @@ async function login(){
   if(!u||!p){err.textContent="Please enter both fields.";err.style.display="block";return;}
   btn.disabled=true; btn.textContent="Signing in…"; err.style.display="none";
   try{
-    const res=await fetch(`${WORKER_URL}/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})});
-    const data=await res.json();
-    if(res.ok&&data.success){
-      sessionStorage.setItem("elwoic_token",data.token);
+    const r=await fetch(`${W}/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})});
+    const d=await r.json();
+    if(r.ok&&d.success){
+      sessionStorage.setItem("elwoic_token",d.token);
       document.getElementById("loginScreen").style.display="none";
       document.getElementById("appScreen").style.display="block";
       loadRequests();
-    } else { err.textContent="Incorrect username or password."; err.style.display="block"; }
-  } catch(e){ err.textContent="Connection failed."; err.style.display="block"; }
-  finally{ btn.disabled=false; btn.textContent="Sign In"; }
+    } else {err.textContent="Incorrect username or password.";err.style.display="block";}
+  }catch(e){err.textContent="Connection failed.";err.style.display="block";}
+  finally{btn.disabled=false;btn.textContent="Sign In";}
 }
 
-function logout(){ sessionStorage.removeItem("elwoic_token"); location.reload(); }
+function logout(){sessionStorage.removeItem("elwoic_token");location.reload();}
 
 window.addEventListener("load",()=>{
   if(getToken()){
@@ -363,296 +312,294 @@ window.addEventListener("load",()=>{
     document.getElementById("appScreen").style.display="block";
     loadRequests();
   }
-  emailjs.init(EMAILJS_KEY);
+  emailjs.init(EJS_KEY);
 });
 
-/* ── FETCH HELPER ── */
-async function aFetch(url,opts={}){
-  const res=await fetch(url,{...opts,headers:{"Content-Type":"application/json","X-Admin-Token":getToken(),...(opts.headers||{})}});
-  if(res.status===401){showToast("Session expired.","e");setTimeout(logout,2000);throw new Error("401");}
-  return res;
+/* ── AUTH FETCH ── */
+async function af(url,opts={}){
+  const r=await fetch(url,{...opts,headers:{"Content-Type":"application/json","X-Admin-Token":getToken(),...(opts.headers||{})}});
+  if(r.status===401){showToast("Session expired","e");setTimeout(logout,2000);throw new Error("401");}
+  return r;
 }
 
 /* ── LOAD ── */
 async function loadRequests(){
   try{
-    const res=await aFetch(`${WORKER_URL}/requests`);
-    allData=await res.json();
-    updateStats(); render();
-  } catch(e){ if(e.message!=="401") showToast("Failed to load","e"); }
+    const r=await af(`${W}/requests`);
+    allData=await r.json();
+    updateStats();render();
+  }catch(e){if(e.message!=="401")showToast("Failed to load","e");}
 }
 
 function updateStats(){
-  document.getElementById("statP").textContent=allData.filter(d=>d.status==="Pending"||d.status==="verification_failed").length+" Pending";
-  document.getElementById("statA").textContent=allData.filter(d=>d.status==="approved"||d.status==="approved_pending").length+" Approved";
-  document.getElementById("statR").textContent=allData.filter(d=>d.status==="rejected").length+" Rejected";
+  const p=allData.filter(d=>d.status==="Pending"||d.status==="verification_failed").length;
+  const a=allData.filter(d=>d.status==="approved"||d.status==="approved_pending").length;
+  const r=allData.filter(d=>d.status==="rejected").length;
+  document.getElementById("statP").textContent=p+" Pending";
+  document.getElementById("statA").textContent=a+" Approved";
+  document.getElementById("statR").textContent=r+" Rejected";
 }
 
-/* ── PIPELINE MINI (table) ── */
-function pipeMini(d){
-  const steps=[
-    {done:true,                                                fail:false},
-    {done:!!d.verified_at&&!d.verification_failed_reason,     fail:!!d.verification_failed_reason},
-    {done:!!d.data_stored_at,                                 fail:false},
-    {done:!!d.data_prep_at,                                   fail:false},
-    {done:d.status==="approved"&&!!d.data_sent_at,            fail:false}
-  ];
-  return steps.map((s,i)=>{
-    const bg=s.fail?"#7c3aed":s.done?"#16a34a":"#d1d5db";
-    const col=(s.done||s.fail)?"#fff":"#6b7280";
-    const lbl=s.done?"✓":s.fail?"✕":(i+1).toString();
-    return `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:${bg};color:${col};font-size:9px;font-weight:700;margin:0 1px;">${lbl}</span>`;
-  }).join("");
+/* ── STAGE LABEL for table ── */
+function stageLbl(d){
+  if(d.case_closed_at) return '<span style="font-size:10px;font-family:var(--mono);color:#475569;">🔒 Closed</span>';
+  if(d.data_sent_at)   return '<span style="font-size:10px;font-family:var(--mono);color:#16a34a;">✓ Delivered</span>';
+  if(d.data_prep_at)   return '<span style="font-size:10px;font-family:var(--mono);color:#0891b2;">📦 Data Ready</span>';
+  if(d.verified_at&&!d.verification_failed_reason) return '<span style="font-size:10px;font-family:var(--mono);color:#16a34a;">✓ Verified</span>';
+  if(d.verification_failed_reason) return '<span style="font-size:10px;font-family:var(--mono);color:#7c3aed;">⚠ Verif. Failed</span>';
+  if(d.seen_at)        return '<span style="font-size:10px;font-family:var(--mono);color:#1d4ed8;">👁 Seen</span>';
+  return '<span style="font-size:10px;font-family:var(--mono);color:#d97706;">⏳ New</span>';
 }
 
 /* ── RENDER TABLE ── */
 function render(){
-  const srch=document.getElementById("srch").value.toLowerCase();
-  const fst=document.getElementById("fltStatus").value;
-  const srt=document.getElementById("fltSort").value;
+  const q=document.getElementById("srch").value.toLowerCase();
+  const fs=document.getElementById("fltS").value;
+  const fo=document.getElementById("fltO").value;
+
   let data=allData.filter(d=>{
-    const ms=fst==="all"||d.status===fst;
-    const mq=(d.name||"").toLowerCase().includes(srch)||(d.email||"").toLowerCase().includes(srch)||(d.request_id||"").toLowerCase().includes(srch);
-    return ms&&mq;
+    const st=fs==="all"||d.status===fs||(fs==="closed"&&d.case_closed_at);
+    const sq=(d.name||"").toLowerCase().includes(q)||(d.email||"").toLowerCase().includes(q)||(d.request_id||"").toLowerCase().includes(q);
+    return st&&sq;
   });
-  if(srt==="latest") data.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-  if(srt==="oldest") data.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  if(srt==="pending") data.sort((a,b)=>a.status==="Pending"?-1:1);
+  if(fo==="latest") data.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  if(fo==="oldest") data.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  if(fo==="pending") data.sort((a,b)=>a.status==="Pending"?-1:1);
+
   const body=document.getElementById("tBody");
-  if(!data.length){body.innerHTML=`<tr class="empty-row"><td colspan="8">No requests found.</td></tr>`;return;}
+  if(!data.length){body.innerHTML='<tr class="empty-row"><td colspan="8">No requests found.</td></tr>';return;}
+
   const lbl={Pending:"Pending",approved:"Approved",approved_pending:"Appr. Pending",rejected:"Rejected",verification_failed:"Verif. Failed"};
   body.innerHTML=data.map(d=>{
     const dt=d.created_at?new Date(d.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
+    const badge=d.case_closed_at?"closed":d.status;
     return `<tr>
       <td class="td-id">${d.request_id||"—"}</td>
       <td>${d.name||"—"}</td>
       <td>${d.email||"—"}</td>
       <td>${d.purpose_category||"—"}</td>
       <td class="td-date">${dt}</td>
-      <td><span class="badge badge-${d.status}">${lbl[d.status]||d.status}</span></td>
-      <td>${pipeMini(d)}</td>
+      <td><span class="badge badge-${badge}">${d.case_closed_at?"Closed":(lbl[d.status]||d.status)}</span></td>
+      <td>${stageLbl(d)}</td>
       <td>
         <button class="btn btn-view" onclick="viewReq(${d.id})">View</button>
         <button class="btn btn-del"  onclick="delReq(${d.id})">Delete</button>
-      </td></tr>`;
+      </td>
+    </tr>`;
   }).join("");
 }
 
-/* ── FORMAT TIMESTAMP ── */
+/* ── TIMESTAMP FORMAT ── */
 function fmtTs(ts){
   if(!ts) return null;
   return new Date(ts).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true})+" IST";
 }
 
-/* ── BUILD PIPELINE (detail view) ── */
-function buildPipe(d){
-  const isDelivered = d.status==="approved" && !!d.data_sent_at;
+/* ── BUILD PIPELINE (right column in view) ── */
+function buildPipeline(d){
+  const isClosed    = !!d.case_closed_at;
+  const isDelivered = !!d.data_sent_at;
+  const hasPrep     = !!d.data_prep_at;
+  const isApprPend  = d.status==="approved_pending";
+  const isApproved  = d.status==="approved";
+  const isRejected  = d.status==="rejected";
+  const hasVerified = !!d.verified_at && !d.verification_failed_reason;
+  const hasVFail    = !!d.verification_failed_reason;
 
-  const stages=[
+  const steps=[
     {
-      label:"Administration",
-      sub:"Request received & logged",
+      label:"Submitted & Logged",
+      sub:"Request received in system",
       ts:d.created_at,
       state:"done"
     },
     {
+      label:"Seen by Admin",
+      sub:d.seen_at?"Reviewed by team":"Not yet reviewed",
+      ts:d.seen_at,
+      state:d.seen_at?"done":(d.status==="Pending"?"active":"wait")
+    },
+    {
       label:"Verification",
-      sub: d.verification_failed_reason
-            ? "Failed: "+d.verification_failed_reason
-            : d.verified_at ? "Identity & details verified" : "Awaiting verification",
-      ts: d.verified_at||null,
-      state: d.verification_failed_reason ? "error"
-           : d.verified_at ? "done"
-           : (d.status==="Pending") ? "active" : "wait"
+      sub:hasVFail?`Failed: ${d.verification_failed_reason}`:hasVerified?"Identity verified":"Pending verification",
+      ts:d.verified_at||null,
+      state:hasVFail?"error":hasVerified?"done":(d.seen_at?"active":"wait")
+    },
+    ...(isApprPend||(!d.approved_at&&isApproved&&!d.data_prep_at)?[{
+      label:"Approved — Data Pending",
+      sub:isApprPend?"Request approved, data being prepared":"Approved, moving to data prep",
+      ts:d.approved_at||null,
+      state:isApprPend?"active":d.approved_at?"done":"wait"
+    }]:[]),
+    {
+      label:"Data Prepared",
+      sub:hasPrep?"Data compiled & formatted":"Awaiting data preparation",
+      ts:d.data_prep_at||null,
+      state:hasPrep?"done":(hasVerified&&!isRejected?"active":"wait")
     },
     {
-      label:"Processing",
-      sub: d.data_stored_at ? "Data located & reviewed" : d.status==="approved_pending" ? "Data being located…" : "Pending",
-      ts: d.data_stored_at||null,
-      state: d.data_stored_at ? "done" : d.status==="approved_pending" ? "active" : "wait"
+      label:isDelivered?"Delivered ✓":"Delivery",
+      sub:isDelivered?"Data sent to applicant":hasPrep?"Ready to send":"Awaiting data prep",
+      ts:d.data_sent_at||null,
+      state:isDelivered?"done":(hasPrep?"active":"wait")
     },
     {
-      label:"Data Prep",
-      sub: d.data_prep_at ? "Data compiled & formatted" : d.data_stored_at ? "Data stored — prep in progress" : "Pending",
-      ts: d.data_prep_at||null,
-      state: d.data_prep_at ? "done" : d.data_stored_at ? "active" : "wait"
-    },
-    {
-      label: isDelivered ? "Delivered ✓" : "Delivery",
-      sub: isDelivered ? "Data sent to applicant email" : d.status==="approved_pending" ? "Awaiting data send" : d.status==="approved" ? "Preparing to send" : "Pending",
-      ts: d.data_sent_at||null,
-      state: isDelivered ? "done" : (d.status==="approved_pending"||d.status==="approved") ? "active" : "wait"
+      label:"Case Closed",
+      sub:isClosed?"No further action required":"Open",
+      ts:d.case_closed_at||null,
+      state:isClosed?"done":"wait"
     }
   ];
 
-  // If rejected → only admin stays done, rest waiting
-  if(d.status==="rejected"){
-    stages[2].state=stages[3].state=stages[4].state="wait";
-    if(!d.verified_at) stages[1].state="wait";
+  // If rejected → grey everything after verification
+  if(isRejected){
+    steps.forEach((s,i)=>{if(i>2)s.state="wait";});
+    // But keep closed if it happened
+    if(isClosed) steps[steps.length-1].state="done";
   }
 
-  return `<div class="pipe-wrap">`+stages.map(s=>{
-    const icon=s.state==="done"?"✓":s.state==="error"?"✕":s.state==="active"?"…":"○";
+  return `<div class="pipeline">`+steps.map(s=>{
+    const icon=s.state==="done"?"✓":s.state==="error"?"✕":s.state==="active"?"…":s.state==="skipped"?"↷":"○";
     const ts=s.ts?`<div class="pipe-ts">🕐 ${fmtTs(s.ts)}</div>`:"";
-    return `<div class="pipe-item ${s.state}">
+    return `<div class="pipe-step ${s.state}">
       <div class="pipe-dot ${s.state}">${icon}</div>
-      <div><div class="pipe-label">${s.label}</div><div class="pipe-sub">${s.sub}</div>${ts}</div>
+      <div class="pipe-body">
+        <div class="pipe-label">${s.label}</div>
+        <div class="pipe-sub">${s.sub}</div>
+        ${ts}
+      </div>
     </div>`;
   }).join("")+`</div>`;
 }
 
-/* ── VIEW REQUEST (wide modal) ── */
-function viewReq(id){
+/* ── VIEW REQUEST ── */
+async function viewReq(id){
   const d=allData.find(x=>x.id==id);
   if(!d) return;
   cur=d;
 
-  // Action buttons based on status
-  let btns="";
-  const hasPrepData = !!(d.prepared_data||"").trim();
-
-  if(d.status==="Pending"||d.status==="verification_failed"){
-    // Verification row
-    if(!d.verified_at&&!d.verification_failed_reason){
-      btns+=`<button class="btn btn-verify" onclick="openVerify('pass')">✓ Mark Verified</button>
-             <button class="btn btn-vfail"  onclick="openVerify('fail')">✕ Verification Failed</button>`;
-    } else if(d.verified_at&&!d.verification_failed_reason){
-      btns+=`<span style="font-size:11px;color:var(--green);font-family:var(--mono);margin-right:8px;">✓ Verified</span>`;
-    }
-    btns+=`<button class="btn btn-approve" onclick="openReply('approved')">Approve</button>
-           <button class="btn btn-reject"  onclick="openReply('rejected')">Reject</button>`;
-
-  } else if(d.status==="approved_pending"){
-    if(!d.data_prep_at){
-      btns+=`<button class="btn btn-store" onclick="openDataPrep()">📝 Prepare &amp; Store Data</button>`;
-    } else {
-      btns+=`<span style="font-size:11px;color:var(--teal);font-family:var(--mono);margin-right:8px;">📦 Data Prepared</span>`;
-    }
-    if(hasPrepData){
-      btns+=`<button class="btn btn-datasent" onclick="openReply('mark_sent_with_data')">✉ Reply with Data</button>`;
-    }
-    btns+=`<button class="btn btn-datasent" onclick="openReply('mark_sent')">✉ Mark Data Sent</button>
-           <button class="btn btn-reject"   onclick="openReply('reject_from_approved')">Reject</button>`;
-
-  } else if(d.status==="approved"){
-    btns=`<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">✓ Delivered — completed</span>`;
-
-  } else if(d.status==="rejected"){
-    btns=`<button class="btn btn-reopen" onclick="openReply('reopen')">Re-open Request</button>`;
+  // Auto-mark as seen (fire and forget)
+  if(!d.seen_at){
+    af(`${W}/seen`,{method:"POST",body:JSON.stringify({id:d.id})})
+      .then(()=>{ patchLocal(d.id,{seen_at:new Date().toISOString()}); updateStats(); render(); })
+      .catch(()=>{});
   }
 
+  const isClosed    = !!d.case_closed_at;
+  const isDelivered = !!d.data_sent_at;
+  const isRejected  = d.status==="rejected";
+  const isApprPend  = d.status==="approved_pending";
+  const hasVFail    = !!d.verification_failed_reason;
+  const hasVerified = !!d.verified_at && !hasVFail;
+  const hasPrep     = !!d.data_prep_at;
+  const hasPrepData = !!(d.prepared_data||"").trim();
+  const isPending   = d.status==="Pending"||d.status==="verification_failed";
+
+  /* Build action buttons based on current stage */
+  let btns="";
+  if(isClosed){
+    btns=`<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">🔒 Case is closed — no further actions</span>`;
+  } else if(isDelivered){
+    btns=`<button class="abtn abtn-gray" onclick="closeCase()">🔒 Close Case</button>`;
+  } else if(isRejected){
+    btns=`
+      <button class="abtn abtn-orange" onclick="openEmail('reopen')">Re-open Request</button>
+      <button class="abtn abtn-gray"   onclick="closeCase()">🔒 Close Case</button>`;
+  } else if(isApprPend){
+    btns=`
+      <button class="abtn abtn-teal"   onclick="openDataPrep()">📝 Prepare &amp; Save Data</button>
+      ${hasPrepData?`<button class="abtn abtn-green" onclick="openEmail('send_with_data')">✉ Send Prepared Data</button>`:""}
+      <button class="abtn abtn-red"    onclick="openEmail('reject_approved')">Reject</button>`;
+  } else if(d.status==="approved"&&hasPrep&&!isDelivered){
+    btns=`
+      <button class="abtn abtn-green"  onclick="openEmail('send_with_data')">✉ Send Prepared Data</button>
+      <button class="abtn abtn-outline" onclick="openEmail('mark_sent')">Mark as Sent (no email)</button>`;
+  } else if(isPending){
+    if(!hasVerified&&!hasVFail){
+      btns+=`
+        <button class="abtn abtn-green"  onclick="markVerified()">✓ Mark Verified</button>
+        <button class="abtn abtn-purple" onclick="openEmail('verify_fail')">✕ Verification Failed</button>`;
+    } else if(hasVerified){
+      btns+=`<span style="font-size:11px;color:var(--green);font-family:var(--mono);margin-right:10px;">✓ Verified</span>`;
+    } else if(hasVFail){
+      btns+=`<button class="abtn abtn-green" onclick="markVerified()">✓ Mark Verified Now</button>`;
+    }
+    btns+=`
+      <button class="abtn abtn-blue"  onclick="openEmail('approve')">Approve</button>
+      <button class="abtn abtn-red"   onclick="openEmail('reject')">Reject</button>`;
+  }
+
+  document.getElementById("viewTitle").textContent=`Request — ${d.request_id||""}`;
   document.getElementById("viewBody").innerHTML=`
-    <div class="detail-grid">
-      <div class="d-item"><label>Request ID</label><span style="font-family:var(--mono);font-size:11px;">${d.request_id||"—"}</span></div>
-      <div class="d-item"><label>Submitted</label><span>${d.created_at?new Date(d.created_at).toLocaleString("en-IN"):"—"}</span></div>
-      <div class="d-item"><label>Status</label><span><span class="badge badge-${d.status}">${d.status}</span></span></div>
-      <div class="d-item"><label>Name</label><span>${d.name||"—"}</span></div>
-      <div class="d-item"><label>Email</label><span>${d.email||"—"}</span></div>
-      <div class="d-item"><label>Phone</label><span>${d.phone||"Not provided"}</span></div>
-      <div class="d-item"><label>Organisation</label><span>${d.organisation||"Not provided"}</span></div>
-      <div class="d-item"><label>Designation</label><span>${d.designation||"Not provided"}</span></div>
-      <div class="d-item"><label>Purpose Category</label><span>${d.purpose_category||"—"}</span></div>
+  <div class="view-grid">
+    <div class="view-left">
+      <div class="dg3">
+        <div class="di"><label>Request ID</label><span style="font-family:var(--mono);font-size:11px;">${d.request_id||"—"}</span></div>
+        <div class="di"><label>Status</label><span><span class="badge badge-${d.case_closed_at?"closed":d.status}">${d.case_closed_at?"Closed":d.status}</span></span></div>
+        <div class="di"><label>Submitted</label><span>${d.created_at?new Date(d.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—"}</span></div>
+        <div class="di"><label>Name</label><span>${d.name||"—"}</span></div>
+        <div class="di"><label>Email</label><span>${d.email||"—"}</span></div>
+        <div class="di"><label>Phone</label><span>${d.phone||"—"}</span></div>
+        <div class="di"><label>Organisation</label><span>${d.organisation||"—"}</span></div>
+        <div class="di"><label>Designation</label><span>${d.designation||"—"}</span></div>
+        <div class="di"><label>Category</label><span>${d.purpose_category||"—"}</span></div>
+      </div>
+      <div class="dg2">
+        <div class="df"><label>Purpose</label><div class="dbox">${d.purpose||"—"}</div></div>
+        <div class="df"><label>Parameters Requested</label><div class="dbox">${d.parameters||"—"}</div></div>
+      </div>
+      <div class="dg3">
+        <div class="di"><label>Request Type</label><span>${d.type||"—"}</span></div>
+        <div class="di"><label>Response Format</label><span>${d.response_format||"—"}</span></div>
+        <div class="di"><label>Date / Time</label><span>${[d.date,d.time].filter(Boolean).join(" ")||"—"}</span></div>
+        <div class="di"><label>From Date</label><span>${d.from_date||"—"}</span></div>
+        <div class="di"><label>To Date</label><span>${d.to_date||"—"}</span></div>
+      </div>
+      <div class="df"><label>Additional Details</label><div class="dbox">${d.additional_details||"None"}</div></div>
+      ${hasVFail?`<div style="margin-top:10px;padding:10px 13px;background:#fdf4ff;border:1px solid #d8b4fe;border-radius:7px;font-size:12px;color:#581c87;line-height:1.6;">
+        ⚠️ <strong>Verification failed reason:</strong> ${d.verification_failed_reason}</div>`:""}
+      ${hasPrepData?`
+      <div class="divider"></div>
+      <div class="sec-hdr">Prepared Data <span class="saved-tag">SAVED</span></div>
+      <div class="dbox" style="font-family:var(--mono);font-size:12px;max-height:180px;overflow-y:auto;">${d.prepared_data}</div>
+      ${d.data_stored_note?`<div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--mono);">Ref: ${d.data_stored_note}</div>`:""}
+      `:""}
+      <div class="divider"></div>
+      <div class="actions">${btns}<button class="abtn abtn-outline" onclick="closeM('oView')">Close</button></div>
     </div>
-    <hr class="divider">
-    <div class="detail-grid-2">
-      <div class="d-full"><label>Purpose</label><div class="d-box">${d.purpose||"—"}</div></div>
-      <div class="d-full"><label>Parameters Requested</label><div class="d-box">${d.parameters||"—"}</div></div>
+    <div class="view-right">
+      <div class="sec-hdr">Pipeline</div>
+      ${buildPipeline(d)}
     </div>
-    <div class="detail-grid">
-      <div class="d-item"><label>Request Type</label><span>${d.type||"—"}</span></div>
-      <div class="d-item"><label>Response Format</label><span>${d.response_format||"—"}</span></div>
-      <div class="d-item"><label>Date / Time</label><span>${[d.date,d.time].filter(Boolean).join(" ")||"—"}</span></div>
-      <div class="d-item"><label>From Date</label><span>${d.from_date||"—"}</span></div>
-      <div class="d-item"><label>To Date</label><span>${d.to_date||"—"}</span></div>
-    </div>
-    <div class="d-full" style="margin-top:4px;"><label>Additional Details</label><div class="d-box">${d.additional_details||"None"}</div></div>
-
-    ${d.verification_failed_reason?`
-    <div style="margin-top:12px;padding:10px 14px;background:#fdf4ff;border:1px solid #d8b4fe;border-radius:8px;font-size:12px;color:#581c87;line-height:1.6;">
-      ⚠️ <strong>Verification failed reason:</strong> ${d.verification_failed_reason}
-    </div>`:""}
-
-    ${hasPrepData?`
-    <hr class="divider">
-    <div class="section-hdr">Prepared Data <span class="saved-tag">SAVED IN DB</span></div>
-    <div class="d-box" style="font-family:var(--mono);font-size:12px;max-height:200px;overflow-y:auto;">${d.prepared_data}</div>
-    ${d.data_stored_note?`<div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono);">Ref: ${d.data_stored_note}</div>`:""}
-    `:""}
-
-    <hr class="divider">
-    <div class="section-hdr">Request Pipeline</div>
-    ${buildPipe(d)}
-
-    <hr class="divider">
-    <div class="actions">${btns}
-      <button class="btn btn-cancel" onclick="closeM('oView')">Close</button>
-    </div>`;
+  </div>`;
 
   openM("oView");
 }
 
-/* ── VERIFY ── */
-function openVerify(type){
-  const d=cur;
-  window.verifyType=type;
-  if(type==="pass"){
-    document.getElementById("verifyTitle").textContent="Mark Request as Verified";
-    document.getElementById("vPassSec").style.display="block";
-    document.getElementById("vFailSec").style.display="none";
-  } else {
-    document.getElementById("verifyTitle").textContent="Verification Failed";
-    document.getElementById("vPassSec").style.display="none";
-    document.getElementById("vFailSec").style.display="block";
-    document.getElementById("vfReason").value="";
-    document.getElementById("vfStatusMsg").value="Your request verification was unsuccessful.";
-    document.getElementById("vfFinalStatus").value="Verification Failed";
-    document.getElementById("vfBody").value=
-      `Dear ${d.name},\n\nWe were unable to verify the details submitted with your data request (${d.request_id}).\n\nReason: [see below]\n\nPlease re-submit with the correct information or contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-  }
-  closeM("oView"); openM("oVerify");
-}
-
-async function submitVerify(type){
+/* ── MARK VERIFIED ── */
+async function markVerified(){
   const d=cur; const now=new Date().toISOString();
-  if(type==="pass"){
-    try{
-      await aFetch(`${WORKER_URL}/update`,{method:"POST",body:JSON.stringify({id:d.id,verified_at:now})});
-      patchLocal(d.id,{verified_at:now});
-      closeM("oVerify"); showToast("Marked as verified ✓","s");
-    } catch(e){ if(e.message!=="401") showToast("Update failed","e"); }
-    return;
-  }
-  // FAIL
-  const reason=document.getElementById("vfReason").value.trim();
-  const sMssg=document.getElementById("vfStatusMsg").value.trim();
-  const sFinal=document.getElementById("vfFinalStatus").value.trim();
-  const sBody=document.getElementById("vfBody").value.trim();
-  if(!reason){showToast("Please enter a reason","w");return;}
-
-  // Auto-inject reason into body
-  const bodyWithReason=sBody.replace("[see below]",reason);
-
   try{
-    await emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:d.email,name:d.name,requestId:d.request_id,
-      parameters:d.parameters,type:d.type,
-      message:bodyWithReason,status_message:sMssg,
-      final_status:`Verification Failed — ${reason}`,theme_color:"#7c3aed"
-    });
-  } catch(e){ showToast("Email failed","e"); return; }
-
-  try{
-    await aFetch(`${WORKER_URL}/update`,{method:"POST",body:JSON.stringify({
-      id:d.id,status:"verification_failed",
-      verification_failed_reason:reason,verified_at:now
-    })});
-    patchLocal(d.id,{status:"verification_failed",verification_failed_reason:reason,verified_at:now});
+    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,verified_at:now,verification_failed_reason:null,resubmit_requested:false})});
+    patchLocal(d.id,{verified_at:now,verification_failed_reason:null,resubmit_requested:false});
+    closeM("oView"); showToast("Marked as verified ✓","s");
     updateStats(); render();
-    closeM("oVerify"); showToast("Verification failed — email sent","w");
-  } catch(e){ if(e.message!=="401") showToast("Update failed","e"); }
+  }catch(e){if(e.message!=="401")showToast("Update failed","e");}
 }
 
-/* ── DATA PREP ── */
+/* ── CLOSE CASE ── */
+async function closeCase(){
+  if(!confirm("Close this case? This is a final action — the case will be locked.")) return;
+  const d=cur; const now=new Date().toISOString();
+  try{
+    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,case_closed_at:now})});
+    patchLocal(d.id,{case_closed_at:now});
+    closeM("oView"); showToast("Case closed 🔒","s");
+    updateStats(); render();
+  }catch(e){if(e.message!=="401")showToast("Update failed","e");}
+}
+
+/* ── DATA PREP MODAL ── */
 function openDataPrep(){
   const d=cur;
   document.getElementById("dpNote").value=d.data_stored_note||"";
@@ -664,141 +611,163 @@ async function submitDataPrep(){
   const d=cur; const now=new Date().toISOString();
   const note=document.getElementById("dpNote").value.trim();
   const prep=document.getElementById("dpData").value.trim();
-  if(!prep){showToast("Please enter the prepared data","w");return;}
+  if(!prep){showToast("Please write the prepared data first","w");return;}
   try{
-    await aFetch(`${WORKER_URL}/update`,{method:"POST",body:JSON.stringify({
-      id:d.id,
-      data_stored_at:d.data_stored_at||now,
-      data_stored_note:note,
-      prepared_data:prep,
-      data_prep_at:now
+    await af(`${W}/update`,{method:"POST",body:JSON.stringify({
+      id:d.id, data_stored_at:d.data_stored_at||now,
+      data_stored_note:note, prepared_data:prep, data_prep_at:now
     })});
     patchLocal(d.id,{data_stored_at:d.data_stored_at||now,data_stored_note:note,prepared_data:prep,data_prep_at:now});
     updateStats(); render();
-    closeM("oDataPrep"); showToast("Data prep saved ✓ — Processing & Data Prep stages complete","s");
-  } catch(e){ if(e.message!=="401") showToast("Save failed","e"); }
+    closeM("oDataPrep");
+    showToast("Data saved ✓ — opening email draft","s");
+    // Auto-open email draft with data
+    setTimeout(()=>{ cur=allData.find(x=>x.id==d.id)||cur; openEmail("send_with_data"); },400);
+  }catch(e){if(e.message!=="401")showToast("Save failed","e");}
 }
 
-/* ── REPLY ── */
-function openReply(action){
-  window.replyAction=action;
+/* ── EMAIL MODAL ── */
+function openEmail(action){
+  window.emailAction=action;
   const d=cur;
-  document.getElementById("replyWarn").style.display="none";
+  document.getElementById("emailWarn").style.display="none";
   document.getElementById("pendOpt").style.display="none";
   document.getElementById("pendCheck").checked=false;
 
-  if(action==="approved"){
-    document.getElementById("replyTitle").textContent="Approve Request";
+  if(action==="approve"){
+    document.getElementById("emailTitle").textContent="Approve Request";
     document.getElementById("pendOpt").style.display="flex";
-    document.getElementById("rStatusMsg").value="Your data request has been Approved.";
-    document.getElementById("rFinalStatus").value="Approved — Data will be sent shortly.";
-    document.getElementById("rBody").value=
-      `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for: ${d.parameters} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+    document.getElementById("eStatusMsg").value="Your data request has been Approved.";
+    document.getElementById("eFinalStatus").value="Approved — Data will be sent shortly.";
+    document.getElementById("eBody").value=
+      `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for: ${d.parameters||"your parameters"} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
-  } else if(action==="mark_sent"){
-    document.getElementById("replyTitle").textContent="Mark Data as Sent";
-    document.getElementById("rStatusMsg").value="Your requested data has been sent.";
-    document.getElementById("rFinalStatus").value="Approved — Data Sent";
-    document.getElementById("rBody").value=
-      `Dear ${d.name},\n\nThe data for your request (${d.request_id}) has been processed and sent to you.\n\nPlease check your email for the attached data.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+  } else if(action==="verify_fail"){
+    document.getElementById("emailTitle").textContent="Verification Failed — Notify & Request Fix";
+    document.getElementById("emailWarn").style.display="block";
+    document.getElementById("emailWarnText").textContent=
+      "The email will include a link so the user can edit and resubmit their request.";
+    document.getElementById("eStatusMsg").value="Your request could not be verified.";
+    document.getElementById("eFinalStatus").value="Verification Failed — Resubmit Required";
+    document.getElementById("eBody").value=
+      `Dear ${d.name},\n\nWe were unable to verify the details on your data request (${d.request_id}).\n\nReason: [FILL IN REASON]\n\nPlease click the link below to edit and resubmit your request:\nhttps://request.elwoic.in/request-tracking.html\n\nOnce resubmitted, we will review it again promptly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
-  } else if(action==="mark_sent_with_data"){
-    // Auto-fill with the prepared data
-    document.getElementById("replyTitle").textContent="Reply with Prepared Data";
-    document.getElementById("rStatusMsg").value="Your requested data is ready and attached below.";
-    document.getElementById("rFinalStatus").value="Approved — Data Delivered";
-    document.getElementById("rBody").value=
+  } else if(action==="reject"){
+    document.getElementById("emailTitle").textContent="Reject Request";
+    document.getElementById("eStatusMsg").value="Your data request could not be approved.";
+    document.getElementById("eFinalStatus").value="Rejected";
+    document.getElementById("eBody").value=
+      `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have questions, please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+
+  } else if(action==="reject_approved"){
+    document.getElementById("emailTitle").textContent="Reject Approved Request";
+    document.getElementById("emailWarn").style.display="block";
+    document.getElementById("emailWarnText").textContent=
+      "⚠️ This request was already approved. The user will be notified that approval is withdrawn.";
+    document.getElementById("eStatusMsg").value="Your approved request has been withdrawn.";
+    document.getElementById("eFinalStatus").value="Rejected — Approval Withdrawn";
+    document.getElementById("eBody").value=
+      `Dear ${d.name},\n\nYour previously approved request (${d.request_id}) has been withdrawn.\n\n[State reason here]\n\nWe apologise for the inconvenience. Contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+
+  } else if(action==="send_with_data"){
+    document.getElementById("emailTitle").textContent="Send Prepared Data to Applicant";
+    document.getElementById("eStatusMsg").value="Your requested data is ready and has been sent.";
+    document.getElementById("eFinalStatus").value="Approved — Data Delivered";
+    document.getElementById("eBody").value=
       `Dear ${d.name},\n\nYour data request (${d.request_id}) has been fully processed. Please find the requested data below:\n\n──────────────────────────\n${d.prepared_data||""}\n──────────────────────────\n\nIf you have any questions, contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
-  } else if(action==="rejected"){
-    document.getElementById("replyTitle").textContent="Reject Request";
-    document.getElementById("rStatusMsg").value="Your data request could not be approved.";
-    document.getElementById("rFinalStatus").value="Rejected";
-    document.getElementById("rBody").value=
-      `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have questions, contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="reject_from_approved"){
-    document.getElementById("replyTitle").textContent="Reject Approved Request";
-    document.getElementById("replyWarn").style.display="block";
-    document.getElementById("replyWarnText").textContent="⚠️ This request was already approved. Rejecting it will notify the user that approval has been withdrawn.";
-    document.getElementById("rStatusMsg").value="Your approved request has been withdrawn.";
-    document.getElementById("rFinalStatus").value="Rejected — Approval Withdrawn";
-    document.getElementById("rBody").value=
-      `Dear ${d.name},\n\nWe regret to inform you that your previously approved request (${d.request_id}) has been withdrawn.\n\n[Please state the reason here]\n\nWe apologise for any inconvenience. Contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
+  } else if(action==="mark_sent"){
+    document.getElementById("emailTitle").textContent="Mark Data as Sent";
+    document.getElementById("eStatusMsg").value="Your requested data has been sent.";
+    document.getElementById("eFinalStatus").value="Approved — Data Sent";
+    document.getElementById("eBody").value=
+      `Dear ${d.name},\n\nThe data for your request (${d.request_id}) has been processed and sent to you.\n\nPlease check your email for the attached data.\n\nBest Regards,\nAdmin Team, ELWOIC`;
 
   } else if(action==="reopen"){
-    document.getElementById("replyTitle").textContent="Re-open Rejected Request";
-    document.getElementById("replyWarn").style.display="block";
-    document.getElementById("replyWarnText").textContent="ℹ️ This will change the status back to Pending and notify the user that their request is being reconsidered.";
-    document.getElementById("rStatusMsg").value="Your data request is being reconsidered.";
-    document.getElementById("rFinalStatus").value="Re-opened — Under Review";
-    document.getElementById("rBody").value=
+    document.getElementById("emailTitle").textContent="Re-open Rejected Request";
+    document.getElementById("eStatusMsg").value="Your request is being reconsidered.";
+    document.getElementById("eFinalStatus").value="Re-opened — Under Review";
+    document.getElementById("eBody").value=
       `Dear ${d.name},\n\nYour previously rejected request (${d.request_id}) is being reconsidered.\n\nWe will update you once a decision has been made.\n\nBest Regards,\nAdmin Team, ELWOIC`;
   }
 
-  closeM("oView"); openM("oReply");
+  openM("oEmail");
 }
 
-async function sendReply(){
-  const d=cur; const action=window.replyAction; const now=new Date().toISOString();
-  const msg=document.getElementById("rBody").value.trim();
-  const sMssg=document.getElementById("rStatusMsg").value.trim();
-  const sFinal=document.getElementById("rFinalStatus").value.trim();
+async function sendEmail(){
+  const d=cur; const action=window.emailAction; const now=new Date().toISOString();
+  const msg=document.getElementById("eBody").value.trim();
+  const sMssg=document.getElementById("eStatusMsg").value.trim();
+  const sFinal=document.getElementById("eFinalStatus").value.trim();
   const isPend=document.getElementById("pendCheck").checked;
 
-  let newStatus, themeColor, extra={};
+  let newStatus=null, extra={}, themeColor="#1d4ed8";
 
-  if(action==="approved"){
+  if(action==="approve"){
     newStatus=isPend?"approved_pending":"approved";
     themeColor=isPend?"#1d4ed8":"#16a34a";
     extra.approved_at=now;
-    if(!isPend) extra.data_sent_at=now;
-  } else if(action==="mark_sent"||action==="mark_sent_with_data"){
-    newStatus="approved"; themeColor="#16a34a"; extra.data_sent_at=now;
-  } else if(action==="rejected"||action==="reject_from_approved"){
+    if(!isPend){ extra.data_sent_at=now; }
+  } else if(action==="verify_fail"){
+    // Extract reason from email body for storage
+    const reasonMatch=msg.match(/Reason:\s*(.+)/);
+    const reason=reasonMatch?reasonMatch[1].trim():"See email";
+    newStatus="verification_failed";
+    themeColor="#7c3aed";
+    extra.verification_failed_reason=reason;
+    extra.verified_at=now;
+    extra.resubmit_requested=true;
+  } else if(action==="reject"||action==="reject_approved"){
     newStatus="rejected"; themeColor="#dc2626"; extra.rejected_at=now;
+  } else if(action==="send_with_data"||action==="mark_sent"){
+    newStatus="approved"; themeColor="#16a34a"; extra.data_sent_at=now;
   } else if(action==="reopen"){
     newStatus="Pending"; themeColor="#d97706";
   }
 
+  // Send email
   try{
-    await emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:d.email,name:d.name,requestId:d.request_id,
-      parameters:d.parameters,type:d.type,
-      message:msg,status_message:sMssg,final_status:sFinal,theme_color:themeColor
+    await emailjs.send(EJS_SVC,EJS_TPL,{
+      to_email:d.email, name:d.name, requestId:d.request_id,
+      parameters:d.parameters, type:d.type,
+      message:msg, status_message:sMssg,
+      final_status:sFinal, theme_color:themeColor
     });
-  } catch(e){ showToast("Email failed","e"); return; }
+  }catch(e){showToast("Email failed to send","e");return;}
 
+  // Update DB
   try{
-    await aFetch(`${WORKER_URL}/update`,{method:"POST",body:JSON.stringify({id:d.id,status:newStatus,...extra})});
-    patchLocal(d.id,{status:newStatus,...extra});
+    const patch={...extra};
+    if(newStatus) patch.status=newStatus;
+    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,...patch})});
+    patchLocal(d.id,patch);
     updateStats(); render();
-    closeM("oReply"); showToast("Reply sent → "+newStatus,"s");
-  } catch(e){ if(e.message!=="401") showToast("Status update failed","e"); }
+    closeM("oEmail");
+    showToast("Email sent → "+( newStatus||"updated"),"s");
+  }catch(e){if(e.message!=="401")showToast("Status update failed","e");}
 }
 
 /* ── DELETE ── */
 async function delReq(id){
   if(!confirm("Permanently delete this request?")) return;
   try{
-    await aFetch(`${WORKER_URL}/delete`,{method:"POST",body:JSON.stringify({id})});
+    await af(`${W}/delete`,{method:"POST",body:JSON.stringify({id})});
     allData=allData.filter(x=>x.id!=id);
     updateStats(); render(); showToast("Deleted","s");
-  } catch(e){ if(e.message!=="401") showToast("Delete failed","e"); }
+  }catch(e){if(e.message!=="401")showToast("Delete failed","e");}
 }
 
 /* ── HELPERS ── */
 function patchLocal(id,patch){
-  const idx=allData.findIndex(x=>x.id==id);
-  if(idx!==-1) Object.assign(allData[idx],patch);
-  // Sync cur if same record
+  const i=allData.findIndex(x=>x.id==id);
+  if(i!==-1) Object.assign(allData[i],patch);
   if(cur.id==id) Object.assign(cur,patch);
 }
-function openM(id) { document.getElementById(id).classList.add("open"); }
-function closeM(id){ document.getElementById(id).classList.remove("open"); }
+function openM(id){document.getElementById(id).classList.add("open");}
+function closeM(id){document.getElementById(id).classList.remove("open");}
 function showToast(msg,type="s"){
   const t=document.getElementById("toast");
-  t.textContent=msg; t.className=`toast toast-${type} show`;
+  t.textContent=msg; t.className=`toast t-${type} show`;
   setTimeout(()=>t.classList.remove("show"),3200);
 }
 </script>
