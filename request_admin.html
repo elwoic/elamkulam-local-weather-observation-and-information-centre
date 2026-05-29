@@ -473,26 +473,27 @@ function buildPipeline(d){
 }
 
 /* ── VIEW REQUEST ── */
-/* ── VIEW REQUEST ── */
 async function viewReq(id){
-  const d=allData.find(x=>x.id==id);
+  // Force conversion to a clean number type
+  const numericId = Number(id);
+  const d = allData.find(x => x.id === numericId);
   if(!d) return;
-  cur=d;
+  cur = d;
 
-  // If it's a brand new request, instantly mark status as viewed locally and in database
+  // Now checking status is perfectly safe
   if(d.status === "Pending" && !d.seen_at){
     const now = new Date().toISOString();
     
     // 1. Update frontend instantly
-    patchLocal(d.id, { status: "viewed", seen_at: now });
+    patchLocal(numericId, { status: "viewed", seen_at: now });
     updateStats();
     render();
 
-    // 2. Sync to Supabase via Worker
+    // 2. Sync to Supabase via Worker using clean numeric fields
     af(`${W}/update`, {
       method: "POST",
-      body: JSON.stringify({ id: d.id, status: "viewed", seen_at: now })
-    }).catch(e => console.error("Failed to update status to viewed:", e));
+      body: JSON.stringify({ id: numericId, status: "viewed", seen_at: now })
+    }).catch(e => console.error("Database sync failed:", e));
   }
 
   const isClosed    = !!d.case_closed_at;
