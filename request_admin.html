@@ -888,17 +888,20 @@ async function executeFailureEmailDispatch(id) {
   showToast("Dispatching failure notice via EmailJS...", "w");
   try {
     // Fire dynamic notification via template metrics
-    await emailjs.send(EJS_SVC, EJS_TPL, {
-      to_email: cur.email,
-      name: cur.name,
-      requestId: cur.request_id,
-      parameters: cur.parameters,
-      request_type: cur.type || "Meteorological Request Array",
-      status_message: statusMsg,
-      message: emailBody,
-      final_status: finalLbl,
-      theme_color: "#7c3aed"
-    });
+  await emailjs.send(EJS_SVC, EJS_TPL, {
+    to_email: cur.email,
+    name: cur.name,
+    requestId: cur.request_id,
+    parameters: cur.parameters,
+    request_type: cur.type || "Meteorological Request Array",
+    status_message: statusMsg,
+    message: emailBody,
+    final_status: finalLbl,
+    theme_color: "#7c3aed",
+    // ─── ADDED VARIABLES FOR BUTTON ───
+    button_url: "https://request.elwoic.in/request-tracking.html",
+    button_text: "Update & Resubmit Data Request"
+  });
 
     const now = new Date().toISOString();
     // Enable resubmit requested option seamlessly inside the worker validation array
@@ -953,17 +956,20 @@ async function executeTransmissionDispatch(id) {
 
   showToast("Initiating secure transport transmission...", "w");
   try {
-    await emailjs.send(EJS_SVC, EJS_TPL, {
-      to_email: cur.email,
-      name: cur.name,
-      requestId: cur.request_id,
-      parameters: cur.parameters,
-      request_type: cur.type || "Meteorological Request Array",
-      status_message: statusLine,
-      message: msgText,
-      final_status: finalStatusText,
-      theme_color: "#16a34a"
-    });
+   await emailjs.send(EJS_SVC, EJS_TPL, {
+    to_email: cur.email,
+    name: cur.name,
+    requestId: cur.request_id,
+    parameters: cur.parameters,
+    request_type: cur.type || "Meteorological Request Array",
+    status_message: statusLine,
+    message: msgText,
+    final_status: finalStatusText,
+    theme_color: "#16a34a",
+    // ─── ADDED VARIABLES FOR BUTTON ───
+    button_url: "https://elwoic.in/",
+    button_text: "Visit ELWOIC Homepage"
+  });
     
     const now = new Date().toISOString();
     await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_sent_at: now, status: "approved" }) });
