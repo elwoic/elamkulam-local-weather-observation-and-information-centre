@@ -342,6 +342,60 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;}
   border-radius: 6px;
   font-size: 12.5px;
 }
+
+/* Align actions column table data styling components */
+.stage-pill-box {
+  display: inline-block;
+  min-width: 105px;
+}
+
+.action-trigger {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+}
+
+.view-trigger {
+  background: #f8fafc;
+  color: #334155;
+}
+.view-trigger:hover {
+  background: #e2e8f0;
+}
+
+/* Operational Workspace Sub-inputs */
+.inline-text-field {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #ffffff;
+  margin-bottom: 8px;
+  font-family: inherit;
+}
+
+.inline-text-field:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.input-inline-lbl {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.execution-card.stage-failed-active {
+  border-left: 4px solid #7c3aed;
+  background: #fbfaff;
+}
 </style>
 </head>
 <body>
@@ -538,7 +592,7 @@ function stageLbl(d){
   if(d.data_sent_at) return '<span class="lbl-status" style="color:#16a34a;">✓ Delivered</span>';
   if(d.data_prep_at) return '<span class="lbl-status" style="color:#0891b2;">📦 Data Ready</span>';
   if(d.verified_at && !d.verification_failed_reason) return '<span class="lbl-status" style="color:#2563eb;">⚙ Verified</span>';
-  if(d.verification_failed_reason) return '<span class="lbl-status" style="color:#7c3aed;">⚠ Verif. Failed</span>';
+  if(d.verification_failed_reason) return '<span class="lbl-status" style="color:#7c3aed;">⚠️ Verif. Failed</span>';
   return '<span class="lbl-status" style="color:#d97706;">⏳ New Request</span>';
 }
 
@@ -571,33 +625,45 @@ function render(){
 
   body.innerHTML = data.map(d => {
     const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—";
+    
+    // Explicit clean styling based on status colorization requested in template
+    let statusBadge = `<span style="color:#d97706; font-weight:600;">⏳ New Request</span>`;
+    if(d.status === "viewed") statusBadge = `<span style="color:#2563eb; font-weight:600;">👁 viewed</span>`;
+    if(d.status === "approved_pending") statusBadge = `<span style="color:#0891b2; font-weight:600;">⚙ Approved Pending</span>`;
+    if(d.status === "approved") statusBadge = `<span style="color:#16a34a; font-weight:600;">✓ Delivered</span>`;
+    if(d.status === "verification_failed") statusBadge = `<span style="color:#7c3aed; font-weight:600;">⚠️ Verif. Failed</span>`;
+    if(d.status === "rejected") statusBadge = `<span style="color:#dc2626; font-weight:600;">❌ Rejected</span>`;
+
     return `<tr>
       <td style="font-family:var(--mono);font-weight:600;">${d.request_id || "—"}</td>
       <td>${d.name || "—"}</td>
       <td>${d.email || "—"}</td>
       <td><span class="category-tag">${d.purpose_category || "—"}</span></td>
       <td>${dt}</td>
-      <td>${stageLbl(d)}</td>
+      <td>${statusBadge}</td>
+      <td><span class="stage-pill-box">${stageLbl(d)}</span></td>
       <td>
-        <button class="action-trigger view-trigger" onclick="viewReq(${d.id})">Process Unit</button>
+        <div style="display:flex; gap:6px;">
+          <button class="action-trigger view-trigger" onclick="viewReq(${d.id})">Process Unit</button>
+          <button class="action-trigger delete-trigger" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;" onclick="executeDirectDeletion(${d.id})">Delete</button>
+        </div>
       </td>
     </tr>`;
   }).join("");
 }
 
-/* ── INTERACTIVE WORKFLOW GENERATOR ── */
+/* ── WORKSPACE CORE ENGINE ── */
 async function viewReq(id) {
   const numericId = Number(id);
   const d = allData.find(x => x.id === numericId);
   if(!d) return;
   cur = d;
 
-  // Track initial interaction seamlessly
-  if(!d.seen_at) {
+  if(!d.seen_at || d.status === "Pending") {
     const now = new Date().toISOString();
-    patchLocal(numericId, { seen_at: now });
+    patchLocal(numericId, { seen_at: now, status: "viewed" });
     render();
-    af(`${W}/update`, { method: "POST", body: JSON.stringify({ id: numericId, seen_at: now }) }).catch(console.error);
+    af(`${W}/update`, { method: "POST", body: JSON.stringify({ id: numericId, seen_at: now, status: "viewed" }) }).catch(console.error);
   }
 
   document.getElementById("viewTitle").textContent = `Data Request Processing Workspace — ${d.request_id || ""}`;
@@ -608,7 +674,6 @@ async function viewReq(id) {
 function buildWorkspaceDOM(d) {
   const container = document.getElementById("viewBody");
   
-  // Logical stage valuations
   const isClosed = !!d.case_closed_at;
   const isDelivered = !!d.data_sent_at;
   const isPrepared = !!d.data_prep_at;
@@ -617,7 +682,7 @@ function buildWorkspaceDOM(d) {
 
   container.innerHTML = `
     <div class="workspace-layout">
-      <!-- LEFT MODULE: Applicant Profile Metadata -->
+      <!-- LEFT MODULE: Applicant Profile Metadata (Fully Complete) -->
       <div class="workspace-meta-panel">
         <h3 class="panel-section-title">Applicant Credentials & Requirements</h3>
         <div class="meta-profile-grid">
@@ -628,7 +693,9 @@ function buildWorkspaceDOM(d) {
           <div class="meta-item"><label>Organization</label><span>${d.organisation || "—"}</span></div>
           <div class="meta-item"><label>Designation</label><span>${d.designation || "—"}</span></div>
           <div class="meta-item"><label>Category Profile</label><span>${d.purpose_category || "—"}</span></div>
+          <div class="meta-item"><label>Request Type</label><span style="font-weight:600; color:#0284c7;">${d.type || "—"}</span></div>
           <div class="meta-item"><label>Format Target</label><span>${d.response_format || "—"}</span></div>
+          <div class="meta-item"><label>Target Date Range</label><span>${[d.from_date, d.to_date].filter(Boolean).join(" to ") || "Single Window"}</span></div>
         </div>
         
         <div class="meta-block-expand">
@@ -641,9 +708,15 @@ function buildWorkspaceDOM(d) {
           <div class="text-display-box target-parameters">${d.parameters || "No parameters specified."}</div>
         </div>
 
-        <div class="meta-profile-grid" style="margin-top:15px;">
-          <div class="meta-item"><label>Target Date Range</label><span>${[d.from_date, d.to_date].filter(Boolean).join(" to ") || "Single Window"}</span></div>
-          <div class="meta-item"><label>Specific Timeline Details</label><span>${[d.date, d.time].filter(Boolean).join(" | ") || "—"}</span></div>
+        <!-- ADDITIONAL DETAILS COMPONENT (Now Fully Visible) -->
+        <div class="meta-block-expand" style="margin-top:15px;">
+          <label style="color:#b91c1c; font-weight:700;">⚠️ Additional Information Provided</label>
+          <div class="text-display-box" style="background:#fffaf0; border-color:#fed7aa; min-height:60px;">${d.additional_details || "No secondary attachments or notes specified by applicant."}</div>
+        </div>
+
+        <div class="meta-profile-grid" style="margin-top:15px; border-top:1px dashed #cbd5e1; padding-top:10px;">
+          <div class="meta-item"><label>Submission Date</label><span>${fmtTs(d.created_at) || "—"}</span></div>
+          <div class="meta-item"><label>Resubmitted State</label><span>${d.resubmit_requested ? "🔄 Yes (Awaiting Review)" : "No"}</span></div>
         </div>
       </div>
 
@@ -652,7 +725,7 @@ function buildWorkspaceDOM(d) {
         <h3 class="panel-section-title">Sequential Stage Desk</h3>
         
         <!-- STEP 1: IDENTITY VERIFICATION ENGINE -->
-        <div class="execution-card ${isVerified ? 'stage-complete' : 'stage-active'}" id="stepCard1">
+        <div class="execution-card ${isVerified ? 'stage-complete' : isFailedVerif ? 'stage-failed-active' : 'stage-active'}" id="stepCard1">
           <div class="card-header-bar">
             <span class="step-badge">Stage 1</span>
             <h4>Identity & Target Evaluation Verification</h4>
@@ -661,11 +734,28 @@ function buildWorkspaceDOM(d) {
             ${isVerified ? `
               <div class="success-banner">✓ Verification complete. Verified at: ${fmtTs(d.verified_at)}</div>
             ` : `
-              <p class="stage-instruction-text">Review the applicant details. Confirm authority level before proceeding to packaging weather arrays.</p>
-              ${isFailedVerif ? `<div class="error-banner" style="margin-bottom:10px;">⚠️ Previous failure state: ${d.verification_failed_reason}</div>` : ''}
-              <div class="workspace-action-row">
+              <p class="stage-instruction-text">Review credentials. If verification fails, open the messaging field to notify the applicant for resubmission.</p>
+              
+              <div class="workspace-action-row" style="margin-bottom:12px;">
                 <button class="panel-btn btn-success" onclick="executeVerification(${d.id})">Confirm & Verify Identity</button>
-                <button class="panel-btn btn-danger" onclick="triggerVerificationFailurePrompt(${d.id})">Mark Verification Failed</button>
+                <button class="panel-btn btn-danger" style="background:#7c3aed;" onclick="revealFailureEmailDeck()">Mark Verification Failed & Draft Email</button>
+              </div>
+
+              <!-- DYNAMIC EMAIL DISAPPROVAL WORKSPACE -->
+              <div id="failureEmailDeck" style="display:${isFailedVerif ? 'block' : 'none'}; border-top:1px solid #e2e8f0; padding-top:12px; margin-top:12px;">
+                <label class="input-inline-lbl">Reason Statement (Saved to DB Logs)</label>
+                <input type="text" id="fail_reason_log" class="inline-text-field" value="${d.verification_failed_reason || 'Invalid credential profile links or unverified organization background.'}" placeholder="Internal failure reason..."/>
+                
+                <label class="input-inline-lbl" style="margin-top:8px;">Custom Rejection Notice Title Header</label>
+                <input type="text" id="fail_status_msg" class="inline-text-field" style="color:#b91c1c; font-weight:600;" value="Verification identity failed. Action required for resubmission." />
+
+                <label class="input-inline-lbl" style="margin-top:8px;">Final Summary State</label>
+                <input type="text" id="fail_final_lbl" class="inline-text-field" style="color:#7c3aed; font-weight:600;" value="Verification Failed — Resubmission Allowed" />
+
+                <label class="input-inline-lbl" style="margin-top:8px;">Email Message Body Container</label>
+                <textarea id="fail_email_body" class="matrix-input-area" style="height:120px;">Dear ${d.name},\n\nWe were unable to verify your data access profile credentials for request file ${d.request_id || 'ELWOIC-REQ'}.\n\nReason: ${d.verification_failed_reason || 'Provided verification fields do not match organizational records.'}\n\nPlease visit your tracking link to resubmit the corrected verification profile blocks.\n\nBest Regards,\nELWOIC Operations Desk</textarea>
+                
+                <button class="panel-btn btn-danger" style="width:100%; margin-top:10px; background:#6d28d9;" onclick="executeFailureEmailDispatch(${d.id})">Dispatch Failure Email & Open Resubmit Portal</button>
               </div>
             `}
           </div>
@@ -685,8 +775,8 @@ function buildWorkspaceDOM(d) {
               <div class="text-display-box structural-mono" style="margin-top:10px; max-height:120px; overflow-y:auto;">${d.prepared_data}</div>
               <button class="panel-btn btn-secondary" style="margin-top:10px;" onclick="reactivateDataPrep(${d.id})">Modify Stored Array</button>
             ` : `
-              <p class="stage-instruction-text">Compile the weather matrix records from your database. Format clearly as requested (${d.response_format || 'Text'}).</p>
-              <textarea id="workspace_prepared_data" class="matrix-input-area" placeholder="Paste array mapping here... Example:\n[2026-05-30] Temp: 31°C, Humidity: 78%, Rainfall: 4.2mm, AQI: 42 (Good)"></textarea>
+              <p class="stage-instruction-text">Compile weather matrix rows. Format explicitly matching requested style (${d.response_format || 'Text'}).</p>
+              <textarea id="workspace_prepared_data" class="matrix-input-area" placeholder="Paste weather records here... Example:\n[2026-05-30] Temp: 31°C, Humidity: 78%, Rainfall: 4.2mm, AQI: 42 (Good)"></textarea>
               <div class="workspace-action-row" style="margin-top:10px;">
                 <button class="panel-btn btn-primary" onclick="executeDataPackaging(${d.id})">Commit & Seal Dataset</button>
               </div>
@@ -694,7 +784,7 @@ function buildWorkspaceDOM(d) {
           </div>
         </div>
 
-        <!-- STEP 3: DISPATCH VIA EMAILJS INFRASTRUCTURE -->
+        <!-- STEP 3: DISPATCH VIA EMAILJS INFRASTRUCTURE (Fully Editable) -->
         <div class="execution-card ${!isPrepared ? 'stage-locked' : isDelivered ? 'stage-complete' : 'stage-active'}" id="stepCard3">
           <div class="card-header-bar">
             <span class="step-badge">Stage 3</span>
@@ -706,13 +796,21 @@ function buildWorkspaceDOM(d) {
             ` : isDelivered ? `
               <div class="success-banner">✓ Transmission successful. Payload delivered via EmailJS infrastructure at: ${fmtTs(d.data_sent_at)}</div>
             ` : `
-              <p class="stage-instruction-text">Review and fine-tune your messaging body. The secure data array from Stage 2 is auto-injected into the payload.</p>
+              <p class="stage-instruction-text">Customize the fields below. These values map exactly to your live layout preview.</p>
+              
               <div class="email-composition-field">
-                <label>Direct Dynamic Output Stream Preview</label>
-                <textarea id="workspace_email_body" class="matrix-input-area email-preview-area">${generateDefaultEmailBody(d)}</textarea>
+                <label class="input-inline-lbl">1. Status Update Text Line (Below Person's Name)</label>
+                <input type="text" id="workspace_status_message" class="inline-text-field" style="color:#16a34a; font-weight:600;" value="Your requested data is ready and has been delivered." />
+
+                <label class="input-inline-lbl" style="margin-top:8px;">2. Core Message Body Area</label>
+                <textarea id="workspace_email_body" class="matrix-input-area" style="height:140px;">${generateDefaultEmailBody(d)}</textarea>
+
+                <label class="input-inline-lbl" style="margin-top:8px;">3. Final Status Label Row</label>
+                <input type="text" id="workspace_final_status" class="inline-text-field" style="color:#15803d; font-weight:700;" value="Approved — Data Delivered" />
               </div>
-              <div class="workspace-action-row" style="margin-top:10px;">
-                <button class="panel-btn btn-success" onclick="executeTransmissionDispatch(${d.id})">Transmit Data Package Now</button>
+
+              <div class="workspace-action-row" style="margin-top:12px;">
+                <button class="panel-btn btn-success" onclick="executeTransmissionDispatch(${d.id})">Transmit Complete Data Package Now</button>
               </div>
             `}
           </div>
@@ -730,7 +828,7 @@ function buildWorkspaceDOM(d) {
             ` : !isDelivered ? `
               <p class="locked-placeholder-text">🔒 Locked — Package must pass transmission delivery routing checks before closure.</p>
             ` : `
-              <p class="stage-instruction-text">Finalize case record management parameters. Closing will revoke any further mutation capabilities on this record.</p>
+              <p class="stage-instruction-text">Finalize case management profiles. Locking completes this workflow track.</p>
               <button class="panel-btn btn-danger" style="width:100%;" onclick="executeCaseClosure(${d.id})">Archive & Close Case File</button>
             `}
           </div>
@@ -742,7 +840,11 @@ function buildWorkspaceDOM(d) {
 }
 
 function generateDefaultEmailBody(d) {
-  return `Dear ${d.name},\n\nYour data request (${d.request_id || 'ELWOIC-REQ'}) has been fully processed by the ELWOIC Admin Team.\n\nPlease find your requested community weather observations mapping below:\n\n──────────────────────────\n${d.prepared_data || ''}\n──────────────────────────\n\nNotes/Use Constraints: Data provided under local observation protocols.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC`;
+  return `Dear ${d.name || 'Applicant'},\n\nYour data request (${d.request_id || 'ELWOIC-REQ'}) has been fully processed by the ELWOIC Admin Team.\n\nPlease find your requested community weather observations mapping below:\n\n──────────────────────────\n${d.prepared_data || ''}\n──────────────────────────\n\nNotes/Use Constraints: Data provided under local observation protocols.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC`;
+}
+
+function revealFailureEmailDeck() {
+  document.getElementById("failureEmailDeck").style.display = "block";
 }
 
 /* ── STEP PIPELINE IMPLEMENTATIONS ── */
@@ -756,18 +858,52 @@ async function executeVerification(id) {
   } catch(e) { showToast("Verification sync failed", "e"); }
 }
 
-async function triggerVerificationFailurePrompt(id) {
-  const reason = prompt("Enter verification failure reason message to send to applicant:");
-  if(reason === null) return;
-  if(!reason.trim()){ showToast("A descriptive reason statement is required", "w"); return; }
+async function executeFailureEmailDispatch(id) {
+  const reasonLog = document.getElementById("fail_reason_log").value.trim();
+  const statusMsg = document.getElementById("fail_status_msg").value.trim();
+  const finalLbl = document.getElementById("fail_final_lbl").value.trim();
+  const emailBody = document.getElementById("fail_email_body").value.trim();
+
+  if(!reasonLog || !emailBody) { showToast("Please input reasons and email body texts", "w"); return; }
   
-  const now = new Date().toISOString();
+  showToast("Dispatching failure notice via EmailJS...", "w");
   try {
-    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: reason, status: "verification_failed" }) });
-    patchLocal(id, { verified_at: now, verification_failed_reason: reason, status: "verification_failed" });
-    showToast("Marked as verification failed", "w");
-    buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("Status tracking error", "e"); }
+    // Fire dynamic notification via template metrics
+    await emailjs.send(EJS_SVC, EJS_TPL, {
+      to_email: cur.email,
+      name: cur.name,
+      requestId: cur.request_id,
+      parameters: cur.parameters,
+      request_type: cur.type || "Meteorological Request Array",
+      status_message: statusMsg,
+      message: emailBody,
+      final_status: finalLbl,
+      theme_color: "#7c3aed"
+    });
+
+    const now = new Date().toISOString();
+    // Enable resubmit requested option seamlessly inside the worker validation array
+    await af(`${W}/update`, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        id, 
+        verified_at: now, 
+        verification_failed_reason: reasonLog, 
+        status: "verification_failed",
+        resubmit_requested: true 
+      }) 
+    });
+
+    patchLocal(id, { 
+      verified_at: now, 
+      verification_failed_reason: reasonLog, 
+      status: "verification_failed",
+      resubmit_requested: true 
+    });
+
+    showToast("Failure notification dispatched. Resubmit window open.", "s");
+    closeM("oView"); updateStats(); render();
+  } catch(e) { showToast("EmailJS transport engine error", "e"); }
 }
 
 async function executeDataPackaging(id) {
@@ -790,8 +926,11 @@ function reactivateDataPrep(id) {
 }
 
 async function executeTransmissionDispatch(id) {
+  const statusLine = document.getElementById("workspace_status_message").value.trim();
   const msgText = document.getElementById("workspace_email_body").value.trim();
-  if(!msgText){ showToast("Email body stream is empty", "w"); return; }
+  const finalStatusText = document.getElementById("workspace_final_status").value.trim();
+
+  if(!msgText || !statusLine || !finalStatusText){ showToast("Workspace configurations cannot be left empty", "w"); return; }
 
   showToast("Initiating secure transport transmission...", "w");
   try {
@@ -800,18 +939,19 @@ async function executeTransmissionDispatch(id) {
       name: cur.name,
       requestId: cur.request_id,
       parameters: cur.parameters,
+      request_type: cur.type || "Meteorological Request Array",
+      status_message: statusLine,
       message: msgText,
-      status_message: "Your requested data is ready and has been delivered.",
-      final_status: "Approved — Data Delivered",
+      final_status: finalStatusText,
       theme_color: "#16a34a"
     });
     
     const now = new Date().toISOString();
     await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_sent_at: now, status: "approved" }) });
     patchLocal(id, { data_sent_at: now, status: "approved" });
-    showToast("Email dispatched & status tracked", "s");
+    showToast("Data array payload dispatched", "s");
     buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("EmailJS core transmission rejected", "e"); }
+  } catch(e) { showToast("EmailJS transmission processing failure", "e"); }
 }
 
 async function executeCaseClosure(id) {
@@ -825,6 +965,16 @@ async function executeCaseClosure(id) {
   } catch(e) { showToast("Database latch error", "e"); }
 }
 
+async function executeDirectDeletion(id) {
+  if(!confirm("🚨 Critical Action: Are you sure you want to completely erase this request record from the database?")) return;
+  try {
+    await af(`${W}/delete`, { method: "POST", body: JSON.stringify({ id }) });
+    allData = allData.filter(x => x.id !== id);
+    showToast("Record completely cleared", "w");
+    updateStats(); render();
+  } catch(e) { showToast("Deletion failed", "e"); }
+}
+
 function patchLocal(id, patch){
   const i = allData.findIndex(x => x.id == id);
   if(i !== -1) Object.assign(allData[i], patch);
@@ -832,7 +982,7 @@ function patchLocal(id, patch){
 }
 
 function openM(id){ document.getElementById(id).classList.add("open"); }
-function closeM(id){ document.getElementById(id).classList.remove("remove-if-needed"); document.getElementById(id).classList.remove("open"); }
+function closeM(id){ document.getElementById(id).classList.remove("open"); }
 
 function showToast(msg, type = "s"){
   const t = document.getElementById("toast");
