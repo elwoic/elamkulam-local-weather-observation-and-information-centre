@@ -693,7 +693,8 @@ async function viewReq(id) {
 function buildWorkspaceDOM(d) {
   const container = document.getElementById("viewBody");
   
-  const isClosed = !!d.case_closed_at;
+  const isClosed   = !!d.case_closed_at;
+  const isRejected = d.status === "rejected";
   const isDelivered = !!d.data_sent_at;
   const isPrepared = !!d.data_prep_at;
   const isVerified = d.verified_at && !d.verification_failed_reason;
@@ -854,6 +855,60 @@ function buildWorkspaceDOM(d) {
         </div>
 
       </div>
+
+    <!-- REJECTION DECK — Available at all stages -->
+<div class="execution-card ${isRejected ? 'stage-complete' : 'stage-failed-active'}" style="border-left-color:#dc2626;">
+  <div class="card-header-bar">
+    <span class="step-badge" style="background:#fee2e2; color:#991b1b;">Reject</span>
+    <h4 style="color:#dc2626;">Reject This Request</h4>
+  </div>
+  <div class="card-interior-content">
+    ${isRejected ? `
+      <div class="success-banner" style="background:#fef2f2; color:#991b1b; border-color:#fecaca;">
+        ❌ Request rejected at: ${fmtTs(d.rejected_at)}
+      </div>
+    ` : `
+      ${isVerified ? `
+        <div class="warn-box" style="margin-bottom:10px;">
+          <p>⚠️ This request has already passed verification. Rejection at this stage will override the approved state.</p>
+        </div>
+      ` : ''}
+      <button class="panel-btn btn-danger" onclick="revealRejectDeck()">Open Rejection Composer</button>
+
+      <div id="rejectDeck" style="display:none; border-top:1px solid #e2e8f0; padding-top:12px; margin-top:12px;">
+
+        <label class="input-inline-lbl">Reason Statement (Saved to DB Logs)</label>
+        <input type="text" id="reject_reason_log" class="inline-text-field"
+          value="Request does not meet ELWOIC data access eligibility criteria."
+          placeholder="Internal rejection reason..." />
+
+        <label class="input-inline-lbl" style="margin-top:8px;">Status Message Line</label>
+        <input type="text" id="reject_status_msg" class="inline-text-field" style="color:#b91c1c; font-weight:600;"
+          value="Your data request has been reviewed and could not be approved." />
+
+        <label class="input-inline-lbl" style="margin-top:8px;">Final Status Label</label>
+        <input type="text" id="reject_final_lbl" class="inline-text-field" style="color:#dc2626; font-weight:700;"
+          value="Request Rejected" />
+
+        <label class="input-inline-lbl" style="margin-top:8px;">Email Message Body</label>
+        <textarea id="reject_email_body" class="matrix-input-area" style="height:140px;">Dear ${d.name},\n\nThank you for submitting your data request (${d.request_id || 'ELWOIC-REQ'}) to ELWOIC.\n\nAfter careful review, we are unable to fulfil this request at this time.\n\nIf you believe this is in error or wish to submit a revised request, please use the link below.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC</textarea>
+
+        <label class="input-inline-lbl" style="margin-top:8px;">Button URL</label>
+        <input type="text" id="reject_btn_url" class="inline-text-field"
+          value="https://request.elwoic.in/" />
+
+        <label class="input-inline-lbl" style="margin-top:8px;">Button Text</label>
+        <input type="text" id="reject_btn_text" class="inline-text-field"
+          value="Submit a New Request" />
+
+        <button class="panel-btn btn-danger" style="width:100%; margin-top:10px;"
+          onclick="executeRejectionDispatch(${d.id})">
+          Dispatch Rejection Email & Mark Rejected
+        </button>
+      </div>
+    `}
+  </div>
+</div>
     </div>
   `;
 }
@@ -866,6 +921,48 @@ function revealFailureEmailDeck() {
   document.getElementById("failureEmailDeck").style.display = "block";
 }
 
+function revealRejectDeck() {
+  document.getElementById("rejectDeck").style.display = "block";
+}
+
+async function executeRejectionDispatch(id) {
+  const reasonLog = document.getElementById("reject_reason_log").value.trim();
+  const statusMsg = document.getElementById("reject_status_msg").value.trim();
+  const finalLbl  = document.getElementById("reject_final_lbl").value.trim();
+  const emailBody = document.getElementById("reject_email_body").value.trim();
+  const btnUrl    = document.getElementById("reject_btn_url").value.trim();
+  const btnText   = document.getElementById("reject_btn_text").value.trim();
+
+  if (!reasonLog || !emailBody) { showToast("Please fill reason and email body", "w"); return; }
+
+  showToast("Dispatching rejection notice...", "w");
+  try {
+    await emailjs.send(EJS_SVC, EJS_TPL, {
+      to_email:       cur.email,
+      name:           cur.name,
+      requestId:      cur.request_id,
+      parameters:     cur.parameters,
+      request_type:   cur.type || "Meteorological Request Array",
+      status_message: statusMsg,
+      message:        emailBody,
+      final_status:   finalLbl,
+      theme_color:    "#dc2626",
+      button_url:     btnUrl,
+      button_text:    btnText
+    });
+
+    const now = new Date().toISOString();
+    await af(`${W}/update`, {
+      method: "POST",
+      body: JSON.stringify({ id, status: "rejected", rejected_at: now, verification_failed_reason: reasonLog })
+    });
+
+    patchLocal(id, { status: "rejected", rejected_at: now, verification_failed_reason: reasonLog });
+    showToast("Rejection dispatched and case marked rejected", "s");
+    closeM("oView"); updateStats(); render();
+  } catch(e) { showToast("Rejection dispatch failed", "e"); }
+}
+  
 /* ── STEP PIPELINE IMPLEMENTATIONS ── */
 async function executeVerification(id) {
   const now = new Date().toISOString();
