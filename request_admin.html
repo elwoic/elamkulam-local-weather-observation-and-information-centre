@@ -4,398 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELWOIC Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f7f8fa; --surface:#fff; --sf2:#f1f3f7; --border:#dde2ec; --border2:#c8d0e0;
-  --text:#1a2236; --muted:#7a8aaa; --accent:#1d4ed8; --green:#16a34a; --red:#dc2626;
-  --orange:#d97706; --teal:#0891b2; --purple:#7c3aed;
-  --mono:'IBM Plex Mono',monospace; --serif:'Source Serif 4',Georgia,serif;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --sf2: #1c2128;
+  --sf3: #21262d;
+  --border: #30363d;
+  --border2: #3d444d;
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --muted2: #484f58;
+  --accent: #2f81f7;
+  --accent2: #1f6feb;
+  --green: #3fb950;
+  --green2: #238636;
+  --red: #f85149;
+  --red2: #da3633;
+  --orange: #d29922;
+  --teal: #39c5cf;
+  --purple: #a371f7;
+  --yellow: #e3b341;
+  --mono: 'IBM Plex Mono', monospace;
+  --serif: 'Fraunces', Georgia, serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--serif);background:var(--bg);color:var(--text);min-height:100vh;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
 
 /* LOGIN */
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
-.login-box{width:380px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px 40px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.07);}
-.login-logo{font-family:var(--mono);font-size:28px;font-weight:600;letter-spacing:5px;margin-bottom:4px;}
-.login-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
-.login-div{width:40px;height:2px;background:var(--accent);margin:0 auto 28px;}
-.login-box input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:13px;margin-bottom:10px;outline:none;transition:border-color .2s;}
-.login-box input:focus{border-color:var(--accent);}
-.login-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:var(--serif);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:4px;}
-.login-btn:hover{background:#1e40af;} .login-btn:disabled{background:#93c5fd;cursor:not-allowed;}
-.login-err{color:var(--red);font-size:12px;margin-top:10px;display:none;}
+#loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); position: relative; overflow: hidden; }
+#loginScreen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(47,129,247,0.08) 0%, transparent 70%); pointer-events: none; }
+.login-box { width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 44px 36px; text-align: center; position: relative; box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 16px 64px rgba(0,0,0,0.5); }
+.login-logo { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: 8px; color: var(--text); margin-bottom: 4px; }
+.login-sub { font-size: 10px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+.login-rule { width: 32px; height: 1px; background: var(--accent); margin: 0 auto 32px; opacity: 0.6; }
+.login-box input { width: 100%; padding: 10px 14px; background: var(--sf2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 13px; margin-bottom: 10px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.login-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,129,247,0.12); }
+.login-box input::placeholder { color: var(--muted2); }
+.login-btn { width: 100%; padding: 11px; background: var(--accent2); color: #fff; border: none; border-radius: 6px; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 1px; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px; }
+.login-btn:hover { background: var(--accent); }
+.login-btn:active { transform: scale(0.99); }
+.login-btn:disabled { background: var(--muted2); cursor: not-allowed; }
+.login-err { color: var(--red); font-size: 11px; margin-top: 10px; display: none; }
 
 /* TOPBAR */
-#appScreen{display:none;}
-.topbar{background:var(--surface);border-bottom:2px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;}
-.tb-left{display:flex;align-items:center;gap:14px;}
-.tb-logo{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:4px;}
-.tb-sep{width:1px;height:18px;background:var(--border);}
-.tb-sub{font-size:12px;color:var(--muted);}
-.tb-right{display:flex;align-items:center;gap:8px;}
-.chip{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);}
-.chip-p{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
-.chip-a{background:#dcfce7;color:#14532d;border:1px solid #86efac;}
-.chip-r{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5;}
-.logout-btn{padding:6px 14px;background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
-.logout-btn:hover{border-color:var(--red);color:var(--red);}
+#appScreen { display: none; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 100; }
+.tb-left { display: flex; align-items: center; gap: 16px; }
+.tb-logo { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 5px; color: var(--text); }
+.tb-sep { width: 1px; height: 16px; background: var(--border); }
+.tb-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; }
+.tb-right { display: flex; align-items: center; gap: 8px; }
+.stat-chip { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--sf2); color: var(--muted); }
+.stat-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.stat-chip.pending .dot { background: var(--yellow); }
+.stat-chip.pending { color: var(--yellow); border-color: rgba(227,179,65,0.25); background: rgba(227,179,65,0.06); }
+.stat-chip.active .dot { background: var(--green); }
+.stat-chip.active { color: var(--green); border-color: rgba(63,185,80,0.25); background: rgba(63,185,80,0.06); }
+.stat-chip.closed .dot { background: var(--muted); }
+.logout-btn { padding: 5px 12px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
 
-/* MAIN TABLE */
-.main{padding:24px 28px;}
-.controls{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
-.controls input,.controls select{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;outline:none;transition:border-color .2s;}
-.controls input{flex:1;min-width:200px;} .controls input:focus,.controls select:focus{border-color:var(--accent);}
-.refresh-btn{padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:13px;cursor:pointer;transition:all .2s;}
-.refresh-btn:hover{border-color:var(--accent);color:var(--accent);}
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.04);}
-table{width:100%;border-collapse:collapse;}
-thead tr{background:var(--sf2);border-bottom:1px solid var(--border);}
-th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:var(--mono);}
-tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
-tbody tr:last-child{border-bottom:none;} tbody tr:hover{background:#f5f7ff;}
-td{padding:11px 14px;font-size:13px;vertical-align:middle;}
-.td-id{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.td-date{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono);}
-.badge-Pending{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
-.badge-approved{background:#dcfce7;color:#14532d;border:1px solid #86efac;}
-.badge-approved_pending{background:#dbeafe;color:#1e3a8a;border:1px solid #93c5fd;}
-.badge-rejected{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5;}
-.badge-verification_failed{background:#fae8ff;color:#581c87;border:1px solid #d8b4fe;}
-.badge-closed{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;}
-.btn{padding:5px 11px;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--serif);transition:opacity .15s;margin-right:3px;}
-.btn:hover{opacity:.82;}
-.btn-view{background:var(--accent);color:#fff;}
-.btn-del{background:transparent;color:var(--muted);border:1px solid var(--border);}
-.btn-del:hover{color:var(--red);border-color:var(--red);opacity:1;}
-.empty-row td{text-align:center;padding:48px;color:var(--muted);font-size:13px;}
+/* MAIN */
+.main { padding: 20px 24px; }
+.controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.controls input, .controls select { padding: 7px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color 0.2s; }
+.controls input { flex: 1; min-width: 200px; }
+.controls input::placeholder { color: var(--muted2); }
+.controls input:focus, .controls select:focus { border-color: var(--accent); }
+.controls select { background: var(--surface); color: var(--text); }
+.controls select option { background: var(--sf2); }
+.refresh-btn { padding: 7px 14px; background: var(--sf2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--mono); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* TABLE */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--sf2); border-bottom: 1px solid var(--border); }
+th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-family: var(--mono); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--sf2); }
+td { padding: 10px 14px; font-size: 12px; vertical-align: middle; color: var(--text); }
+.td-mono { font-family: var(--mono); font-size: 11px; color: var(--muted); font-weight: 500; }
+.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; font-family: var(--mono); white-space: nowrap; }
+.sb-pending { background: rgba(227,179,65,0.1); color: var(--yellow); border: 1px solid rgba(227,179,65,0.3); }
+.sb-viewed { background: rgba(47,129,247,0.1); color: var(--accent); border: 1px solid rgba(47,129,247,0.3); }
+.sb-resubmitted { background: rgba(57,197,207,0.1); color: var(--teal); border: 1px solid rgba(57,197,207,0.3); }
+.sb-approved-pending { background: rgba(57,197,207,0.1); color: var(--teal); border: 1px solid rgba(57,197,207,0.3); }
+.sb-approved { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+.sb-failed { background: rgba(163,113,247,0.1); color: var(--purple); border: 1px solid rgba(163,113,247,0.3); }
+.sb-rejected { background: rgba(248,81,73,0.1); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+.sb-closed { background: rgba(125,133,144,0.1); color: var(--muted); border: 1px solid rgba(125,133,144,0.3); }
+.tbl-btn { padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 5px; cursor: pointer; font-family: var(--mono); transition: all 0.15s; border: 1px solid var(--border); background: var(--sf2); color: var(--muted); }
+.tbl-btn:hover { background: var(--sf3); color: var(--text); border-color: var(--border2); }
+.tbl-btn-del { background: transparent; color: var(--muted2); border: 1px solid var(--border); }
+.tbl-btn-del:hover { color: var(--red); border-color: rgba(248,81,73,0.5); background: rgba(248,81,73,0.06); }
 
 /* OVERLAY / MODAL */
-.overlay{position:fixed;inset:0;background:rgba(10,20,40,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
-.overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 8px 48px rgba(0,0,0,.16);}
-.modal-wide{max-width:860px;} .modal-med{max-width:580px;}
-.mhead{padding:16px 24px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--sf2);border-radius:12px 12px 0 0;position:sticky;top:0;z-index:10;}
-.mhead h3{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text);text-transform:uppercase;}
-.mx{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0;}
-.mx:hover{color:var(--text);}
-.mbody{padding:22px 24px;}
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; backdrop-filter: blur(2px); }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-height: 94vh; overflow-y: auto; box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 24px 80px rgba(0,0,0,0.6); }
+.modal-wide { max-width: 980px; }
+.mhead { padding: 14px 20px 13px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--sf2); border-radius: 12px 12px 0 0; position: sticky; top: 0; z-index: 10; }
+.mhead-left { display: flex; align-items: center; gap: 10px; }
+.mhead h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; font-weight: 400; }
+.mhead-id { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text); padding: 2px 8px; background: var(--sf3); border: 1px solid var(--border2); border-radius: 4px; }
+.mx { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; transition: all 0.15s; }
+.mx:hover { color: var(--text); background: var(--sf3); }
+.mbody { padding: 20px; }
 
-/* DETAIL LAYOUT (2 col main + pipeline) */
-.view-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
-.view-left{min-width:0;}
-.view-right{border-left:1px solid var(--border);padding-left:20px;}
-.dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
-.dg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.di label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;font-family:var(--mono);}
-.di span{font-size:13px;color:var(--text);word-break:break-word;}
-.df{margin-bottom:13px;}
-.df label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-family:var(--mono);}
-.dbox{background:var(--sf2);border:1px solid var(--border);border-radius:6px;padding:9px 13px;font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;}
-.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
-.sec-hdr{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+/* WORKSPACE */
+.workspace-layout { display: grid; grid-template-columns: 420px 1fr; gap: 20px; align-items: start; }
+.meta-panel { background: var(--sf2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: sticky; top: 80px; }
+.meta-panel-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.meta-panel-head h4 { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.meta-body { padding: 14px 16px; }
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.meta-item label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted2); margin-bottom: 3px; font-weight: 500; }
+.meta-item span { font-size: 12px; color: var(--text); word-break: break-word; line-height: 1.4; }
+.meta-item span.highlight { color: var(--accent); font-weight: 500; }
+.meta-divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+.meta-block { margin-bottom: 12px; }
+.meta-block:last-child { margin-bottom: 0; }
+.meta-block label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted2); margin-bottom: 5px; font-weight: 500; }
+.meta-textbox { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; font-size: 12px; color: var(--text); line-height: 1.6; word-break: break-word; font-family: var(--mono); min-height: 36px; }
+.meta-textbox.params { border-left: 3px solid var(--accent); color: var(--accent); font-size: 11px; }
+.meta-textbox.extra { border-left: 3px solid var(--orange); background: rgba(210,153,34,0.04); }
 
-/* PIPELINE (right column) */
-.pipeline{display:flex;flex-direction:column;gap:0;}
-.pipe-step{display:flex;gap:10px;position:relative;padding-bottom:0;}
-.pipe-step:not(:last-child) .pipe-body{padding-bottom:16px;}
-.pipe-step:not(:last-child)::before{content:'';position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--border);}
-.pipe-step.done::before{background:#86efac;}
-.pipe-step.error::before{background:#d8b4fe;}
-.pipe-step.skipped::before{background:#e2e8f0;}
-.pipe-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;z-index:1;}
-.pipe-dot.done{background:var(--green);color:#fff;}
-.pipe-dot.active{background:var(--accent);color:#fff;}
-.pipe-dot.error{background:var(--purple);color:#fff;}
-.pipe-dot.skipped{background:#94a3b8;color:#fff;}
-.pipe-dot.wait{background:var(--border2);color:var(--muted);}
-.pipe-body{flex:1;}
-.pipe-label{font-size:12px;font-weight:600;font-family:var(--mono);line-height:1.3;}
-.pipe-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
-.pipe-ts{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:3px;}
+/* EXEC PANEL */
+.exec-panel { display: flex; flex-direction: column; gap: 10px; }
+.exec-panel-head { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
 
-/* ACTION BUTTONS */
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;}
-.abtn{padding:8px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--serif);transition:opacity .15s;}
-.abtn:hover{opacity:.85;}
-.abtn-green{background:var(--green);color:#fff;}
-.abtn-red{background:var(--red);color:#fff;}
-.abtn-blue{background:var(--accent);color:#fff;}
-.abtn-teal{background:var(--teal);color:#fff;}
-.abtn-purple{background:var(--purple);color:#fff;}
-.abtn-orange{background:var(--orange);color:#fff;}
-.abtn-gray{background:#475569;color:#fff;}
-.abtn-outline{background:var(--sf2);color:var(--muted);border:1px solid var(--border2);}
+/* STAGE CARDS */
+.stage-card { background: var(--sf2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: all 0.2s; }
+.stage-card.s-active { border-color: rgba(47,129,247,0.4); box-shadow: 0 0 0 1px rgba(47,129,247,0.1); }
+.stage-card.s-complete { border-color: rgba(63,185,80,0.3); }
+.stage-card.s-locked { opacity: 0.4; pointer-events: none; }
+.stage-card.s-warn { border-color: rgba(163,113,247,0.4); }
+.stage-card.s-reject { border-color: rgba(248,81,73,0.3); }
+.stage-card.s-reject-done { border-color: rgba(248,81,73,0.2); background: rgba(248,81,73,0.03); }
+.stage-card.s-closed-case { border-color: rgba(125,133,144,0.3); opacity: 0.7; }
+.card-head { padding: 11px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: var(--sf3); }
+.stage-num { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); background: var(--border); color: var(--muted); }
+.s-active .stage-num { background: rgba(47,129,247,0.2); color: var(--accent); }
+.s-complete .stage-num { background: rgba(63,185,80,0.2); color: var(--green); }
+.s-warn .stage-num { background: rgba(163,113,247,0.2); color: var(--purple); }
+.s-reject .stage-num, .s-reject-done .stage-num { background: rgba(248,81,73,0.15); color: var(--red); }
+.card-head h4 { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text); margin: 0; }
+.card-head-icon { margin-left: auto; font-size: 13px; color: var(--muted); }
+.card-body { padding: 14px; }
 
-/* FORM ELEMENTS */
-.slabel{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--mono);margin-bottom:5px;margin-top:13px;display:block;}
-.slabel:first-child{margin-top:0;}
-.sinp{width:100%;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;outline:none;transition:border-color .2s;}
-.sinp:focus{border-color:var(--accent);}
-.sta{width:100%;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:13px;line-height:1.6;resize:vertical;outline:none;}
-.sta:focus{border-color:var(--accent);}
-.sta-data{height:150px;font-family:var(--mono);font-size:12px;}
-.sta-reply{height:130px;}
-.info-box{background:#f0fdf4;border:1px solid #86efac;border-radius:7px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#14532d;line-height:1.6;}
-.warn-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:12px 14px;margin-bottom:12px;}
-.warn-box p{font-size:13px;color:#7c2d12;line-height:1.6;}
-.pend-opt{display:flex;align-items:flex-start;gap:9px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:11px 13px;margin-top:10px;}
-.pend-opt input{margin-top:2px;accent-color:var(--accent);}
-.pend-opt label{font-size:13px;color:var(--text);cursor:pointer;line-height:1.5;}
-.saved-tag{display:inline-block;background:#dcfce7;color:#14532d;border:1px solid #86efac;border-radius:4px;font-size:9px;font-family:var(--mono);padding:1px 7px;margin-left:7px;vertical-align:middle;}
+/* BANNERS */
+.banner { padding: 9px 12px; border-radius: 6px; font-size: 12px; line-height: 1.5; font-family: var(--mono); }
+.banner-green { background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25); color: var(--green); }
+.banner-red { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.25); color: var(--red); }
+.banner-orange { background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.25); color: var(--orange); }
+.banner-blue { background: rgba(47,129,247,0.08); border: 1px solid rgba(47,129,247,0.25); color: var(--accent); }
+.banner-purple { background: rgba(163,113,247,0.08); border: 1px solid rgba(163,113,247,0.25); color: var(--purple); }
+.banner-gray { background: rgba(125,133,144,0.08); border: 1px solid rgba(125,133,144,0.2); color: var(--muted); }
+
+/* FORM */
+.field-label { display: block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 4px; font-family: var(--mono); }
+.finp { width: 100%; padding: 8px 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 10px; }
+.finp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,129,247,0.1); }
+.finp::placeholder { color: var(--muted2); }
+.fta { width: 100%; padding: 8px 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px; line-height: 1.6; resize: vertical; outline: none; transition: border-color 0.2s; margin-bottom: 10px; }
+.fta:focus { border-color: var(--accent); }
+.fta-sm { height: 90px; }
+.fta-md { height: 130px; }
+.fta-lg { height: 160px; }
+.finp.green { color: var(--green); }
+.finp.red { color: var(--red); }
+.finp.purple { color: var(--purple); }
+
+/* BUTTONS */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.pbtn { padding: 7px 14px; border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: var(--mono); transition: all 0.15s; letter-spacing: 0.5px; }
+.pbtn:hover { opacity: 0.85; }
+.pbtn:active { transform: scale(0.98); }
+.pbtn-green { background: var(--green2); color: #fff; border: 1px solid rgba(63,185,80,0.3); }
+.pbtn-red { background: rgba(218,54,51,0.9); color: #fff; border: 1px solid rgba(248,81,73,0.3); }
+.pbtn-blue { background: var(--accent2); color: #fff; border: 1px solid rgba(47,129,247,0.3); }
+.pbtn-purple { background: #7c3aed; color: #fff; border: 1px solid rgba(163,113,247,0.3); }
+.pbtn-gray { background: var(--sf3); color: var(--muted); border: 1px solid var(--border2); }
+.pbtn-gray:hover { color: var(--text); opacity: 1; }
+.pbtn-full { width: 100%; text-align: center; }
+
+/* MISC */
+.data-display { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: var(--mono); font-size: 11px; color: var(--teal); max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.5; }
+.inst { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; font-family: var(--mono); }
+.locked-txt { font-size: 11px; color: var(--muted2); font-style: italic; font-family: var(--mono); }
+.reopen-note { font-size: 11px; color: var(--muted); margin-top: 8px; font-style: italic; line-height: 1.5; }
+.collapse-zone { display: none; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+.sdiv { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
 
 /* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;font-family:var(--serif);box-shadow:0 4px 16px rgba(0,0,0,.12);}
-.toast.show{opacity:1;transform:translateY(0);}
-.t-s{background:var(--green);color:#fff;} .t-e{background:var(--red);color:#fff;} .t-w{background:var(--orange);color:#fff;}
-
-  /* Custom Wide Workspace Layout Definitions */
-#oView .modal-container {
-  width: 95% !important;
-  max-width: 1400px !important;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.workspace-layout {
-  display: grid;
-  grid-template-columns: 450px 1fr;
-  gap: 25px;
-  align-items: start;
-  margin-top: 15px;
-}
-
-.workspace-meta-panel {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.workspace-execution-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.panel-section-title {
-  margin: 0 0 15px 0;
-  font-size: 16px;
-  color: #1e293b;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 8px;
-}
-
-.meta-profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.meta-item label {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.meta-item span {
-  font-size: 13.5px;
-  color: #0f172a;
-}
-
-.meta-block-expand {
-  margin-top: 15px;
-}
-
-.meta-block-expand label {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.text-display-box {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #334155;
-}
-
-.target-parameters {
-  border-left: 3px solid #0284c7;
-  font-weight: 500;
-}
-
-.structural-mono {
-  font-family: monospace;
-  background: #0f172a;
-  color: #38bdf8;
-  border: none;
-}
-
-/* Interactive Execution Process Cards */
-.execution-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 15px;
-  transition: all 0.2s ease;
-}
-
-.execution-card.stage-locked {
-  opacity: 0.5;
-  background: #f1f5f9;
-  pointer-events: none;
-}
-
-.execution-card.stage-active {
-  border-left: 4px solid #2563eb;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-}
-
-.execution-card.stage-complete {
-  border-left: 4px solid #16a34a;
-  background: #fbfdfb;
-}
-
-.card-header-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.step-badge {
-  font-size: 10px;
-  font-weight: 700;
-  background: #cbd5e1;
-  color: #334155;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-}
-
-.stage-active .step-badge { background: #dbeafe; color: #1e40af; }
-.stage-complete .step-badge { background: #dcfce7; color: #166534; }
-
-.card-header-bar h4 { margin: 0; font-size: 14px; color: #1e293b; }
-
-.stage-instruction-text { margin: 0 0 10px 0; font-size: 12.5px; color: #64748b; }
-.locked-placeholder-text { margin: 0; font-size: 12px; color: #94a3b8; font-style: italic; }
-
-.matrix-input-area {
-  width: 100%;
-  height: 90px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-family: monospace;
-  font-size: 12px;
-  resize: vertical;
-}
-
-.email-preview-area {
-  height: 140px;
-  background: #fafafa;
-  font-family: sans-serif;
-  line-height: 1.4;
-}
-
-.workspace-action-row { display: flex; gap: 10px; }
-
-.panel-btn {
-  padding: 6px 14px;
-  font-size: 12.5px;
-  font-weight: 500;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.btn-primary { background: #2563eb; color: white; }
-.btn-success { background: #16a34a; color: white; }
-.btn-danger { background: #dc2626; color: white; }
-.btn-secondary { background: #64748b; color: white; }
-
-.success-banner {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #166534;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12.5px;
-}
-.error-banner {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12.5px;
-}
-
-/* Align actions column table data styling components */
-.stage-pill-box {
-  display: inline-block;
-  min-width: 105px;
-}
-
-.action-trigger {
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid #cbd5e1;
-}
-
-.view-trigger {
-  background: #f8fafc;
-  color: #334155;
-}
-.view-trigger:hover {
-  background: #e2e8f0;
-}
-
-/* Operational Workspace Sub-inputs */
-.inline-text-field {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 13px;
-  border: 1px solid #cbd5e1;
-  border-radius: 5px;
-  background: #ffffff;
-  margin-bottom: 8px;
-  font-family: inherit;
-}
-
-.inline-text-field:focus {
-  border-color: #3b82f6;
-  outline: none;
-}
-
-.input-inline-lbl {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: #475569;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.execution-card.stage-failed-active {
-  border-left: 4px solid #7c3aed;
-  background: #fbfaff;
-}
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 8px; font-size: 12px; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(6px); transition: all 0.25s; pointer-events: none; font-family: var(--mono); box-shadow: 0 4px 20px rgba(0,0,0,0.4); border: 1px solid transparent; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.t-s { background: rgba(35,134,54,0.95); color: #fff; border-color: rgba(63,185,80,0.3); }
+.t-e { background: rgba(218,54,51,0.95); color: #fff; border-color: rgba(248,81,73,0.3); }
+.t-w { background: rgba(187,128,9,0.95); color: #fff; border-color: rgba(227,179,65,0.3); }
 </style>
 </head>
 <body>
@@ -404,10 +218,10 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;}
   <div class="login-box">
     <div class="login-logo">ELWOIC</div>
     <div class="login-sub">Admin Panel</div>
-    <div class="login-div"></div>
+    <div class="login-rule"></div>
     <input type="text" id="uname" placeholder="Username" onkeydown="if(event.key==='Enter')login()">
     <input type="password" id="upass" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
-    <button class="login-btn" id="loginBtn" onclick="login()">Sign In</button>
+    <button class="login-btn" id="loginBtn" onclick="login()">SIGN IN</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
@@ -420,15 +234,16 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;}
       <div class="tb-sub">Data Request Admin</div>
     </div>
     <div class="tb-right">
-      <span class="chip chip-p" id="statP">— Pending</span>
-      <span class="chip chip-a" id="statA">— Approved</span>
-      <span class="chip chip-r" id="statR">— Rejected</span>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <div class="stat-chip pending"><span class="dot"></span><span id="statP">—</span></div>
+      <div class="stat-chip active"><span class="dot"></span><span id="statA">—</span></div>
+      <div class="stat-chip closed"><span class="dot"></span><span id="statR">—</span></div>
+      <button class="logout-btn" onclick="logout()">LOGOUT</button>
     </div>
   </div>
+
   <div class="main">
     <div class="controls">
-      <input type="text" id="srch" placeholder="Search name, email or request ID…" oninput="render()">
+      <input type="text" id="srch" placeholder="Search name, email, request ID…" oninput="render()">
       <select id="fltS" onchange="render()">
         <option value="all">All Status</option>
         <option value="Pending">Pending</option>
@@ -441,119 +256,76 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;}
       <select id="fltO" onchange="render()">
         <option value="latest">Latest First</option>
         <option value="oldest">Oldest First</option>
-        <option value="pending">Pending First</option>
       </select>
       <button class="refresh-btn" onclick="loadRequests()">↻ Refresh</button>
     </div>
+
     <div class="table-wrap">
       <table>
-        <thead><tr>
-          <th>Request ID</th><th>Name</th><th>Email</th><th>Category</th>
-          <th>Submitted</th><th>Status</th><th>Stage</th><th>Actions</th>
-        </tr></thead>
-        <tbody id="tBody"><tr class="empty-row"><td colspan="8">Loading…</td></tr></tbody>
+        <thead>
+          <tr>
+            <th>Request ID</th><th>Name</th><th>Email</th><th>Category</th>
+            <th>Submitted</th><th>Status</th><th>Stage</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tBody">
+          <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- VIEW MODAL -->
+<!-- WORKSPACE MODAL -->
 <div class="overlay" id="oView">
   <div class="modal modal-wide">
     <div class="mhead">
-      <h3 id="viewTitle">Request Details</h3>
+      <div class="mhead-left">
+        <h3>Processing Workspace</h3>
+        <span class="mhead-id" id="viewTitle">—</span>
+      </div>
       <button class="mx" onclick="closeM('oView')">×</button>
     </div>
     <div class="mbody" id="viewBody"></div>
   </div>
 </div>
 
-<!-- EMAIL MODAL -->
-<div class="overlay" id="oEmail">
-  <div class="modal modal-med">
-    <div class="mhead">
-      <h3 id="emailTitle">Send Email</h3>
-      <button class="mx" onclick="closeM('oEmail')">×</button>
-    </div>
-    <div class="mbody">
-      <div class="warn-box" id="emailWarn" style="display:none"><p id="emailWarnText"></p></div>
-      <div class="pend-opt" id="pendOpt" style="display:none">
-        <input type="checkbox" id="pendCheck">
-        <label for="pendCheck"><strong>Data not ready yet</strong><br>
-          Approve the request but mark data as still pending — you'll send the data in a later email.</label>
-      </div>
-      <label class="slabel">Status Message <span style="color:#aaa;font-size:10px;">(email headline)</span></label>
-      <input class="sinp" id="eStatusMsg">
-      <label class="slabel">Final Status Line <span style="color:#aaa;font-size:10px;">(tracking summary)</span></label>
-      <input class="sinp" id="eFinalStatus">
-      <label class="slabel">Message Body</label>
-      <textarea class="sta sta-reply" id="eBody"></textarea>
-      <div class="actions" style="margin-top:12px;">
-        <button class="abtn abtn-green" onclick="sendEmail()">Send &amp; Update</button>
-        <button class="abtn abtn-outline" onclick="closeM('oEmail')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- DATA PREP MODAL -->
-<div class="overlay" id="oDataPrep">
-  <div class="modal modal-med">
-    <div class="mhead">
-      <h3>Prepare &amp; Save Data</h3>
-      <button class="mx" onclick="closeM('oDataPrep')">×</button>
-    </div>
-    <div class="mbody">
-      <div class="info-box">📝 Write the prepared data below. Saving stores it in Supabase and marks Processing &amp; Data Prep as complete. After saving, the email draft will open automatically with this data pre-filled.</div>
-      <label class="slabel">Internal Reference <span style="color:#aaa;font-size:10px;">(not shown to user)</span></label>
-      <input class="sinp" id="dpNote" placeholder="e.g. Supabase bucket /elwoic/2026/req-001">
-      <label class="slabel">Prepared Data <span style="color:#aaa;font-size:10px;">(auto-fills reply email)</span></label>
-      <textarea class="sta sta-data" id="dpData" placeholder="Paste or write the data here…"></textarea>
-      <div class="actions" style="margin-top:10px;">
-        <button class="abtn abtn-teal" onclick="submitDataPrep()">💾 Save &amp; Open Email Draft</button>
-        <button class="abtn abtn-outline" onclick="closeM('oDataPrep')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-const W = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
+const W       = "https://data-admin-request-handler.bold-waterfall-0d01.workers.dev";
 const EJS_SVC = "service_qpz7vpz";
 const EJS_TPL = "template_gejp4qq";
 const EJS_KEY = "Bd-no1cWjcYLmCKIW";
 
 let allData = [], cur = {};
 
-/* ── AUTHENTICATION ── */
-function getToken(){ return sessionStorage.getItem("elwoic_token"); }
+function getToken() { return sessionStorage.getItem("elwoic_token"); }
 
-async function login(){
+async function login() {
   const u = document.getElementById("uname").value.trim();
   const p = document.getElementById("upass").value;
   const btn = document.getElementById("loginBtn");
   const err = document.getElementById("loginErr");
-  if(!u || !p){ err.textContent = "Please enter both fields."; err.style.display = "block"; return; }
-  btn.disabled = true; btn.textContent = "Signing in…"; err.style.display = "none";
+  if (!u || !p) { err.textContent = "Please enter both fields."; err.style.display = "block"; return; }
+  btn.disabled = true; btn.textContent = "SIGNING IN…"; err.style.display = "none";
   try {
     const r = await fetch(`${W}/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) });
     const d = await r.json();
-    if(r.ok && d.success){
+    if (r.ok && d.success) {
       sessionStorage.setItem("elwoic_token", d.token);
       document.getElementById("loginScreen").style.display = "none";
       document.getElementById("appScreen").style.display = "block";
       loadRequests();
     } else { err.textContent = "Incorrect username or password."; err.style.display = "block"; }
-  } catch(e) { err.textContent = "Connection failed."; err.style.display = "block"; }
-  finally { btn.disabled = false; btn.textContent = "Sign In"; }
+  } catch (e) { err.textContent = "Connection failed."; err.style.display = "block"; }
+  finally { btn.disabled = false; btn.textContent = "SIGN IN"; }
 }
 
-function logout(){ sessionStorage.removeItem("elwoic_token"); location.reload(); }
+function logout() { sessionStorage.removeItem("elwoic_token"); location.reload(); }
 
 window.addEventListener("load", () => {
-  if(getToken()){
+  if (getToken()) {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appScreen").style.display = "block";
     loadRequests();
@@ -561,368 +333,414 @@ window.addEventListener("load", () => {
   emailjs.init(EJS_KEY);
 });
 
-/* ── AUTH FETCH ── */
-async function af(url, opts = {}){
+async function af(url, opts = {}) {
   const r = await fetch(url, { ...opts, headers: { "Content-Type": "application/json", "X-Admin-Token": getToken(), ...(opts.headers || {}) } });
-  if(r.status === 401){ showToast("Session expired", "e"); setTimeout(logout, 2000); throw new Error("401"); }
+  if (r.status === 401) { showToast("Session expired", "e"); setTimeout(logout, 2000); throw new Error("401"); }
   return r;
 }
 
-/* ── LOAD DATA ── */
-async function loadRequests(){
+async function loadRequests() {
   try {
     const r = await af(`${W}/requests`);
     allData = await r.json();
     updateStats(); render();
-  } catch(e) { if(e.message !== "401") showToast("Failed to load requests", "e"); }
+  } catch (e) { if (e.message !== "401") showToast("Failed to load requests", "e"); }
 }
 
-function updateStats(){
+function updateStats() {
   const p = allData.filter(d => !d.verified_at && d.status !== "rejected" && !d.case_closed_at).length;
-  const ready = allData.filter(d => d.verified_at && !d.data_prep_at && d.status !== "rejected" && !d.case_closed_at).length;
-  const c = allData.filter(d => d.case_closed_at).length;
+  const a = allData.filter(d => d.verified_at && !d.data_prep_at && d.status !== "rejected" && !d.case_closed_at).length;
+  const c = allData.filter(d => d.case_closed_at || d.status === "rejected").length;
   document.getElementById("statP").textContent = p + " Verification Pending";
-  document.getElementById("statA").textContent = ready + " Data Prep Needed";
-  document.getElementById("statR").textContent = c + " Cases Closed";
+  document.getElementById("statA").textContent = a + " Data Prep Needed";
+  document.getElementById("statR").textContent = c + " Closed / Rejected";
 }
 
-/* ── PIPELINE GRAPHICS ── */
-function stageLbl(d){
-  if(d.case_closed_at) return '<span class="lbl-status" style="color:#475569;">🔒 Closed</span>';
-  if(d.data_sent_at) return '<span class="lbl-status" style="color:#16a34a;">✓ Delivered</span>';
-  if(d.data_prep_at) return '<span class="lbl-status" style="color:#0891b2;">📦 Data Ready</span>';
-  if(d.verified_at && !d.verification_failed_reason) return '<span class="lbl-status" style="color:#2563eb;">⚙ Verified</span>';
-  if(d.verification_failed_reason) return '<span class="lbl-status" style="color:#7c3aed;">⚠️ Verif. Failed</span>';
-  return '<span class="lbl-status" style="color:#d97706;">⏳ New Request</span>';
+function stageLbl(d) {
+  if (d.status === "rejected")                           return '<span style="color:var(--red);">❌ Rejected</span>';
+  if (d.case_closed_at)                                  return '<span style="color:var(--muted);">🔒 Closed</span>';
+  if (d.data_sent_at)                                    return '<span style="color:var(--green);">✓ Delivered</span>';
+  if (d.data_prep_at)                                    return '<span style="color:var(--teal);">📦 Data Ready</span>';
+  if (d.verified_at && !d.verification_failed_reason)    return '<span style="color:var(--accent);">⚙ Verified</span>';
+  if (d.verification_failed_reason)                      return '<span style="color:var(--purple);">⚠ Verif. Failed</span>';
+  return '<span style="color:var(--yellow);">⏳ New</span>';
 }
 
-function fmtTs(ts){
-  if(!ts) return null;
-  return new Date(ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:true }) + " IST";
+function fmtTs(ts) {
+  if (!ts) return null;
+  return new Date(ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) + " IST";
 }
 
-/* ── RENDER SYSTEM TABLE ── */
-/* ── RENDER SYSTEM TABLE ── */
-function render(){
-  const q = document.getElementById("srch").value.toLowerCase();
+function render() {
+  const q  = document.getElementById("srch").value.toLowerCase();
   const fs = document.getElementById("fltS").value;
   const fo = document.getElementById("fltO").value;
 
   let data = allData.filter(d => {
-    const st = fs === "all" || 
-               (fs === "pending" && !d.verified_at && !d.case_closed_at) ||
-               (fs === "verified" && d.verified_at && !d.data_prep_at && !d.case_closed_at) ||
-               (fs === "prepared" && d.data_prep_at && !d.data_sent_at && !d.case_closed_at) ||
-               (fs === "closed" && d.case_closed_at);
-    const sq = (d.name || "").toLowerCase().includes(q) || (d.email || "").toLowerCase().includes(q) || (d.request_id || "").toLowerCase().includes(q);
-    return st && sq;
+    const matchStatus =
+      fs === "all" ||
+      (fs === "Pending"             && d.status === "Pending") ||
+      (fs === "verification_failed" && d.status === "verification_failed") ||
+      (fs === "approved_pending"    && d.status === "approved_pending") ||
+      (fs === "approved"            && d.status === "approved") ||
+      (fs === "rejected"            && d.status === "rejected") ||
+      (fs === "closed"              && !!d.case_closed_at);
+    const matchQ = (d.name || "").toLowerCase().includes(q) ||
+                   (d.email || "").toLowerCase().includes(q) ||
+                   (d.request_id || "").toLowerCase().includes(q);
+    return matchStatus && matchQ;
   });
 
-  if(fo === "latest") data.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-  if(fo === "oldest") data.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+  if (fo === "latest") data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (fo === "oldest") data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
   const body = document.getElementById("tBody");
-  if(!data.length){ body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">No records match current filters.</td></tr>'; return; }
+  if (!data.length) {
+    body.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">No records match current filters.</td></tr>`;
+    return;
+  }
 
   body.innerHTML = data.map(d => {
-    const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—";
-    
-    // Check if the record is a fresh user resubmission
-    const isResubmission = (d.status === "Pending" && d.verification_failed_reason !== null) || 
-                           (d.status === "Pending" && d.seen_at && !d.verified_at && d.resubmit_requested === false);
+    const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+    const isResubmission = d.status === "Pending" && d.verification_failed_reason !== null;
 
-    // Dynamic Status Badge Logic
-    let statusBadge = `<span style="color:#d97706; font-weight:600;">⏳ New Request</span>`;
-    if(isResubmission) {
-      statusBadge = `<span style="color:#2563eb; font-weight:600;">🔄 Resubmitted</span>`;
-    } else if(d.status === "viewed") {
-      statusBadge = `<span style="color:#2563eb; font-weight:600;">👁 viewed</span>`;
-    } else if(d.status === "approved_pending") {
-      statusBadge = `<span style="color:#0891b2; font-weight:600;">⚙ Approved Pending</span>`;
-    } else if(d.status === "approved") {
-      statusBadge = `<span style="color:#16a34a; font-weight:600;">✓ Delivered</span>`;
-    } else if(d.status === "verification_failed") {
-      statusBadge = `<span style="color:#7c3aed; font-weight:600;">⚠️ Verif. Failed</span>`;
-    } else if(d.status === "rejected") {
-      statusBadge = `<span style="color:#dc2626; font-weight:600;">❌ Rejected</span>`;
-    }
-
-    // Dynamic Stage Pill Logic
-    let calculatedStage = stageLbl(d);
-    if(isResubmission) {
-      calculatedStage = '<span class="lbl-status" style="color:#2563eb;">🔄 Re-verify Desk</span>';
-    }
+    let badge = `<span class="status-badge sb-pending">⏳ New</span>`;
+    if (isResubmission)                       badge = `<span class="status-badge sb-resubmitted">🔄 Resubmitted</span>`;
+    else if (d.status === "viewed")           badge = `<span class="status-badge sb-viewed">👁 Viewed</span>`;
+    else if (d.status === "approved_pending") badge = `<span class="status-badge sb-approved-pending">⚙ Appr. Pending</span>`;
+    else if (d.status === "approved")         badge = `<span class="status-badge sb-approved">✓ Delivered</span>`;
+    else if (d.status === "verification_failed") badge = `<span class="status-badge sb-failed">⚠ Verif. Failed</span>`;
+    else if (d.status === "rejected")         badge = `<span class="status-badge sb-rejected">❌ Rejected</span>`;
+    else if (d.case_closed_at)                badge = `<span class="status-badge sb-closed">🔒 Closed</span>`;
 
     return `<tr>
-      <td style="font-family:var(--mono);font-weight:600;">${d.request_id || "—"}</td>
-      <td>${d.name || "—"}</td>
-      <td>${d.email || "—"}</td>
-      <td><span class="category-tag">${d.purpose_category || "—"}</span></td>
-      <td>${dt}</td>
-      <td>${statusBadge}</td>
-      <td><span class="stage-pill-box">${calculatedStage}</span></td>
+      <td class="td-mono" style="font-weight:600;color:var(--text);">${d.request_id || "—"}</td>
+      <td style="font-weight:500;">${d.name || "—"}</td>
+      <td style="color:var(--muted);font-size:11px;">${d.email || "—"}</td>
+      <td style="font-size:11px;color:var(--muted);">${d.purpose_category || "—"}</td>
+      <td class="td-mono">${dt}</td>
+      <td>${badge}</td>
+      <td style="font-size:11px;">${stageLbl(d)}</td>
       <td>
-        <div style="display:flex; gap:6px;">
-          <button class="action-trigger view-trigger" onclick="viewReq(${d.id})">Process Unit</button>
-          <button class="action-trigger delete-trigger" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;" onclick="executeDirectDeletion(${d.id})">Delete</button>
+        <div style="display:flex;gap:6px;">
+          <button class="tbl-btn" onclick="viewReq(${d.id})">Open</button>
+          <button class="tbl-btn tbl-btn-del" onclick="executeDirectDeletion(${d.id})">Delete</button>
         </div>
       </td>
     </tr>`;
   }).join("");
 }
 
-/* ── WORKSPACE CORE ENGINE ── */
 async function viewReq(id) {
   const numericId = Number(id);
   const d = allData.find(x => x.id === numericId);
-  if(!d) return;
+  if (!d) return;
   cur = d;
 
-  if(!d.seen_at || d.status === "Pending") {
+  if (!d.seen_at || d.status === "Pending") {
     const now = new Date().toISOString();
     patchLocal(numericId, { seen_at: now, status: "viewed" });
     render();
     af(`${W}/update`, { method: "POST", body: JSON.stringify({ id: numericId, seen_at: now, status: "viewed" }) }).catch(console.error);
   }
 
-  document.getElementById("viewTitle").textContent = `Data Request Processing Workspace — ${d.request_id || ""}`;
+  document.getElementById("viewTitle").textContent = d.request_id || "—";
   buildWorkspaceDOM(d);
   openM("oView");
 }
 
 function buildWorkspaceDOM(d) {
   const container = document.getElementById("viewBody");
-  
-  const isClosed   = !!d.case_closed_at;
-  const isRejected = d.status === "rejected";
-  const isDelivered = !!d.data_sent_at;
-  const isPrepared = !!d.data_prep_at;
-  const isVerified = d.verified_at && !d.verification_failed_reason;
-  const isFailedVerif = !!d.verification_failed_reason;
+
+  const isClosed      = !!d.case_closed_at;
+  const isRejected    = d.status === "rejected";
+  const isDelivered   = !!d.data_sent_at;
+  const isPrepared    = !!d.data_prep_at;
+  const isVerified    = !!(d.verified_at && !d.verification_failed_reason);
+  const isFailedVerif = !!d.verification_failed_reason && d.status === "verification_failed";
+  const wfLocked      = isRejected;
+
+  const curStatusBadge = isRejected ? 'sb-rejected' : isClosed ? 'sb-closed' : isDelivered ? 'sb-approved' :
+    isVerified ? 'sb-approved-pending' : isFailedVerif ? 'sb-failed' : 'sb-pending';
+  const curStatusText = isRejected ? '❌ Rejected' : isClosed ? '🔒 Closed' : isDelivered ? '✓ Delivered' :
+    isVerified ? '⚙ Verified' : isFailedVerif ? '⚠ Verif. Failed' : '⏳ Pending';
 
   container.innerHTML = `
-    <div class="workspace-layout">
-      <!-- LEFT MODULE: Applicant Profile Metadata (Fully Complete) -->
-      <div class="workspace-meta-panel">
-        <h3 class="panel-section-title">Applicant Credentials & Requirements</h3>
-        <div class="meta-profile-grid">
-          <div class="meta-item"><label>Tracking ID</label><span class="mono-text">${d.request_id || "—"}</span></div>
+  <div class="workspace-layout">
+
+    <div class="meta-panel">
+      <div class="meta-panel-head">
+        <h4>Applicant Profile</h4>
+        <span class="status-badge ${curStatusBadge}">${curStatusText}</span>
+      </div>
+      <div class="meta-body">
+        <div class="meta-grid">
+          <div class="meta-item"><label>Tracking ID</label><span style="font-family:var(--mono);font-size:11px;">${d.request_id || "—"}</span></div>
           <div class="meta-item"><label>Full Name</label><span>${d.name || "—"}</span></div>
-          <div class="meta-item"><label>Email Address</label><span>${d.email || "—"}</span></div>
-          <div class="meta-item"><label>Contact Phone</label><span>${d.phone || "—"}</span></div>
-          <div class="meta-item"><label>Organization</label><span>${d.organisation || "—"}</span></div>
+          <div class="meta-item"><label>Email</label><span style="font-size:11px;">${d.email || "—"}</span></div>
+          <div class="meta-item"><label>Phone</label><span>${d.phone || "—"}</span></div>
+          <div class="meta-item"><label>Organisation</label><span>${d.organisation || "—"}</span></div>
           <div class="meta-item"><label>Designation</label><span>${d.designation || "—"}</span></div>
-          <div class="meta-item"><label>Category Profile</label><span>${d.purpose_category || "—"}</span></div>
-          <div class="meta-item"><label>Request Type</label><span style="font-weight:600; color:#0284c7;">${d.type || "—"}</span></div>
-          <div class="meta-item"><label>Format Target</label><span>${d.response_format || "—"}</span></div>
-          <div class="meta-item"><label>Target Date Range</label><span>${[d.from_date, d.to_date].filter(Boolean).join(" to ") || "Single Window"}</span></div>
+          <div class="meta-item"><label>Category</label><span>${d.purpose_category || "—"}</span></div>
+          <div class="meta-item"><label>Request Type</label><span class="highlight">${d.type || "—"}</span></div>
+          <div class="meta-item"><label>Format</label><span>${d.response_format || "—"}</span></div>
+          <div class="meta-item"><label>Date Range</label><span style="font-size:11px;">${[d.from_date, d.to_date].filter(Boolean).join(" → ") || "Single Window"}</span></div>
         </div>
-        
-        <div class="meta-block-expand">
-          <label>Explicit Request Purpose</label>
-          <div class="text-display-box">${d.purpose || "No descriptive statement logged."}</div>
+        <hr class="meta-divider">
+        <div class="meta-block">
+          <label>Purpose</label>
+          <div class="meta-textbox">${d.purpose || "No purpose stated."}</div>
         </div>
-
-        <div class="meta-block-expand">
-          <label>Meteorological Parameters Requested</label>
-          <div class="text-display-box target-parameters">${d.parameters || "No parameters specified."}</div>
+        <div class="meta-block">
+          <label>Parameters Requested</label>
+          <div class="meta-textbox params">${d.parameters || "None specified."}</div>
         </div>
-
-        <!-- ADDITIONAL DETAILS COMPONENT (Now Fully Visible) -->
-        <div class="meta-block-expand" style="margin-top:15px;">
-          <label style="color:#b91c1c; font-weight:700;">⚠️ Additional Information Provided</label>
-          <div class="text-display-box" style="background:#fffaf0; border-color:#fed7aa; min-height:60px;">${d.additional_details || "No secondary attachments or notes specified by applicant."}</div>
+        <div class="meta-block">
+          <label style="color:var(--orange);">⚠ Additional Details</label>
+          <div class="meta-textbox extra">${d.additional_details || "None provided."}</div>
         </div>
-
-        <div class="meta-profile-grid" style="margin-top:15px; border-top:1px dashed #cbd5e1; padding-top:10px;">
-          <div class="meta-item"><label>Submission Date</label><span>${fmtTs(d.created_at) || "—"}</span></div>
-          <div class="meta-item"><label>Resubmitted State</label><span>${d.resubmit_requested ? "🔄 Yes (Awaiting Review)" : "No"}</span></div>
+        <hr class="meta-divider">
+        <div class="meta-grid">
+          <div class="meta-item"><label>Submitted</label><span style="font-size:11px;">${fmtTs(d.created_at) || "—"}</span></div>
+          <div class="meta-item"><label>Resubmitted</label><span>${d.resubmit_requested ? "🔄 Pending" : "No"}</span></div>
         </div>
       </div>
-
-      <!-- RIGHT MODULE: Sequential Operational Desk -->
-      <div class="workspace-execution-panel">
-        <h3 class="panel-section-title">Sequential Stage Desk</h3>
-        
-        <!-- STEP 1: IDENTITY VERIFICATION ENGINE -->
-        <div class="execution-card ${isVerified ? 'stage-complete' : isFailedVerif ? 'stage-failed-active' : 'stage-active'}" id="stepCard1">
-          <div class="card-header-bar">
-            <span class="step-badge">Stage 1</span>
-            <h4>Identity & Target Evaluation Verification</h4>
-          </div>
-          <div class="card-interior-content">
-            ${isVerified ? `
-              <div class="success-banner">✓ Verification complete. Verified at: ${fmtTs(d.verified_at)}</div>
-            ` : `
-              <p class="stage-instruction-text">Review credentials. If verification fails, open the messaging field to notify the applicant for resubmission.</p>
-              
-              <div class="workspace-action-row" style="margin-bottom:12px;">
-                <button class="panel-btn btn-success" onclick="executeVerification(${d.id})">Confirm & Verify Identity</button>
-                <button class="panel-btn btn-danger" style="background:#7c3aed;" onclick="revealFailureEmailDeck()">Mark Verification Failed & Draft Email</button>
-              </div>
-
-              <!-- DYNAMIC EMAIL DISAPPROVAL WORKSPACE -->
-              <div id="failureEmailDeck" style="display:${isFailedVerif ? 'block' : 'none'}; border-top:1px solid #e2e8f0; padding-top:12px; margin-top:12px;">
-                <label class="input-inline-lbl">Reason Statement (Saved to DB Logs)</label>
-                <input type="text" id="fail_reason_log" class="inline-text-field" value="${d.verification_failed_reason || 'Invalid credential profile links or unverified organization background.'}" placeholder="Internal failure reason..."/>
-                
-                <label class="input-inline-lbl" style="margin-top:8px;">Custom Rejection Notice Title Header</label>
-                <input type="text" id="fail_status_msg" class="inline-text-field" style="color:#b91c1c; font-weight:600;" value="Verification identity failed. Action required for resubmission." />
-
-                <label class="input-inline-lbl" style="margin-top:8px;">Final Summary State</label>
-                <input type="text" id="fail_final_lbl" class="inline-text-field" style="color:#7c3aed; font-weight:600;" value="Verification Failed — Resubmission Allowed" />
-
-                <label class="input-inline-lbl" style="margin-top:8px;">Email Message Body Container</label>
-                <textarea id="fail_email_body" class="matrix-input-area" style="height:120px;">Dear ${d.name},\n\nWe were unable to verify your data access profile credentials for request file ${d.request_id || 'ELWOIC-REQ'}.\n\nReason: ${d.verification_failed_reason || 'Provided verification fields do not match organizational records.'}\n\nPlease visit your tracking link to resubmit the corrected verification profile blocks.\n\nBest Regards,\nELWOIC Operations Desk</textarea>
-                
-                <button class="panel-btn btn-danger" style="width:100%; margin-top:10px; background:#6d28d9;" onclick="executeFailureEmailDispatch(${d.id})">Dispatch Failure Email & Open Resubmit Portal</button>
-              </div>
-            `}
-          </div>
-        </div>
-
-        <!-- STEP 2: METEOROLOGICAL DATA COMPILATION PANELS -->
-        <div class="execution-card ${!isVerified ? 'stage-locked' : isPrepared ? 'stage-complete' : 'stage-active'}" id="stepCard2">
-          <div class="card-header-bar">
-            <span class="step-badge">Stage 2</span>
-            <h4>ELWOIC Station Data Compilation</h4>
-          </div>
-          <div class="card-interior-content">
-            ${!isVerified ? `
-              <p class="locked-placeholder-text">🔒 Locked — Complete Stage 1 Verification to activate compilation deck.</p>
-            ` : isPrepared ? `
-              <div class="success-banner">📦 Dataset packed and committed to Supabase Storage layer.</div>
-              <div class="text-display-box structural-mono" style="margin-top:10px; max-height:120px; overflow-y:auto;">${d.prepared_data}</div>
-              <button class="panel-btn btn-secondary" style="margin-top:10px;" onclick="reactivateDataPrep(${d.id})">Modify Stored Array</button>
-            ` : `
-              <p class="stage-instruction-text">Compile weather matrix rows. Format explicitly matching requested style (${d.response_format || 'Text'}).</p>
-              <textarea id="workspace_prepared_data" class="matrix-input-area" placeholder="Paste weather records here... Example:\n[2026-05-30] Temp: 31°C, Humidity: 78%, Rainfall: 4.2mm, AQI: 42 (Good)"></textarea>
-              <div class="workspace-action-row" style="margin-top:10px;">
-                <button class="panel-btn btn-primary" onclick="executeDataPackaging(${d.id})">Commit & Seal Dataset</button>
-              </div>
-            `}
-          </div>
-        </div>
-
-        <!-- STEP 3: DISPATCH VIA EMAILJS INFRASTRUCTURE (Fully Editable) -->
-        <div class="execution-card ${!isPrepared ? 'stage-locked' : isDelivered ? 'stage-complete' : 'stage-active'}" id="stepCard3">
-          <div class="card-header-bar">
-            <span class="step-badge">Stage 3</span>
-            <h4>Automated Dispatch Delivery Routing</h4>
-          </div>
-          <div class="card-interior-content">
-            ${!isPrepared ? `
-              <p class="locked-placeholder-text">🔒 Locked — Commit compiled matrix values to open transmission routing options.</p>
-            ` : isDelivered ? `
-              <div class="success-banner">✓ Transmission successful. Payload delivered via EmailJS infrastructure at: ${fmtTs(d.data_sent_at)}</div>
-            ` : `
-              <p class="stage-instruction-text">Customize the fields below. These values map exactly to your live layout preview.</p>
-              
-              <div class="email-composition-field">
-                <label class="input-inline-lbl">1. Status Update Text Line (Below Person's Name)</label>
-                <input type="text" id="workspace_status_message" class="inline-text-field" style="color:#16a34a; font-weight:600;" value="Your requested data is ready and has been delivered." />
-
-                <label class="input-inline-lbl" style="margin-top:8px;">2. Core Message Body Area</label>
-                <textarea id="workspace_email_body" class="matrix-input-area" style="height:140px;">${generateDefaultEmailBody(d)}</textarea>
-
-                <label class="input-inline-lbl" style="margin-top:8px;">3. Final Status Label Row</label>
-                <input type="text" id="workspace_final_status" class="inline-text-field" style="color:#15803d; font-weight:700;" value="Approved — Data Delivered" />
-              </div>
-
-              <div class="workspace-action-row" style="margin-top:12px;">
-                <button class="panel-btn btn-success" onclick="executeTransmissionDispatch(${d.id})">Transmit Complete Data Package Now</button>
-              </div>
-            `}
-          </div>
-        </div>
-
-        <!-- STEP 4: PROTOCOL CLOSURE STATUS LOCK -->
-        <div class="execution-card ${!isDelivered ? 'stage-locked' : isClosed ? 'stage-complete' : 'stage-active'}" id="stepCard4">
-          <div class="card-header-bar">
-            <span class="step-badge">Stage 4</span>
-            <h4>Protocol Archive & Case Closure</h4>
-          </div>
-          <div class="card-interior-content">
-            ${isClosed ? `
-              <div class="success-banner" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">🔒 Case securely sealed. Protocol complete.</div>
-            ` : !isDelivered ? `
-              <p class="locked-placeholder-text">🔒 Locked — Package must pass transmission delivery routing checks before closure.</p>
-            ` : `
-              <p class="stage-instruction-text">Finalize case management profiles. Locking completes this workflow track.</p>
-              <button class="panel-btn btn-danger" style="width:100%;" onclick="executeCaseClosure(${d.id})">Archive & Close Case File</button>
-            `}
-          </div>
-        </div>
-
-      </div>
-
-    <!-- REJECTION DECK — Available at all stages -->
-<div class="execution-card ${isRejected ? 'stage-complete' : 'stage-failed-active'}" style="border-left-color:#dc2626;">
-  <div class="card-header-bar">
-    <span class="step-badge" style="background:#fee2e2; color:#991b1b;">Reject</span>
-    <h4 style="color:#dc2626;">Reject This Request</h4>
-  </div>
-  <div class="card-interior-content">
-    ${isRejected ? `
-      <div class="success-banner" style="background:#fef2f2; color:#991b1b; border-color:#fecaca;">
-        ❌ Request rejected at: ${fmtTs(d.rejected_at)}
-      </div>
-    ` : `
-      ${isVerified ? `
-        <div class="warn-box" style="margin-bottom:10px;">
-          <p>⚠️ This request has already passed verification. Rejection at this stage will override the approved state.</p>
-        </div>
-      ` : ''}
-      <button class="panel-btn btn-danger" onclick="revealRejectDeck()">Open Rejection Composer</button>
-
-      <div id="rejectDeck" style="display:none; border-top:1px solid #e2e8f0; padding-top:12px; margin-top:12px;">
-
-        <label class="input-inline-lbl">Reason Statement (Saved to DB Logs)</label>
-        <input type="text" id="reject_reason_log" class="inline-text-field"
-          value="Request does not meet ELWOIC data access eligibility criteria."
-          placeholder="Internal rejection reason..." />
-
-        <label class="input-inline-lbl" style="margin-top:8px;">Status Message Line</label>
-        <input type="text" id="reject_status_msg" class="inline-text-field" style="color:#b91c1c; font-weight:600;"
-          value="Your data request has been reviewed and could not be approved." />
-
-        <label class="input-inline-lbl" style="margin-top:8px;">Final Status Label</label>
-        <input type="text" id="reject_final_lbl" class="inline-text-field" style="color:#dc2626; font-weight:700;"
-          value="Request Rejected" />
-
-        <label class="input-inline-lbl" style="margin-top:8px;">Email Message Body</label>
-        <textarea id="reject_email_body" class="matrix-input-area" style="height:140px;">Dear ${d.name},\n\nThank you for submitting your data request (${d.request_id || 'ELWOIC-REQ'}) to ELWOIC.\n\nAfter careful review, we are unable to fulfil this request at this time.\n\nIf you believe this is in error or wish to submit a revised request, please use the link below.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC</textarea>
-
-        <label class="input-inline-lbl" style="margin-top:8px;">Button URL</label>
-        <input type="text" id="reject_btn_url" class="inline-text-field"
-          value="https://request.elwoic.in/" />
-
-        <label class="input-inline-lbl" style="margin-top:8px;">Button Text</label>
-        <input type="text" id="reject_btn_text" class="inline-text-field"
-          value="Submit a New Request" />
-
-        <button class="panel-btn btn-danger" style="width:100%; margin-top:10px;"
-          onclick="executeRejectionDispatch(${d.id})">
-          Dispatch Rejection Email & Mark Rejected
-        </button>
-      </div>
-    `}
-  </div>
-</div>
     </div>
-  `;
+
+    <div class="exec-panel">
+      <div class="exec-panel-head">Sequential Stage Desk</div>
+
+      ${wfLocked ? `<div class="banner banner-red" style="margin-bottom:4px;">❌ Rejected at ${fmtTs(d.rejected_at) || "—"}. All stages are locked.${d.verification_failed_reason ? `<br><span style="opacity:0.75;font-size:11px;">Reason: ${d.verification_failed_reason}</span>` : ''}</div>` : ''}
+
+      <!-- STAGE 1 -->
+      <div class="stage-card ${wfLocked ? 's-locked' : isVerified ? 's-complete' : isFailedVerif ? 's-warn' : 's-active'}">
+        <div class="card-head">
+          <span class="stage-num">Stage 1</span>
+          <h4>Identity & Credential Verification</h4>
+          <span class="card-head-icon">${isVerified ? '✓' : isFailedVerif ? '⚠' : '○'}</span>
+        </div>
+        <div class="card-body">
+          ${isVerified ? `
+            <div class="banner banner-green">✓ Verification complete — ${fmtTs(d.verified_at)}</div>
+          ` : `
+            <p class="inst">Review credentials. Confirm identity or mark as failed and notify the applicant.</p>
+            <div class="btn-row" style="margin-bottom:12px;">
+              <button class="pbtn pbtn-green" onclick="executeVerification(${d.id})">✓ Confirm & Verify</button>
+              <button class="pbtn pbtn-purple" onclick="revealFailureEmailDeck()">⚠ Mark Failed & Draft Email</button>
+            </div>
+            <div id="failureEmailDeck" style="display:${isFailedVerif ? 'block' : 'none'};" class="collapse-zone">
+              <label class="field-label">Reason (Saved to DB)</label>
+              <input type="text" id="fail_reason_log" class="finp" value="${d.verification_failed_reason || 'Invalid credential profile — unverified organisation.'}" />
+              <label class="field-label">Email Status Line</label>
+              <input type="text" id="fail_status_msg" class="finp red" value="Verification failed. Action required for resubmission." />
+              <label class="field-label">Final Status Label</label>
+              <input type="text" id="fail_final_lbl" class="finp purple" value="Verification Failed — Resubmission Allowed" />
+              <label class="field-label">Email Body</label>
+              <textarea id="fail_email_body" class="fta fta-md">Dear ${d.name},\n\nWe were unable to verify your credentials for request ${d.request_id || 'ELWOIC-REQ'}.\n\nReason: ${d.verification_failed_reason || 'Provided fields do not match organisational records.'}\n\nPlease visit your tracking link to resubmit with corrected details.\n\nBest Regards,\nELWOIC Operations Desk</textarea>
+              <button class="pbtn pbtn-purple pbtn-full" onclick="executeFailureEmailDispatch(${d.id})">Dispatch Failure Email & Open Resubmit Portal</button>
+            </div>
+          `}
+        </div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div class="stage-card ${wfLocked || !isVerified ? 's-locked' : isPrepared ? 's-complete' : 's-active'}">
+        <div class="card-head">
+          <span class="stage-num">Stage 2</span>
+          <h4>Station Data Compilation</h4>
+          <span class="card-head-icon">${isPrepared ? '✓' : '○'}</span>
+        </div>
+        <div class="card-body">
+          ${!isVerified ? `
+            <p class="locked-txt">🔒 Locked — Complete Stage 1 to activate.</p>
+          ` : isPrepared ? `
+            <div class="banner banner-blue" style="margin-bottom:10px;">📦 Dataset committed to storage.</div>
+            <div class="data-display">${d.prepared_data}</div>
+            <div class="btn-row" style="margin-top:10px;">
+              <button class="pbtn pbtn-gray" onclick="reactivateDataPrep(${d.id})">Modify Dataset</button>
+            </div>
+          ` : `
+            <p class="inst">Compile weather data. Format: ${d.response_format || 'Text'}.</p>
+            <textarea id="workspace_prepared_data" class="fta fta-md" placeholder="[2026-05-30] Temp: 31°C, Humidity: 78%, Rainfall: 4.2mm"></textarea>
+            <button class="pbtn pbtn-blue pbtn-full" onclick="executeDataPackaging(${d.id})">Commit & Seal Dataset</button>
+          `}
+        </div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div class="stage-card ${wfLocked || !isPrepared ? 's-locked' : isDelivered ? 's-complete' : 's-active'}">
+        <div class="card-head">
+          <span class="stage-num">Stage 3</span>
+          <h4>Email Dispatch & Delivery</h4>
+          <span class="card-head-icon">${isDelivered ? '✓' : '○'}</span>
+        </div>
+        <div class="card-body">
+          ${!isPrepared ? `
+            <p class="locked-txt">🔒 Locked — Commit dataset to activate.</p>
+          ` : isDelivered ? `
+            <div class="banner banner-green">✓ Delivered via EmailJS at ${fmtTs(d.data_sent_at)}</div>
+          ` : `
+            <p class="inst">Customise all fields before transmitting.</p>
+            <label class="field-label">Status Line</label>
+            <input type="text" id="workspace_status_message" class="finp green" value="Your requested data is ready and has been delivered." />
+            <label class="field-label">Email Body</label>
+            <textarea id="workspace_email_body" class="fta fta-lg">${generateDefaultEmailBody(d)}</textarea>
+            <label class="field-label">Final Status Label</label>
+            <input type="text" id="workspace_final_status" class="finp green" value="Approved — Data Delivered" />
+            <button class="pbtn pbtn-green pbtn-full" style="margin-top:2px;" onclick="executeTransmissionDispatch(${d.id})">Transmit Data Package</button>
+          `}
+        </div>
+      </div>
+
+      <!-- STAGE 4 -->
+      <div class="stage-card ${wfLocked || !isDelivered ? 's-locked' : isClosed ? 's-closed-case' : 's-active'}">
+        <div class="card-head">
+          <span class="stage-num">Stage 4</span>
+          <h4>Protocol Archive & Case Closure</h4>
+          <span class="card-head-icon">${isClosed ? '🔒' : '○'}</span>
+        </div>
+        <div class="card-body">
+          ${isClosed ? `
+            <div class="banner banner-gray">🔒 Case sealed and archived. Protocol complete.</div>
+          ` : !isDelivered ? `
+            <p class="locked-txt">🔒 Locked — Deliver data to activate closure.</p>
+          ` : `
+            <p class="inst">Finalise and lock this case. This action cannot be undone.</p>
+            <button class="pbtn pbtn-red pbtn-full" onclick="executeCaseClosure(${d.id})">Archive & Close Case</button>
+          `}
+        </div>
+      </div>
+
+      <!-- REJECTION DECK -->
+      <div class="stage-card ${isRejected ? 's-reject-done' : 's-reject'}">
+        <div class="card-head">
+          <span class="stage-num">Reject</span>
+          <h4 style="color:var(--red);">Reject This Request</h4>
+          <span class="card-head-icon">${isRejected ? '❌' : '—'}</span>
+        </div>
+        <div class="card-body">
+          ${isRejected ? `
+            <div class="banner banner-red">❌ Rejected at ${fmtTs(d.rejected_at) || "—"}</div>
+            <p class="reopen-note">Need to re-evaluate this request? The re-open button will restore it to Pending status, clearing the rejection and allowing the workflow to restart.</p>
+            <div class="btn-row" style="margin-top:10px;">
+              <button class="pbtn pbtn-gray" onclick="executeReopen(${d.id})">↩ Re-open Request</button>
+            </div>
+          ` : isClosed ? `
+            <div class="banner banner-gray">🔒 Case is already closed and archived.</div>
+          ` : `
+            ${isVerified ? `<div class="banner banner-orange" style="margin-bottom:10px;">⚠ This request has already passed verification. Rejection will override the approved state.</div>` : ''}
+            <button class="pbtn pbtn-red" onclick="revealRejectDeck()">Open Rejection Composer</button>
+            <div id="rejectDeck" class="collapse-zone">
+              <label class="field-label">Reason (Saved to DB)</label>
+              <input type="text" id="reject_reason_log" class="finp" value="Request does not meet ELWOIC data access eligibility criteria." />
+              <label class="field-label">Email Status Line</label>
+              <input type="text" id="reject_status_msg" class="finp red" value="Your data request has been reviewed and could not be approved." />
+              <label class="field-label">Final Status Label</label>
+              <input type="text" id="reject_final_lbl" class="finp red" value="Request Rejected" />
+              <label class="field-label">Email Body</label>
+              <textarea id="reject_email_body" class="fta fta-lg">Dear ${d.name},\n\nThank you for submitting your data request (${d.request_id || 'ELWOIC-REQ'}) to ELWOIC.\n\nAfter careful review, we are unable to fulfil this request at this time.\n\nIf you believe this is in error or wish to submit a revised request, please use the link below.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC</textarea>
+              <label class="field-label">Button URL</label>
+              <input type="text" id="reject_btn_url" class="finp" value="https://request.elwoic.in/" />
+              <label class="field-label">Button Text</label>
+              <input type="text" id="reject_btn_text" class="finp" value="Submit a New Request" />
+              <button class="pbtn pbtn-red pbtn-full" onclick="executeRejectionDispatch(${d.id})">Dispatch Rejection Email & Mark Rejected</button>
+            </div>
+          `}
+        </div>
+      </div>
+
+    </div>
+  </div>`;
 }
 
 function generateDefaultEmailBody(d) {
-  return `Dear ${d.name || 'Applicant'},\n\nYour data request (${d.request_id || 'ELWOIC-REQ'}) has been fully processed by the ELWOIC Admin Team.\n\nPlease find your requested community weather observations mapping below:\n\n──────────────────────────\n${d.prepared_data || ''}\n──────────────────────────\n\nNotes/Use Constraints: Data provided under local observation protocols.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC`;
+  return `Dear ${d.name || 'Applicant'},\n\nYour data request (${d.request_id || 'ELWOIC-REQ'}) has been fully processed by the ELWOIC Admin Team.\n\nPlease find your requested weather observations below:\n\n──────────────────────────\n${d.prepared_data || ''}\n──────────────────────────\n\nNotes: Data provided under local observation protocols.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC`;
 }
 
-function revealFailureEmailDeck() {
-  document.getElementById("failureEmailDeck").style.display = "block";
+function revealFailureEmailDeck() { document.getElementById("failureEmailDeck").style.display = "block"; }
+function revealRejectDeck()       { document.getElementById("rejectDeck").style.display = "block"; }
+
+async function executeVerification(id) {
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: null, status: "approved_pending" }) });
+    patchLocal(id, { verified_at: now, verification_failed_reason: null, status: "approved_pending" });
+    showToast("Identity verified", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch (e) { showToast("Verification sync failed", "e"); }
 }
 
-function revealRejectDeck() {
-  document.getElementById("rejectDeck").style.display = "block";
+async function executeFailureEmailDispatch(id) {
+  const reasonLog = document.getElementById("fail_reason_log").value.trim();
+  const statusMsg = document.getElementById("fail_status_msg").value.trim();
+  const finalLbl  = document.getElementById("fail_final_lbl").value.trim();
+  const emailBody = document.getElementById("fail_email_body").value.trim();
+  if (!reasonLog || !emailBody) { showToast("Fill in reason and email body", "w"); return; }
+  showToast("Dispatching failure notice…", "w");
+  try {
+    await emailjs.send(EJS_SVC, EJS_TPL, {
+      to_email: cur.email, name: cur.name, requestId: cur.request_id,
+      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      status_message: statusMsg, message: emailBody, final_status: finalLbl,
+      theme_color: "#7c3aed",
+      button_url: "https://request.elwoic.in/request-tracking.html",
+      button_text: "Update & Resubmit Data Request"
+    });
+    const now = new Date().toISOString();
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: reasonLog, status: "verification_failed", resubmit_requested: true }) });
+    patchLocal(id, { verified_at: now, verification_failed_reason: reasonLog, status: "verification_failed", resubmit_requested: true });
+    showToast("Failure notice dispatched. Resubmit window open.", "s");
+    closeM("oView"); updateStats(); render();
+  } catch (e) { showToast("EmailJS error", "e"); }
+}
+
+async function executeDataPackaging(id) {
+  const el = document.getElementById("workspace_prepared_data");
+  const packedData = el ? el.value.trim() : "";
+  if (!packedData) { showToast("Data field cannot be blank", "w"); return; }
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_prep_at: now, prepared_data: packedData }) });
+    patchLocal(id, { data_prep_at: now, prepared_data: packedData });
+    showToast("Dataset sealed", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch (e) { showToast("Storage failed", "e"); }
+}
+
+function reactivateDataPrep(id) { cur.data_prep_at = null; buildWorkspaceDOM(cur); }
+
+async function executeTransmissionDispatch(id) {
+  const statusLine = document.getElementById("workspace_status_message").value.trim();
+  const msgText    = document.getElementById("workspace_email_body").value.trim();
+  const finalTxt   = document.getElementById("workspace_final_status").value.trim();
+  if (!msgText || !statusLine || !finalTxt) { showToast("Fields cannot be empty", "w"); return; }
+  showToast("Transmitting…", "w");
+  try {
+    await emailjs.send(EJS_SVC, EJS_TPL, {
+      to_email: cur.email, name: cur.name, requestId: cur.request_id,
+      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      status_message: statusLine, message: msgText, final_status: finalTxt,
+      theme_color: "#16a34a",
+      button_url: "https://elwoic.in/",
+      button_text: "Visit ELWOIC Homepage"
+    });
+    const now = new Date().toISOString();
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_sent_at: now, status: "approved" }) });
+    patchLocal(id, { data_sent_at: now, status: "approved" });
+    showToast("Data package delivered", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch (e) { showToast("Transmission failed", "e"); }
+}
+
+async function executeCaseClosure(id) {
+  if (!confirm("Permanently lock and archive this case?")) return;
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, case_closed_at: now }) });
+    patchLocal(id, { case_closed_at: now });
+    showToast("Case locked and archived 🔒", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch (e) { showToast("Closure failed", "e"); }
 }
 
 async function executeRejectionDispatch(id) {
@@ -932,184 +750,57 @@ async function executeRejectionDispatch(id) {
   const emailBody = document.getElementById("reject_email_body").value.trim();
   const btnUrl    = document.getElementById("reject_btn_url").value.trim();
   const btnText   = document.getElementById("reject_btn_text").value.trim();
-
-  if (!reasonLog || !emailBody) { showToast("Please fill reason and email body", "w"); return; }
-
-  showToast("Dispatching rejection notice...", "w");
+  if (!reasonLog || !emailBody) { showToast("Fill in reason and email body", "w"); return; }
+  showToast("Dispatching rejection notice…", "w");
   try {
     await emailjs.send(EJS_SVC, EJS_TPL, {
-      to_email:       cur.email,
-      name:           cur.name,
-      requestId:      cur.request_id,
-      parameters:     cur.parameters,
-      request_type:   cur.type || "Meteorological Request Array",
-      status_message: statusMsg,
-      message:        emailBody,
-      final_status:   finalLbl,
-      theme_color:    "#dc2626",
-      button_url:     btnUrl,
-      button_text:    btnText
+      to_email: cur.email, name: cur.name, requestId: cur.request_id,
+      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      status_message: statusMsg, message: emailBody, final_status: finalLbl,
+      theme_color: "#dc2626", button_url: btnUrl, button_text: btnText
     });
-
     const now = new Date().toISOString();
-    await af(`${W}/update`, {
-      method: "POST",
-      body: JSON.stringify({ id, status: "rejected", rejected_at: now, verification_failed_reason: reasonLog })
-    });
-
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, status: "rejected", rejected_at: now, verification_failed_reason: reasonLog }) });
     patchLocal(id, { status: "rejected", rejected_at: now, verification_failed_reason: reasonLog });
-    showToast("Rejection dispatched and case marked rejected", "s");
+    showToast("Rejection dispatched", "s");
     closeM("oView"); updateStats(); render();
-  } catch(e) { showToast("Rejection dispatch failed", "e"); }
+  } catch (e) { showToast("Rejection dispatch failed", "e"); }
 }
-  
-/* ── STEP PIPELINE IMPLEMENTATIONS ── */
-async function executeVerification(id) {
-  const now = new Date().toISOString();
+
+async function executeReopen(id) {
+  if (!confirm("Re-open this rejected request and restore it to Pending?")) return;
   try {
-    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: null, status: "approved_pending" }) });
-    patchLocal(id, { verified_at: now, verification_failed_reason: null, status: "approved_pending" });
-    showToast("Identity verified successfully", "s");
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, status: "Pending", rejected_at: null, verification_failed_reason: null }) });
+    patchLocal(id, { status: "Pending", rejected_at: null, verification_failed_reason: null });
+    showToast("Request re-opened and set to Pending", "s");
     buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("Verification sync failed", "e"); }
-}
-
-async function executeFailureEmailDispatch(id) {
-  const reasonLog = document.getElementById("fail_reason_log").value.trim();
-  const statusMsg = document.getElementById("fail_status_msg").value.trim();
-  const finalLbl = document.getElementById("fail_final_lbl").value.trim();
-  const emailBody = document.getElementById("fail_email_body").value.trim();
-
-  if(!reasonLog || !emailBody) { showToast("Please input reasons and email body texts", "w"); return; }
-  
-  showToast("Dispatching failure notice via EmailJS...", "w");
-  try {
-    // Fire dynamic notification via template metrics
-  await emailjs.send(EJS_SVC, EJS_TPL, {
-    to_email: cur.email,
-    name: cur.name,
-    requestId: cur.request_id,
-    parameters: cur.parameters,
-    request_type: cur.type || "Meteorological Request Array",
-    status_message: statusMsg,
-    message: emailBody,
-    final_status: finalLbl,
-    theme_color: "#7c3aed",
-    // ─── ADDED VARIABLES FOR BUTTON ───
-    button_url: "https://request.elwoic.in/request-tracking.html",
-    button_text: "Update & Resubmit Data Request"
-  });
-
-    const now = new Date().toISOString();
-    // Enable resubmit requested option seamlessly inside the worker validation array
-    await af(`${W}/update`, { 
-      method: "POST", 
-      body: JSON.stringify({ 
-        id, 
-        verified_at: now, 
-        verification_failed_reason: reasonLog, 
-        status: "verification_failed",
-        resubmit_requested: true 
-      }) 
-    });
-
-    patchLocal(id, { 
-      verified_at: now, 
-      verification_failed_reason: reasonLog, 
-      status: "verification_failed",
-      resubmit_requested: true 
-    });
-
-    showToast("Failure notification dispatched. Resubmit window open.", "s");
-    closeM("oView"); updateStats(); render();
-  } catch(e) { showToast("EmailJS transport engine error", "e"); }
-}
-
-async function executeDataPackaging(id) {
-  const dataBox = document.getElementById("workspace_prepared_data");
-  const packedData = dataBox ? dataBox.value.trim() : "";
-  if(!packedData){ showToast("Data field cannot be committed blank", "w"); return; }
-
-  const now = new Date().toISOString();
-  try {
-    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_prep_at: now, prepared_data: packedData }) });
-    patchLocal(id, { data_prep_at: now, prepared_data: packedData });
-    showToast("Weather data matrix sealed", "s");
-    buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("Supabase persistence failed", "e"); }
-}
-
-function reactivateDataPrep(id) {
-  cur.data_prep_at = null;
-  buildWorkspaceDOM(cur);
-}
-
-async function executeTransmissionDispatch(id) {
-  const statusLine = document.getElementById("workspace_status_message").value.trim();
-  const msgText = document.getElementById("workspace_email_body").value.trim();
-  const finalStatusText = document.getElementById("workspace_final_status").value.trim();
-
-  if(!msgText || !statusLine || !finalStatusText){ showToast("Workspace configurations cannot be left empty", "w"); return; }
-
-  showToast("Initiating secure transport transmission...", "w");
-  try {
-   await emailjs.send(EJS_SVC, EJS_TPL, {
-    to_email: cur.email,
-    name: cur.name,
-    requestId: cur.request_id,
-    parameters: cur.parameters,
-    request_type: cur.type || "Meteorological Request Array",
-    status_message: statusLine,
-    message: msgText,
-    final_status: finalStatusText,
-    theme_color: "#16a34a",
-    // ─── ADDED VARIABLES FOR BUTTON ───
-    button_url: "https://elwoic.in/",
-    button_text: "Visit ELWOIC Homepage"
-  });
-    
-    const now = new Date().toISOString();
-    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_sent_at: now, status: "approved" }) });
-    patchLocal(id, { data_sent_at: now, status: "approved" });
-    showToast("Data array payload dispatched", "s");
-    buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("EmailJS transmission processing failure", "e"); }
-}
-
-async function executeCaseClosure(id) {
-  if(!confirm("Are you sure you want to permanently lock and archive this request file?")) return;
-  const now = new Date().toISOString();
-  try {
-    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, case_closed_at: now }) });
-    patchLocal(id, { case_closed_at: now });
-    showToast("Case locked and archived securely 🔒", "s");
-    buildWorkspaceDOM(cur); updateStats(); render();
-  } catch(e) { showToast("Database latch error", "e"); }
+  } catch (e) { showToast("Re-open failed", "e"); }
 }
 
 async function executeDirectDeletion(id) {
-  if(!confirm("🚨 Critical Action: Are you sure you want to completely erase this request record from the database?")) return;
+  if (!confirm("Permanently delete this record from the database?")) return;
   try {
     await af(`${W}/delete`, { method: "POST", body: JSON.stringify({ id }) });
     allData = allData.filter(x => x.id !== id);
-    showToast("Record completely cleared", "w");
+    showToast("Record deleted", "w");
     updateStats(); render();
-  } catch(e) { showToast("Deletion failed", "e"); }
+  } catch (e) { showToast("Deletion failed", "e"); }
 }
 
-function patchLocal(id, patch){
+function patchLocal(id, patch) {
   const i = allData.findIndex(x => x.id == id);
-  if(i !== -1) Object.assign(allData[i], patch);
-  if(cur.id == id) Object.assign(cur, patch);
+  if (i !== -1) Object.assign(allData[i], patch);
+  if (cur.id == id) Object.assign(cur, patch);
 }
 
-function openM(id){ document.getElementById(id).classList.add("open"); }
-function closeM(id){ document.getElementById(id).classList.remove("open"); }
+function openM(id)  { document.getElementById(id).classList.add("open"); }
+function closeM(id) { document.getElementById(id).classList.remove("open"); }
 
-function showToast(msg, type = "s"){
+function showToast(msg, type = "s") {
   const t = document.getElementById("toast");
-  t.textContent = msg; t.className = `toast t-${type} show`;
-  setTimeout(() => t.classList.remove("show"), 3200);
+  t.textContent = msg;
+  t.className = `toast t-${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3000);
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
