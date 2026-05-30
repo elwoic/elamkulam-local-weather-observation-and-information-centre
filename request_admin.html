@@ -602,6 +602,7 @@ function fmtTs(ts){
 }
 
 /* ── RENDER SYSTEM TABLE ── */
+/* ── RENDER SYSTEM TABLE ── */
 function render(){
   const q = document.getElementById("srch").value.toLowerCase();
   const fs = document.getElementById("fltS").value;
@@ -626,13 +627,31 @@ function render(){
   body.innerHTML = data.map(d => {
     const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—";
     
-    // Explicit clean styling based on status colorization requested in template
+    // Check if the record is a fresh user resubmission
+    const isResubmission = (d.status === "Pending" && d.verification_failed_reason !== null) || 
+                           (d.status === "Pending" && d.seen_at && !d.verified_at && d.resubmit_requested === false);
+
+    // Dynamic Status Badge Logic
     let statusBadge = `<span style="color:#d97706; font-weight:600;">⏳ New Request</span>`;
-    if(d.status === "viewed") statusBadge = `<span style="color:#2563eb; font-weight:600;">👁 viewed</span>`;
-    if(d.status === "approved_pending") statusBadge = `<span style="color:#0891b2; font-weight:600;">⚙ Approved Pending</span>`;
-    if(d.status === "approved") statusBadge = `<span style="color:#16a34a; font-weight:600;">✓ Delivered</span>`;
-    if(d.status === "verification_failed") statusBadge = `<span style="color:#7c3aed; font-weight:600;">⚠️ Verif. Failed</span>`;
-    if(d.status === "rejected") statusBadge = `<span style="color:#dc2626; font-weight:600;">❌ Rejected</span>`;
+    if(isResubmission) {
+      statusBadge = `<span style="color:#2563eb; font-weight:600;">🔄 Resubmitted</span>`;
+    } else if(d.status === "viewed") {
+      statusBadge = `<span style="color:#2563eb; font-weight:600;">👁 viewed</span>`;
+    } else if(d.status === "approved_pending") {
+      statusBadge = `<span style="color:#0891b2; font-weight:600;">⚙ Approved Pending</span>`;
+    } else if(d.status === "approved") {
+      statusBadge = `<span style="color:#16a34a; font-weight:600;">✓ Delivered</span>`;
+    } else if(d.status === "verification_failed") {
+      statusBadge = `<span style="color:#7c3aed; font-weight:600;">⚠️ Verif. Failed</span>`;
+    } else if(d.status === "rejected") {
+      statusBadge = `<span style="color:#dc2626; font-weight:600;">❌ Rejected</span>`;
+    }
+
+    // Dynamic Stage Pill Logic
+    let calculatedStage = stageLbl(d);
+    if(isResubmission) {
+      calculatedStage = '<span class="lbl-status" style="color:#2563eb;">🔄 Re-verify Desk</span>';
+    }
 
     return `<tr>
       <td style="font-family:var(--mono);font-weight:600;">${d.request_id || "—"}</td>
@@ -641,7 +660,7 @@ function render(){
       <td><span class="category-tag">${d.purpose_category || "—"}</span></td>
       <td>${dt}</td>
       <td>${statusBadge}</td>
-      <td><span class="stage-pill-box">${stageLbl(d)}</span></td>
+      <td><span class="stage-pill-box">${calculatedStage}</span></td>
       <td>
         <div style="display:flex; gap:6px;">
           <button class="action-trigger view-trigger" onclick="viewReq(${d.id})">Process Unit</button>
