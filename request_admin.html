@@ -150,6 +150,198 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;}
 .toast{position:fixed;bottom:22px;right:22px;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;font-family:var(--serif);box-shadow:0 4px 16px rgba(0,0,0,.12);}
 .toast.show{opacity:1;transform:translateY(0);}
 .t-s{background:var(--green);color:#fff;} .t-e{background:var(--red);color:#fff;} .t-w{background:var(--orange);color:#fff;}
+
+  /* Custom Wide Workspace Layout Definitions */
+#oView .modal-container {
+  width: 95% !important;
+  max-width: 1400px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.workspace-layout {
+  display: grid;
+  grid-template-columns: 450px 1fr;
+  gap: 25px;
+  align-items: start;
+  margin-top: 15px;
+}
+
+.workspace-meta-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.workspace-execution-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.panel-section-title {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #1e293b;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.meta-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.meta-item label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.meta-item span {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.meta-block-expand {
+  margin-top: 15px;
+}
+
+.meta-block-expand label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.text-display-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.target-parameters {
+  border-left: 3px solid #0284c7;
+  font-weight: 500;
+}
+
+.structural-mono {
+  font-family: monospace;
+  background: #0f172a;
+  color: #38bdf8;
+  border: none;
+}
+
+/* Interactive Execution Process Cards */
+.execution-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.2s ease;
+}
+
+.execution-card.stage-locked {
+  opacity: 0.5;
+  background: #f1f5f9;
+  pointer-events: none;
+}
+
+.execution-card.stage-active {
+  border-left: 4px solid #2563eb;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.execution-card.stage-complete {
+  border-left: 4px solid #16a34a;
+  background: #fbfdfb;
+}
+
+.card-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.step-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: #cbd5e1;
+  color: #334155;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.stage-active .step-badge { background: #dbeafe; color: #1e40af; }
+.stage-complete .step-badge { background: #dcfce7; color: #166534; }
+
+.card-header-bar h4 { margin: 0; font-size: 14px; color: #1e293b; }
+
+.stage-instruction-text { margin: 0 0 10px 0; font-size: 12.5px; color: #64748b; }
+.locked-placeholder-text { margin: 0; font-size: 12px; color: #94a3b8; font-style: italic; }
+
+.matrix-input-area {
+  width: 100%;
+  height: 90px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: monospace;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.email-preview-area {
+  height: 140px;
+  background: #fafafa;
+  font-family: sans-serif;
+  line-height: 1.4;
+}
+
+.workspace-action-row { display: flex; gap: 10px; }
+
+.panel-btn {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-primary { background: #2563eb; color: white; }
+.btn-success { background: #16a34a; color: white; }
+.btn-danger { background: #dc2626; color: white; }
+.btn-secondary { background: #64748b; color: white; }
+
+.success-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+.error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
 </style>
 </head>
 <body>
@@ -281,505 +473,371 @@ const EJS_KEY = "Bd-no1cWjcYLmCKIW";
 
 let allData = [], cur = {};
 
-/* ── AUTH ── */
+/* ── AUTHENTICATION ── */
 function getToken(){ return sessionStorage.getItem("elwoic_token"); }
 
 async function login(){
-  const u=document.getElementById("uname").value.trim();
-  const p=document.getElementById("upass").value;
-  const btn=document.getElementById("loginBtn");
-  const err=document.getElementById("loginErr");
-  if(!u||!p){err.textContent="Please enter both fields.";err.style.display="block";return;}
-  btn.disabled=true; btn.textContent="Signing in…"; err.style.display="none";
-  try{
-    const r=await fetch(`${W}/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})});
-    const d=await r.json();
-    if(r.ok&&d.success){
-      sessionStorage.setItem("elwoic_token",d.token);
-      document.getElementById("loginScreen").style.display="none";
-      document.getElementById("appScreen").style.display="block";
+  const u = document.getElementById("uname").value.trim();
+  const p = document.getElementById("upass").value;
+  const btn = document.getElementById("loginBtn");
+  const err = document.getElementById("loginErr");
+  if(!u || !p){ err.textContent = "Please enter both fields."; err.style.display = "block"; return; }
+  btn.disabled = true; btn.textContent = "Signing in…"; err.style.display = "none";
+  try {
+    const r = await fetch(`${W}/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) });
+    const d = await r.json();
+    if(r.ok && d.success){
+      sessionStorage.setItem("elwoic_token", d.token);
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("appScreen").style.display = "block";
       loadRequests();
-    } else {err.textContent="Incorrect username or password.";err.style.display="block";}
-  }catch(e){err.textContent="Connection failed.";err.style.display="block";}
-  finally{btn.disabled=false;btn.textContent="Sign In";}
+    } else { err.textContent = "Incorrect username or password."; err.style.display = "block"; }
+  } catch(e) { err.textContent = "Connection failed."; err.style.display = "block"; }
+  finally { btn.disabled = false; btn.textContent = "Sign In"; }
 }
 
-function logout(){sessionStorage.removeItem("elwoic_token");location.reload();}
+function logout(){ sessionStorage.removeItem("elwoic_token"); location.reload(); }
 
-window.addEventListener("load",()=>{
+window.addEventListener("load", () => {
   if(getToken()){
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("appScreen").style.display="block";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appScreen").style.display = "block";
     loadRequests();
   }
   emailjs.init(EJS_KEY);
 });
 
 /* ── AUTH FETCH ── */
-async function af(url,opts={}){
-  const r=await fetch(url,{...opts,headers:{"Content-Type":"application/json","X-Admin-Token":getToken(),...(opts.headers||{})}});
-  if(r.status===401){showToast("Session expired","e");setTimeout(logout,2000);throw new Error("401");}
+async function af(url, opts = {}){
+  const r = await fetch(url, { ...opts, headers: { "Content-Type": "application/json", "X-Admin-Token": getToken(), ...(opts.headers || {}) } });
+  if(r.status === 401){ showToast("Session expired", "e"); setTimeout(logout, 2000); throw new Error("401"); }
   return r;
 }
 
-/* ── LOAD ── */
+/* ── LOAD DATA ── */
 async function loadRequests(){
-  try{
-    const r=await af(`${W}/requests`);
-    allData=await r.json();
-    updateStats();render();
-  }catch(e){if(e.message!=="401")showToast("Failed to load","e");}
+  try {
+    const r = await af(`${W}/requests`);
+    allData = await r.json();
+    updateStats(); render();
+  } catch(e) { if(e.message !== "401") showToast("Failed to load requests", "e"); }
 }
 
 function updateStats(){
-  const p=allData.filter(d=>d.status==="Pending"||d.status==="verification_failed").length;
-  const a=allData.filter(d=>d.status==="approved"||d.status==="approved_pending").length;
-  const r=allData.filter(d=>d.status==="rejected").length;
-  document.getElementById("statP").textContent=p+" Pending";
-  document.getElementById("statA").textContent=a+" Approved";
-  document.getElementById("statR").textContent=r+" Rejected";
+  const p = allData.filter(d => !d.verified_at && d.status !== "rejected" && !d.case_closed_at).length;
+  const ready = allData.filter(d => d.verified_at && !d.data_prep_at && d.status !== "rejected" && !d.case_closed_at).length;
+  const c = allData.filter(d => d.case_closed_at).length;
+  document.getElementById("statP").textContent = p + " Verification Pending";
+  document.getElementById("statA").textContent = ready + " Data Prep Needed";
+  document.getElementById("statR").textContent = c + " Cases Closed";
 }
 
-/* ── STAGE LABEL for table ── */
+/* ── PIPELINE GRAPHICS ── */
 function stageLbl(d){
-  if(d.case_closed_at) return '<span style="font-size:10px;font-family:var(--mono);color:#475569;">🔒 Closed</span>';
-  if(d.data_sent_at)   return '<span style="font-size:10px;font-family:var(--mono);color:#16a34a;">✓ Delivered</span>';
-  if(d.data_prep_at)   return '<span style="font-size:10px;font-family:var(--mono);color:#0891b2;">📦 Data Ready</span>';
-  if(d.verified_at&&!d.verification_failed_reason) return '<span style="font-size:10px;font-family:var(--mono);color:#16a34a;">✓ Verified</span>';
-  if(d.verification_failed_reason) return '<span style="font-size:10px;font-family:var(--mono);color:#7c3aed;">⚠ Verif. Failed</span>';
-  if(d.seen_at)        return '<span style="font-size:10px;font-family:var(--mono);color:#1d4ed8;">👁 Seen</span>';
-  return '<span style="font-size:10px;font-family:var(--mono);color:#d97706;">⏳ New</span>';
+  if(d.case_closed_at) return '<span class="lbl-status" style="color:#475569;">🔒 Closed</span>';
+  if(d.data_sent_at) return '<span class="lbl-status" style="color:#16a34a;">✓ Delivered</span>';
+  if(d.data_prep_at) return '<span class="lbl-status" style="color:#0891b2;">📦 Data Ready</span>';
+  if(d.verified_at && !d.verification_failed_reason) return '<span class="lbl-status" style="color:#2563eb;">⚙ Verified</span>';
+  if(d.verification_failed_reason) return '<span class="lbl-status" style="color:#7c3aed;">⚠ Verif. Failed</span>';
+  return '<span class="lbl-status" style="color:#d97706;">⏳ New Request</span>';
 }
 
-/* ── RENDER TABLE ── */
+function fmtTs(ts){
+  if(!ts) return null;
+  return new Date(ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:true }) + " IST";
+}
+
+/* ── RENDER SYSTEM TABLE ── */
 function render(){
-  const q=document.getElementById("srch").value.toLowerCase();
-  const fs=document.getElementById("fltS").value;
-  const fo=document.getElementById("fltO").value;
+  const q = document.getElementById("srch").value.toLowerCase();
+  const fs = document.getElementById("fltS").value;
+  const fo = document.getElementById("fltO").value;
 
-  let data=allData.filter(d=>{
-    const st=fs==="all"||d.status===fs||(fs==="closed"&&d.case_closed_at);
-    const sq=(d.name||"").toLowerCase().includes(q)||(d.email||"").toLowerCase().includes(q)||(d.request_id||"").toLowerCase().includes(q);
-    return st&&sq;
+  let data = allData.filter(d => {
+    const st = fs === "all" || 
+               (fs === "pending" && !d.verified_at && !d.case_closed_at) ||
+               (fs === "verified" && d.verified_at && !d.data_prep_at && !d.case_closed_at) ||
+               (fs === "prepared" && d.data_prep_at && !d.data_sent_at && !d.case_closed_at) ||
+               (fs === "closed" && d.case_closed_at);
+    const sq = (d.name || "").toLowerCase().includes(q) || (d.email || "").toLowerCase().includes(q) || (d.request_id || "").toLowerCase().includes(q);
+    return st && sq;
   });
-  if(fo==="latest") data.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-  if(fo==="oldest") data.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  if(fo==="pending") data.sort((a,b)=>a.status==="Pending"?-1:1);
 
-  const body=document.getElementById("tBody");
-  if(!data.length){body.innerHTML='<tr class="empty-row"><td colspan="8">No requests found.</td></tr>';return;}
+  if(fo === "latest") data.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  if(fo === "oldest") data.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
 
-  const lbl={Pending:"Pending",viewed:"Viewed",approved:"Approved",approved_pending:"Appr. Pending",rejected:"Rejected",verification_failed:"Verif. Failed"};
-  body.innerHTML=data.map(d=>{
-    const dt=d.created_at?new Date(d.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
-    const badge=d.case_closed_at?"closed":d.status;
+  const body = document.getElementById("tBody");
+  if(!data.length){ body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">No records match current filters.</td></tr>'; return; }
+
+  body.innerHTML = data.map(d => {
+    const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—";
     return `<tr>
-      <td class="td-id">${d.request_id||"—"}</td>
-      <td>${d.name||"—"}</td>
-      <td>${d.email||"—"}</td>
-      <td>${d.purpose_category||"—"}</td>
-      <td class="td-date">${dt}</td>
-      <td><span class="badge badge-${badge}">${d.case_closed_at?"Closed":(lbl[d.status]||d.status)}</span></td>
+      <td style="font-family:var(--mono);font-weight:600;">${d.request_id || "—"}</td>
+      <td>${d.name || "—"}</td>
+      <td>${d.email || "—"}</td>
+      <td><span class="category-tag">${d.purpose_category || "—"}</span></td>
+      <td>${dt}</td>
       <td>${stageLbl(d)}</td>
       <td>
-        <button class="btn btn-view" onclick="viewReq(${d.id})">View</button>
-        <button class="btn btn-del"  onclick="delReq(${d.id})">Delete</button>
+        <button class="action-trigger view-trigger" onclick="viewReq(${d.id})">Process Unit</button>
       </td>
     </tr>`;
   }).join("");
 }
 
-/* ── TIMESTAMP FORMAT ── */
-function fmtTs(ts){
-  if(!ts) return null;
-  return new Date(ts).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true})+" IST";
-}
-
-/* ── BUILD PIPELINE (right column in view) ── */
-function buildPipeline(d){
-  const isClosed    = !!d.case_closed_at;
-  const isDelivered = !!d.data_sent_at;
-  const hasPrep     = !!d.data_prep_at;
-  const isApprPend  = d.status==="approved_pending";
-  const isApproved  = d.status==="approved";
-  const isRejected  = d.status==="rejected";
-  const hasVerified = !!d.verified_at && !d.verification_failed_reason;
-  const hasVFail    = !!d.verification_failed_reason;
-
-  const steps=[
-    {
-      label:"Submitted & Logged",
-      sub:"Request received in system",
-      ts:d.created_at,
-      state:"done"
-    },
-    {
-      label:"Seen by Admin",
-      sub:d.seen_at?"Reviewed by team":"Not yet reviewed",
-      ts:d.seen_at,
-      state:d.seen_at?"done":(d.status==="Pending"?"active":"wait")
-    },
-    {
-      label:"Verification",
-      sub:hasVFail?`Failed: ${d.verification_failed_reason}`:hasVerified?"Identity verified":"Pending verification",
-      ts:d.verified_at||null,
-      state:hasVFail?"error":hasVerified?"done":(d.seen_at?"active":"wait")
-    },
-    ...(isApprPend||(!d.approved_at&&isApproved&&!d.data_prep_at)?[{
-      label:"Approved — Data Pending",
-      sub:isApprPend?"Request approved, data being prepared":"Approved, moving to data prep",
-      ts:d.approved_at||null,
-      state:isApprPend?"active":d.approved_at?"done":"wait"
-    }]:[]),
-    {
-      label:"Data Prepared",
-      sub:hasPrep?"Data compiled & formatted":"Awaiting data preparation",
-      ts:d.data_prep_at||null,
-      state:hasPrep?"done":(hasVerified&&!isRejected?"active":"wait")
-    },
-    {
-      label:isDelivered?"Delivered ✓":"Delivery",
-      sub:isDelivered?"Data sent to applicant":hasPrep?"Ready to send":"Awaiting data prep",
-      ts:d.data_sent_at||null,
-      state:isDelivered?"done":(hasPrep?"active":"wait")
-    },
-    {
-      label:"Case Closed",
-      sub:isClosed?"No further action required":"Open",
-      ts:d.case_closed_at||null,
-      state:isClosed?"done":"wait"
-    }
-  ];
-
-  // If rejected → grey everything after verification
-  if(isRejected){
-    steps.forEach((s,i)=>{if(i>2)s.state="wait";});
-    // But keep closed if it happened
-    if(isClosed) steps[steps.length-1].state="done";
-  }
-
-  return `<div class="pipeline">`+steps.map(s=>{
-    const icon=s.state==="done"?"✓":s.state==="error"?"✕":s.state==="active"?"…":s.state==="skipped"?"↷":"○";
-    const ts=s.ts?`<div class="pipe-ts">🕐 ${fmtTs(s.ts)}</div>`:"";
-    return `<div class="pipe-step ${s.state}">
-      <div class="pipe-dot ${s.state}">${icon}</div>
-      <div class="pipe-body">
-        <div class="pipe-label">${s.label}</div>
-        <div class="pipe-sub">${s.sub}</div>
-        ${ts}
-      </div>
-    </div>`;
-  }).join("")+`</div>`;
-}
-
-/* ── VIEW REQUEST ── */
-async function viewReq(id){
-  // Force conversion to a clean number type
+/* ── INTERACTIVE WORKFLOW GENERATOR ── */
+async function viewReq(id) {
   const numericId = Number(id);
   const d = allData.find(x => x.id === numericId);
   if(!d) return;
   cur = d;
 
-  // Now checking status is perfectly safe
-  if(d.status === "Pending" && !d.seen_at){
+  // Track initial interaction seamlessly
+  if(!d.seen_at) {
     const now = new Date().toISOString();
-    
-    // 1. Update frontend instantly
-    patchLocal(numericId, { status: "viewed", seen_at: now });
-    updateStats();
+    patchLocal(numericId, { seen_at: now });
     render();
-
-    // 2. Sync to Supabase via Worker using clean numeric fields
-    af(`${W}/update`, {
-      method: "POST",
-      body: JSON.stringify({ id: numericId, status: "viewed", seen_at: now })
-    }).catch(e => console.error("Database sync failed:", e));
+    af(`${W}/update`, { method: "POST", body: JSON.stringify({ id: numericId, seen_at: now }) }).catch(console.error);
   }
 
-  const isClosed    = !!d.case_closed_at;
-  const isDelivered = !!d.data_sent_at;
-  const isRejected  = d.status==="rejected";
-  const isApprPend  = d.status==="approved_pending";
-  const hasVFail    = !!d.verification_failed_reason;
-  const hasVerified = !!d.verified_at && !hasVFail;
-  const hasPrep     = !!d.data_prep_at;
-  const hasPrepData = !!(d.prepared_data||"").trim();
-  // Updated to include 'viewed' as a pending state
-  const isPending   = d.status==="Pending"||d.status==="viewed"||d.status==="verification_failed";
-
-  /* Build action buttons based on current stage */
-  let btns="";
-  if(isClosed){
-    btns=`<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">🔒 Case is closed — no further actions</span>`;
-  } else if(isDelivered){
-    btns=`<button class="abtn abtn-gray" onclick="closeCase()">🔒 Close Case</button>`;
-  } else if(isRejected){
-    btns=`
-      <button class="abtn abtn-orange" onclick="openEmail('reopen')">Re-open Request</button>
-      <button class="abtn abtn-gray"   onclick="closeCase()">🔒 Close Case</button>`;
-  } else if(isApprPend){
-    btns=`
-      <button class="abtn abtn-teal"   onclick="openDataPrep()">📝 Prepare &amp; Save Data</button>
-      ${hasPrepData?`<button class="abtn abtn-green" onclick="openEmail('send_with_data')">✉ Send Prepared Data</button>`:""}
-      <button class="abtn abtn-red"    onclick="openEmail('reject_approved')">Reject</button>`;
-  } else if(d.status==="approved"&&hasPrep&&!isDelivered){
-    btns=`
-      <button class="abtn abtn-green"  onclick="openEmail('send_with_data')">✉ Send Prepared Data</button>
-      <button class="abtn abtn-outline" onclick="openEmail('mark_sent')">Mark as Sent (no email)</button>`;
-  } else if(isPending){
-    if(!hasVerified&&!hasVFail){
-      btns+=`
-        <button class="abtn abtn-green"  onclick="markVerified()">✓ Mark Verified</button>
-        <button class="abtn abtn-purple" onclick="openEmail('verify_fail')">✕ Verification Failed</button>`;
-    } else if(hasVerified){
-      btns+=`<span style="font-size:11px;color:var(--green);font-family:var(--mono);margin-right:10px;">✓ Verified</span>`;
-    } else if(hasVFail){
-      btns+=`<button class="abtn abtn-green" onclick="markVerified()">✓ Mark Verified Now</button>`;
-    }
-    btns+=`
-      <button class="abtn abtn-blue"  onclick="openEmail('approve')">Approve</button>
-      <button class="abtn abtn-red"    onclick="openEmail('reject')">Reject</button>`;
-  }
-
-  document.getElementById("viewTitle").textContent=`Request — ${d.request_id||""}`;
-  document.getElementById("viewBody").innerHTML=`
-  <div class="view-grid">
-    <div class="view-left">
-      <div class="dg3">
-        <div class="di"><label>Request ID</label><span style="font-family:var(--mono);font-size:11px;">${d.request_id||"—"}</span></div>
-        <div class="di"><label>Status</label><span><span class="badge badge-${d.case_closed_at?"closed":d.status}">${d.case_closed_at?"Closed":d.status}</span></span></div>
-        <div class="di"><label>Submitted</label><span>${d.created_at?new Date(d.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—"}</span></div>
-        <div class="di"><label>Name</label><span>${d.name||"—"}</span></div>
-        <div class="di"><label>Email</label><span>${d.email||"—"}</span></div>
-        <div class="di"><label>Phone</label><span>${d.phone||"—"}</span></div>
-        <div class="di"><label>Organisation</label><span>${d.organisation||"—"}</span></div>
-        <div class="di"><label>Designation</label><span>${d.designation||"—"}</span></div>
-        <div class="di"><label>Category</label><span>${d.purpose_category||"—"}</span></div>
-      </div>
-      <div class="dg2">
-        <div class="df"><label>Purpose</label><div class="dbox">${d.purpose||"—"}</div></div>
-        <div class="df"><label>Parameters Requested</label><div class="dbox">${d.parameters||"—"}</div></div>
-      </div>
-      <div class="dg3">
-        <div class="di"><label>Request Type</label><span>${d.type||"—"}</span></div>
-        <div class="di"><label>Response Format</label><span>${d.response_format||"—"}</span></div>
-        <div class="di"><label>Date / Time</label><span>${[d.date,d.time].filter(Boolean).join(" ")||"—"}</span></div>
-        <div class="di"><label>From Date</label><span>${d.from_date||"—"}</span></div>
-        <div class="di"><label>To Date</label><span>${d.to_date||"—"}</span></div>
-      </div>
-      <div class="df"><label>Additional Details</label><div class="dbox">${d.additional_details||"None"}</div></div>
-      ${hasVFail?`<div style="margin-top:10px;padding:10px 13px;background:#fdf4ff;border:1px solid #d8b4fe;border-radius:7px;font-size:12px;color:#581c87;line-height:1.6;">
-        ⚠️ <strong>Verification failed reason:</strong> ${d.verification_failed_reason}</div>`:""}
-      ${hasPrepData?`
-      <div class="divider"></div>
-      <div class="sec-hdr">Prepared Data <span class="saved-tag">SAVED</span></div>
-      <div class="dbox" style="font-family:var(--mono);font-size:12px;max-height:180px;overflow-y:auto;">${d.prepared_data}</div>
-      ${d.data_stored_note?`<div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--mono);">Ref: ${d.data_stored_note}</div>`:""}
-      `:""}
-      <div class="divider"></div>
-      <div class="actions">${btns}<button class="abtn abtn-outline" onclick="closeM('oView')">Close</button></div>
-    </div>
-    <div class="view-right">
-      <div class="sec-hdr">Pipeline</div>
-      ${buildPipeline(d)}
-    </div>
-  </div>`;
-
+  document.getElementById("viewTitle").textContent = `Data Request Processing Workspace — ${d.request_id || ""}`;
+  buildWorkspaceDOM(d);
   openM("oView");
 }
-/* ── MARK VERIFIED ── */
-async function markVerified(){
-  const d=cur; const now=new Date().toISOString();
-  try{
-    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,verified_at:now,verification_failed_reason:null,resubmit_requested:false})});
-    patchLocal(d.id,{verified_at:now,verification_failed_reason:null,resubmit_requested:false});
-    closeM("oView"); showToast("Marked as verified ✓","s");
-    updateStats(); render();
-  }catch(e){if(e.message!=="401")showToast("Update failed","e");}
+
+function buildWorkspaceDOM(d) {
+  const container = document.getElementById("viewBody");
+  
+  // Logical stage valuations
+  const isClosed = !!d.case_closed_at;
+  const isDelivered = !!d.data_sent_at;
+  const isPrepared = !!d.data_prep_at;
+  const isVerified = d.verified_at && !d.verification_failed_reason;
+  const isFailedVerif = !!d.verification_failed_reason;
+
+  container.innerHTML = `
+    <div class="workspace-layout">
+      <!-- LEFT MODULE: Applicant Profile Metadata -->
+      <div class="workspace-meta-panel">
+        <h3 class="panel-section-title">Applicant Credentials & Requirements</h3>
+        <div class="meta-profile-grid">
+          <div class="meta-item"><label>Tracking ID</label><span class="mono-text">${d.request_id || "—"}</span></div>
+          <div class="meta-item"><label>Full Name</label><span>${d.name || "—"}</span></div>
+          <div class="meta-item"><label>Email Address</label><span>${d.email || "—"}</span></div>
+          <div class="meta-item"><label>Contact Phone</label><span>${d.phone || "—"}</span></div>
+          <div class="meta-item"><label>Organization</label><span>${d.organisation || "—"}</span></div>
+          <div class="meta-item"><label>Designation</label><span>${d.designation || "—"}</span></div>
+          <div class="meta-item"><label>Category Profile</label><span>${d.purpose_category || "—"}</span></div>
+          <div class="meta-item"><label>Format Target</label><span>${d.response_format || "—"}</span></div>
+        </div>
+        
+        <div class="meta-block-expand">
+          <label>Explicit Request Purpose</label>
+          <div class="text-display-box">${d.purpose || "No descriptive statement logged."}</div>
+        </div>
+
+        <div class="meta-block-expand">
+          <label>Meteorological Parameters Requested</label>
+          <div class="text-display-box target-parameters">${d.parameters || "No parameters specified."}</div>
+        </div>
+
+        <div class="meta-profile-grid" style="margin-top:15px;">
+          <div class="meta-item"><label>Target Date Range</label><span>${[d.from_date, d.to_date].filter(Boolean).join(" to ") || "Single Window"}</span></div>
+          <div class="meta-item"><label>Specific Timeline Details</label><span>${[d.date, d.time].filter(Boolean).join(" | ") || "—"}</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT MODULE: Sequential Operational Desk -->
+      <div class="workspace-execution-panel">
+        <h3 class="panel-section-title">Sequential Stage Desk</h3>
+        
+        <!-- STEP 1: IDENTITY VERIFICATION ENGINE -->
+        <div class="execution-card ${isVerified ? 'stage-complete' : 'stage-active'}" id="stepCard1">
+          <div class="card-header-bar">
+            <span class="step-badge">Stage 1</span>
+            <h4>Identity & Target Evaluation Verification</h4>
+          </div>
+          <div class="card-interior-content">
+            ${isVerified ? `
+              <div class="success-banner">✓ Verification complete. Verified at: ${fmtTs(d.verified_at)}</div>
+            ` : `
+              <p class="stage-instruction-text">Review the applicant details. Confirm authority level before proceeding to packaging weather arrays.</p>
+              ${isFailedVerif ? `<div class="error-banner" style="margin-bottom:10px;">⚠️ Previous failure state: ${d.verification_failed_reason}</div>` : ''}
+              <div class="workspace-action-row">
+                <button class="panel-btn btn-success" onclick="executeVerification(${d.id})">Confirm & Verify Identity</button>
+                <button class="panel-btn btn-danger" onclick="triggerVerificationFailurePrompt(${d.id})">Mark Verification Failed</button>
+              </div>
+            `}
+          </div>
+        </div>
+
+        <!-- STEP 2: METEOROLOGICAL DATA COMPILATION PANELS -->
+        <div class="execution-card ${!isVerified ? 'stage-locked' : isPrepared ? 'stage-complete' : 'stage-active'}" id="stepCard2">
+          <div class="card-header-bar">
+            <span class="step-badge">Stage 2</span>
+            <h4>ELWOIC Station Data Compilation</h4>
+          </div>
+          <div class="card-interior-content">
+            ${!isVerified ? `
+              <p class="locked-placeholder-text">🔒 Locked — Complete Stage 1 Verification to activate compilation deck.</p>
+            ` : isPrepared ? `
+              <div class="success-banner">📦 Dataset packed and committed to Supabase Storage layer.</div>
+              <div class="text-display-box structural-mono" style="margin-top:10px; max-height:120px; overflow-y:auto;">${d.prepared_data}</div>
+              <button class="panel-btn btn-secondary" style="margin-top:10px;" onclick="reactivateDataPrep(${d.id})">Modify Stored Array</button>
+            ` : `
+              <p class="stage-instruction-text">Compile the weather matrix records from your database. Format clearly as requested (${d.response_format || 'Text'}).</p>
+              <textarea id="workspace_prepared_data" class="matrix-input-area" placeholder="Paste array mapping here... Example:\n[2026-05-30] Temp: 31°C, Humidity: 78%, Rainfall: 4.2mm, AQI: 42 (Good)"></textarea>
+              <div class="workspace-action-row" style="margin-top:10px;">
+                <button class="panel-btn btn-primary" onclick="executeDataPackaging(${d.id})">Commit & Seal Dataset</button>
+              </div>
+            `}
+          </div>
+        </div>
+
+        <!-- STEP 3: DISPATCH VIA EMAILJS INFRASTRUCTURE -->
+        <div class="execution-card ${!isPrepared ? 'stage-locked' : isDelivered ? 'stage-complete' : 'stage-active'}" id="stepCard3">
+          <div class="card-header-bar">
+            <span class="step-badge">Stage 3</span>
+            <h4>Automated Dispatch Delivery Routing</h4>
+          </div>
+          <div class="card-interior-content">
+            ${!isPrepared ? `
+              <p class="locked-placeholder-text">🔒 Locked — Commit compiled matrix values to open transmission routing options.</p>
+            ` : isDelivered ? `
+              <div class="success-banner">✓ Transmission successful. Payload delivered via EmailJS infrastructure at: ${fmtTs(d.data_sent_at)}</div>
+            ` : `
+              <p class="stage-instruction-text">Review and fine-tune your messaging body. The secure data array from Stage 2 is auto-injected into the payload.</p>
+              <div class="email-composition-field">
+                <label>Direct Dynamic Output Stream Preview</label>
+                <textarea id="workspace_email_body" class="matrix-input-area email-preview-area">${generateDefaultEmailBody(d)}</textarea>
+              </div>
+              <div class="workspace-action-row" style="margin-top:10px;">
+                <button class="panel-btn btn-success" onclick="executeTransmissionDispatch(${d.id})">Transmit Data Package Now</button>
+              </div>
+            `}
+          </div>
+        </div>
+
+        <!-- STEP 4: PROTOCOL CLOSURE STATUS LOCK -->
+        <div class="execution-card ${!isDelivered ? 'stage-locked' : isClosed ? 'stage-complete' : 'stage-active'}" id="stepCard4">
+          <div class="card-header-bar">
+            <span class="step-badge">Stage 4</span>
+            <h4>Protocol Archive & Case Closure</h4>
+          </div>
+          <div class="card-interior-content">
+            ${isClosed ? `
+              <div class="success-banner" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">🔒 Case securely sealed. Protocol complete.</div>
+            ` : !isDelivered ? `
+              <p class="locked-placeholder-text">🔒 Locked — Package must pass transmission delivery routing checks before closure.</p>
+            ` : `
+              <p class="stage-instruction-text">Finalize case record management parameters. Closing will revoke any further mutation capabilities on this record.</p>
+              <button class="panel-btn btn-danger" style="width:100%;" onclick="executeCaseClosure(${d.id})">Archive & Close Case File</button>
+            `}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
 }
 
-/* ── CLOSE CASE ── */
-async function closeCase(){
-  if(!confirm("Close this case? This is a final action — the case will be locked.")) return;
-  const d=cur; const now=new Date().toISOString();
-  try{
-    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,case_closed_at:now})});
-    patchLocal(d.id,{case_closed_at:now});
-    closeM("oView"); showToast("Case closed 🔒","s");
-    updateStats(); render();
-  }catch(e){if(e.message!=="401")showToast("Update failed","e");}
+function generateDefaultEmailBody(d) {
+  return `Dear ${d.name},\n\nYour data request (${d.request_id || 'ELWOIC-REQ'}) has been fully processed by the ELWOIC Admin Team.\n\nPlease find your requested community weather observations mapping below:\n\n──────────────────────────\n${d.prepared_data || ''}\n──────────────────────────\n\nNotes/Use Constraints: Data provided under local observation protocols.\n\nBest Regards,\nAswanth Krishna K\nFounder & Data Operations Manager, ELWOIC`;
 }
 
-/* ── DATA PREP MODAL ── */
-function openDataPrep(){
-  const d=cur;
-  document.getElementById("dpNote").value=d.data_stored_note||"";
-  document.getElementById("dpData").value=d.prepared_data||"";
-  closeM("oView"); openM("oDataPrep");
+/* ── STEP PIPELINE IMPLEMENTATIONS ── */
+async function executeVerification(id) {
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: null, status: "approved_pending" }) });
+    patchLocal(id, { verified_at: now, verification_failed_reason: null, status: "approved_pending" });
+    showToast("Identity verified successfully", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch(e) { showToast("Verification sync failed", "e"); }
 }
 
-async function submitDataPrep(){
-  const d=cur; const now=new Date().toISOString();
-  const note=document.getElementById("dpNote").value.trim();
-  const prep=document.getElementById("dpData").value.trim();
-  if(!prep){showToast("Please write the prepared data first","w");return;}
-  try{
-    await af(`${W}/update`,{method:"POST",body:JSON.stringify({
-      id:d.id, data_stored_at:d.data_stored_at||now,
-      data_stored_note:note, prepared_data:prep, data_prep_at:now
-    })});
-    patchLocal(d.id,{data_stored_at:d.data_stored_at||now,data_stored_note:note,prepared_data:prep,data_prep_at:now});
-    updateStats(); render();
-    closeM("oDataPrep");
-    showToast("Data saved ✓ — opening email draft","s");
-    // Auto-open email draft with data
-    setTimeout(()=>{ cur=allData.find(x=>x.id==d.id)||cur; openEmail("send_with_data"); },400);
-  }catch(e){if(e.message!=="401")showToast("Save failed","e");}
+async function triggerVerificationFailurePrompt(id) {
+  const reason = prompt("Enter verification failure reason message to send to applicant:");
+  if(reason === null) return;
+  if(!reason.trim()){ showToast("A descriptive reason statement is required", "w"); return; }
+  
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, verified_at: now, verification_failed_reason: reason, status: "verification_failed" }) });
+    patchLocal(id, { verified_at: now, verification_failed_reason: reason, status: "verification_failed" });
+    showToast("Marked as verification failed", "w");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch(e) { showToast("Status tracking error", "e"); }
 }
 
-/* ── EMAIL MODAL ── */
-function openEmail(action){
-  window.emailAction=action;
-  const d=cur;
-  document.getElementById("emailWarn").style.display="none";
-  document.getElementById("pendOpt").style.display="none";
-  document.getElementById("pendCheck").checked=false;
+async function executeDataPackaging(id) {
+  const dataBox = document.getElementById("workspace_prepared_data");
+  const packedData = dataBox ? dataBox.value.trim() : "";
+  if(!packedData){ showToast("Data field cannot be committed blank", "w"); return; }
 
-  if(action==="approve"){
-    document.getElementById("emailTitle").textContent="Approve Request";
-    document.getElementById("pendOpt").style.display="flex";
-    document.getElementById("eStatusMsg").value="Your data request has been Approved.";
-    document.getElementById("eFinalStatus").value="Approved — Data will be sent shortly.";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nYour data request (${d.request_id}) has been approved.\n\nThe requested data for: ${d.parameters||"your parameters"} will be sent to you shortly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="verify_fail"){
-    document.getElementById("emailTitle").textContent="Verification Failed — Notify & Request Fix";
-    document.getElementById("emailWarn").style.display="block";
-    document.getElementById("emailWarnText").textContent=
-      "The email will include a link so the user can edit and resubmit their request.";
-    document.getElementById("eStatusMsg").value="Your request could not be verified.";
-    document.getElementById("eFinalStatus").value="Verification Failed — Resubmit Required";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nWe were unable to verify the details on your data request (${d.request_id}).\n\nReason: [FILL IN REASON]\n\nPlease click the link below to edit and resubmit your request:\nhttps://request.elwoic.in/request-tracking.html\n\nOnce resubmitted, we will review it again promptly.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="reject"){
-    document.getElementById("emailTitle").textContent="Reject Request";
-    document.getElementById("eStatusMsg").value="Your data request could not be approved.";
-    document.getElementById("eFinalStatus").value="Rejected";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nWe regret to inform you that your data request (${d.request_id}) could not be approved at this time.\n\nIf you have questions, please contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="reject_approved"){
-    document.getElementById("emailTitle").textContent="Reject Approved Request";
-    document.getElementById("emailWarn").style.display="block";
-    document.getElementById("emailWarnText").textContent=
-      "⚠️ This request was already approved. The user will be notified that approval is withdrawn.";
-    document.getElementById("eStatusMsg").value="Your approved request has been withdrawn.";
-    document.getElementById("eFinalStatus").value="Rejected — Approval Withdrawn";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nYour previously approved request (${d.request_id}) has been withdrawn.\n\n[State reason here]\n\nWe apologise for the inconvenience. Contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="send_with_data"){
-    document.getElementById("emailTitle").textContent="Send Prepared Data to Applicant";
-    document.getElementById("eStatusMsg").value="Your requested data is ready and has been sent.";
-    document.getElementById("eFinalStatus").value="Approved — Data Delivered";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nYour data request (${d.request_id}) has been fully processed. Please find the requested data below:\n\n──────────────────────────\n${d.prepared_data||""}\n──────────────────────────\n\nIf you have any questions, contact us at info@elwoic.in.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="mark_sent"){
-    document.getElementById("emailTitle").textContent="Mark Data as Sent";
-    document.getElementById("eStatusMsg").value="Your requested data has been sent.";
-    document.getElementById("eFinalStatus").value="Approved — Data Sent";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nThe data for your request (${d.request_id}) has been processed and sent to you.\n\nPlease check your email for the attached data.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-
-  } else if(action==="reopen"){
-    document.getElementById("emailTitle").textContent="Re-open Rejected Request";
-    document.getElementById("eStatusMsg").value="Your request is being reconsidered.";
-    document.getElementById("eFinalStatus").value="Re-opened — Under Review";
-    document.getElementById("eBody").value=
-      `Dear ${d.name},\n\nYour previously rejected request (${d.request_id}) is being reconsidered.\n\nWe will update you once a decision has been made.\n\nBest Regards,\nAdmin Team, ELWOIC`;
-  }
-
-  openM("oEmail");
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_prep_at: now, prepared_data: packedData }) });
+    patchLocal(id, { data_prep_at: now, prepared_data: packedData });
+    showToast("Weather data matrix sealed", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch(e) { showToast("Supabase persistence failed", "e"); }
 }
 
-async function sendEmail(){
-  const d=cur; const action=window.emailAction; const now=new Date().toISOString();
-  const msg=document.getElementById("eBody").value.trim();
-  const sMssg=document.getElementById("eStatusMsg").value.trim();
-  const sFinal=document.getElementById("eFinalStatus").value.trim();
-  const isPend=document.getElementById("pendCheck").checked;
+function reactivateDataPrep(id) {
+  cur.data_prep_at = null;
+  buildWorkspaceDOM(cur);
+}
 
-  let newStatus=null, extra={}, themeColor="#1d4ed8";
+async function executeTransmissionDispatch(id) {
+  const msgText = document.getElementById("workspace_email_body").value.trim();
+  if(!msgText){ showToast("Email body stream is empty", "w"); return; }
 
-  if(action==="approve"){
-    newStatus=isPend?"approved_pending":"approved";
-    themeColor=isPend?"#1d4ed8":"#16a34a";
-    extra.approved_at=now;
-    if(!isPend){ extra.data_sent_at=now; }
-  } else if(action==="verify_fail"){
-    // Extract reason from email body for storage
-    const reasonMatch=msg.match(/Reason:\s*(.+)/);
-    const reason=reasonMatch?reasonMatch[1].trim():"See email";
-    newStatus="verification_failed";
-    themeColor="#7c3aed";
-    extra.verification_failed_reason=reason;
-    extra.verified_at=now;
-    extra.resubmit_requested=true;
-  } else if(action==="reject"||action==="reject_approved"){
-    newStatus="rejected"; themeColor="#dc2626"; extra.rejected_at=now;
-  } else if(action==="send_with_data"||action==="mark_sent"){
-    newStatus="approved"; themeColor="#16a34a"; extra.data_sent_at=now;
-  } else if(action==="reopen"){
-    newStatus="Pending"; themeColor="#d97706";
-  }
-
-  // Send email
-  try{
-    await emailjs.send(EJS_SVC,EJS_TPL,{
-      to_email:d.email, name:d.name, requestId:d.request_id,
-      parameters:d.parameters, type:d.type,
-      message:msg, status_message:sMssg,
-      final_status:sFinal, theme_color:themeColor
+  showToast("Initiating secure transport transmission...", "w");
+  try {
+    await emailjs.send(EJS_SVC, EJS_TPL, {
+      to_email: cur.email,
+      name: cur.name,
+      requestId: cur.request_id,
+      parameters: cur.parameters,
+      message: msgText,
+      status_message: "Your requested data is ready and has been delivered.",
+      final_status: "Approved — Data Delivered",
+      theme_color: "#16a34a"
     });
-  }catch(e){showToast("Email failed to send","e");return;}
-
-  // Update DB
-  try{
-    const patch={...extra};
-    if(newStatus) patch.status=newStatus;
-    await af(`${W}/update`,{method:"POST",body:JSON.stringify({id:d.id,...patch})});
-    patchLocal(d.id,patch);
-    updateStats(); render();
-    closeM("oEmail");
-    showToast("Email sent → "+( newStatus||"updated"),"s");
-  }catch(e){if(e.message!=="401")showToast("Status update failed","e");}
+    
+    const now = new Date().toISOString();
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, data_sent_at: now, status: "approved" }) });
+    patchLocal(id, { data_sent_at: now, status: "approved" });
+    showToast("Email dispatched & status tracked", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch(e) { showToast("EmailJS core transmission rejected", "e"); }
 }
 
-/* ── DELETE ── */
-async function delReq(id){
-  if(!confirm("Permanently delete this request?")) return;
-  try{
-    await af(`${W}/delete`,{method:"POST",body:JSON.stringify({id})});
-    allData=allData.filter(x=>x.id!=id);
-    updateStats(); render(); showToast("Deleted","s");
-  }catch(e){if(e.message!=="401")showToast("Delete failed","e");}
+async function executeCaseClosure(id) {
+  if(!confirm("Are you sure you want to permanently lock and archive this request file?")) return;
+  const now = new Date().toISOString();
+  try {
+    await af(`${W}/update`, { method: "POST", body: JSON.stringify({ id, case_closed_at: now }) });
+    patchLocal(id, { case_closed_at: now });
+    showToast("Case locked and archived securely 🔒", "s");
+    buildWorkspaceDOM(cur); updateStats(); render();
+  } catch(e) { showToast("Database latch error", "e"); }
 }
 
-/* ── HELPERS ── */
-function patchLocal(id,patch){
-  const i=allData.findIndex(x=>x.id==id);
-  if(i!==-1) Object.assign(allData[i],patch);
-  if(cur.id==id) Object.assign(cur,patch);
+function patchLocal(id, patch){
+  const i = allData.findIndex(x => x.id == id);
+  if(i !== -1) Object.assign(allData[i], patch);
+  if(cur.id == id) Object.assign(cur, patch);
 }
-function openM(id){document.getElementById(id).classList.add("open");}
-function closeM(id){document.getElementById(id).classList.remove("open");}
-function showToast(msg,type="s"){
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.className=`toast t-${type} show`;
-  setTimeout(()=>t.classList.remove("show"),3200);
+
+function openM(id){ document.getElementById(id).classList.add("open"); }
+function closeM(id){ document.getElementById(id).classList.remove("remove-if-needed"); document.getElementById(id).classList.remove("open"); }
+
+function showToast(msg, type = "s"){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = `toast t-${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3200);
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
