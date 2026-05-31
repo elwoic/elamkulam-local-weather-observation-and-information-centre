@@ -1048,7 +1048,7 @@ function render() {
 
   body.innerHTML = data.map(d => {
     const dt = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
-    const isResubmission = d.status === "Pending" && d.verification_failed_reason !== null;
+    const isResubmission = d.status === "Pending" && d.seen_at && d.resubmit_requested === false && !d.verified_at;
 
     let badge = `<span class="status-badge sb-pending">⏳ New</span>`;
     if (isResubmission)              badge = `<span class="status-badge sb-resubmitted">🔄 Resubmitted</span>`;
@@ -1133,6 +1133,8 @@ function buildWorkspaceDOM(d) {
           <div class="meta-item"><label>Request Type</label><span class="highlight">${d.type || "—"}</span></div>
           <div class="meta-item"><label>Format</label><span>${d.response_format || "—"}</span></div>
           <div class="meta-item"><label>Date Range</label><span style="font-size:11px;">${[d.from_date, d.to_date].filter(Boolean).join(" → ") || "Single Window"}</span></div>
+          <div class="meta-item"><label>Specific Date</label><span style="font-size:11px;">${d.date || "—"}</span></div>
+          <div class="meta-item"><label>Specific Time</label><span style="font-size:11px;">${d.time || "—"}</span></div>
         </div>
 
         <hr class="meta-divider">
@@ -1349,7 +1351,7 @@ async function executeFailureEmailDispatch(id) {
   try {
     await emailjs.send(EJS_SVC, EJS_TPL, {
       to_email: cur.email, name: cur.name, requestId: cur.request_id,
-      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      parameters: cur.parameters, type: cur.type || "Meteorological Request",
       status_message: statusMsg, message: emailBody, final_status: finalLbl,
       theme_color: "#7c3aed",
       button_url: "https://request.elwoic.in/request-tracking.html",
@@ -1390,7 +1392,7 @@ async function executeTransmissionDispatch(id) {
   try {
     await emailjs.send(EJS_SVC, EJS_TPL, {
       to_email: cur.email, name: cur.name, requestId: cur.request_id,
-      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      parameters: cur.parameters, type: cur.type || "Meteorological Request",
       status_message: statusLine, message: msgText, final_status: finalStatusTxt,
       theme_color: "#16a34a",
       button_url: "https://elwoic.in/",
@@ -1427,7 +1429,7 @@ async function executeRejectionDispatch(id) {
   try {
     await emailjs.send(EJS_SVC, EJS_TPL, {
       to_email: cur.email, name: cur.name, requestId: cur.request_id,
-      parameters: cur.parameters, request_type: cur.type || "Meteorological Request",
+      parameters: cur.parameters, type: cur.type || "Meteorological Request",
       status_message: statusMsg, message: emailBody, final_status: finalLbl,
       theme_color: "#dc2626", button_url: btnUrl, button_text: btnText
     });
