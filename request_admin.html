@@ -1132,9 +1132,17 @@ function buildWorkspaceDOM(d) {
           <div class="meta-item"><label>Category</label><span>${d.purpose_category || "—"}</span></div>
           <div class="meta-item"><label>Request Type</label><span class="highlight">${d.type || "—"}</span></div>
           <div class="meta-item"><label>Format</label><span>${d.response_format || "—"}</span></div>
-          <div class="meta-item"><label>Date Range</label><span style="font-size:11px;">${[d.from_date, d.to_date].filter(Boolean).join(" → ") || "Single Window"}</span></div>
-          <div class="meta-item"><label>Specific Date</label><span style="font-size:11px;">${d.date || "—"}</span></div>
-          <div class="meta-item"><label>Specific Time</label><span style="font-size:11px;">${d.time || "—"}</span></div>
+          <div class="meta-item" style="grid-column:1/-1;">
+            <label>Date / Time Requested</label>
+             <span style="font-size:12px;">
+                ${d.from_date || d.to_date
+                  ? `<span style="color:var(--teal);font-weight:600;">📅 Range:</span> ${d.from_date || "—"} → ${d.to_date || "—"}`
+                  : d.date
+             ? `<span style="color:var(--accent);font-weight:600;">📌 Single:</span> ${d.date}${d.time ? " at " + d.time : ""}`
+            : `<span style="color:var(--muted2);">No date specified</span>`
+            }
+           </span>
+     </div>
         </div>
 
         <hr class="meta-divider">
