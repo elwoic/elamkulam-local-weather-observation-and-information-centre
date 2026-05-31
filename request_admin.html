@@ -1135,12 +1135,12 @@ function buildWorkspaceDOM(d) {
           <div class="meta-item" style="grid-column:1/-1;">
             <label>Date / Time Requested</label>
              <span style="font-size:12px;">
-                ${d.from_date || d.to_date
-                  ? `<span style="color:var(--teal);font-weight:600;">📅 Range:</span> ${d.from_date || "—"} → ${d.to_date || "—"}`
-                  : d.date
-             ? `<span style="color:var(--accent);font-weight:600;">📌 Single:</span> ${d.date}${d.time ? " at " + d.time : ""}`
-            : `<span style="color:var(--muted2);">No date specified</span>`
-            }
+                ${d.from_date || d.to_date || d.from_time || d.to_time
+  ? `<span style="color:var(--teal);font-weight:600;">📅 Range:</span> ${d.from_date || "—"} → ${d.to_date || "—"}${d.from_time || d.to_time ? ` &nbsp;⏱ ${d.from_time || "—"} → ${d.to_time || "—"}` : ''}`
+  : d.date
+    ? `<span style="color:var(--accent);font-weight:600;">📌 Single:</span> ${d.date}${d.time ? " at " + d.time : ""}`
+    : `<span style="color:var(--muted2);">No date specified</span>`
+}
            </span>
      </div>
         </div>
