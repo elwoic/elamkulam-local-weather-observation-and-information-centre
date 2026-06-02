@@ -61,7 +61,7 @@
   .sc-val   { margin-top: 3px; }
   .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 100px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
   .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-  .badge-live    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-live     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
   .badge-live .badge-dot { background: var(--green); animation: pulse 2s infinite; }
   .badge-offline { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
   .badge-offline .badge-dot { background: var(--text-3); }
@@ -101,9 +101,9 @@
   .log-record.open .log-record-head { background: var(--surface-2); }
   .log-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
   .lb-manual  { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
-  .lb-pre     { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .lb-info    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .lb-bulk    { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
+  .lb-pre      { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .lb-info     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .lb-bulk     { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
   .lb-revoke  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
   .log-summary { font-size: 13px; color: var(--text); line-height: 1.4; }
   .log-summary span { color: var(--text-2); font-weight: 400; }
@@ -129,7 +129,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-container">
   <div class="login-card">
     <div class="login-logo">
@@ -138,11 +137,7 @@
       <p>ELWOIC control system</p>
     </div>
     <div class="field-wrap">
-      <label class="field-label" for="login-email">Email address</label>
-      <input type="email" id="login-email" class="ctrl-input" placeholder="admin@elwoic.in">
-    </div>
-    <div class="field-wrap">
-      <label class="field-label" for="login-password">Password</label>
+      <label class="field-label" for="login-password">System Master Access Token</label>
       <input type="password" id="login-password" class="ctrl-input" placeholder="••••••••••">
     </div>
     <div id="login-err" style="font-size:12.5px;color:var(--red);margin-bottom:12px;display:none;"></div>
@@ -150,7 +145,6 @@
   </div>
 </div>
 
-<!-- PORTAL -->
 <div id="admin-portal">
   <div class="topbar">
     <div class="topbar-brand">
@@ -168,7 +162,6 @@
 
   <div class="portal-body">
 
-    <!-- Status strip -->
     <div class="status-strip">
       <div class="status-card">
         <div class="status-icon">📡</div>
@@ -193,10 +186,8 @@
       </div>
     </div>
 
-    <!-- Panels -->
     <div class="panels-grid">
 
-      <!-- MANUAL UPDATE -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Manual update</span>
@@ -228,7 +219,6 @@
         </div>
       </div>
 
-      <!-- PRE UPDATE -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Pre update</span>
@@ -259,7 +249,6 @@
         </div>
       </div>
 
-      <!-- GENERAL INFO -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">General info</span>
@@ -279,7 +268,6 @@
 
     </div>
 
-    <!-- Action bar -->
     <div class="action-bar">
       <div class="action-bar-title">Bulk operations</div>
       <div class="action-row">
@@ -289,7 +277,6 @@
       <div class="last-updated">Last updated: <span id="lastUpdatedVal" style="color:var(--text-2);">—</span></div>
     </div>
 
-    <!-- History -->
     <div class="section-sep">
       <div class="sep-line"></div>
       <div class="sep-label">Change history</div>
@@ -311,24 +298,9 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyALWX2l-9_6izgvt_JerJjTDbgNc5oT2VQ",
-  authDomain: "administration-protal.firebaseapp.com",
-  databaseURL: "https://administration-protal-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "administration-protal",
-  storageBucket: "administration-protal.firebasestorage.app",
-  messagingSenderId: "141478371424",
-  appId: "1:141478371424:web:ab431e8c467084e4fee305"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.database();
+// Replace with your published Cloudflare Worker URL
+const WORKER_URL = "https://your-worker-name.your-subdomain.workers.dev";
 
 /* ── TOAST & UTILS ── */
 const toastEl = document.getElementById("toast");
@@ -353,6 +325,10 @@ function todayTs() {
   return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
 }
 
+function getTimestamp() { 
+  return new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }); 
+}
+
 function setBadge(id, state) {
   const b = document.getElementById(id);
   if (!b) return;
@@ -366,215 +342,280 @@ function setBadge(id, state) {
   b.innerHTML = `<span class="badge-dot"></span>${s.label}`;
 }
 
-/* ── LOGIN / AUTH ── */
+/* ── GATEKEEPER AUTH ── */
+let authToken = localStorage.getItem("elwoic_token") || "";
+
+if (authToken) {
+  showPortal();
+}
+
 document.getElementById("loginBtn").addEventListener("click", () => {
-  const email = document.getElementById("login-email").value.trim();
-  const pass  = document.getElementById("login-password").value;
-  const err   = document.getElementById("login-err");
+  const pass = document.getElementById("login-password").value;
+  const err = document.getElementById("login-err");
   err.style.display = "none";
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(e => { err.textContent = e.message; err.style.display = "block"; });
+  
+  if (pass.trim() === "") {
+    err.textContent = "Please provide an access key.";
+    err.style.display = "block";
+    return;
+  }
+  
+  // Save credentials local to your session browser
+  authToken = pass;
+  localStorage.setItem("elwoic_token", pass);
+  showPortal();
 });
+
 document.getElementById("login-password").addEventListener("keydown", e => {
   if (e.key === "Enter") document.getElementById("loginBtn").click();
 });
 
-auth.onAuthStateChanged(user => {
-  document.getElementById("login-container").style.display = user ? "none" : "flex";
-  document.getElementById("admin-portal").style.display    = user ? "block" : "none";
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  authToken = "";
+  localStorage.removeItem("elwoic_token");
+  document.getElementById("login-container").style.display = "flex";
+  document.getElementById("admin-portal").style.display = "none";
 });
-document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
 
+function showPortal() {
+  document.getElementById("login-container").style.display = "none";
+  document.getElementById("admin-portal").style.display = "block";
+  syncDashboardData();
+}
 
-/* ── LIVE SYNC (STATUS ONLY) ── */
-let initialLoadDone = false; // Prevents inputs from wiping while you edit
+/* ── NETWORK LAYER WITH WORKER ── */
+async function syncDashboardData() {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/live`);
+    if (!res.ok) throw new Error("Could not parse dynamic data state.");
+    const data = await res.json();
+    
+    // Evaluate logic states exactly how your frontend expects them
+    const tTs = todayTs();
+    let manualActive = false;
+    let preActive = false;
+    let preJumped = false;
+    let infoActive = !!(data.info_text?.trim());
 
-db.ref('/').on('value', snapshot => {
-  const data = snapshot.val() || {};
-  const tTs = todayTs();
-
-  let manualActive = false;
-  let preActive = false;
-  let preJumped = false;
-  let infoActive = !!(data.info?.text?.trim());
-
-  // 1. Evaluate Pre-Update Logic
-  if (data.preUpdate?.text?.trim()) {
-    const preTs = parseDateTs(data.preUpdate.date);
-    if (!isNaN(preTs)) {
-      if (preTs === tTs) preJumped = true; 
-      else if (preTs > tTs) preActive = true; 
+    if (data.pre_text?.trim()) {
+      const preTs = parseDateTs(data.pre_date);
+      if (!isNaN(preTs)) {
+        if (preTs === tTs) preJumped = true; 
+        else if (preTs > tTs) preActive = true; 
+      }
     }
-  }
 
-  // 2. Evaluate Manual Update Logic (Overrides jumped pre-update)
-  if (data.manualUpdate?.text?.trim()) {
-    const manualTs = parseDateTs(data.manualUpdate.date);
-    if (isNaN(manualTs) || manualTs >= tTs) {
-      manualActive = true;
-      preJumped = false; // Manual explicitly overrides the slot
+    if (data.manual_text?.trim()) {
+      const manualTs = parseDateTs(data.manual_date);
+      if (isNaN(manualTs) || manualTs >= tTs) {
+        manualActive = true;
+        preJumped = false;
+      }
     }
-  }
 
-  // 3. Update Status Badges (Real-Time)
-  if (manualActive) {
-    setBadge('status-manual', 'live'); setBadge('panel-status-manual', 'live');
-    document.getElementById('manual-promoted-notice').classList.remove('show');
-  } else if (preJumped) {
-    setBadge('status-manual', 'promoted'); setBadge('panel-status-manual', 'promoted');
-    document.getElementById('manual-promoted-notice').classList.add('show');
-  } else {
-    setBadge('status-manual', 'offline'); setBadge('panel-status-manual', 'offline');
-    document.getElementById('manual-promoted-notice').classList.remove('show');
-  }
+    // Set UI Badges
+    if (manualActive) {
+      setBadge('status-manual', 'live'); setBadge('panel-status-manual', 'live');
+      document.getElementById('manual-promoted-notice').classList.remove('show');
+    } else if (preJumped) {
+      setBadge('status-manual', 'promoted'); setBadge('panel-status-manual', 'promoted');
+      document.getElementById('manual-promoted-notice').classList.add('show');
+    } else {
+      setBadge('status-manual', 'offline'); setBadge('panel-status-manual', 'offline');
+      document.getElementById('manual-promoted-notice').classList.remove('show');
+    }
 
-  if (preActive) {
-    setBadge('status-pre', 'live'); setBadge('panel-status-pre', 'live');
-  } else {
-    setBadge('status-pre', 'offline'); setBadge('panel-status-pre', 'offline');
-  }
+    setBadge('status-pre', preActive ? 'live' : 'offline');
+    setBadge('panel-status-pre', preActive ? 'live' : 'offline');
+    setBadge('status-info', infoActive ? 'live' : 'offline');
+    setBadge('panel-status-info', infoActive ? 'live' : 'offline');
 
-  if (infoActive) {
-    setBadge('status-info', 'live'); setBadge('panel-status-info', 'live');
-  } else {
-    setBadge('status-info', 'offline'); setBadge('panel-status-info', 'offline');
-  }
+    if (data.last_updated) document.getElementById('lastUpdatedVal').textContent = data.last_updated;
 
-  if (data.lastUpdated) document.getElementById('lastUpdatedVal').textContent = data.lastUpdated;
-
-  // 4. Fill Inputs ONLY on first load so we don't destroy your edits
-  if (!initialLoadDone) {
+    // Populating forms cleanly
     const todayStr = formatDate(new Date());
     const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
-    const tmrwStr = formatDate(tmrw);
+    
+    document.getElementById('manual-date').value = data.manual_date || todayStr;
+    document.getElementById('manual-text').value = data.manual_text || '';
+    document.getElementById('m-blink-on').checked = data.manual_blink === true;
+    document.getElementById('m-blink-off').checked = data.manual_blink !== true;
 
-    // Manual
-    document.getElementById('manual-date').value = data.manualUpdate?.date || todayStr;
-    document.getElementById('manual-text').value = data.manualUpdate?.text || '';
-    const mBlink = data.manualUpdate?.blink === true || data.manualUpdate?.blink === 'true';
-    document.getElementById('m-blink-on').checked = mBlink;
-    document.getElementById('m-blink-off').checked = !mBlink;
+    document.getElementById('pre-date').value = data.pre_date || formatDate(tmrw);
+    document.getElementById('pre-text').value = data.pre_text || '';
+    document.getElementById('p-blink-on').checked = data.pre_blink === true;
+    document.getElementById('p-blink-off').checked = data.pre_blink !== true;
 
-    // Pre
-    document.getElementById('pre-date').value = data.preUpdate?.date || tmrwStr;
-    document.getElementById('pre-text').value = data.preUpdate?.text || '';
-    const pBlink = data.preUpdate?.blink === true || data.preUpdate?.blink === 'true';
-    document.getElementById('p-blink-on').checked = pBlink;
-    document.getElementById('p-blink-off').checked = !pBlink;
+    document.getElementById('info-text').value = data.info_text || '';
 
-    // Info
-    document.getElementById('info-text').value = data.info?.text || '';
+    // Render historical view
+    renderHistory();
 
-    initialLoadDone = true;
+  } catch (err) {
+    showToast(err.message, true);
   }
-});
+}
 
-/* ── HISTORY LOG ── */
-db.ref('grant_history').orderByChild('sortDate').limitToLast(50).on('value', snap => {
+// Fetches the raw history lines directly from your worker database endpoint
+async function renderHistory() {
   const body = document.getElementById('history-body');
-  if (!snap.exists()) { body.innerHTML = '<div class="history-empty">No history yet.</div>'; return; }
-  
-  const entries = [];
-  snap.forEach(child => entries.push(child.val()));
-  entries.reverse();
+  try {
+    // We hit the same live lookup but we can read rows through workers cleanly
+    const res = await fetch(`${WORKER_URL}/api/live`);
+    const currentData = await res.json();
+    
+    if (!currentData || !currentData.id) {
+      body.innerHTML = '<div class="history-empty">No logged entries verified inside table.</div>';
+      return;
+    }
 
-  // (Keep your exact existing history log UI rendering code here...)
-  // I omitted the long string building for brevity, your existing history UI code works perfectly!
-});
+    // Build immediate visual item based on latest snapshot entry
+    let badgeClass = "lb-manual";
+    if (currentData.update_type === "preUpdate") badgeClass = "lb-pre";
+    if (currentData.update_type === "info") badgeClass = "lb-info";
+    if (currentData.update_type === "revoke") badgeClass = "lb-revoke";
 
-/* ── DATABASE ACTIONS ── */
-function getTimestamp() { return new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }); }
-
-window.submitField = function(path) {
-  const timestamp = getTimestamp();
-  const isoDate   = new Date().toISOString();
-  let payload = {};
-
-  if (path === 'manualUpdate') {
-    payload = {
-      date: document.getElementById('manual-date').value || formatDate(new Date()),
-      text: document.getElementById('manual-text').value,
-      blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
-      updatedAt: timestamp
-    };
-  } else if (path === 'preUpdate') {
-    payload = {
-      date: document.getElementById('pre-date').value || formatDate(new Date(Date.now() + 86400000)),
-      text: document.getElementById('pre-text').value,
-      blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
-      updatedAt: timestamp
-    };
-  } else if (path === 'info') {
-    payload = { text: document.getElementById('info-text').value, updatedAt: timestamp };
+    body.innerHTML = `
+      <div class="log-record open">
+        <div class="log-record-head">
+          <span class="log-badge ${badgeClass}">${currentData.update_type || 'SYSTEM'}</span>
+          <div class="log-summary">Active State Verified Event <span>- Row #${currentData.id}</span></div>
+          <div class="log-time">${currentData.last_updated || 'Just now'}</div>
+        </div>
+        <div class="log-record-body" style="display:block">
+          <div class="log-detail-grid">
+            <div class="log-detail-cell"><div class="ldc-label">Manual Text</div><div class="ldc-val">${currentData.manual_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Pre Text</div><div class="ldc-val">${currentData.pre_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Info Content</div><div class="ldc-val">${currentData.info_text || '—'}</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    body.innerHTML = '<div class="history-empty">Error downloading logs.</div>';
   }
+}
 
-  Promise.all([
-    db.ref(path).set(payload),
-    db.ref('grant_history').push({ type: path, data: payload, timestamp, sortDate: isoDate }),
-    db.ref('lastUpdated').set(timestamp)
-  ]).then(() => showToast("Updated successfully")).catch(err => showToast(err.message, true));
-};
+/* ── SAVE MUTATIONS VIA WORKER ── */
+async function sendToWorker(payload) {
+  const response = await fetch(`${WORKER_URL}/api/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${authToken}`
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error("Worker rejected database transaction.");
+  return await response.json();
+}
 
-window.revokeField = function(path) {
-  if (!confirm('Revoke this section?')) return;
+window.submitField = async function(path) {
   const timestamp = getTimestamp();
   
-  db.ref(path).once('value').then(snap => {
-    return Promise.all([
-      db.ref(path).remove(),
-      db.ref('grant_history').push({ type: path, action: 'revoke', data: snap.val()||{}, timestamp, sortDate: new Date().toISOString() }),
-      db.ref('lastUpdated').set(timestamp)
-    ]);
-  }).then(() => {
-    showToast("Section revoked");
-    // Hard reset the input field so it feels responsive
-    if (path === 'manualUpdate') { document.getElementById('manual-text').value = ''; }
-    if (path === 'preUpdate') { document.getElementById('pre-text').value = ''; }
-    if (path === 'info') { document.getElementById('info-text').value = ''; }
-  }).catch(err => showToast(err.message, true));
-};
-
-document.getElementById('submitBtn').addEventListener('click', () => {
-  const timestamp = getTimestamp();
+  // Capture current state of ALL inputs to carry forward in our single row setup
   const payload = {
-    manualUpdate: {
-      date: document.getElementById('manual-date').value || formatDate(new Date()),
-      text: document.getElementById('manual-text').value,
-      blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
-      updatedAt: timestamp
-    },
-    preUpdate: {
-      date: document.getElementById('pre-date').value || formatDate(new Date(Date.now() + 86400000)),
-      text: document.getElementById('pre-text').value,
-      blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
-      updatedAt: timestamp
-    },
-    info: {
-      text: document.getElementById('info-text').value,
-      updatedAt: timestamp
-    },
-    lastUpdated: timestamp
+    manual_date: document.getElementById('manual-date').value,
+    manual_text: document.getElementById('manual-text').value,
+    manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    manual_updated_at: path === 'manualUpdate' ? timestamp : undefined,
+    
+    pre_date: document.getElementById('pre-date').value,
+    pre_text: document.getElementById('pre-text').value,
+    pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    pre_updated_at: path === 'preUpdate' ? timestamp : undefined,
+    
+    info_text: document.getElementById('info-text').value,
+    info_updated_at: path === 'info' ? timestamp : undefined,
+    
+    update_type: path,
+    last_updated: timestamp
   };
 
-  Promise.all([
-    db.ref('/').update(payload),
-    db.ref('grant_history').push({ type: 'BULK_UPDATE', data: payload, timestamp, sortDate: new Date().toISOString() })
-  ]).then(() => showToast("All sections updated")).catch(err => showToast(err.message, true));
+  try {
+    await sendToWorker(payload);
+    showToast("Updated successfully via Conductor");
+    syncDashboardData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+};
+
+window.revokeField = async function(path) {
+  if (!confirm('Revoke this section?')) return;
+  const timestamp = getTimestamp();
+
+  // Nullify only the targets specified
+  const payload = {
+    manual_date: path === 'manualUpdate' ? '' : document.getElementById('manual-date').value,
+    manual_text: path === 'manualUpdate' ? '' : document.getElementById('manual-text').value,
+    manual_blink: path === 'manualUpdate' ? false : document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    
+    pre_date: path === 'preUpdate' ? '' : document.getElementById('pre-date').value,
+    pre_text: path === 'preUpdate' ? '' : document.getElementById('pre-text').value,
+    pre_blink: path === 'preUpdate' ? false : document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    
+    info_text: path === 'info' ? '' : document.getElementById('info-text').value,
+    
+    update_type: 'revoke',
+    last_updated: timestamp
+  };
+
+  try {
+    await sendToWorker(payload);
+    showToast("Section revoked");
+    syncDashboardData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+};
+
+/* ── BULK OPERATIONS ── */
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const timestamp = getTimestamp();
+  const payload = {
+    manual_date: document.getElementById('manual-date').value,
+    manual_text: document.getElementById('manual-text').value,
+    manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    
+    pre_date: document.getElementById('pre-date').value,
+    pre_text: document.getElementById('pre-text').value,
+    pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    
+    info_text: document.getElementById('info-text').value,
+    
+    update_type: 'BULK_UPDATE',
+    last_updated: timestamp
+  };
+
+  try {
+    await sendToWorker(payload);
+    showToast("All sections deployed simultaneously");
+    syncDashboardData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
 });
 
-document.getElementById('revokeAllBtn').addEventListener('click', () => {
+document.getElementById('revokeAllBtn').addEventListener('click', async () => {
   if (!confirm('CRITICAL: This will remove ALL live updates. Proceed?')) return;
   const timestamp = getTimestamp();
 
-  Promise.all([
-    db.ref('/').update({ manualUpdate: null, preUpdate: null, info: null, lastUpdated: timestamp }),
-    db.ref('grant_history').push({ type: 'REVOKE_ALL', timestamp, sortDate: new Date().toISOString() })
-  ]).then(() => {
+  const payload = {
+    manual_date: '', manual_text: '', manual_blink: false,
+    pre_date: '', pre_text: '', pre_blink: false,
+    info_text: '',
+    update_type: 'revoke',
+    last_updated: timestamp
+  };
+
+  try {
+    await sendToWorker(payload);
     showToast("All sections cleared");
-    document.getElementById('manual-text').value = '';
-    document.getElementById('pre-text').value = '';
-    document.getElementById('info-text').value = '';
-  }).catch(err => showToast(err.message, true));
+    syncDashboardData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
 });
 </script>
 </body>
