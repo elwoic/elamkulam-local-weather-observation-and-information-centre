@@ -20,6 +20,10 @@ const COLOR_MAP = {
     name: "Green (No Warning)",
     css: "linear-gradient(90deg, #1d976c, #93f9b9)"
   },
+  "2": {
+    name: "Orange alert (Be Prepared)",
+    css: "linear-gradient(90deg, #f46b45, #eea849)"
+  },
   "3": {
     name: "Yellow alert (Be Aware)",
     css: "linear-gradient(90deg, #f7971e, #ffd200)"
