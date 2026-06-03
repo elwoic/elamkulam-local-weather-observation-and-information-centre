@@ -16,9 +16,8 @@ function _wd_init() {
     return;
   }
 
-  var API_URL  = "https://elwoi-dashboar-parameters.bold-waterfall-0d01.workers.dev/";
-  var WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
-  var OW_URL   = "https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric";
+  var API_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
+  var OW_URL  = "https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric";
 
   var latestWind      = null;
   var latestCondition = "";
@@ -26,12 +25,10 @@ function _wd_init() {
 
   /* ══════════════════════════════════════════
      RAIN MEMORY BUFFER
-     Stores last 10 readings (= ~5 min at 30s)
-     Remembers rain even if one reading misses
   ══════════════════════════════════════════ */
-  var rainBuf     = [];   /* { rate, daily } */
+  var rainBuf      = [];
   var RAIN_BUF_MAX = 10;
-  var lastDailyMm  = 0;   /* daily accumulation anchor */
+  var lastDailyMm  = 0;
 
   function pushRain(rate, daily) {
     rainBuf.push({ rate: rate || 0, daily: daily || 0 });
@@ -39,7 +36,6 @@ function _wd_init() {
     if (daily > lastDailyMm) lastDailyMm = daily;
   }
 
-  /* any rain in buffer window? */
   function bufHasRain() {
     for (var i = 0; i < rainBuf.length; i++) {
       if (rainBuf[i].rate > 0) return true;
@@ -47,7 +43,6 @@ function _wd_init() {
     return false;
   }
 
-  /* max rate seen in buffer */
   function bufMaxRate() {
     var mx = 0;
     for (var i = 0; i < rainBuf.length; i++) {
@@ -56,7 +51,6 @@ function _wd_init() {
     return mx;
   }
 
-  /* rain just stopped? (last reading = 0, but earlier readings had rain) */
   function rainJustStopped() {
     if (rainBuf.length < 2) return false;
     var last = rainBuf[rainBuf.length - 1];
@@ -67,73 +61,66 @@ function _wd_init() {
     return false;
   }
 
-  /* rain intensity from rate (mm/hr) */
   function rainLabel(rate) {
-    if (rate < 0.3)  return { text:"🌦 ചാറ്റൽ മഴ",        key:"rain" };  /* trace/drizzle   */
-    if (rate < 2.5)  return { text:"🌦 നേർത്ത ചാറ്റൽ",    key:"rain" };  /* light drizzle   */
-    if (rate < 7.6)  return { text:"🌧 നേരിയ മഴ",          key:"rain" };  /* light rain      */
-    if (rate < 25)   return { text:"🌧 മഴ പെയ്യുന്നു",     key:"rain" };  /* moderate rain   */
-    if (rate < 50)   return { text:"🌧 ശക്തമായ മഴ",        key:"rain" };  /* heavy rain      */
-    return                  { text:"⛈ കനത്ത മഴ",           key:"storm"};  /* very heavy/storm*/
+    if (rate < 0.3)  return { text:"🌦 ചാറ്റൽ മഴ",        key:"rain" };
+    if (rate < 2.5)  return { text:"🌦 നേർത്ത ചാറ്റൽ",    key:"rain" };
+    if (rate < 7.6)  return { text:"🌧 നേരിയ മഴ",          key:"rain" };
+    if (rate < 25)   return { text:"🌧 മഴ പെയ്യുന്നു",     key:"rain" };
+    if (rate < 50)   return { text:"🌧 ശക്തമായ മഴ",        key:"rain" };
+    return                  { text:"⛈ കനത്ത മഴ",           key:"storm"};
   }
 
   /* ══════════════════════════════════════════
-     INTELLIGENT CONDITION ENGINE
-     Priority order:
-       1. Active rain (buffer)
-       2. Rain just stopped
-       3. Daytime → solar irradiance tiers
-       4. Night   → humidity fog check
+     BEAUFORT SCALE (client-side)
+  ══════════════════════════════════════════ */
+  function beaufort(kmh) {
+    var scale = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117];
+    var desc  = ["Calm","Light air","Light breeze","Gentle breeze","Moderate breeze",
+                 "Fresh breeze","Strong breeze","Near gale","Gale","Strong gale","Storm","Violent storm","Hurricane"];
+    var b = scale.findIndex(function(v){ return kmh < v; });
+    return { force: b === -1 ? 12 : b, description: desc[b === -1 ? 12 : b] };
+  }
+
+  /* ══════════════════════════════════════════
+     CONDITION ENGINE
   ══════════════════════════════════════════ */
   function getCondition(rain, rainDaily, solar, uvi, humidity, hour) {
     var isDay = (hour >= 6 && hour < 19);
 
-    /* ── 1. RAIN ACTIVE ── */
     if (bufHasRain() || rain > 0) {
       var activeRate = (rain > 0) ? rain : bufMaxRate();
       return rainLabel(activeRate);
     }
 
-    /* ── 2. RAIN JUST STOPPED ──
-       Only from buffer evidence — daily total is NOT used (it persists all day).
-       Also skip if solar/UVI already shows sun is clearly out. */
     if (rainJustStopped()) {
       var sunAlreadyOut = (solar != null && solar > 150) || (uvi != null && uvi >= 3);
       if (!sunAlreadyOut) {
         return { text:"🌦 മഴ ശമിച്ചു", key:"partial" };
       }
-      /* sun is out — fall through to sky condition */
     }
 
-    /* ── 3. DAYTIME — solar primary ── */
     if (isDay) {
       if (solar != null) {
-        /* Kerala summer peak ~1000+ W/m², classify in tiers */
         if (solar >= 700)              return { text:"☀️ തെളിഞ്ഞ ആകാശം",          key:"sunny"   };
         if (solar >= 350 && uvi >= 4)  return { text:"🌤 ഭാഗികമായി തെളിഞ്ഞ",      key:"partial" };
         if (solar >= 120)              return { text:"⛅ ഭാഗികമായി മേഘാവൃതം",     key:"partial" };
         if (solar >= 20)               return { text:"🌥 മേഘാവൃതം",               key:"cloudy"  };
-        /* solar < 20 during daylight = very heavy overcast or pre-rain */
         if (uvi != null && uvi <= 1)   return { text:"☁️ കനത്ത മേഘം",             key:"cloudy"  };
         return                                { text:"🌥 മേഘാവൃതം",               key:"cloudy"  };
       }
-      /* solar sensor unavailable → use uvi only */
       if (uvi != null) {
-        if (uvi >= 7) return { text:"☀️ തെളിഞ്ഞ ആകാശം",          key:"sunny"   };
-        if (uvi >= 4) return { text:"🌤 ഭാഗികമായി മേഘാവൃതം",     key:"partial" };
-        if (uvi >= 1) return { text:"🌥 മേഘാവൃതം",               key:"cloudy"  };
-        return              { text:"☁️ കനത്ത മേഘം",               key:"cloudy"  };
+        if (uvi >= 7) return { text:"☀️ തെളിഞ്ഞ ആകാശം",      key:"sunny"   };
+        if (uvi >= 4) return { text:"🌤 ഭാഗികമായി മേഘാവൃതം", key:"partial" };
+        if (uvi >= 1) return { text:"🌥 മേഘാവൃതം",           key:"cloudy"  };
+        return              { text:"☁️ കനത്ത മേഘം",           key:"cloudy"  };
       }
       return { text:"🌤 പകൽ", key:"partial" };
     }
 
-    /* ── 4. NIGHT ── */
-    /* fog: outdoor humidity very high at night */
     if (humidity != null) {
-      if (humidity >= 95) return { text:"🌫 കനത്ത മൂടൽ",     key:"night" };
-      if (humidity >= 88) return { text:"🌫 മൂടൽ മഞ്ഞ്",     key:"night" };
+      if (humidity >= 95) return { text:"🌫 കനത്ത മൂടൽ",  key:"night" };
+      if (humidity >= 88) return { text:"🌫 മൂടൽ മഞ്ഞ്",  key:"night" };
     }
-    /* clear night: if earlier in the day we saw high solar it was clear */
     return { text:"🌙 രാത്രി ആകാശം", key:"night" };
   }
 
@@ -179,15 +166,18 @@ function _wd_init() {
       showModal("കാറ്റ്", "<div class='wx-modal-note'>ഡേറ്റ ലോഡ് ആകുന്നു...</div>", "wind");
       return;
     }
-    var lw = latestWind;
+    var lw  = latestWind;
+    var bft = beaufort(lw.speed);
+    var gbft= beaufort(lw.gust);
+    var dgbft = beaufort(lw.dayGust);
     showModal(
       "💨 കാറ്റ് — വിശദ വിവരങ്ങൾ",
-      mrow("🌬","ഇപ്പോഴത്തെ വേഗത",             lw.speed + " " + lw.speedUnit) +
+      mrow("🌬","ഇപ്പോഴത്തെ വേഗത",             lw.speed + " km/h") +
       mrow("🧭","ദിശ",                          lw.mlDir + " (" + lw.dirComp + ", " + lw.dirDeg + "°)") +
-      mrow("💨","ഇപ്പോഴത്തെ ഗസ്റ്റ്",           lw.gust + " " + lw.gustUnit) +
-      mrow("📈","ഇന്ന് ഏറ്റവും ഉയർന്ന ഗസ്റ്റ്", lw.dayGust + " " + lw.dayGustU) +
-      "<div class='wx-modal-note'>⏰ " + lw.dayGustAt + "</div>" +
-      mrow("🌀","Beaufort " + lw.bftForce,      lw.bftDesc) +
+      mrow("💨","ഇപ്പോഴത്തെ ഗസ്റ്റ്",           lw.gust + " km/h") +
+      mrow("📈","ഇന്ന് ഏറ്റവും ഉയർന്ന ഗസ്റ്റ്", lw.dayGust + " km/h") +
+      mrow("🌀","Beaufort (speed)",             bft.force + " — " + bft.description) +
+      mrow("🌀","Beaufort (gust)",              gbft.force + " — " + gbft.description) +
       mrow("📊","10 മിനിറ്റ് ശരാശരി ദിശ",       lw.avg10Comp + " (" + lw.avg10Deg + "°)"),
       "wind"
     );
@@ -212,6 +202,8 @@ function _wd_init() {
       "🌤 കാലാവസ്ഥ വിശദീകരണം",
       mrow("☀️","UVI",                m.uvi         != null ? m.uvi         : "--") +
       mrow("🔆","Solar",              (m.solar      != null ? m.solar       : "--") + " W/m²") +
+      mrow("🌱","VPD",                (m.vpd        != null ? m.vpd         : "--") + " kPa") +
+      mrow("🌡","Dew Point (Out)",    (m.dewOut     != null ? m.dewOut      : "--") + "°C") +
       mrow("🌧","Rain rate (now)",    (m.rain       || 0)                   + " mm/hr") +
       mrow("🌧","Rain today",         (m.rainDaily  || 0)                   + " mm") +
       mrow("💧","Outdoor humidity",   (m.humidity   != null ? m.humidity    : "--") + "%") +
@@ -224,78 +216,88 @@ function _wd_init() {
   };
 
   /* ══════════════════════════════════════════
-     FETCH WIND
+     SINGLE FETCH — unified worker + OWM
   ══════════════════════════════════════════ */
-  function updateWind() {
-    fetch(WIND_URL, { cache: "no-store" })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data || !data.wind) return;
-        var w         = data.wind;
-        var speed     = (w.speed     && w.speed.value     != null) ? w.speed.value                  : 0;
-        var speedUnit = (w.speed     && w.speed.unit)               ? w.speed.unit                   : "km/h";
-        var gust      = (w.gust      && w.gust.value      != null) ? w.gust.value                   : 0;
-        var gustUnit  = (w.gust      && w.gust.unit)                ? w.gust.unit                    : "km/h";
-        var dirDeg    = (w.direction && w.direction.degrees != null)? w.direction.degrees            : 0;
-        var dirComp   = (w.direction && w.direction.compass)        ? w.direction.compass            : "N";
-        var bftForce  = (w.speed     && w.speed.beaufort)           ? w.speed.beaufort.force         : 0;
-        var bftDesc   = (w.speed     && w.speed.beaufort)           ? w.speed.beaufort.description   : "Calm";
-        var avg10Comp = (w.avg_10min && w.avg_10min.direction_compass)         ? w.avg_10min.direction_compass   : "--";
-        var avg10Deg  = (w.avg_10min && w.avg_10min.direction_degrees != null) ? w.avg_10min.direction_degrees   : "--";
-        var dayGust   = (w.daily_max_gust && w.daily_max_gust.value != null)   ? w.daily_max_gust.value         : "--";
-        var dayGustU  = (w.daily_max_gust && w.daily_max_gust.unit)            ? w.daily_max_gust.unit          : "km/h";
-        var dayGustAt = (w.daily_max_gust && w.daily_max_gust.observed_at)     ? w.daily_max_gust.observed_at   : "--";
-        var ml        = dirML(dirDeg);
-
-        document.getElementById("wd-wind").textContent        = speed + " " + speedUnit;
-        document.getElementById("wd-wind-detail").textContent = "Gust " + gust + " " + gustUnit + " · " + ml;
-
-        latestWind = { speed:speed, speedUnit:speedUnit, gust:gust, gustUnit:gustUnit,
-                       dirDeg:dirDeg, dirComp:dirComp, mlDir:ml,
-                       bftForce:bftForce, bftDesc:bftDesc,
-                       avg10Comp:avg10Comp, avg10Deg:avg10Deg,
-                       dayGust:dayGust, dayGustU:dayGustU, dayGustAt:dayGustAt };
-      })
-      .catch(function(e) { console.error("Wind fetch failed:", e); });
-  }
-
-  /* ══════════════════════════════════════════
-     FETCH MAIN
-  ══════════════════════════════════════════ */
-  function updateMain() {
+  function updateAll() {
     Promise.all([
-      fetch(API_URL, { cache:"no-store" }).then(function(r){return r.json();}).catch(function(){return null;}),
-      fetch(OW_URL,  { cache:"no-store" }).then(function(r){return r.json();}).catch(function(){return null;})
+      fetch(API_URL, { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch(OW_URL,  { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; })
     ]).then(function(res) {
-      var w = res[0], o = res[1];
-      if (!w) return;
+      var payload = res[0];
+      var owm     = res[1];
+      if (!payload) return;
 
-      var t           = w.temperature ? w.temperature.outdoor            : null;
-      var h           = w.humidity    ? w.humidity.outdoor               : null;
-      var feels       = w.temperature ? w.temperature.feels_like_outdoor : null;
-      var indoorT     = w.temperature ? w.temperature.indoor             : null;
-      var indoorH     = w.humidity    ? w.humidity.indoor                : null;
-      var indoorFeels = w.temperature ? w.temperature.feels_like_indoor  : null;
-      var pressureAbs = w.pressure    ? w.pressure.absolute_hpa          : null;
-      var pressureRel = w.pressure    ? w.pressure.relative_hpa          : null;
-      var uvi         = w.uvi   != null ? w.uvi   : null;
-      var solar       = w.solar != null ? w.solar : null;
-      var rain        = (w.rain && w.rain.rate_mm_hr != null) ? w.rain.rate_mm_hr : 0;
-      var rainDaily   = (w.rain && w.rain.daily_mm   != null) ? w.rain.daily_mm   : 0;
-      var vis         = (o && o.visibility) ? (o.visibility / 1000).toFixed(1) : "--";
+      var ld  = payload.live_data || {};
+      var tmp = ld.temperature  || {};
+      var hum = ld.humidity     || {};
+      var wnd = ld.wind         || {};
+      var prs = ld.pressure     || {};
+      var rn  = ld.rain         || {};
 
-      /* feed rain buffer every cycle */
+      /* ── temperatures ── */
+      var t           = tmp.outdoor            != null ? tmp.outdoor            : null;
+      var feels       = tmp.feels_like_outdoor != null ? tmp.feels_like_outdoor : null;
+      var indoorT     = tmp.indoor             != null ? tmp.indoor             : null;
+      var indoorFeels = tmp.feels_like_indoor  != null ? tmp.feels_like_indoor  : null;
+      var dewOut      = tmp.dew_point_outdoor  != null ? tmp.dew_point_outdoor  : null;
+      var dewIn       = tmp.dew_point_indoor   != null ? tmp.dew_point_indoor   : null;
+
+      /* ── humidity ── */
+      var h       = hum.outdoor != null ? hum.outdoor : null;
+      var indoorH = hum.indoor  != null ? hum.indoor  : null;
+
+      /* ── wind ── */
+      var windSpeed    = wnd.speed_kmh             != null ? wnd.speed_kmh             : 0;
+      var windGust     = wnd.gust_kmh              != null ? wnd.gust_kmh              : 0;
+      var windDirDeg   = wnd.direction_degrees     != null ? wnd.direction_degrees     : 0;
+      var windDirComp  = wnd.direction_compass     || "N";
+      var avg10Deg     = wnd.avg_10min_dir_deg     != null ? wnd.avg_10min_dir_deg     : "--";
+      var avg10Comp    = wnd.avg_10min_dir_compass || "--";
+      var dayMaxGust   = payload.daily_max_gust_kmh != null ? payload.daily_max_gust_kmh : "--";
+      var mlDir        = dirML(windDirDeg);
+
+      /* ── pressure ── */
+      var pressureAbs = prs.absolute_hpa != null ? prs.absolute_hpa : null;
+      var pressureRel = prs.relative_hpa != null ? prs.relative_hpa : null;
+
+      /* ── solar / uvi / vpd ── */
+      var uvi   = ld.uvi     != null ? ld.uvi     : null;
+      var solar = ld.solar_wm2 != null ? ld.solar_wm2 : null;
+      var vpd   = ld.vpd_kpa != null ? ld.vpd_kpa : null;
+
+      /* ── rain ── */
+      var rain      = rn.rate_mm_hr != null ? rn.rate_mm_hr : 0;
+      var rainDaily = rn.daily_mm   != null ? rn.daily_mm   : 0;
+
+      /* ── visibility from OWM ── */
+      var vis = (owm && owm.visibility) ? (owm.visibility / 1000).toFixed(1) : "--";
+
+      /* ── rain buffer ── */
       pushRain(rain, rainDaily);
 
+      /* ── condition ── */
       var now  = new Date();
       var cond = getCondition(rain, rainDaily, solar, uvi, h, now.getHours());
       latestCondition = cond.text;
-      latestMain = { indoorT:indoorT, indoorH:indoorH, indoorFeels:indoorFeels,
-                     pressureAbs:pressureAbs, pressureRel:pressureRel,
-                     uvi:uvi, solar:solar,
-                     rain:rain, rainDaily:rainDaily,
-                     humidity:h };
 
+      /* ── store for modals ── */
+      latestWind = {
+        speed: windSpeed, gust: windGust,
+        dirDeg: windDirDeg, dirComp: windDirComp, mlDir: mlDir,
+        avg10Deg: avg10Deg, avg10Comp: avg10Comp,
+        dayGust: dayMaxGust
+      };
+
+      latestMain = {
+        indoorT: indoorT, indoorH: indoorH, indoorFeels: indoorFeels,
+        pressureAbs: pressureAbs, pressureRel: pressureRel,
+        uvi: uvi, solar: solar, vpd: vpd,
+        dewOut: dewOut, dewIn: dewIn,
+        rain: rain, rainDaily: rainDaily,
+        humidity: h
+      };
+
+      /* ── DOM updates ── */
       document.getElementById("wd-temp").textContent            = t           != null ? t           : "--";
       document.getElementById("wd-humidity").textContent        = h           != null ? h           : "--";
       document.getElementById("wd-feels").textContent           = feels       != null ? feels       : "--";
@@ -304,6 +306,8 @@ function _wd_init() {
       document.getElementById("wd-uvi").textContent             = uvi         != null ? uvi         : "--";
       document.getElementById("wd-solar").textContent           = solar       != null ? solar       : "--";
       document.getElementById("wd-condition").textContent       = cond.text;
+      document.getElementById("wd-wind").textContent            = windSpeed + " km/h";
+      document.getElementById("wd-wind-detail").textContent     = "Gust " + windGust + " km/h · " + mlDir;
       document.getElementById("wd-indoor-temp").textContent     = indoorT     != null ? indoorT     : "--";
       document.getElementById("wd-indoor-humidity").textContent = indoorH     != null ? indoorH     : "--";
       document.getElementById("wd-indoor-feels").textContent    = indoorFeels != null ? indoorFeels : "--";
@@ -312,13 +316,11 @@ function _wd_init() {
 
       hero.className = "wx-hero " + cond.key;
 
-    }).catch(function(e){ console.error("Main fetch failed:", e); });
+    }).catch(function(e){ console.error("Weather fetch failed:", e); });
   }
 
   /* ── INIT — 30 second refresh ── */
-  updateWind();
-  updateMain();
-  setInterval(updateWind, 30000);
-  setInterval(updateMain, 30000);
+  updateAll();
+  setInterval(updateAll, 30000);
 }
 _wd_init();
