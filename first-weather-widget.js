@@ -311,8 +311,10 @@ function _wd_init() {
       document.getElementById("wd-indoor-temp").textContent     = indoorT     != null ? indoorT     : "--";
       document.getElementById("wd-indoor-humidity").textContent = indoorH     != null ? indoorH     : "--";
       document.getElementById("wd-indoor-feels").textContent    = indoorFeels != null ? indoorFeels : "--";
-      document.getElementById("wd-last-updated").textContent    =
-        now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
+      var updatedAt = payload.updated_at
+        ? new Date(payload.updated_at).toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" })
+        : now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
+      document.getElementById("wd-last-updated").textContent = updatedAt;
 
       hero.className = "wx-hero " + cond.key;
 
