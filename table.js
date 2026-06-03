@@ -1,4 +1,4 @@
- // table.js
+// table.js
 
 const lat     = 10.9081;
 const lon     = 76.2296;
@@ -160,11 +160,11 @@ async function loadNowFromStation(owmCurrentData) {
 
         let cond;
 
-        if (rain > 0 || trending) {
-            const label = (trending && rain === 0)
-                ? "Rain Starting"
-                : `Raining (${rain} mm/hr)`;
-            cond = { icon: "🌧️", text: label, isRain: true };
+        if (rain > 0) {
+            cond = { icon: "🌧️", text: `Raining (${rain} mm/hr)`, isRain: true };
+
+        } else if (trending) {
+            cond = { icon: "🌧️", text: "Rain Starting", isRain: true };
 
         } else if (isDaytime()) {
             cond = conditionFromStation(uvi, solar, rain);
