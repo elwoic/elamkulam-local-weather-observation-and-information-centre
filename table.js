@@ -4,17 +4,12 @@ const lat     = 10.9081;
 const lon     = 76.2296;
 const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
-const API_URL  = "https://elwoic-dashboard-for-table.bold-waterfall-0d01.workers.dev/";
-const WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
+const API_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
 
-// Fetch options — always bypass cache for live station data
 const LIVE = { cache: "no-store" };
 
 /* =============================================================
    RAIN TREND TRACKER
-   Keeps last 3 rain rate readings (one per 30s cycle).
-   If all 3 are non-zero and each >= previous → rain is confirmed.
-   If rate just ticked above 0 with a rising trend → "Rain Starting".
 ============================================================= */
 const rainHistory = [];
 const RAIN_HISTORY_SIZE = 3;
@@ -32,10 +27,18 @@ function isRainTrending() {
 }
 
 /* =============================================================
+   BEAUFORT SCALE (client-side)
+============================================================= */
+function beaufortDesc(kmh) {
+    const scale = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117];
+    const desc  = ["Calm","Light air","Light breeze","Gentle breeze","Moderate breeze",
+                   "Fresh breeze","Strong breeze","Near gale","Gale","Strong gale","Storm","Violent storm","Hurricane"];
+    const b = scale.findIndex(v => kmh < v);
+    return desc[b === -1 ? 12 : b];
+}
+
+/* =============================================================
    CONDITION LOGIC
-   Day   → derived from station sensors (UVI, solar, rain)
-   Night → derived from OWM current weather description
-   Boundary: civil twilight approx 06:00–19:00 IST
 ============================================================= */
 function isDaytime() {
     const h = new Date().getHours();
@@ -99,43 +102,45 @@ function formatTime(date) {
 }
 
 /* =============================================================
-   NOW COLUMN  (index 0) — station workers
+   NOW COLUMN (index 0) — unified worker
 ============================================================= */
 async function loadNowFromStation(owmCurrentData) {
     try {
-        const [stationRes, windRes] = await Promise.all([
-            fetch(API_URL,  LIVE).then(r => r.json()).catch(() => null),
-            fetch(WIND_URL, LIVE).then(r => r.json()).catch(() => null)
-        ]);
+        const payload = await fetch(API_URL, LIVE).then(r => r.json()).catch(() => null);
 
-        if (!stationRes) {
+        if (!payload) {
             displayRainStatus("owRainBox0", false, "Error", true);
             return;
         }
 
+        const ld  = payload.live_data || {};
+        const tmp = ld.temperature   || {};
+        const hum = ld.humidity      || {};
+        const wnd = ld.wind          || {};
+        const prs = ld.pressure      || {};
+        const rn  = ld.rain          || {};
+
         // --- Temperature & Humidity ---
-        const temp  = stationRes?.temperature?.outdoor ?? "--";
-        const feels = stationRes?.temperature?.feels_like_outdoor ?? "--";
-        const hum   = stationRes?.humidity?.outdoor ?? "--";
-        const press = stationRes?.pressure?.relative_hpa
-                   ?? stationRes?.pressure?.absolute_hpa
-                   ?? "--";
+        const temp  = tmp.outdoor            ?? "--";
+        const feels = tmp.feels_like_outdoor ?? "--";
+        const hout  = hum.outdoor            ?? "--";
+        const press = prs.relative_hpa ?? prs.absolute_hpa ?? "--";
 
         setEl("owTemp0",  temp  !== "--" ? `${temp}°C`    : "--");
         setEl("owFeels0", feels !== "--" ? `${feels}°C`   : "--");
-        setEl("owHum0",   hum   !== "--" ? `${hum}%`      : "--");
+        setEl("owHum0",   hout  !== "--" ? `${hout}%`     : "--");
         setEl("owPress0", press !== "--" ? `${press} hPa` : "--");
 
-        // --- Wind (from WIND_URL) ---
-        const wind      = windRes?.wind || {};
-        const windSpeed = wind?.speed?.value ?? 0;
-        const windGust  = wind?.gust?.value  ?? 0;
-        const windComp  = wind?.direction?.compass           ?? "--";
-        const avg10Comp = wind?.avg_10min?.direction_compass ?? "--";
-        const beaufort  = wind?.speed?.beaufort?.description ?? "";
+        // --- Wind ---
+        const windSpeed  = wnd.speed_kmh             ?? 0;
+        const windGust   = wnd.gust_kmh              ?? 0;
+        const windComp   = wnd.direction_compass     ?? "--";
+        const avg10Comp  = wnd.avg_10min_dir_compass ?? "--";
+        const bft        = beaufortDesc(windSpeed);
+        const dayMaxGust = payload.daily_max_gust_kmh ?? "--";
 
         setEl("owWind0",
-            `${windSpeed} km/h ${windComp} | Gust: ${windGust} km/h | Avg dir: ${avg10Comp} — ${beaufort}`
+            `${windSpeed} km/h ${windComp} | Gust: ${windGust} km/h | Avg dir: ${avg10Comp} — ${bft}`
         );
 
         // --- Visibility from OWM ---
@@ -144,14 +149,14 @@ async function loadNowFromStation(owmCurrentData) {
             : "--";
         setEl("owVis0", vis);
 
-        // --- Rain trend tracking ---
-        const rain = stationRes?.rain?.rate_mm_hr ?? 0;
+        // --- Rain trend ---
+        const rain = rn.rate_mm_hr ?? 0;
         trackRain(rain);
         const trending = isRainTrending();
 
         // --- Condition ---
-        const uvi   = stationRes?.uvi   ?? 0;
-        const solar = stationRes?.solar ?? 0;
+        const uvi   = ld.uvi      ?? 0;
+        const solar = ld.solar_wm2 ?? 0;
 
         let cond;
 
@@ -172,23 +177,20 @@ async function loadNowFromStation(owmCurrentData) {
             }
 
         } else {
-            if (owmCurrentData) {
-                cond = conditionFromOWM(
+            cond = owmCurrentData
+                ? conditionFromOWM(
                     owmCurrentData.weather?.[0]?.description ?? "",
                     owmCurrentData.weather?.[0]?.main ?? ""
-                );
-            } else {
-                cond = { icon: "🌙", text: "Night", isRain: false };
-            }
+                  )
+                : { icon: "🌙", text: "Night", isRain: false };
         }
 
         setEl("owCond0", `${cond.icon} ${cond.text}`);
         displayRainStatus("owRainBox0", cond.isRain, cond.isRain ? "Raining" : "Dry");
 
-        // --- Last updated time ---
-        const stationTs = stationRes?.timestamp;
-        const updatedAt = stationTs
-            ? formatTime(new Date(stationTs))
+        // --- Last updated from Supabase updated_at ---
+        const updatedAt = payload.updated_at
+            ? formatTime(new Date(payload.updated_at))
             : formatTime(new Date());
         setEl("stationLastUpdated", `🕐 Last updated: ${updatedAt}`);
 
