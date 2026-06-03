@@ -8,76 +8,61 @@ const lat     = 10.9081;
 const lon     = 76.2296;
 const OWM_KEY = "ca13a2cbdc07e7613b6af82cff262295";
 
-const API_URL  = "https://elwoic-weather-dash.bold-waterfall-0d01.workers.dev/";
-const WIND_URL = "https://wind-fetcher.bold-waterfall-0d01.workers.dev/";
+const API_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
 
-const OW_KEY = OWM_KEY;
-const LAT = lat;
-const LON = lon;
-
-// Fetch options — always bypass cache for live station data
 const LIVE = { cache: "no-store" };
 
 let chart = null;
 
 /* =============================================================
    RAIN TREND TRACKER
-   Tracks last 3 readings of BOTH rate_mm_hr AND hourly_mm.
-   Rain is only confirmed as active when:
-     1. rate_mm_hr > 0  AND
-     2. hourly_mm is also > 0 (i.e. accumulation has actually occurred)
-     3. hourly_mm has increased across the last 2 readings (still accumulating)
-   This prevents stale rate values triggering false "Raining" status.
 ============================================================= */
-const rainHistory = [];        // rate_mm_hr readings
-const hourlyHistory = [];      // hourly_mm readings
+const rainHistory   = [];
+const hourlyHistory = [];
 const RAIN_HISTORY_SIZE = 3;
 
 function trackRain(rate, hourly) {
     rainHistory.push(rate);
     hourlyHistory.push(hourly);
-    if (rainHistory.length  > RAIN_HISTORY_SIZE) rainHistory.shift();
+    if (rainHistory.length   > RAIN_HISTORY_SIZE) rainHistory.shift();
     if (hourlyHistory.length > RAIN_HISTORY_SIZE) hourlyHistory.shift();
 }
 
 function isRainActive(rate, hourly) {
-    // Primary guard: rate must be non-zero
-    if (rate <= 0) return false;
-
-    // Secondary guard: hourly accumulation must also be non-zero
-    // (rules out stale rate from a rain event that already ended)
+    if (rate   <= 0) return false;
     if (hourly <= 0) return false;
-
-    // Tertiary guard: hourly_mm must have increased in the last two readings
-    // (confirms rain is still actively falling, not a frozen leftover value)
     if (hourlyHistory.length >= 2) {
         const prev = hourlyHistory[hourlyHistory.length - 2];
         const curr = hourlyHistory[hourlyHistory.length - 1];
-        if (curr <= prev) return false; // accumulation has stopped
+        if (curr <= prev) return false;
     }
-
     return true;
 }
 
 function isRainTrending() {
-    // "Rain Starting" signal: rate just appeared and hourly is ticking up
-    if (rainHistory.length < RAIN_HISTORY_SIZE) return false;
+    if (rainHistory.length   < RAIN_HISTORY_SIZE) return false;
     if (hourlyHistory.length < 2) return false;
-
     const rateRising = rainHistory.every((v, i) =>
         i === 0 ? v > 0 : v >= rainHistory[i - 1] && v > 0
     );
     const hourlyRising =
         hourlyHistory[hourlyHistory.length - 1] > hourlyHistory[hourlyHistory.length - 2];
-
     return rateRising && hourlyRising;
 }
 
 /* =============================================================
+   BEAUFORT SCALE (client-side)
+============================================================= */
+function beaufortDesc(kmh) {
+    const scale = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117];
+    const desc  = ["Calm","Light air","Light breeze","Gentle breeze","Moderate breeze",
+                   "Fresh breeze","Strong breeze","Near gale","Gale","Strong gale","Storm","Violent storm","Hurricane"];
+    const b = scale.findIndex(v => kmh < v);
+    return desc[b === -1 ? 12 : b];
+}
+
+/* =============================================================
    CONDITION LOGIC
-   Day   → derived from station sensors (UVI, solar, rain)
-   Night → derived from OWM current weather description
-   Boundary: civil twilight approx 06:00–19:00 IST
 ============================================================= */
 function isDaytime() {
     const h = new Date().getHours();
@@ -110,30 +95,28 @@ function conditionFromOWM(owmDesc, owmMain) {
     return                                 { icon: "🌙",  text: "Night",         isRain: false };
 }
 
-/* =============================================================
-   MALAYALAM CONDITION HELPER  (from dashboard script)
-============================================================= */
+/* Malayalam condition helper */
 const dirMap = (deg = 0) => {
-    if (deg >= 337 || deg < 23) return "വടക്ക്";
-    if (deg < 68) return "വടക്കുകിഴക്ക്";
-    if (deg < 113) return "കിഴക്ക്";
-    if (deg < 158) return "തെക്കുകിഴക്ക്";
-    if (deg < 203) return "തെക്ക്";
-    if (deg < 248) return "തെക്കുപടിഞ്ഞാറ്";
-    if (deg < 293) return "പടിഞ്ഞാറ്";
+    if (deg >= 337 || deg < 23)  return "വടക്ക്";
+    if (deg < 68)                return "വടക്കുകിഴക്ക്";
+    if (deg < 113)               return "കിഴക്ക്";
+    if (deg < 158)               return "തെക്കുകിഴക്ക്";
+    if (deg < 203)               return "തെക്ക്";
+    if (deg < 248)               return "തെക്കുപടിഞ്ഞാറ്";
+    if (deg < 293)               return "പടിഞ്ഞാറ്";
     return "വടക്കുപടിഞ്ഞാറ്";
 };
 
 function getCondition(uvi, solar, rain) {
-    if (rain > 0) return "🌧 മഴ പെയ്യുന്നു";
-    if (uvi >= 6 && solar > 600) return "☀️ തെളിഞ്ഞ ആകാശം";
-    if (solar > 300) return "🌤 ഭാഗികമായി മേഘാവൃതം";
-    if (solar > 80) return "⛅ ചെറിയ മേഘങ്ങൾ";
+    if (rain > 0)                    return "🌧 മഴ പെയ്യുന്നു";
+    if (uvi >= 6 && solar > 600)     return "☀️ തെളിഞ്ഞ ആകാശം";
+    if (solar > 300)                 return "🌤 ഭാഗികമായി മേഘാവൃതം";
+    if (solar > 80)                  return "⛅ ചെറിയ മേഘങ്ങൾ";
     return "☁️ മേഘാവൃതം";
 }
 
 /* =============================================================
-   DISPLAY HELPERS  (from table.js)
+   DISPLAY HELPERS
 ============================================================= */
 function displayRainStatus(elementId, isRaining, text, isError = false) {
     const r = document.getElementById(elementId);
@@ -152,72 +135,67 @@ function setEl(id, val) {
     if (el) el.textContent = val ?? "--";
 }
 
-function formatTime(date) {
-    return date.toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-    });
-}
-
-/* =============================================================
-   UTIL  (from dashboard script)
-============================================================= */
 function set(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val ?? "--";
 }
 
-/* =============================================================
-   SHARED DATA FETCH
-   Single fetch for all three API calls, shared between
-   the table columns and the dashboard UI.
-============================================================= */
-async function fetchAllSources() {
-    const [stationRes, owmCurrentRes, forecastRes, windRes] = await Promise.all([
-        fetch(API_URL,  LIVE).then(r => r.json()).catch(() => null),
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`)
-            .then(r => r.json()).catch(() => null),
-        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`)
-            .then(r => r.json()).catch(() => null),
-        fetch(WIND_URL, LIVE).then(r => r.json()).catch(() => null)
-    ]);
-    return { stationRes, owmCurrentRes, forecastRes, windRes };
+function formatTime(date) {
+    return date.toLocaleTimeString("en-IN", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true
+    });
 }
 
 /* =============================================================
-   NOW COLUMN  (index 0) — station workers  [from table.js]
+   SHARED FETCH
 ============================================================= */
-function loadNowFromStation(stationRes, windRes, owmCurrentData) {
-    if (!stationRes) {
+async function fetchAllSources() {
+    const [payload, owmCurrentRes, forecastRes] = await Promise.all([
+        fetch(API_URL, LIVE).then(r => r.json()).catch(() => null),
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`)
+            .then(r => r.json()).catch(() => null),
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`)
+            .then(r => r.json()).catch(() => null)
+    ]);
+    return { payload, owmCurrentRes, forecastRes };
+}
+
+/* =============================================================
+   NOW COLUMN (index 0)
+============================================================= */
+function loadNowFromStation(payload, owmCurrentData) {
+    if (!payload) {
         displayRainStatus("owRainBox0", false, "Error", true);
         return;
     }
 
+    const ld  = payload.live_data || {};
+    const tmp = ld.temperature   || {};
+    const hum = ld.humidity      || {};
+    const wnd = ld.wind          || {};
+    const prs = ld.pressure      || {};
+    const rn  = ld.rain          || {};
+
     // --- Temperature & Humidity ---
-    const temp  = stationRes?.temperature?.outdoor ?? "--";
-    const feels = stationRes?.temperature?.feels_like_outdoor ?? "--";
-    const hum   = stationRes?.humidity?.outdoor ?? "--";
-    const press = stationRes?.pressure?.relative_hpa
-               ?? stationRes?.pressure?.absolute_hpa
-               ?? "--";
+    const temp  = tmp.outdoor            ?? "--";
+    const feels = tmp.feels_like_outdoor ?? "--";
+    const hout  = hum.outdoor            ?? "--";
+    const press = prs.relative_hpa ?? prs.absolute_hpa ?? "--";
 
     setEl("owTemp0",  temp  !== "--" ? `${temp}°C`    : "--");
     setEl("owFeels0", feels !== "--" ? `${feels}°C`   : "--");
-    setEl("owHum0",   hum   !== "--" ? `${hum}%`      : "--");
+    setEl("owHum0",   hout  !== "--" ? `${hout}%`     : "--");
     setEl("owPress0", press !== "--" ? `${press} hPa` : "--");
 
-    // --- Wind (from WIND_URL) ---
-    const wind      = windRes?.wind || {};
-    const windSpeed = wind?.speed?.value ?? 0;
-    const windGust  = wind?.gust?.value  ?? 0;
-    const windComp  = wind?.direction?.compass           ?? "--";
-    const avg10Comp = wind?.avg_10min?.direction_compass ?? "--";
-    const beaufort  = wind?.speed?.beaufort?.description ?? "";
+    // --- Wind ---
+    const windSpeed  = wnd.speed_kmh             ?? 0;
+    const windGust   = wnd.gust_kmh              ?? 0;
+    const windComp   = wnd.direction_compass     ?? "--";
+    const avg10Comp  = wnd.avg_10min_dir_compass ?? "--";
+    const bft        = beaufortDesc(windSpeed);
 
     setEl("owWind0",
-        `${windSpeed} km/h ${windComp} | Gust: ${windGust} km/h | Avg dir: ${avg10Comp} — ${beaufort}`
+        `${windSpeed} km/h ${windComp} | Gust: ${windGust} km/h | Avg dir: ${avg10Comp} — ${bft}`
     );
 
     // --- Visibility from OWM ---
@@ -226,60 +204,52 @@ function loadNowFromStation(stationRes, windRes, owmCurrentData) {
         : "--";
     setEl("owVis0", vis);
 
-    // --- Rain — cross-check rate_mm_hr against hourly_mm to avoid stale values ---
-    const rain   = stationRes?.rain?.rate_mm_hr ?? 0;
-    const hourly = stationRes?.rain?.hourly_mm  ?? 0;
+    // --- Rain ---
+    const rain   = rn.rate_mm_hr ?? 0;
+    const hourly = rn.hourly_mm  ?? 0;
     trackRain(rain, hourly);
 
     const activeRain = isRainActive(rain, hourly);
     const trending   = !activeRain && isRainTrending();
 
     // --- Condition ---
-    const uvi   = stationRes?.uvi   ?? 0;
-    const solar = stationRes?.solar ?? 0;
+    const uvi   = ld.uvi      ?? 0;
+    const solar = ld.solar_wm2 ?? 0;
 
     let cond;
-
-    if (activeRain) {
+    if (rain > 0) {
         cond = { icon: "🌧️", text: `Raining (${rain} mm/hr)`, isRain: true };
-
     } else if (trending) {
         cond = { icon: "🌧️", text: "Rain Starting", isRain: true };
-
     } else if (isDaytime()) {
         cond = conditionFromStation(uvi, solar);
-
         if (!cond.isRain && owmCurrentData) {
             const owmMain = owmCurrentData.weather?.[0]?.main ?? "";
             if (owmMain.includes("Rain") || owmMain.includes("Drizzle") || owmMain.includes("Thunderstorm")) {
                 cond = conditionFromOWM(owmCurrentData.weather[0].description, owmMain);
             }
         }
-
     } else {
-        if (owmCurrentData) {
-            cond = conditionFromOWM(
+        cond = owmCurrentData
+            ? conditionFromOWM(
                 owmCurrentData.weather?.[0]?.description ?? "",
                 owmCurrentData.weather?.[0]?.main ?? ""
-            );
-        } else {
-            cond = { icon: "🌙", text: "Night", isRain: false };
-        }
+              )
+            : { icon: "🌙", text: "Night", isRain: false };
     }
 
     setEl("owCond0", `${cond.icon} ${cond.text}`);
     displayRainStatus("owRainBox0", cond.isRain, cond.isRain ? "Raining" : "Dry");
 
-    // --- Last updated time ---
-    const stationTs = stationRes?.timestamp;
-    const updatedAt = stationTs
-        ? formatTime(new Date(stationTs))
+    // --- Last updated from Supabase ---
+    const updatedAt = payload.updated_at
+        ? formatTime(new Date(payload.updated_at))
         : formatTime(new Date());
     setEl("stationLastUpdated", `🕐 Last updated: ${updatedAt}`);
 }
 
 /* =============================================================
-   FORECAST COLUMNS (index 1 = +3h, index 2 = +6h)  [from table.js]
+   FORECAST COLUMNS (index 1 = +3h, index 2 = +6h)
 ============================================================= */
 function updateForecastColumn(index, data) {
     setEl(`owTemp${index}`,  `${data.main.temp.toFixed(1)}°C`);
@@ -300,54 +270,52 @@ function updateForecastColumn(index, data) {
 }
 
 /* =============================================================
-   DASHBOARD UI UPDATE  (from main dashboard script)
+   DASHBOARD UI UPDATE
 ============================================================= */
-function updateDashboard(stationRes, owmCurrentRes, windRes) {
-    if (!stationRes) return;
+function updateDashboard(payload, owmCurrentRes) {
+    if (!payload) return;
 
-    /* ---------- SAFE CORE ---------- */
-    const t = stationRes?.temperature?.outdoor ?? "--";
-    const h = stationRes?.humidity?.outdoor ?? "--";
-    const feels = stationRes?.temperature?.feels_like_outdoor ?? "--";
+    const ld  = payload.live_data || {};
+    const tmp = ld.temperature   || {};
+    const hum = ld.humidity      || {};
+    const wnd = ld.wind          || {};
+    const prs = ld.pressure      || {};
+    const rn  = ld.rain          || {};
 
-    const indoorT = stationRes?.temperature?.indoor ?? "--";
-    const indoorH = stationRes?.humidity?.indoor ?? "--";
-    const indoorFeels = stationRes?.temperature?.feels_like_indoor ?? "--";
+    const t           = tmp.outdoor            ?? "--";
+    const h           = hum.outdoor            ?? "--";
+    const feels       = tmp.feels_like_outdoor ?? "--";
+    const indoorT     = tmp.indoor             ?? "--";
+    const indoorH     = hum.indoor             ?? "--";
+    const indoorFeels = tmp.feels_like_indoor  ?? "--";
 
-    const wind  = windRes?.wind  || stationRes?.wind  || {};
-    const uvi   = stationRes?.uvi   ?? 0;
-    const solar = stationRes?.solar ?? 0;
-    const rain  = stationRes?.rain?.rate_mm_hr ?? 0;
+    const windSpeed  = wnd.speed_kmh         ?? 0;
+    const windGust   = wnd.gust_kmh          ?? 0;
+    const windDirDeg = wnd.direction_degrees ?? 0;
+    const windDir    = dirMap(windDirDeg);
+
+    const uvi      = ld.uvi       ?? 0;
+    const solar    = ld.solar_wm2 ?? 0;
+    const rain     = rn.rate_mm_hr ?? 0;
+    const pressure = prs.absolute_hpa ?? prs.relative_hpa ?? "--";
 
     const visibilityKm = owmCurrentRes?.visibility
         ? (owmCurrentRes.visibility / 1000).toFixed(1)
         : "--";
 
-    const pressure =
-        stationRes?.pressure?.absolute_hpa ??
-        stationRes?.pressure?.relative_hpa ??
-        "--";
-
     const condition = getCondition(uvi, solar, rain);
 
-    const windSpeed = wind?.speed?.value  ?? wind?.speed  ?? 0;
-    const windGust  = wind?.gust?.value   ?? wind?.gust   ?? 0;
-    const windDir   = dirMap(wind?.direction?.degrees ?? wind?.direction ?? 0);
-
     /* ---------- MAIN UI ---------- */
-    set("temp", t);
-    set("humidity", h);
-    set("feels", feels);
-    set("visibility", visibilityKm);
-
-    set("pressure", pressure);
-    set("uvi", uvi);
-    set("solar", solar);
-
-    set("wind", `${windSpeed} km/h`);
+    set("temp",        t);
+    set("humidity",    h);
+    set("feels",       feels);
+    set("visibility",  visibilityKm);
+    set("pressure",    pressure);
+    set("uvi",         uvi);
+    set("solar",       solar);
+    set("wind",        `${windSpeed} km/h`);
     set("wind-detail", `ഗസ്റ്റ് ${windGust} km/h | ${windDir}`);
-
-    set("condition", condition);
+    set("condition",   condition);
 
     /* ---------- TABLE ---------- */
     const table = document.getElementById("weather-table-body");
@@ -367,7 +335,6 @@ function updateDashboard(stationRes, owmCurrentRes, windRes) {
     set("weather-marquee-1",
         `Elamkulam: ${t}°C | Feels ${feels}°C | Humidity ${h}% | Wind ${windSpeed} km/h`
     );
-
     set("weather-marquee-2",
         `Indoor: ${indoorT}°C | ${indoorH}% | Feels ${indoorFeels}°C | Pressure ${pressure} hPa | UVI ${uvi} | Solar ${solar}`
     );
@@ -377,26 +344,18 @@ function updateDashboard(stationRes, owmCurrentRes, windRes) {
     if (extra) {
         extra.innerHTML = `
             <div style="font-size:12px;line-height:1.6">
-
                 🌡 Outdoor: ${t}°C<br>
                 💧 Humidity: ${h}%<br>
                 🌬 Wind: ${windSpeed} km/h<br>
-
                 <hr>
-
                 🌧 Rate: ${rain} mm/hr<br>
-                📊 Daily: ${stationRes?.rain?.daily_mm ?? 0} mm<br>
-                🌪 Event: ${stationRes?.rain?.event_mm ?? 0} mm<br>
-
+                📊 Daily: ${rn.daily_mm ?? 0} mm<br>
+                🌪 Event: ${rn.event_mm ?? 0} mm<br>
                 <hr>
-
-                🧭 Relative Pressure: ${stationRes?.pressure?.relative_hpa ?? "--"} hPa<br>
-                🧪 Absolute Pressure: ${stationRes?.pressure?.absolute_hpa ?? "--"} hPa<br>
-
+                🧭 Relative Pressure: ${prs.relative_hpa ?? "--"} hPa<br>
+                🧪 Absolute Pressure: ${prs.absolute_hpa ?? "--"} hPa<br>
                 <hr>
-
                 ☀️ Condition: ${condition}
-
             </div>
         `;
     }
@@ -420,19 +379,17 @@ Pressure: ${pressure} hPa
 }
 
 /* =============================================================
-   MAIN LOADER — single fetch cycle, feeds both table & dashboard
+   MAIN LOADER
 ============================================================= */
 async function loadAllData() {
     try {
-        const { stationRes, owmCurrentRes, forecastRes, windRes } = await fetchAllSources();
+        const { payload, owmCurrentRes, forecastRes } = await fetchAllSources();
 
-        // --- Table: Now column ---
-        loadNowFromStation(stationRes, windRes, owmCurrentRes);
+        loadNowFromStation(payload, owmCurrentRes);
 
-        // --- Table: Forecast columns ---
         if (forecastRes?.list?.length >= 2) {
-            updateForecastColumn(1, forecastRes.list[0]); // +3h
-            updateForecastColumn(2, forecastRes.list[1]); // +6h
+            updateForecastColumn(1, forecastRes.list[0]);
+            updateForecastColumn(2, forecastRes.list[1]);
         } else {
             console.error("Forecast data unavailable.");
             for (let i = 1; i < 3; i++) {
@@ -442,8 +399,7 @@ async function loadAllData() {
             }
         }
 
-        // --- Dashboard UI ---
-        updateDashboard(stationRes, owmCurrentRes, windRes);
+        updateDashboard(payload, owmCurrentRes);
 
     } catch (e) {
         console.error("Critical error in loadAllData:", e);
@@ -454,7 +410,7 @@ async function loadAllData() {
 }
 
 /* =============================================================
-   CHART  (unchanged from dashboard script)
+   CHART
 ============================================================= */
 function loadChart() {
     const cfg = {
@@ -465,28 +421,23 @@ function loadChart() {
     };
 
     const app = initializeApp(cfg, "chartApp");
-    const db = getDatabase(app);
+    const db  = getDatabase(app);
 
-    const now = new Date();
+    const now  = new Date();
     const path =
         `weather/${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")}`;
 
-    const logsRef = ref(db, path);
-
-    onValue(logsRef, snap => {
+    onValue(ref(db, path), snap => {
         if (!snap.exists()) return;
-
-        const raw = snap.val();
-        let labels = [];
-        let temps = [];
-
+        const raw    = snap.val();
+        const labels = [];
+        const temps  = [];
         Object.keys(raw).sort().forEach(h => {
             Object.keys(raw[h]).sort().forEach(m => {
                 labels.push(`${h}:${m}`);
                 temps.push(raw[h][m].outdoor_temp);
             });
         });
-
         draw(labels, temps);
     });
 }
@@ -494,12 +445,9 @@ function loadChart() {
 function draw(labels, temps) {
     const canvas = document.getElementById("trendChart");
     if (!canvas) return;
-
     if (chart) chart.destroy();
 
-    const ctx = canvas.getContext("2d");
-
-    chart = new Chart(ctx, {
+    chart = new Chart(canvas.getContext("2d"), {
         type: "line",
         data: {
             labels,
@@ -536,8 +484,6 @@ function draw(labels, temps) {
 
 /* =============================================================
    INIT
-   - loadAllData runs immediately and every 30s (table.js cadence)
-   - Chart loads once on DOMContentLoaded
 ============================================================= */
 document.addEventListener("DOMContentLoaded", () => {
     loadAllData();
