@@ -16,26 +16,11 @@ const WARNING_MAP = {
 
 // Standard IMD Color Mapping
 const COLOR_MAP = {
-  "1": {
-    name: "Green (No Warning)",
-    css: "linear-gradient(90deg, #1d976c, #93f9b9)"
-  },
-  "2": {
-    name: "Orange alert (Be Prepared)",
-    css: "linear-gradient(90deg, #f46b45, #eea849)"
-  },
-  "3": {
-    name: "Yellow alert (Be Aware)",
-    css: "linear-gradient(90deg, #f7971e, #ffd200)"
-  },
-  "4": {
-    name: "Orange alert (Be Prepared)",
-    css: "linear-gradient(90deg, #f46b45, #eea849)"
-  },
-  "5": {
-    name: "Red alert (Take Action)",
-    css: "linear-gradient(90deg, #cb2d3e, #ef473a)"
-  }
+  "1": { name: "Red alert (Take Action)",     css: "linear-gradient(90deg, #cb2d3e, #ef473a)" },
+  "2": { name: "Orange alert (Be Prepared)",  css: "linear-gradient(90deg, #f46b45, #eea849)" },
+  "3": { name: "Yellow alert (Be Aware)",     css: "linear-gradient(90deg, #f7971e, #ffd200)" },
+  "4": { name: "Green (No Warning)",          css: "linear-gradient(90deg, #1d976c, #93f9b9)" },
+  "5": { name: "Green (No Warning)",          css: "linear-gradient(90deg, #1d976c, #93f9b9)" }
 };
 
 function decodeWarnings(codeString) {
