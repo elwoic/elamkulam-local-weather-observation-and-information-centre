@@ -1591,7 +1591,6 @@ if (window.top === window.self) {
 </script>
 
 
-<!-- ── 3. Historical Weather ── -->
 <script>
 const DB_URL =
   "https://days-records-5bf68-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -1600,7 +1599,6 @@ const RAIN_API =
   "https://history-table-data.aswanthkrishnak822.workers.dev/history";
 
 async function loadHistory(days, btn) {
-
   document.querySelectorAll(".hist-btn")
     .forEach(b => b.classList.remove("active"));
 
@@ -1614,30 +1612,29 @@ async function loadHistory(days, btn) {
   tableEl.style.display = "none";
   body.innerHTML = "";
 
-  // ── FETCH RAIN + GUST HISTORY FROM WORKER ──
-  let rainMap = {};
-  let gustMap = {};
+  // ── FETCH COMPREHENSIVE HISTORY METRICS FROM WORKER KV ──
+  let workerMap = {};
 
   try {
-
     const rainRes = await fetch(RAIN_API);
     const rainData = await rainRes.json();
 
+    // Map all properties indexed by date string
     rainData.forEach(item => {
-      rainMap[item.date] = item.rain_mm;
-      if (item.gust_kmh != null) gustMap[item.date] = item.gust_kmh;
+      workerMap[item.date] = item;
     });
-
   } catch (e) {
-    console.log("Rain/gust API failed");
+    console.log("Worker Metrics API failed");
   }
 
   let results = [];
   const now = new Date();
 
-  // ── LOAD FIREBASE WEATHER DATA ──
-  for (let i = 0; i < days; i++) {
+  // Define the boundary line: June 5, 2026
+  const boundaryDate = new Date("2026-06-05T00:00:00");
 
+  // ── LOAD WEATHER DATA ──
+  for (let i = 0; i < days; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
 
@@ -1648,88 +1645,68 @@ async function loadHistory(days, btn) {
     );
 
     const year = istDate.getFullYear();
-    const month = String(
-      istDate.getMonth() + 1
-    ).padStart(2, "0");
+    const month = String(istDate.getMonth() + 1).padStart(2, "0");
+    const day = String(istDate.getDate()).padStart(2, "0");
+    const dateKey = `${year}-${month}-${day}`;
 
-    const day = String(
-      istDate.getDate()
-    ).padStart(2, "0");
+    // Strip time for exact midnight comparison boundaries
+    const checkDate = new Date(year, istDate.getMonth(), istDate.getDate());
 
-    const firebaseUrl =
-      `${DB_URL}/weather/${year}-${month}/${day}.json`;
+    const firebaseUrl = `${DB_URL}/weather/${year}-${month}/${day}.json`;
 
     try {
-
       const res = await fetch(firebaseUrl);
       const data = await res.json();
 
-      const row = processDayDataSafe(istDate, data);
+      let row = processDayDataSafe(istDate, data);
+      const kvData = workerMap[dateKey];
 
-      const rainKey = `${year}-${month}-${day}`;
+      // ── CONDITIONAL METRIC INTERPOLATION ──
+      if (checkDate > boundaryDate && kvData) {
+        // If date is > 5/6/2026, grab pre-calculated Min/Max blocks directly from Worker
+        row.minTemp  = kvData.min_temp_c != null ? Number(kvData.min_temp_c).toFixed(1) : row.minTemp;
+        row.maxTemp  = kvData.max_temp_c != null ? Number(kvData.max_temp_c).toFixed(1) : row.maxTemp;
+        row.minPress = kvData.min_press_hpa != null ? Number(kvData.min_press_hpa).toFixed(1) : row.minPress;
+        row.maxPress = kvData.max_press_hpa != null ? Number(kvData.max_press_hpa).toFixed(1) : row.maxPress;
+      }
 
-      // ── RAIN FROM KV ──
-      row.totalRain =
-        rainMap[rainKey] != null
-          ? Number(rainMap[rainKey]).toFixed(1)
-          : "0.0";
-
-      // ── MAX GUST FROM KV (overrides Firebase wind) ──
-      row.maxWind =
-        gustMap[rainKey] != null
-          ? Number(gustMap[rainKey]).toFixed(1)
-          : row.maxWind;
+      // Rain and Wind Max Gust adjustments (Applies to all available Worker dates)
+      if (kvData) {
+        row.totalRain = kvData.rain_mm != null ? Number(kvData.rain_mm).toFixed(1) : "0.0";
+        row.maxWind   = kvData.gust_kmh != null ? Number(kvData.gust_kmh).toFixed(1) : row.maxWind;
+      }
 
       results.push(row);
-
     } catch (e) {
-
       results.push(emptyRow(istDate));
-
     }
   }
 
   results.sort((a, b) => b.timestamp - a.timestamp);
 
   if (results.length === 0) {
-
-    body.innerHTML =
-      `<tr><td colspan="5">No data available</td></tr>`;
-
+    body.innerHTML = `<tr><td colspan="5">No data available</td></tr>`;
   } else {
-
     results.forEach(row => {
-
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
         <td>${row.date}</td>
-
         <td>
-          <span style="color:#4a90e2">
-            ${row.minTemp}
-          </span>
+          <span style="color:#4a90e2">${row.minTemp}</span>
           /
-          <span style="color:#e74c3c">
-            ${row.maxTemp}
-          </span>
+          <span style="color:#e74c3c">${row.maxTemp}</span>
           °C
         </td>
-
         <td>${row.maxWind} km/h</td>
-
         <td>
           ${row.minPress}
           /
           ${row.maxPress}
           hPa
         </td>
-
         <td>${row.totalRain} mm</td>
       `;
-
       body.appendChild(tr);
-
     });
   }
 
@@ -1738,7 +1715,6 @@ async function loadHistory(days, btn) {
 }
 
 function processDayDataSafe(dateObj, dayData) {
-
   let temps = [];
   let pressures = [];
   let winds = [];
@@ -1748,117 +1724,53 @@ function processDayDataSafe(dateObj, dayData) {
   }
 
   Object.values(dayData).forEach(hourNode => {
-
-    if (!hourNode || typeof hourNode !== "object")
-      return;
+    if (!hourNode || typeof hourNode !== "object") return;
 
     Object.values(hourNode).forEach(node => {
+      if (!node || typeof node !== "object") return;
 
-      if (!node || typeof node !== "object")
-        return;
-
-      // DIRECT ENTRY
       if ("outdoor_temp" in node) {
-
-        if (node.outdoor_temp != null)
-          temps.push(Number(node.outdoor_temp));
-
-        if (node.pressure_relative != null)
-          pressures.push(Number(node.pressure_relative));
-
-        if (node.wind_speed != null)
-          winds.push(Number(node.wind_speed));
-      }
-
-      // NESTED ENTRY
-      else {
-
+        if (node.outdoor_temp != null) temps.push(Number(node.outdoor_temp));
+        if (node.pressure_relative != null) pressures.push(Number(node.pressure_relative));
+        if (node.wind_speed != null) winds.push(Number(node.wind_speed));
+      } else {
         Object.values(node).forEach(entry => {
-
-          if (!entry || typeof entry !== "object")
-            return;
-
-          if (entry.outdoor_temp != null)
-            temps.push(Number(entry.outdoor_temp));
-
-          if (entry.pressure_relative != null)
-            pressures.push(Number(entry.pressure_relative));
-
-          if (entry.wind_speed != null)
-            winds.push(Number(entry.wind_speed));
-
+          if (!entry || typeof entry !== "object") return;
+          if (entry.outdoor_temp != null) temps.push(Number(entry.outdoor_temp));
+          if (entry.pressure_relative != null) pressures.push(Number(entry.pressure_relative));
+          if (entry.wind_speed != null) winds.push(Number(entry.wind_speed));
         });
       }
     });
   });
 
   return {
-
-    date: dateObj.toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short"
-      }
-    ),
-
+    date: dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
     timestamp: dateObj.getTime(),
-
-    minTemp: temps.length
-      ? Math.min(...temps).toFixed(1)
-      : "—",
-
-    maxTemp: temps.length
-      ? Math.max(...temps).toFixed(1)
-      : "—",
-
-    minPress: pressures.length
-      ? Math.min(...pressures).toFixed(1)
-      : "—",
-
-    maxPress: pressures.length
-      ? Math.max(...pressures).toFixed(1)
-      : "—",
-
-    maxWind: winds.length
-      ? Math.max(...winds).toFixed(1)
-      : "0.0",
-
+    minTemp: temps.length ? Math.min(...temps).toFixed(1) : "—",
+    maxTemp: temps.length ? Math.max(...temps).toFixed(1) : "—",
+    minPress: pressures.length ? Math.min(...pressures).toFixed(1) : "—",
+    maxPress: pressures.length ? Math.max(...pressures).toFixed(1) : "—",
+    maxWind: winds.length ? Math.max(...winds).toFixed(1) : "0.0",
     totalRain: "0.0"
   };
 }
 
 function emptyRow(dateObj) {
-
   return {
-
-    date: dateObj.toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short"
-      }
-    ),
-
+    date: dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
     timestamp: dateObj.getTime(),
-
     minTemp: "—",
     maxTemp: "—",
-
     minPress: "—",
     maxPress: "—",
-
     maxWind: "0.0",
-
     totalRain: "0.0"
   };
 }
 
 // INIT
-loadHistory(
-  7,
-  document.querySelector(".hist-btn.active")
-);
+loadHistory(7, document.querySelector(".hist-btn.active"));
 </script>
 
 <!-- ── 4. Activity Recommendations ── -->
