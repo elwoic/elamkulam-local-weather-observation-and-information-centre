@@ -1590,18 +1590,12 @@ if (window.top === window.self) {
 })();
 </script>
 
-
 <script>
-const DB_URL =
-  "https://days-records-5bf68-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-const RAIN_API =
-  "https://history-table-data.aswanthkrishnak822.workers.dev/history";
+// Point this directly to your new Unified Supabase Worker URL
+const SUPABASE_WORKER_API = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/history";
 
 async function loadHistory(days, btn) {
-  document.querySelectorAll(".hist-btn")
-    .forEach(b => b.classList.remove("active"));
-
+  document.querySelectorAll(".hist-btn").forEach(b => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
 
   const loadEl = document.getElementById("hist-loading");
@@ -1612,164 +1606,60 @@ async function loadHistory(days, btn) {
   tableEl.style.display = "none";
   body.innerHTML = "";
 
-  // ── FETCH COMPREHENSIVE HISTORY METRICS FROM WORKER KV ──
-  let workerMap = {};
-
   try {
-    const rainRes = await fetch(RAIN_API);
-    const rainData = await rainRes.json();
+    const res = await fetch(SUPABASE_WORKER_API);
+    if (!res.ok) throw new Error("Failed to fetch weather history");
+    const historyData = await res.json();
 
-    // Map all properties indexed by date string
-    rainData.forEach(item => {
-      workerMap[item.date] = item;
-    });
-  } catch (e) {
-    console.log("Worker Metrics API failed");
-  }
-
-  let results = [];
-  const now = new Date();
-
-  // Define the boundary line: June 5, 2026
-  const boundaryDate = new Date("2026-06-05T00:00:00");
-
-  // ── LOAD WEATHER DATA ──
-  for (let i = 0; i < days; i++) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-
-    const istDate = new Date(
-      d.toLocaleString("en-US", {
-        timeZone: "Asia/Kolkata"
-      })
-    );
-
-    const year = istDate.getFullYear();
-    const month = String(istDate.getMonth() + 1).padStart(2, "0");
-    const day = String(istDate.getDate()).padStart(2, "0");
-    const dateKey = `${year}-${month}-${day}`;
-
-    // Strip time for exact midnight comparison boundaries
-    const checkDate = new Date(year, istDate.getMonth(), istDate.getDate());
-
-    const firebaseUrl = `${DB_URL}/weather/${year}-${month}/${day}.json`;
-
-    try {
-      const res = await fetch(firebaseUrl);
-      const data = await res.json();
-
-      let row = processDayDataSafe(istDate, data);
-      const kvData = workerMap[dateKey];
-
-      // ── CONDITIONAL METRIC INTERPOLATION ──
-      if (checkDate > boundaryDate && kvData) {
-        // If date is > 5/6/2026, grab pre-calculated Min/Max blocks directly from Worker
-        row.minTemp  = kvData.min_temp_c != null ? Number(kvData.min_temp_c).toFixed(1) : row.minTemp;
-        row.maxTemp  = kvData.max_temp_c != null ? Number(kvData.max_temp_c).toFixed(1) : row.maxTemp;
-        row.minPress = kvData.min_press_hpa != null ? Number(kvData.min_press_hpa).toFixed(1) : row.minPress;
-        row.maxPress = kvData.max_press_hpa != null ? Number(kvData.max_press_hpa).toFixed(1) : row.maxPress;
-      }
-
-      // Rain and Wind Max Gust adjustments (Applies to all available Worker dates)
-      if (kvData) {
-        row.totalRain = kvData.rain_mm != null ? Number(kvData.rain_mm).toFixed(1) : "0.0";
-        row.maxWind   = kvData.gust_kmh != null ? Number(kvData.gust_kmh).toFixed(1) : row.maxWind;
-      }
-
-      results.push(row);
-    } catch (e) {
-      results.push(emptyRow(istDate));
+    if (!historyData || historyData.error || !Array.isArray(historyData)) {
+      body.innerHTML = `<tr><td colspan="5">No history data available</td></tr>`;
+      loadEl.style.display = "none";
+      tableEl.style.display = "table";
+      return;
     }
-  }
 
-  results.sort((a, b) => b.timestamp - a.timestamp);
+    // Slice the array to only display the number of requested days (e.g., 7 or 30)
+    const displayData = historyData.slice(0, days);
 
-  if (results.length === 0) {
-    body.innerHTML = `<tr><td colspan="5">No data available</td></tr>`;
-  } else {
-    results.forEach(row => {
+    displayData.forEach(row => {
+      // Format the ISO date (YYYY-MM-DD) into standard Indian Display format (e.g., 12 Jan)
+      const dateObj = new Date(row.date);
+      const formattedDate = dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+
+      // Helper function to safely format metrics to 1 decimal point
+      const fmt = (val, fallback = "—") => (val != null && !isNaN(val)) ? Number(val).toFixed(1) : fallback;
+
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${row.date}</td>
+        <td>${formattedDate}</td>
         <td>
-          <span style="color:#4a90e2">${row.minTemp}</span>
+          <span style="color:#4a90e2">${fmt(row.daily_min_temp_c)}</span>
           /
-          <span style="color:#e74c3c">${row.maxTemp}</span>
+          <span style="color:#e74c3c">${fmt(row.daily_max_temp_c)}</span>
           °C
         </td>
-        <td>${row.maxWind} km/h</td>
+        <td>${fmt(row.daily_max_gust_kmh, "0.0")} km/h</td>
         <td>
-          ${row.minPress}
+          ${fmt(row.daily_min_press_hpa)}
           /
-          ${row.maxPress}
+          ${fmt(row.daily_max_press_hpa)}
           hPa
         </td>
-        <td>${row.totalRain} mm</td>
+        <td>${fmt(row.daily_rain_mm, "0.0")} mm</td>
       `;
       body.appendChild(tr);
     });
+
+  } catch (e) {
+    console.error("Supabase Metrics API failed:", e);
+    body.innerHTML = `<tr><td colspan="5">Error loading weather records.</td></tr>`;
   }
 
   loadEl.style.display = "none";
   tableEl.style.display = "table";
 }
 
-function processDayDataSafe(dateObj, dayData) {
-  let temps = [];
-  let pressures = [];
-  let winds = [];
-
-  if (!dayData || typeof dayData !== "object") {
-    return emptyRow(dateObj);
-  }
-
-  Object.values(dayData).forEach(hourNode => {
-    if (!hourNode || typeof hourNode !== "object") return;
-
-    Object.values(hourNode).forEach(node => {
-      if (!node || typeof node !== "object") return;
-
-      if ("outdoor_temp" in node) {
-        if (node.outdoor_temp != null) temps.push(Number(node.outdoor_temp));
-        if (node.pressure_relative != null) pressures.push(Number(node.pressure_relative));
-        if (node.wind_speed != null) winds.push(Number(node.wind_speed));
-      } else {
-        Object.values(node).forEach(entry => {
-          if (!entry || typeof entry !== "object") return;
-          if (entry.outdoor_temp != null) temps.push(Number(entry.outdoor_temp));
-          if (entry.pressure_relative != null) pressures.push(Number(entry.pressure_relative));
-          if (entry.wind_speed != null) winds.push(Number(entry.wind_speed));
-        });
-      }
-    });
-  });
-
-  return {
-    date: dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
-    timestamp: dateObj.getTime(),
-    minTemp: temps.length ? Math.min(...temps).toFixed(1) : "—",
-    maxTemp: temps.length ? Math.max(...temps).toFixed(1) : "—",
-    minPress: pressures.length ? Math.min(...pressures).toFixed(1) : "—",
-    maxPress: pressures.length ? Math.max(...pressures).toFixed(1) : "—",
-    maxWind: winds.length ? Math.max(...winds).toFixed(1) : "0.0",
-    totalRain: "0.0"
-  };
-}
-
-function emptyRow(dateObj) {
-  return {
-    date: dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
-    timestamp: dateObj.getTime(),
-    minTemp: "—",
-    maxTemp: "—",
-    minPress: "—",
-    maxPress: "—",
-    maxWind: "0.0",
-    totalRain: "0.0"
-  };
-}
-
-// INIT
+// INIT - Load the initial batch (e.g., 7 days)
 loadHistory(7, document.querySelector(".hist-btn.active"));
 </script>
 
