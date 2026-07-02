@@ -696,16 +696,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
      <!-- NAVIGATION BAR -->
-    <nav class="nav-bar" id="main-nav">
+    <!-- NAVIGATION BAR -->
+<nav class="nav-bar" id="main-nav">
   <ul class="nav-links">
     <li><a href="javascript:void(0)" data-page="home.html" class="active-nav">Home</a></li>
     <li><a href="javascript:void(0)" data-page="Forecast.html">Forecast</a></li>
-    <li><a href="javascript:void(0)" data-page="information.html">Information</a></li>
+    <!-- Added id and arrow span to Information -->
+    <li>
+      <a href="javascript:void(0)" data-page="information.html" id="info-nav-btn">
+        Information <span id="info-arrow" style="margin-left: 6px; font-size: 8px; transition: transform 0.2s;">▼</span>
+      </a>
+    </li>
     <li><a href="javascript:void(0)" data-page="about.html">About Us</a></li>
     <li><a href="javascript:void(0)" data-page="contact.html">Contact</a></li>
   </ul>
 </nav>
 
+<!-- NEW TOGGLE-DOWN LINK DRAWER -->
+<div id="info-dropdown-panel" style="max-height: 0; opacity: 0; overflow: hidden; background: #ffffff; border-bottom: 0 solid var(--gold); transition: max-height 0.3s ease-out, opacity 0.2s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+  <div style="max-width: 1100px; margin: 0 auto; padding: 15px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+
+    <!-- Link Column 1 -->
+    <div>
+      <h4 style="color: var(--navy); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Official Hubs</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+        <li><a href="https://info.elwoic.in/" target="_blank" style="font-size: 12px; color: var(--text-mid); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">ELWOIC Information Hub →</a></li>
+        <li><a href="https://info.elwoic.in/registration/intro.html" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Register to ELWOIC</a></li>
+        <li><a href="https://request.elwoic.in/" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Request Historical Data</a></li>
+      </ul>
+    </div>
+
+    <!-- Link Column 2 -->
+    <div>
+      <h4 style="color: var(--navy); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">External Weather Tools</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+        <li><a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" style="font-size: 12px; color: var(--text-mid); text-decoration: none;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">IMD Mausam Portal</a></li>
+        <li><a href="https://www.windy.com/" target="_blank" style="font-size: 12px; color: var(--text-mid); text-decoration: none;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Windy Live Radar Map</a></li>
+      </ul>
+    </div>
+
+    <!-- Link Column 3 -->
+    <div>
+      <h4 style="color: var(--navy); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Community Project</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+        <li><a href="report.html" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Submit Weather Report</a></li>
+        <li><a href="https://info.elwoic.in/application.html" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Volunteer / Work with ELWOIC</a></li>
+        <li><a href="https://elwoic.in/about.html#support-project" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Support ELWOIC</a></li>
+      </ul>
+    </div>
+
+    <!-- Link Column 4 -->
+    <div>
+      <h4 style="color: var(--navy); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Know More</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+        <li><a href="#" style="font-size: 12px; color: var(--text-mid); text-decoration: none;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">View ELWOIC Fund Collection &amp; Utilisation</a></li>
+        <li><a href="https://request.elwoic.in/track" data-dropdown-nav style="font-size: 12px; color: var(--text-mid); text-decoration: none;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='var(--text-mid)'">Track Data Request</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
     <!-- LIVE TICKER (hidden on non-home pages) -->
     <div class="ticker-wrap" id="tickerWrap">
       <div class="ticker-badge">
@@ -720,7 +770,7 @@ Real-Time Weather Monitoring & Forecasting
 &nbsp;&nbsp;|&nbsp;&nbsp;
 Radar · Satellite · Ground-Based Observations · Weather Analysis
 &nbsp;&nbsp;|&nbsp;&nbsp;
-Updates atleast atleast <span id="refresh-time">30</span> minutes
+Updates atleast <span id="refresh-time">30</span> minutes
 &nbsp;&nbsp;|&nbsp;&nbsp;
 Elamkulam, Malappuram, Kerala
 
@@ -770,33 +820,89 @@ Elamkulam, Malappuram, Kerala
   <script>
     // Nav — load pages into iframe, set active, show/hide ticker,
     // and FIX 2: update the page-label in the header
-    document.addEventListener("DOMContentLoaded", () => {
-      const frame     = document.getElementById("content-frame");
-      const links     = document.querySelectorAll("#main-nav a[data-page]");
-      const ticker    = document.getElementById("tickerWrap");
-      const pageLabel = document.getElementById("page-label");
-      const HOME_PAGE = "home.html";
+   document.addEventListener("DOMContentLoaded", () => {
+  const frame        = document.getElementById("content-frame");
+  const links        = document.querySelectorAll("#main-nav a[data-page]");
+  const ticker       = document.getElementById("tickerWrap");
+  const pageLabel    = document.getElementById("page-label");
+  const HOME_PAGE    = "home.html";
 
-      function setActive(el) {
-        links.forEach(l => l.classList.remove("active-nav"));
-        el.classList.add("active-nav");
+  // NEW Dropdown Elements
+  const infoBtn      = document.getElementById("info-nav-btn");
+  const dropdownPanel = document.getElementById("info-dropdown-panel");
+  const arrow        = document.getElementById("info-arrow");
+
+  function setActive(el) {
+    links.forEach(l => l.classList.remove("active-nav"));
+    el.classList.add("active-nav");
+  }
+
+  function updateTicker(page) {
+    ticker.classList.toggle("hidden", page !== HOME_PAGE);
+  }
+
+  function updatePageLabel(page, label) {
+    if (page === HOME_PAGE) {
+      pageLabel.style.display = "none";
+      pageLabel.textContent   = "";
+    } else {
+      pageLabel.style.display = "block";
+      pageLabel.textContent   = "— " + (label || "") + " —";
+    }
+  }
+
+ function toggleDropdown(shouldOpen) {
+  if (shouldOpen) {
+    dropdownPanel.style.maxHeight = dropdownPanel.scrollHeight + "px"; // fits real content, any screen size
+    dropdownPanel.style.opacity = "1";
+    dropdownPanel.style.borderBottom = "2px solid var(--gold)";
+    arrow.textContent = "▲";
+  } else {
+    dropdownPanel.style.maxHeight = "0";
+    dropdownPanel.style.opacity = "0";
+    dropdownPanel.style.borderBottom = "0 solid var(--gold)";
+    arrow.textContent = "▼";
+  }
+}
+
+  // Handle standard link click events
+  links.forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const page  = link.getAttribute("data-page");
+      const label = link.getAttribute("data-label");
+      
+      frame.src   = page;
+      setActive(link);
+      updateTicker(page);
+      updatePageLabel(page, label);
+      frame.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Dropdown toggle logic
+      if (link === infoBtn) {
+        // Toggle open/shut if user keeps clicking information tab
+        const isCollapsed = dropdownPanel.style.maxHeight === "0px" || !dropdownPanel.style.maxHeight;
+        toggleDropdown(isCollapsed);
+      } else {
+        // Close if clicking Home, Forecast, etc.
+        toggleDropdown(false);
       }
+    });
+  });
 
-      function updateTicker(page) {
-        ticker.classList.toggle("hidden", page !== HOME_PAGE);
+  // Optional: Handle sub-links within the drawer that point to other iframe views
+  document.querySelectorAll("[data-dropdown-nav]").forEach(subLink => {
+    subLink.addEventListener("click", e => {
+      const page = subLink.getAttribute("href");
+      if (!page.startsWith("http")) {
+        e.preventDefault();
+        frame.src = page;
+        toggleDropdown(false); // Cleanly shut drawer on navigation
+        const match = document.querySelector(`#main-nav a[data-page="${page}"]`);
+        if (match) setActive(match);
       }
-
-      // FIX 2: show/hide page label based on current page
-      function updatePageLabel(page, label) {
-        if (page === HOME_PAGE) {
-          pageLabel.style.display = "none";
-          pageLabel.textContent   = "";
-        } else {
-          pageLabel.style.display = "block";
-          pageLabel.textContent   = "— " + label + " —";
-        }
-      }
-
+    });
+  });
 
         const params = new URLSearchParams(window.location.search);
   const initialPage = params.get("page") || "home.html";
