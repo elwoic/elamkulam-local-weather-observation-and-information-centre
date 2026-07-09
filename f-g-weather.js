@@ -108,7 +108,7 @@ const dirMap = (deg = 0) => {
 };
 
 function getCondition(uvi, solar, rain) {
-    if (rain > 0)                    return "🌧 മഴ പെയ്യുന്നു";
+    if (rain > 0)                    return "🌧 മഴ";
     if (uvi >= 6 && solar > 600)     return "☀️ തെളിഞ്ഞ ആകാശം";
     if (solar > 300)                 return "🌤 ഭാഗികമായി മേഘാവൃതം";
     if (solar > 80)                  return "⛅ ചെറിയ മേഘങ്ങൾ";
