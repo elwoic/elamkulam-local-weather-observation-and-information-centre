@@ -867,6 +867,176 @@
     .btn-submit:hover { background: var(--navy-mid); }
 
     /* ============================================================
+       REPORT HUB — AI Essay tab + Station Logbook tab
+       (merges the public Logbook Archive into the
+        "എലങ്കുളം കാലാവസ്ഥാ സമഗ്ര റിപ്പോർട്ട്" section)
+    ============================================================ */
+    .verify-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+      border-radius: 7px;
+      padding: 10px 14px;
+      margin: 14px 14px 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+    .verify-banner-icon { font-size: 16px; }
+    .verify-banner-text { flex: 1; min-width: 180px; }
+    .verify-banner-link {
+      background: #065f46;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .verify-banner-link:hover { background: #047857; }
+
+    .report-hub { margin-top: 4px; }
+    .report-hub-tabs {
+      display: flex;
+      gap: 4px;
+      background: #e3ecf6;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 6px 6px 0;
+    }
+    .report-tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 8px 8px 0 0;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 12.5px;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .report-tab:hover { background: rgba(13,61,110,0.07); color: var(--navy); }
+    .report-tab.active {
+      background: var(--card-bg);
+      color: var(--navy);
+      box-shadow: 0 -2px 0 var(--gold) inset;
+    }
+    .report-tab-icon { font-size: 14px; }
+    .report-tab-badge {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .report-tab-panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .report-tab-panel.active { display: block; }
+
+    .logbook-widget-card { padding: 16px; }
+    .logbook-widget-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .logbook-title { font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--navy); }
+    .logbook-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+    #logbook-select {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Noto Sans Malayalam', var(--font-sans);
+      font-size: 12.5px;
+      background: #f7fafd;
+      color: var(--navy);
+      min-width: 210px;
+    }
+    .logbook-loading { padding: 26px; text-align: center; color: var(--text-muted); font-size: 13px; }
+    .logbook-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .logbook-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .logbook-badge.verified { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+    .logbook-meta-item { font-size: 12px; color: var(--text-mid); }
+    .logbook-section { margin-bottom: 14px; }
+    .logbook-section h4 {
+      font-family: 'Noto Sans Malayalam', var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      border-left: 3px solid var(--gold);
+      padding-left: 8px;
+      margin-bottom: 5px;
+    }
+    .logbook-section p {
+      font-family: 'Noto Sans Malayalam', var(--font-sans);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-mid);
+      padding-left: 11px;
+      white-space: pre-wrap;
+    }
+    .logbook-actions { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); text-align: right; }
+    .btn-logbook-full {
+      display: inline-block;
+      background: var(--navy);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn-logbook-full:hover { background: var(--navy-mid); }
+    .logbook-empty { text-align: center; padding: 34px 16px; }
+    .logbook-empty-icon { font-size: 30px; margin-bottom: 8px; }
+    .logbook-empty-title { font-family: var(--font-serif); font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .logbook-empty-text { font-family: 'Noto Sans Malayalam', var(--font-sans); font-size: 12.5px; color: var(--text-mid); max-width: 420px; margin: 0 auto 10px; line-height: 1.6; }
+    .logbook-empty-phone { font-size: 15px; font-weight: 800; color: var(--navy); }
+
+    @media (max-width: 600px) {
+      .report-tab span:not(.report-tab-icon):not(.report-tab-badge) { display: inline; }
+      .logbook-widget-head { flex-direction: column; }
+      #logbook-select { width: 100%; }
+    }
+
+    /* ============================================================
        RESPONSIVE MISC
     ============================================================ */
     @media (max-width: 600px) {
@@ -1073,11 +1243,50 @@ if (window.top === window.self) {
 
 
   <!-- ══════════════════════════════════════
-       ELAMKULAM FORECAST REPORT
-       Target div for elamkulam-forecast.js
-       Keep exactly as it was in original code
+       ELAMKULAM COMPREHENSIVE REPORT HUB
+       Two tabs sharing one card:
+         · AI live essay   (#elamkulam-forecast-report, filled by elamkulam-forecast.js — untouched)
+         · Station Logbook (#panel-logbook, filled by js/logbook-widget.js — new)
   ══════════════════════════════════════ -->
-  <div id="elamkulam-forecast-report"></div>
+  <h2 class="sec-head">എലങ്കുളം കാലാവസ്ഥാ സമഗ്ര റിപ്പോർട്ട്</h2>
+
+  <div class="report-hub">
+    <div class="report-hub-tabs" role="tablist">
+      <button class="report-tab active" id="tab-btn-auto" role="tab" aria-selected="true" aria-controls="panel-auto" onclick="switchReportTab('auto')">
+        <span class="report-tab-icon">🤖</span><span>AI തത്സമയ വിശകലനം</span>
+      </button>
+      <button class="report-tab" id="tab-btn-logbook" role="tab" aria-selected="false" aria-controls="panel-logbook" onclick="switchReportTab('logbook')">
+        <span class="report-tab-icon">📋</span><span>സ്റ്റേഷൻ ലോഗ്ബുക്ക്</span>
+        <span class="report-tab-badge" id="logbook-tab-badge"></span>
+      </button>
+    </div>
+
+    <div class="report-tab-panel active" id="panel-auto" role="tabpanel" aria-labelledby="tab-btn-auto">
+      <div class="verify-banner" id="verify-banner">
+        <span class="verify-banner-icon">✅</span>
+        <span class="verify-banner-text">ഇന്നത്തെ AI പ്രവചനം സ്റ്റേഷൻ ഓഫീസർ പരിശോധിച്ച് സ്ഥിരീകരിച്ചു.</span>
+        <button class="verify-banner-link" onclick="switchReportTab('logbook')">ലോഗ്ബുക്ക് കാണുക →</button>
+      </div>
+      <div id="elamkulam-forecast-report"></div>
+    </div>
+
+    <div class="report-tab-panel" id="panel-logbook" role="tabpanel" aria-labelledby="tab-btn-logbook">
+      <div class="logbook-widget-card">
+        <div class="logbook-widget-head">
+          <div>
+            <div class="logbook-title">📖 ഔദ്യോഗിക നിരീക്ഷണ ലോഗ്ബുക്ക്</div>
+            <div class="logbook-sub">Human-verified station records · ELWOIC Duty Officer</div>
+          </div>
+          <select id="logbook-select" onchange="renderLogbookEntry(this.value)">
+            <option value="">Loading…</option>
+          </select>
+        </div>
+        <div class="logbook-body" id="logbook-body">
+          <div class="logbook-loading">ലോഗ്ബുക്ക് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു…</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- ══════════════════════════════════════
@@ -1230,6 +1439,9 @@ if (window.top === window.self) {
 <script src="js/history-table.js"></script>
 <script src="js/advise.js"></script>
 <script type="module" src="js/community-reports.js"></script>
+
+<!-- NEW: Station Logbook widget — merges the Public Logbook Archive into this page -->
+<script src="js/logbook-widget.js"></script>
 
 </body>
 </html>
