@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELWOIC - Public Logbook Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --elwoic-blue: #1a5ca4;
+            --bg-canvas: #f1f5f9;
+            --text-dark: #0f172a;
+            --border-color: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Noto Sans Malayalam', sans-serif;
+            background-color: var(--bg-canvas); color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        header {
+            width: 100%; background: #ffffff; border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px; display: flex; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .filter-container { width: 210mm; display: flex; justify-content: space-between; align-items: center; gap: 15px; font-family: 'Manjari', sans-serif; flex-wrap: wrap; }
+        .archive-title-block { display: flex; flex-direction: column; gap: 4px; }
+        .back-link {
+            font-family: 'Manjari', sans-serif; font-size: 0.85rem; font-weight: 700;
+            color: var(--elwoic-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .archive-title { font-size: 1.2rem; font-weight: 700; color: var(--elwoic-blue); }
+        .selector-box { display: flex; align-items: center; gap: 10px; }
+        select { padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Noto Sans Malayalam', sans-serif; font-size: 0.9rem; outline: none; background: #ffffff; min-width: 220px; }
+        
+        .print-btn {
+            background-color: var(--elwoic-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px;
+            font-family: 'Manjari', sans-serif; font-weight: 700; cursor: pointer;
+        }
+
+        .fallback-message-card {
+            width: 210mm; background: white; padding: 50px 30px; text-align: center; margin-top: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-radius: 8px; font-family: 'Manjari', sans-serif;
+        }
+
+        .fallback-message-card h2 { color: #475569; margin-bottom: 15px; font-size: 1.5rem; }
+        .fallback-message-card p { font-family: 'Noto Sans Malayalam', sans-serif; color: #64748b; font-size: 1.1rem; line-height: 1.6; }
+        .phone-highlight { color: var(--elwoic-blue); font-weight: bold; font-size: 1.3rem; margin-top: 10px; display: block; }
+
+        .a4-document {
+            width: 210mm; min-height: 297mm; background: white; padding: 20mm 15mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 30px 0; box-sizing: border-box; line-height: 1.7;
+            display: none;
+        }
+
+        .letterhead-container { width: 100%; margin-bottom: 10px; }
+        .letterhead-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .logo-box { width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; }
+        .logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .branding-text { text-align: center; flex-grow: 1; }
+        .branding-text h1 { font-family: Arial, sans-serif; font-size: 1.0rem; font-weight: bold; color: var(--elwoic-blue); margin-bottom: 4px; }
+        .branding-text h2 { font-family: 'Noto Sans Malayalam', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--elwoic-blue); }
+        .letterhead-divider { border: 0; height: 3px; background-color: var(--elwoic-blue); margin-bottom: 15px; }
+
+        .doc-title-bar { text-align: center; margin: 25px 0 15px 0; font-family: 'Manjari', sans-serif; font-weight: 700; font-size: 1.2rem; text-decoration: underline; }
+        .metadata-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Manjari', sans-serif; font-size: 0.95rem; }
+        .metadata-table td { border: 1px solid var(--border-color); padding: 8px 12px; }
+        .metadata-label { font-weight: 700; background-color: #f8fafc; width: 20%; }
+
+        .report-section { margin-bottom: 22px; }
+        .report-section h3 { font-family: 'Manjari', sans-serif; font-size: 1.15rem; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px; }
+        .report-section p { font-size: 0.98rem; text-align: justify; color: #334155; white-space: pre-wrap; }
+
+        .report-footer { margin-top: 50px; display: flex; justify-content: flex-end; font-family: 'Manjari', sans-serif; }
+        .seal-signature-block { text-align: center; width: 220px; }
+        .official-seal-wrap { width: 90px; height: 90px; margin: 0 auto 8px auto; }
+        .official-seal-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        @media print {
+            body { background: white; }
+            header, .fallback-message-card { display: none; }
+            .a4-document { box-shadow: none; margin: 0; padding: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="public-header">
+        <div class="filter-container">
+            <div class="archive-title-block">
+                <a class="back-link" href="Forecast.html">← കാലാവസ്ഥാ പേജിലേക്ക് മടങ്ങുക</a>
+                <div class="archive-title">നിരീക്ഷണ റിപ്പോർട്ടുകൾ (Station Logbook)</div>
+            </div>
+            <div class="selector-box">
+                <select id="report-dropdown" onchange="fetchSelectedReport()">
+                    <option value="">റിപ്പോർട്ടുകൾ ലഭ്യമാക്കുന്നു...</option>
+                </select>
+                <button class="print-btn" onclick="window.print()">Print PDF</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- INTEGRATED LIVE CUSTOM FALLBACK CARD FOR REVOKED OR EMPTY TRACKS -->
+    <div id="fallback-card" class="fallback-message-card" style="display: none;">
+        <h2>റിപ്പോർട്ടുകൾ നിലവിൽ ലഭ്യമല്ല</h2>
+        <p>ഈ വിഭാഗത്തിൽ പബ്ലിഷ് ചെയ്ത കാലാവസ്ഥാ റിപ്പോർട്ടുകൾ ഒന്നും നിലവിലില്ല അല്ലെങ്കിൽ ലഭ്യമാക്കിയവ കാലാവധി പൂർത്തിയായതിനെ തുടർന്ന് പിൻവലിച്ചിരിക്കുന്നു.</p>
+        <p style="margin-top: 15px; font-weight: 700;">കൂടുതൽ വിവരങ്ങൾക്കും സഹായങ്ങൾക്കുമായി ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രവുമായി നേരിട്ട് ബന്ധപ്പെടുക:</p>
+        <span class="phone-highlight">📞 ഫോൺ: 04933 316 750</span>
+    </div>
+
+    <div class="a4-document" id="document-sheet">
+        <div class="letterhead-container">
+            <div class="letterhead-top">
+                <div class="logo-box"><img src="images/ELWOIC.png" alt="[Logo]" class="logo-img"></div>
+                <div class="branding-text">
+                    <h1>Elamkulam Local Weather Observation And Information Centre</h1>
+                    <h2>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം</h2>
+                </div>
+                <div class="logo-box"><img src="images/Elamkulam Weather Logo Design.1.png" alt="[Logo]" class="logo-img"></div>
+            </div>
+            <hr class="letterhead-divider">
+        </div>
+
+        <div class="doc-title-bar">ഔദ്യോഗിക കാലാവസ്ഥാ നിരീക്ഷണ ഡയറിയും പ്രവചന വിലയിരുത്തൽ റിപ്പോർട്ടും</div>
+
+        <table class="metadata-table">
+            <tr>
+                <td class="metadata-label">റിപ്പോർട്ട് നമ്പർ</td>
+                <td id="doc-id" style="width: 35%; font-weight: bold; color: var(--elwoic-blue);">--</td>
+                <td class="metadata-label">തീയതി</td>
+                <td id="doc-date">--</td>
+            </tr>
+            <tr>
+                <td class="metadata-label">നിരീക്ഷകൻ</td>
+                <td id="doc-observer" colspan="3">--</td>
+            </tr>
+        </table>
+
+        <div class="report-section"><h3>പ്രവചനം (Issued Forecast)</h3><p id="doc-forecast">--</p></div>
+        <div class="report-section"><h3>യഥാർത്ഥ കാലാവസ്ഥ സ്ഥിതി (Actual Weather)</h3><p id="doc-actual">--</p></div>
+        <div class="report-section"><h3>പ്രവചന വിലയിരുത്തൽ (Verification)</h3><p id="doc-verification">--</p></div>
+        <div class="report-section"><h3>ശ്രദ്ധേയമായ മാറ്റങ്ങൾ (Deviations)</h3><p id="doc-deviations">--</p></div>
+        <div class="report-section"><h3>അധിക നിരീക്ഷണങ്ങൾ (Human Observations)</h3><p id="doc-additional">--</p></div>
+        <div class="report-section"><h3>അടുത്ത മണിക്കൂറുകളിലെ സാധ്യത (Outlook)</h3><p id="doc-outlook">--</p></div>
+
+        <div class="report-footer">
+            <div class="seal-signature-block">
+                <div class="official-seal-wrap"><img src="images/elwoic_seal.png.png" alt="[ELWOIC Seal]"></div>
+                <p style="font-size: 0.9rem; font-weight: 700;">ELWOIC സ്റ്റേഷൻ റെക്കോർഡ് വിഭാഗം</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://elwoic-weather-diary-api.bold-waterfall-0d01.workers.dev";
+        let localReportsCache = {};
+
+        async function loadArchiveListings() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reports`);
+                if (!response.ok) throw new Error("Load Error");
+                
+                const reportsData = await response.json();
+                
+                // Switch layout cleanly into a beautiful error placeholder context if responses are bare
+                if (!reportsData || Object.keys(reportsData).length === 0) {
+                    showFallbackState();
+                    return;
+                }
+
+                localReportsCache = reportsData;
+                const dropdown = document.getElementById('report-dropdown');
+                dropdown.innerHTML = ""; 
+
+                const sortedKeys = Object.keys(reportsData).sort().reverse();
+                let activeCount = 0;
+                let firstPublishedId = "";
+
+                sortedKeys.forEach(key => {
+                    const report = reportsData[key];
+                    if (report.status === "published") {
+                        const option = document.createElement('option');
+                        option.value = report.report_id;
+                        option.innerText = `${report.report_id} (${report.date})`;
+                        dropdown.appendChild(option);
+                        if (!firstPublishedId) firstPublishedId = report.report_id;
+                        activeCount++;
+                    }
+                });
+
+                if (activeCount === 0) {
+                    showFallbackState();
+                    return;
+                }
+
+                // NEW: support deep-linking via ?id=REPORT_ID (used by the
+                // Forecast page's Station Logbook tab to open a specific report)
+                const params = new URLSearchParams(window.location.search);
+                const requestedId = params.get('id');
+                if (requestedId && localReportsCache[requestedId] && localReportsCache[requestedId].status === "published") {
+                    dropdown.value = requestedId;
+                } else {
+                    dropdown.value = firstPublishedId;
+                }
+                fetchSelectedReport();
+
+            } catch (error) {
+                console.error(error);
+                showFallbackState();
+            }
+        }
+
+        function showFallbackState() {
+            document.getElementById('public-header').style.display = "none";
+            document.getElementById('document-sheet').style.display = "none";
+            document.getElementById('fallback-card').style.display = "block";
+        }
+
+        function fetchSelectedReport() {
+            const selectedID = document.getElementById('report-dropdown').value;
+            const targetReport = localReportsCache[selectedID];
+
+            if (!targetReport) { showFallbackState(); return; }
+
+            document.getElementById('fallback-card').style.display = "none";
+            document.getElementById('document-sheet').style.display = "block";
+
+            document.getElementById('doc-id').innerText = targetReport.report_id;
+            document.getElementById('doc-date').innerText = targetReport.date;
+            document.getElementById('doc-observer').innerText = targetReport.observer || "സ്റ്റേഷൻ ഡ്യൂട്ടി ഓഫീസർ";
+            
+            document.getElementById('doc-forecast').innerText = targetReport.content.forecast || "-";
+            document.getElementById('doc-actual').innerText = targetReport.content.actual_weather || "-";
+            document.getElementById('doc-verification').innerText = targetReport.content.verification || "-";
+            document.getElementById('doc-deviations').innerText = targetReport.content.deviations || "-";
+            document.getElementById('doc-additional').innerText = targetReport.content.additional_obs || "-";
+            document.getElementById('doc-outlook').innerText = targetReport.content.outlook || "-";
+        }
+
+        window.onload = loadArchiveListings;
+    </script>
+</body>
+</html>
