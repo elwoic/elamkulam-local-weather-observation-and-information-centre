@@ -341,12 +341,18 @@ function buildDataConfidenceNote({ coreOk, meteoOk }) {
 
 function buildDewPointNarrative(dewPoint){
   if (dewPoint == null) return null;
-  if (dewPoint >= 26) return pick([
-    "മഞ്ഞുബിന്ദു നില (Dew Point) വളരെ ഉയർന്നതിനാൽ അന്തരീക്ഷം അസ്വസ്ഥജനകമായ ഈർപ്പത്തോടെ അനുഭവപ്പെടാം.",
-    "ഉയർന്ന Dew Point നിലയിൽ അന്തരീക്ഷം കനത്ത ഈർപ്പത്തോടെയാണ് അനുഭവപ്പെടുന്നത്."
+  // Thresholds calibrated to Kerala's actual range — coastal dew points rarely
+  // exceed ~26°C even in peak monsoon, so "very muggy" has to start well below that
+  // or it never fires and everything gets flattened into a meaningless middle bucket.
+  if (dewPoint >= 24) return pick([
+    "മഞ്ഞുബിന്ദു നില വളരെ ഉയർന്നതിനാൽ അന്തരീക്ഷം കനത്ത, അസ്വസ്ഥജനകമായ ഈർപ്പത്തോടെയാണ് അനുഭവപ്പെടുന്നത്.",
+    "ഉയർന്ന Dew Point നിലയിൽ അന്തരീക്ഷത്തിൽ ഈർപ്പം വളരെ കനത്തതായി അനുഭവപ്പെടുന്നു."
   ]);
-  if (dewPoint >= 22) return "മഞ്ഞുബിന്ദു നില മിതമായ ഈർപ്പം സൂചിപ്പിക്കുന്നു.";
-  return null;
+  if (dewPoint >= 20) return pick([
+    "മഞ്ഞുബിന്ദു നില ശ്രദ്ധേയമായ ഈർപ്പം സൂചിപ്പിക്കുന്നു.",
+    "അന്തരീക്ഷത്തിൽ മിതമായതിലധികം ഈർപ്പം അനുഭവപ്പെടാൻ സാധ്യതയുള്ള നിലയാണ് ഇപ്പോഴത്തെ Dew Point."
+  ]);
+  return null; // genuinely comfortable — no need to say anything
 }
 
 function buildTempNarrative(temp, humidity, feelsLike, dewPoint){
@@ -362,7 +368,7 @@ function buildTempNarrative(temp, humidity, feelsLike, dewPoint){
       `അന്തരീക്ഷ ഈർപ്പം ഏകദേശം ${humidity}% നിലയിലാണ്.`
     ]));
   }
-  if (feelsLike != null) {
+  if (feelsLike != null && Math.abs(feelsLike - temp) >= 0.5) {
     lines.push(pick([
       `ശാരീരികമായി അനുഭവപ്പെടുന്ന ചൂട് (Feels Like) ${toFixedSafe(feelsLike,1)}°C വരെ എത്തുന്നുവെന്നാണ് വിലയിരുത്തൽ.`,
       `യഥാർത്ഥത്തിൽ അനുഭവപ്പെടുന്ന ചൂട് ഏകദേശം ${toFixedSafe(feelsLike,1)}°C ആണ്.`
@@ -458,6 +464,14 @@ function getWindImpact(windKmh) {
 
 function buildWindNarrative(speedKmh, gustKmh, dirML){
   if (speedKmh == null) return null;
+  // Below this, direction is noise — a station reading of ~0 km/h has no
+  // meaningful direction to report, so don't manufacture one.
+  if (speedKmh < 1.5) {
+    return pick([
+      "കാറ്റ് ഏതാണ്ട് നിശ്ചലമായ അവസ്ഥയിലാണ്.",
+      "നിലവിൽ ശ്രദ്ധേയമായ കാറ്റ് അനുഭവപ്പെടുന്നില്ല."
+    ]);
+  }
   const dirLabel = dirML || "അജ്ഞാത ദിശ";
   const lines = [pick([
     `ഏകദേശം ${toFixedSafe(speedKmh,1)} km/h വേഗതയിൽ ${dirLabel} ദിശയിൽ നിന്ന് കാറ്റ് വീശുന്നു.`,
@@ -650,10 +664,6 @@ function generateLongNewsMalayalam({ core, rainForecast, imdAlert, dataConfidenc
   );
   const coreSeason = core?.season ?? fallbackSeasonFromMonth(now.getMonth() + 1);
   const seasonBucket = mapCoreSeasonToNarrativeBucket(coreSeason, humidity, rainSignal);
-
-  /* HEADER */
-  s.push(`${formatDateMalayalam(now)} — ${formatTimeMalayalam(now)}`);
-  s.push("--------------------------------------------------");
 
   /* SYNTHESIZED TOP ALERT */
   const topAlert = computeTopAlert({ temp, humidity, aqi, pressureTrend3h, rainRateNow, rainProbNow });
