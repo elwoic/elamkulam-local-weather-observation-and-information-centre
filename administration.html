@@ -486,6 +486,13 @@ const WORKER_URL = "https://elwoic-unified-manual-updates.bold-waterfall-0d01.wo
 
 let authToken = sessionStorage.getItem("elwoic_token") || localStorage.getItem("elwoic_token") || "";
 
+// Declared here (not down in the "WEATHER REPORTS" section) because showApp() below
+// can run immediately on page load (auto-login), before the script has finished
+// parsing further down — a `let` declared later would still be in its temporal
+// dead zone at that point and throw a ReferenceError.
+let generatedReportID = "";
+let isEditingExisting = false;
+
 /* =========================================================
    TOAST
    ========================================================= */
@@ -641,9 +648,6 @@ document.querySelectorAll(".subtab-btn").forEach(btn => {
 /* =========================================================
    WEATHER REPORTS
    ========================================================= */
-let generatedReportID = "";
-let isEditingExisting = false;
-
 function generateSequentialID() {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
