@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ELWOIC Admin Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>ELWOIC Admin Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Manjari:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -16,293 +18,477 @@
     --green: #16a34a; --green-bg: #f0fdf4; --green-border: #bbf7d0;
     --red: #dc2626; --red-bg: #fef2f2; --red-border: #fecaca;
     --amber: #d97706; --amber-bg: #fffbeb; --amber-border: #fde68a;
+    --letterhead-blue: #1a5ca4;
     --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- LOGIN ---------- */
   #login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .login-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 40px 36px; }
-  .login-logo { text-align: center; margin-bottom: 32px; }
+  .login-logo { text-align: center; margin-bottom: 28px; }
   .login-mark { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text-2); letter-spacing: 0.05em; margin-bottom: 14px; }
-  .login-logo h2 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-  .login-logo p  { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; }
+  .login-logo h2 { font-size: 17px; font-weight: 600; }
+  .login-logo p  { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
   .field-wrap { margin-bottom: 14px; }
   .field-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
-  .ctrl-input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; resize: vertical; }
-  .ctrl-input:focus { border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); background: var(--surface); }
+  .ctrl-input, .ctrl-select { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical; }
+  .ctrl-input:focus, .ctrl-select:focus { border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); background: var(--surface); }
   .ctrl-input::placeholder { color: var(--text-3); }
-  textarea.ctrl-input { min-height: 90px; line-height: 1.6; font-family: 'DM Sans', sans-serif; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s, transform 0.1s; white-space: nowrap; }
+  textarea.ctrl-input { min-height: 90px; line-height: 1.6; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 12.5px; color: var(--text-2); }
+  .checkbox-row input { accent-color: var(--accent); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .1s; white-space: nowrap; }
   .btn:active { transform: scale(0.98); }
-  .btn:hover  { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:hover { opacity: .85; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
   .btn-primary { background: var(--accent); color: var(--accent-fg); width: 100%; padding: 11px; font-size: 14px; }
-  .btn-update  { background: var(--accent); color: var(--accent-fg); flex: 1; }
+  .btn-update  { background: var(--accent); color: var(--accent-fg); }
   .btn-revoke  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .btn-success { background: var(--green); color: #fff; flex: 1; padding: 11px; }
-  .btn-danger  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); flex: 1; padding: 11px; }
-  .btn-logout  { background: transparent; color: var(--text-2); border: 1px solid var(--border); padding: 6px 14px; font-size: 12px; }
-  #admin-portal { display: none; }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-danger  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .btn-ghost   { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+  .btn-sm      { padding: 5px 11px; font-size: 12px; }
+  .btn-block   { width: 100%; }
+
+  /* ---------- SHELL ---------- */
+  #app { display: none; }
   .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
   .topbar-brand { display: flex; align-items: center; gap: 12px; }
   .topbar-mark { width: 32px; height: 32px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; color: var(--text-2); }
-  .topbar-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .topbar-sub   { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
-  .topbar-right { display: flex; align-items: center; gap: 14px; }
-  .sys-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-2); font-family: 'DM Mono', monospace; }
-  .sys-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px var(--green-border); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-  .portal-body { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
-  .status-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-  .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
-  .status-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); }
-  .sc-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
-  .sc-val   { margin-top: 3px; }
-  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 100px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
-  .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-  .badge-live     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .badge-live .badge-dot { background: var(--green); animation: pulse 2s infinite; }
-  .badge-offline { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
-  .badge-offline .badge-dot { background: var(--text-3); }
-  .badge-promoted { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .badge-promoted .badge-dot { background: var(--amber); animation: pulse 2s infinite; }
-  .panels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  .topbar-title { font-size: 14px; font-weight: 600; }
+  .topbar-sub   { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: .04em; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .conn-pill { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--text-2); font-family: 'DM Mono', monospace; }
+  .conn-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+  .conn-dot.ok { background: var(--green); }
+  .conn-dot.bad { background: var(--red); }
+
+  .tabnav { display: flex; gap: 4px; padding: 0 28px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tab-btn { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .portal-body { max-width: 1180px; margin: 0 auto; padding: 26px 24px 60px; }
+
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
   .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; }
-  .panel-title { font-size: 13px; font-weight: 600; color: var(--text); }
-  .panel-body  { padding: 16px; }
+  .panel-title { font-size: 13px; font-weight: 600; }
+  .panel-body  { padding: 18px; }
+
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 100px; font-family: 'DM Mono', monospace; letter-spacing: .04em; }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .badge-live     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-live .badge-dot { animation: pulse 2s infinite; background: var(--green); }
+  .badge-offline  { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+  .badge-offline .badge-dot { background: var(--text-3); }
+  .badge-revoked  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .badge-revoked .badge-dot { background: var(--red); }
+  .badge-promoted { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .badge-promoted .badge-dot { animation: pulse 2s infinite; background: var(--amber); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+  /* ---------- WEATHER REPORTS TAB ---------- */
+  .subtabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .subtab-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; }
+  .subtab-btn.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+  .reports-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .reports-grid { grid-template-columns: 1fr; } }
+
+  .id-row { display: flex; gap: 10px; align-items: flex-end; }
+  .id-row .field-wrap { flex: 1; margin-bottom: 0; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.data-table th { text-align: left; font-family: 'DM Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+  table.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  .row-actions { display: flex; gap: 6px; }
+  .empty-row td { text-align: center; color: var(--text-3); padding: 24px; }
+
+  /* Letterhead / A4 preview, scoped */
+  .a4-preview { font-family: 'Noto Sans Malayalam', sans-serif; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 16mm 12mm; line-height: 1.6; color: #1e293b; }
+  .lh-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .lh-logo { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+  .lh-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lh-brand { text-align: center; flex-grow: 1; }
+  .lh-brand h1 { font-family: Arial, sans-serif; font-size: 1.25rem; color: var(--letterhead-blue); margin-bottom: 3px; }
+  .lh-brand h2 { font-family: 'Noto Sans Malayalam', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--letterhead-blue); }
+  .lh-divider { border: 0; height: 3px; background: var(--letterhead-blue); margin-bottom: 10px; }
+  .lh-title { text-align: center; margin: 14px 0 12px; font-family: 'Manjari', sans-serif; font-weight: 700; font-size: 1.1rem; text-decoration: underline; }
+  .lh-meta { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-family: 'Manjari', sans-serif; font-size: .9rem; }
+  .lh-meta td { border: 1px solid #cbd5e1; padding: 6px 10px; }
+  .lh-meta .lbl { font-weight: 700; background: #f8fafc; width: 22%; }
+  .lh-section { margin-bottom: 16px; }
+  .lh-section h3 { font-family: 'Manjari', sans-serif; font-size: 1rem; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px; }
+  .lh-section p { font-size: .88rem; text-align: justify; color: #334155; white-space: pre-wrap; }
+  .lh-footer { margin-top: 40px; display: flex; justify-content: flex-end; font-family: 'Manjari', sans-serif; }
+  .lh-seal { text-align: center; width: 200px; }
+  .lh-seal-img { width: 70px; height: 70px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
+  .lh-seal-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lh-seal p { font-size: .82rem; font-weight: 700; color: #0f172a; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #print-target, #print-target * { visibility: visible; }
+    #print-target { position: absolute; top: 0; left: 0; width: 100%; border: none; }
+  }
+
+  /* ---------- LIVE UPDATES TAB ---------- */
+  .status-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
+  .status-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); }
+  .sc-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
+  .sc-val { margin-top: 3px; }
+  @media (max-width: 700px) { .status-strip { grid-template-columns: 1fr; } }
+
+  .panels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 980px) { .panels-grid { grid-template-columns: 1fr; } }
   .promoted-notice { display: none; font-size: 11px; color: var(--amber); font-family: 'DM Mono', monospace; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--radius-sm); padding: 6px 10px; margin-bottom: 12px; }
   .promoted-notice.show { display: block; }
   .blink-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 8px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
-  .blink-label { font-size: 11px; color: var(--text-2); font-family: 'DM Mono', monospace; flex: 1; text-transform: uppercase; letter-spacing: 0.06em; }
+  .blink-label { font-size: 11px; color: var(--text-2); font-family: 'DM Mono', monospace; flex: 1; text-transform: uppercase; letter-spacing: .06em; }
   .toggle-wrap { display: flex; gap: 4px; }
-  .radio-btn   { display: none; }
-  .radio-label { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); color: var(--text-3); font-family: 'DM Mono', monospace; transition: all 0.15s; background: var(--surface); }
+  .radio-btn { display: none; }
+  .radio-label { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); color: var(--text-3); font-family: 'DM Mono', monospace; background: var(--surface); }
   .radio-btn:checked + .radio-label { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
   .btn-row { display: flex; gap: 8px; margin-top: 12px; }
-  .action-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
-  .action-bar-title { font-size: 11px; font-weight: 600; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .btn-row .btn { flex: 1; }
+
+  .action-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .action-bar-title { font-size: 11px; font-weight: 600; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
   .action-row { display: flex; gap: 10px; }
+  .action-row .btn { flex: 1; }
   .last-updated { font-size: 11.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-align: right; margin-top: 12px; }
+
   .section-sep { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; }
-  .sep-line  { flex: 1; height: 1px; background: var(--border); }
-  .sep-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; font-family: 'DM Mono', monospace; }
-  .history-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-  .history-header { padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; }
-  .history-title { font-size: 13px; font-weight: 600; color: var(--text); }
-  .history-sub   { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; }
-  .history-body  { max-height: 520px; overflow-y: auto; }
+  .sep-line { flex: 1; height: 1px; background: var(--border); }
+  .sep-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; font-family: 'DM Mono', monospace; }
+
+  .history-body { max-height: 480px; overflow-y: auto; }
   .history-empty { padding: 28px; text-align: center; font-size: 13px; color: var(--text-3); }
-  .log-record { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .log-record { border-bottom: 1px solid var(--border); }
   .log-record:last-child { border-bottom: none; }
   .log-record-head { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding: 11px 18px; cursor: pointer; user-select: none; }
   .log-record-head:hover { background: var(--surface-2); }
   .log-record.open .log-record-head { background: var(--surface-2); }
-  .log-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
-  .lb-manual  { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
-  .lb-pre      { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .lb-info     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .lb-bulk     { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
-  .lb-revoke  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .log-summary { font-size: 13px; color: var(--text); line-height: 1.4; }
-  .log-summary span { color: var(--text-2); font-weight: 400; }
-  .log-time { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
-  .log-chevron { font-size: 10px; color: var(--text-3); transition: transform 0.2s; flex-shrink: 0; }
+  .log-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .lb-manualUpdate { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .lb-preUpdate { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .lb-info { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .lb-BULK_UPDATE { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
+  .lb-revoke { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .log-summary { font-size: 13px; }
+  .log-time { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .log-chevron { font-size: 10px; color: var(--text-3); transition: transform .2s; }
   .log-record.open .log-chevron { transform: rotate(180deg); }
   .log-record-body { display: none; }
   .log-record.open .log-record-body { display: block; }
   .log-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
   .log-detail-cell { background: var(--surface-2); padding: 10px 16px; }
-  .ldc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-  .ldc-val   { font-size: 13px; color: var(--text); font-weight: 500; word-break: break-word; line-height: 1.5; }
-  .ldc-val.mono { font-family: 'DM Mono', monospace; font-size: 11.5px; }
-  .blink-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; }
-  .blink-on  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .blink-off { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border); }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; box-shadow: var(--shadow-md); opacity: 0; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 999; }
+  .ldc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .ldc-val { font-size: 13px; word-break: break-word; line-height: 1.5; }
+
+  /* ---------- CONFIRM MODAL ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,15,13,.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 24px; width: 100%; max-width: 400px; }
+  .modal-box h3 { font-size: 15px; margin-bottom: 8px; }
+  .modal-box p { font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 14px; }
+  .modal-box code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .modal-actions .btn { flex: 1; }
+
+  /* ---------- TOAST ---------- */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; box-shadow: var(--shadow-md); opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s; pointer-events: none; white-space: nowrap; z-index: 999; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.err  { background: var(--red); }
-  @media (max-width: 900px) { .panels-grid { grid-template-columns: 1fr; } .status-strip { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .status-strip { grid-template-columns: 1fr; } .action-row { flex-direction: column; } .topbar { padding: 0 16px; } .portal-body { padding: 16px 14px 60px; } .topbar-sub { display: none; } .login-card { padding: 28px 22px; } }
+  .toast.err { background: var(--red); }
+
+  @media (max-width: 600px) {
+    .action-row { flex-direction: column; }
+    .topbar { padding: 0 16px; }
+    .portal-body { padding: 16px 14px 60px; }
+    .topbar-sub { display: none; }
+    .login-card { padding: 28px 22px; }
+    .field-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
+<!-- ============ LOGIN ============ -->
 <div id="login-container">
   <div class="login-card">
     <div class="login-logo">
       <div class="login-mark">ELW</div>
-      <h2>Admin portal</h2>
-      <p>ELWOIC control system</p>
+      <h2>ELWOIC Admin Console</h2>
+      <p>Weather reports &amp; live site updates</p>
     </div>
     <div class="field-wrap">
-      <label class="field-label" for="login-password">System Master Access Token</label>
+      <label class="field-label" for="login-password">Access Token</label>
       <input type="password" id="login-password" class="ctrl-input" placeholder="••••••••••">
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="remember-me">
+      <label for="remember-me">Remember on this device (keeps you signed in after closing the tab)</label>
     </div>
     <div id="login-err" style="font-size:12.5px;color:var(--red);margin-bottom:12px;display:none;"></div>
     <button class="btn btn-primary" id="loginBtn">Sign in</button>
   </div>
 </div>
 
-<div id="admin-portal">
+<!-- ============ APP ============ -->
+<div id="app">
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-mark">ELW</div>
       <div>
-        <div class="topbar-title">ELWOIC administration</div>
-        <div class="topbar-sub">DATA PORTAL CONTROL SYSTEM</div>
+        <div class="topbar-title">ELWOIC Admin Console</div>
+        <div class="topbar-sub">REPORTS &amp; LIVE UPDATES — SINGLE WORKER</div>
       </div>
     </div>
     <div class="topbar-right">
-      <div class="sys-status"><div class="sys-dot"></div>System online</div>
-      <button class="btn btn-logout" id="logoutBtn">Logout</button>
+      <div class="conn-pill"><span class="conn-dot" id="conn-dot"></span><span id="conn-label">Checking connection…</span></div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
     </div>
+  </div>
+
+  <div class="tabnav">
+    <button class="tab-btn active" data-tab="reports">Weather Reports</button>
+    <button class="tab-btn" data-tab="live">Live Site Updates</button>
   </div>
 
   <div class="portal-body">
 
-    <div class="status-strip">
-      <div class="status-card">
-        <div class="status-icon">📡</div>
-        <div>
-          <div class="sc-label">Manual update</div>
-          <div class="sc-val"><span class="badge badge-offline" id="status-manual"><span class="badge-dot"></span>Offline</span></div>
-        </div>
-      </div>
-      <div class="status-card">
-        <div class="status-icon">🕐</div>
-        <div>
-          <div class="sc-label">Pre update</div>
-          <div class="sc-val"><span class="badge badge-offline" id="status-pre"><span class="badge-dot"></span>Offline</span></div>
-        </div>
-      </div>
-      <div class="status-card">
-        <div class="status-icon">📋</div>
-        <div>
-          <div class="sc-label">General info</div>
-          <div class="sc-val"><span class="badge badge-offline" id="status-info"><span class="badge-dot"></span>Offline</span></div>
-        </div>
-      </div>
-    </div>
+    <!-- ===================== WEATHER REPORTS TAB ===================== -->
+    <div class="tab-panel active" id="tab-reports">
 
-    <div class="panels-grid">
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="edit">Edit</button>
+        <button class="subtab-btn" data-subtab="preview">Preview &amp; Print</button>
+      </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Manual update</span>
-          <span class="badge badge-offline" id="panel-status-manual" style="font-size:10px;"><span class="badge-dot"></span>Offline</span>
-        </div>
-        <div class="panel-body">
-          <div class="promoted-notice" id="manual-promoted-notice">⚠ Pre-update promoted to current (target date reached)</div>
-          <div class="blink-row">
-            <span class="blink-label">Blink alert</span>
-            <div class="toggle-wrap">
-              <input type="radio" name="manualBlink" value="true"  id="m-blink-on"  class="radio-btn">
-              <label for="m-blink-on"  class="radio-label">ON</label>
-              <input type="radio" name="manualBlink" value="false" id="m-blink-off" class="radio-btn" checked>
-              <label for="m-blink-off" class="radio-label">OFF</label>
+      <!-- EDIT VIEW -->
+      <div id="subtab-edit">
+        <div class="reports-grid">
+
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Report editor</span></div>
+            <div class="panel-body">
+              <div class="id-row" style="margin-bottom:14px;">
+                <div class="field-wrap">
+                  <label class="field-label">Report ID</label>
+                  <input type="text" id="doc-id" class="ctrl-input" readonly style="color:var(--letterhead-blue);font-weight:600;">
+                </div>
+                <button class="btn btn-ghost btn-sm" id="newReportBtn" title="Start a fresh report for today">New report</button>
+              </div>
+
+              <div class="field-row">
+                <div class="field-wrap" style="margin-bottom:0;">
+                  <label class="field-label">Observer</label>
+                  <input type="text" id="doc-observer" class="ctrl-input" value="സ്റ്റേഷൻ ഡ്യൂട്ടി ഓഫീസർ">
+                </div>
+                <div class="field-wrap" style="margin-bottom:0;">
+                  <label class="field-label">Auto-revoke after</label>
+                  <select id="expiry-lifespan" class="ctrl-select">
+                    <option value="never">Never expire</option>
+                    <option value="1">1 hour</option>
+                    <option value="6">6 hours</option>
+                    <option value="12">12 hours</option>
+                    <option value="24">24 hours</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-wrap"><label class="field-label">Issued forecast</label><textarea id="doc-forecast" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Actual weather</label><textarea id="doc-actual" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Verification</label><textarea id="doc-verification" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Deviations</label><textarea id="doc-deviations" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Additional (human) observations</label><textarea id="doc-additional" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Outlook</label><textarea id="doc-outlook" class="ctrl-input" rows="3"></textarea></div>
+
+              <div class="btn-row">
+                <button class="btn btn-update" id="publishReportBtn">Publish / save report</button>
+                <button class="btn btn-revoke" id="revokeReportBtn">Revoke this report</button>
+              </div>
             </div>
           </div>
-          <div class="field-wrap">
-            <label class="field-label">Date</label>
-            <input type="text" id="manual-date" class="ctrl-input" placeholder="DD/MM/YYYY">
-          </div>
-          <div class="field-wrap" style="margin-bottom:0">
-            <label class="field-label">Message</label>
-            <textarea id="manual-text" class="ctrl-input" rows="4" placeholder="Enter update message..."></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-update" onclick="submitField('manualUpdate')">Update</button>
-            <button class="btn btn-revoke" onclick="revokeField('manualUpdate')">Revoke</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Pre update</span>
-          <span class="badge badge-offline" id="panel-status-pre" style="font-size:10px;"><span class="badge-dot"></span>Offline</span>
-        </div>
-        <div class="panel-body">
-          <div class="blink-row">
-            <span class="blink-label">Blink alert</span>
-            <div class="toggle-wrap">
-              <input type="radio" name="preBlink" value="true"  id="p-blink-on"  class="radio-btn">
-              <label for="p-blink-on"  class="radio-label">ON</label>
-              <input type="radio" name="preBlink" value="false" id="p-blink-off" class="radio-btn" checked>
-              <label for="p-blink-off" class="radio-label">OFF</label>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Recent reports</span>
+              <button class="btn btn-ghost btn-sm" id="refreshReportsBtn">Refresh</button>
+            </div>
+            <div class="panel-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>ID</th><th>Observer</th><th>Status</th><th></th></tr></thead>
+                <tbody id="reports-table-body">
+                  <tr class="empty-row"><td colspan="4">Loading reports…</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="field-wrap">
-            <label class="field-label">Target date</label>
-            <input type="text" id="pre-date" class="ctrl-input" placeholder="DD/MM/YYYY">
+
+        </div>
+      </div>
+
+      <!-- PREVIEW VIEW -->
+      <div id="subtab-preview" style="display:none;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <button class="btn btn-update btn-sm" id="printReportBtn">Print / Save as PDF</button>
+        </div>
+        <div class="a4-preview" id="print-target">
+          <div class="lh-top">
+            <div class="lh-logo"><img src="images/ELWOIC.png" alt=""></div>
+            <div class="lh-brand">
+              <h1>Elamkulam Local Weather Observation And Information Centre</h1>
+              <h2>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം</h2>
+            </div>
+            <div class="lh-logo"><img src="images/Elamkulam Weather Logo Design.1.png" alt=""></div>
           </div>
-          <div class="field-wrap" style="margin-bottom:0">
-            <label class="field-label">Message</label>
-            <textarea id="pre-text" class="ctrl-input" rows="4" placeholder="Enter pre-update message..."></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-update" onclick="submitField('preUpdate')">Update</button>
-            <button class="btn btn-revoke" onclick="revokeField('preUpdate')">Revoke</button>
+          <hr class="lh-divider">
+          <div class="lh-title">ഔദ്യോഗിക കാലാവസ്ഥാ നിരീക്ഷണ ഡയറിയും പ്രവചന വിലയിരുത്തൽ റിപ്പോർട്ടും</div>
+          <table class="lh-meta">
+            <tr><td class="lbl">റിപ്പോർട്ട് നമ്പർ</td><td id="pv-id" style="width:35%;font-weight:bold;color:var(--letterhead-blue);"></td><td class="lbl">തീയതി</td><td id="pv-date"></td></tr>
+            <tr><td class="lbl">നിരീക്ഷകൻ</td><td id="pv-observer" colspan="3"></td></tr>
+          </table>
+          <div class="lh-section"><h3>പ്രവചനം (Issued Forecast)</h3><p id="pv-forecast"></p></div>
+          <div class="lh-section"><h3>യഥാർത്ഥ കാലാവസ്ഥ സ്ഥിതി (Actual Weather)</h3><p id="pv-actual"></p></div>
+          <div class="lh-section"><h3>പ്രവചന വിലയിരുത്തൽ (Verification)</h3><p id="pv-verification"></p></div>
+          <div class="lh-section"><h3>ശ്രദ്ധേയമായ മാറ്റങ്ങൾ (Deviations)</h3><p id="pv-deviations"></p></div>
+          <div class="lh-section"><h3>അധിക നിരീക്ഷണങ്ങൾ (Human Observations)</h3><p id="pv-additional"></p></div>
+          <div class="lh-section"><h3>അടുത്ത മണിക്കൂറുകളിലെ സാധ്യത (Outlook)</h3><p id="pv-outlook"></p></div>
+          <div class="lh-footer">
+            <div class="lh-seal">
+              <div class="lh-seal-img"><img src="images/elwoic_seal.png.png" alt=""></div>
+              <p>ELWOIC സ്റ്റേഷൻ റെക്കോർഡ് വിഭാഗം</p>
+            </div>
           </div>
         </div>
       </div>
+
+    </div>
+
+    <!-- ===================== LIVE UPDATES TAB ===================== -->
+    <div class="tab-panel" id="tab-live">
+
+      <div class="status-strip">
+        <div class="status-card"><div class="status-icon">📡</div><div><div class="sc-label">Manual update</div><div class="sc-val"><span class="badge badge-offline" id="status-manual"><span class="badge-dot"></span>Offline</span></div></div></div>
+        <div class="status-card"><div class="status-icon">🕐</div><div><div class="sc-label">Pre update</div><div class="sc-val"><span class="badge badge-offline" id="status-pre"><span class="badge-dot"></span>Offline</span></div></div></div>
+        <div class="status-card"><div class="status-icon">📋</div><div><div class="sc-label">General info</div><div class="sc-val"><span class="badge badge-offline" id="status-info"><span class="badge-dot"></span>Offline</span></div></div></div>
+      </div>
+
+      <div class="panels-grid">
+
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Manual update</span><span class="badge badge-offline" id="panel-status-manual" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
+          <div class="panel-body">
+            <div class="promoted-notice" id="manual-promoted-notice">⚠ Pre-update promoted to current (target date reached)</div>
+            <div class="blink-row"><span class="blink-label">Blink alert</span>
+              <div class="toggle-wrap">
+                <input type="radio" name="manualBlink" value="true" id="m-blink-on" class="radio-btn"><label for="m-blink-on" class="radio-label">ON</label>
+                <input type="radio" name="manualBlink" value="false" id="m-blink-off" class="radio-btn" checked><label for="m-blink-off" class="radio-label">OFF</label>
+              </div>
+            </div>
+            <div class="field-wrap"><label class="field-label">Date</label><input type="text" id="manual-date" class="ctrl-input" placeholder="DD/MM/YYYY"></div>
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Message</label><textarea id="manual-text" class="ctrl-input" rows="4" placeholder="Enter update message..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('manualUpdate')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('manualUpdate')">Revoke</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Pre update</span><span class="badge badge-offline" id="panel-status-pre" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
+          <div class="panel-body">
+            <div class="blink-row"><span class="blink-label">Blink alert</span>
+              <div class="toggle-wrap">
+                <input type="radio" name="preBlink" value="true" id="p-blink-on" class="radio-btn"><label for="p-blink-on" class="radio-label">ON</label>
+                <input type="radio" name="preBlink" value="false" id="p-blink-off" class="radio-btn" checked><label for="p-blink-off" class="radio-label">OFF</label>
+              </div>
+            </div>
+            <div class="field-wrap"><label class="field-label">Target date</label><input type="text" id="pre-date" class="ctrl-input" placeholder="DD/MM/YYYY"></div>
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Message</label><textarea id="pre-text" class="ctrl-input" rows="4" placeholder="Enter pre-update message..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('preUpdate')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('preUpdate')">Revoke</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">General info</span><span class="badge badge-offline" id="panel-status-info" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
+          <div class="panel-body">
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Content</label><textarea id="info-text" class="ctrl-input" rows="11" placeholder="General news or notes..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('info')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('info')">Revoke</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="action-bar">
+        <div class="action-bar-title">Bulk operations</div>
+        <div class="action-row">
+          <button class="btn btn-success" id="submitAllBtn">↑ Update all sections</button>
+          <button class="btn btn-danger" id="revokeAllBtn">× Revoke all &amp; clear portal</button>
+        </div>
+        <div class="last-updated">Last updated: <span id="lastUpdatedVal" style="color:var(--text-2);">—</span></div>
+      </div>
+
+      <div class="section-sep"><div class="sep-line"></div><div class="sep-label">Change history</div><div class="sep-line"></div></div>
 
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">General info</span>
-          <span class="badge badge-offline" id="panel-status-info" style="font-size:10px;"><span class="badge-dot"></span>Offline</span>
+          <span class="panel-title">Activity log</span>
+          <button class="btn btn-ghost btn-sm" id="refreshHistoryBtn">Refresh</button>
         </div>
-        <div class="panel-body">
-          <div class="field-wrap" style="margin-bottom:0">
-            <label class="field-label">Content</label>
-            <textarea id="info-text" class="ctrl-input" rows="11" placeholder="General news or notes..."></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-update" onclick="submitField('info')">Update</button>
-            <button class="btn btn-revoke" onclick="revokeField('info')">Revoke</button>
-          </div>
+        <div class="history-body" id="history-body">
+          <div class="history-empty">Loading history…</div>
         </div>
       </div>
 
     </div>
 
-    <div class="action-bar">
-      <div class="action-bar-title">Bulk operations</div>
-      <div class="action-row">
-        <button class="btn btn-success" id="submitBtn">↑ Update all sections</button>
-        <button class="btn btn-danger"  id="revokeAllBtn">× Revoke all &amp; clear portal</button>
-      </div>
-      <div class="last-updated">Last updated: <span id="lastUpdatedVal" style="color:var(--text-2);">—</span></div>
-    </div>
+  </div>
+</div>
 
-    <div class="section-sep">
-      <div class="sep-line"></div>
-      <div class="sep-label">Change history</div>
-      <div class="sep-line"></div>
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <h3 id="confirm-title">Confirm action</h3>
+    <p id="confirm-message"></p>
+    <div class="field-wrap" id="confirm-type-wrap" style="display:none;">
+      <input type="text" id="confirm-input" class="ctrl-input" autocomplete="off">
     </div>
-
-    <div class="history-section">
-      <div class="history-header">
-        <span class="history-title">Activity log</span>
-        <span class="history-sub">All updates &amp; revokes — stored permanently</span>
-      </div>
-      <div class="history-body" id="history-body">
-        <div class="history-empty">Loading history...</div>
-      </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Confirm</button>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// Replace with your published Cloudflare Worker URL
-const WORKER_URL = "https://elwoic-manual-update.bold-waterfall-0d01.workers.dev";
+/* =========================================================
+   CONFIG — one worker, one token, for everything.
+   ========================================================= */
+const WORKER_URL = "https://elwoic-unified-api.bold-waterfall-0d01.workers.dev"; // <-- set this to your deployed worker URL
 
-/* ── TOAST & UTILS ── */
+let authToken = sessionStorage.getItem("elwoic_token") || localStorage.getItem("elwoic_token") || "";
+
+/* =========================================================
+   TOAST
+   ========================================================= */
 const toastEl = document.getElementById("toast");
 function showToast(msg, isErr = false) {
   toastEl.textContent = msg;
@@ -310,132 +496,364 @@ function showToast(msg, isErr = false) {
   setTimeout(() => toastEl.className = "toast" + (isErr ? " err" : ""), 2800);
 }
 
-function formatDate(d) {
-  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+/* =========================================================
+   CONFIRM MODAL (replaces window.confirm/prompt everywhere,
+   requires exact typed match for anything destructive)
+   ========================================================= */
+const confirmModal = document.getElementById("confirm-modal");
+const confirmTitle = document.getElementById("confirm-title");
+const confirmMessage = document.getElementById("confirm-message");
+const confirmTypeWrap = document.getElementById("confirm-type-wrap");
+const confirmInput = document.getElementById("confirm-input");
+const confirmOk = document.getElementById("confirm-ok");
+const confirmCancel = document.getElementById("confirm-cancel");
+
+function askConfirm({ title, message, requireText = null }) {
+  return new Promise((resolve) => {
+    confirmTitle.textContent = title;
+    confirmMessage.innerHTML = message;
+    confirmInput.value = "";
+    if (requireText) {
+      confirmTypeWrap.style.display = "block";
+      confirmMessage.innerHTML += ` Type <code>${requireText}</code> below to confirm.`;
+      confirmOk.disabled = true;
+    } else {
+      confirmTypeWrap.style.display = "none";
+      confirmOk.disabled = false;
+    }
+    confirmModal.classList.add("show");
+
+    function onInput() {
+      confirmOk.disabled = requireText ? confirmInput.value.trim() !== requireText : false;
+    }
+    function cleanup(result) {
+      confirmModal.classList.remove("show");
+      confirmInput.removeEventListener("input", onInput);
+      confirmOk.removeEventListener("click", onOk);
+      confirmCancel.removeEventListener("click", onCancel);
+      resolve(result);
+    }
+    function onOk() { cleanup(true); }
+    function onCancel() { cleanup(false); }
+
+    confirmInput.addEventListener("input", onInput);
+    confirmOk.addEventListener("click", onOk);
+    confirmCancel.addEventListener("click", onCancel);
+  });
 }
 
-function parseDateTs(ddmmyyyy) {
-  if (!ddmmyyyy) return NaN;
-  const [d, m, y] = ddmmyyyy.split("/").map(Number);
-  return new Date(y, m - 1, d).getTime();
+// Simple text-prompt modal (for report ID suffix on conflict)
+function askText({ title, message, placeholder = "" }) {
+  return new Promise((resolve) => {
+    confirmTitle.textContent = title;
+    confirmMessage.textContent = message;
+    confirmTypeWrap.style.display = "block";
+    confirmInput.placeholder = placeholder;
+    confirmInput.value = "";
+    confirmOk.disabled = false;
+    confirmModal.classList.add("show");
+
+    function cleanup(result) {
+      confirmModal.classList.remove("show");
+      confirmInput.placeholder = "";
+      confirmOk.removeEventListener("click", onOk);
+      confirmCancel.removeEventListener("click", onCancel);
+      resolve(result);
+    }
+    function onOk() { cleanup(confirmInput.value.trim() || null); }
+    function onCancel() { cleanup(null); }
+    confirmOk.addEventListener("click", onOk);
+    confirmCancel.addEventListener("click", onCancel);
+  });
 }
 
-function todayTs() {
-  const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
-}
-
-function getTimestamp() { 
-  return new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }); 
-}
-
-function setBadge(id, state) {
-  const b = document.getElementById(id);
-  if (!b) return;
-  const map = {
-    live:     { cls: 'badge badge-live',     label: 'Live' },
-    offline:  { cls: 'badge badge-offline',  label: 'Offline' },
-    promoted: { cls: 'badge badge-promoted', label: 'Promoted' },
-  };
-  const s = map[state] || map.offline;
-  b.className = s.cls;
-  b.innerHTML = `<span class="badge-dot"></span>${s.label}`;
-}
-
-/* ── GATEKEEPER AUTH ── */
-let authToken = localStorage.getItem("elwoic_token") || "";
-
-if (authToken) {
-  showPortal();
-}
+/* =========================================================
+   AUTH
+   ========================================================= */
+if (authToken) showApp();
 
 document.getElementById("loginBtn").addEventListener("click", () => {
   const pass = document.getElementById("login-password").value;
+  const remember = document.getElementById("remember-me").checked;
   const err = document.getElementById("login-err");
   err.style.display = "none";
-  
-  if (pass.trim() === "") {
-    err.textContent = "Please provide an access key.";
-    err.style.display = "block";
-    return;
-  }
-  
-  // Save credentials local to your session browser
+  if (!pass.trim()) { err.textContent = "Please provide an access token."; err.style.display = "block"; return; }
   authToken = pass;
-  localStorage.setItem("elwoic_token", pass);
-  showPortal();
+  if (remember) localStorage.setItem("elwoic_token", pass);
+  else sessionStorage.setItem("elwoic_token", pass);
+  showApp();
 });
-
-document.getElementById("login-password").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("loginBtn").click();
-});
+document.getElementById("login-password").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("loginBtn").click(); });
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   authToken = "";
   localStorage.removeItem("elwoic_token");
+  sessionStorage.removeItem("elwoic_token");
   document.getElementById("login-container").style.display = "flex";
-  document.getElementById("admin-portal").style.display = "none";
+  document.getElementById("app").style.display = "none";
 });
 
-function showPortal() {
+function showApp() {
   document.getElementById("login-container").style.display = "none";
-  document.getElementById("admin-portal").style.display = "block";
-  syncDashboardData();
+  document.getElementById("app").style.display = "block";
+  checkConnection();
+  generateSequentialID();
+  loadReportsList();
+  syncLiveDashboard();
 }
 
-/* ── NETWORK LAYER WITH WORKER ── */
-async function syncDashboardData() {
+async function checkConnection() {
+  const dot = document.getElementById("conn-dot");
+  const label = document.getElementById("conn-label");
   try {
     const res = await fetch(`${WORKER_URL}/api/live`);
-    if (!res.ok) throw new Error("Could not parse dynamic data state.");
+    if (!res.ok) throw new Error();
+    dot.className = "conn-dot ok";
+    label.textContent = "Connected";
+  } catch {
+    dot.className = "conn-dot bad";
+    label.textContent = "Worker unreachable — check WORKER_URL";
+  }
+}
+
+/* =========================================================
+   TAB NAVIGATION
+   ========================================================= */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+document.querySelectorAll(".subtab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".subtab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const isEdit = btn.dataset.subtab === "edit";
+    document.getElementById("subtab-edit").style.display = isEdit ? "block" : "none";
+    document.getElementById("subtab-preview").style.display = isEdit ? "none" : "block";
+    if (!isEdit) syncPreview();
+  });
+});
+
+/* =========================================================
+   WEATHER REPORTS
+   ========================================================= */
+let generatedReportID = "";
+let isEditingExisting = false;
+
+function generateSequentialID() {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  generatedReportID = `EWR${yy}${mm}${dd}001`;
+  document.getElementById("doc-id").value = generatedReportID;
+  isEditingExisting = false;
+}
+
+document.getElementById("newReportBtn").addEventListener("click", () => {
+  generateSequentialID();
+  ["doc-forecast","doc-actual","doc-verification","doc-deviations","doc-additional","doc-outlook"].forEach(id => document.getElementById(id).value = "");
+  showToast("Started a new report");
+});
+
+function syncPreview() {
+  document.getElementById("pv-id").textContent = generatedReportID;
+  document.getElementById("pv-date").textContent = new Date().toISOString().split("T")[0];
+  document.getElementById("pv-observer").textContent = document.getElementById("doc-observer").value;
+  document.getElementById("pv-forecast").textContent = document.getElementById("doc-forecast").value;
+  document.getElementById("pv-actual").textContent = document.getElementById("doc-actual").value;
+  document.getElementById("pv-verification").textContent = document.getElementById("doc-verification").value;
+  document.getElementById("pv-deviations").textContent = document.getElementById("doc-deviations").value;
+  document.getElementById("pv-additional").textContent = document.getElementById("doc-additional").value;
+  document.getElementById("pv-outlook").textContent = document.getElementById("doc-outlook").value;
+}
+
+document.getElementById("printReportBtn").addEventListener("click", () => { syncPreview(); window.print(); });
+
+async function publishReport(overrideStatus = false) {
+  if (!authToken) { showToast("Missing access token", true); return; }
+
+  let expiresAtUnix = null;
+  const lifespan = document.getElementById("expiry-lifespan").value;
+  if (lifespan !== "never") expiresAtUnix = Math.floor(Date.now() / 1000) + (parseInt(lifespan) * 3600);
+
+  const payload = {
+    report_id: generatedReportID,
+    observer: document.getElementById("doc-observer").value,
+    expires_at: expiresAtUnix,
+    override: overrideStatus || isEditingExisting,
+    content: {
+      forecast: document.getElementById("doc-forecast").value,
+      actual_weather: document.getElementById("doc-actual").value,
+      verification: document.getElementById("doc-verification").value,
+      deviations: document.getElementById("doc-deviations").value,
+      additional_obs: document.getElementById("doc-additional").value,
+      outlook: document.getElementById("doc-outlook").value,
+    },
+  };
+
+  try {
+    const res = await fetch(`${WORKER_URL}/api/reports/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+      body: JSON.stringify(payload),
+    });
     const data = await res.json();
-    
-    // Evaluate logic states exactly how your frontend expects them
+
+    if (res.ok) {
+      showToast(`Report ${generatedReportID} published successfully`);
+      loadReportsList();
+    } else if (res.status === 409) {
+      const suffix = await askText({ title: "Report already exists", message: `A report with ID ${generatedReportID} already exists today. Enter a suffix (e.g. A, B) to save this as a new one, or Cancel to overwrite it instead.`, placeholder: "A" });
+      if (suffix) {
+        generatedReportID += suffix.toUpperCase();
+        document.getElementById("doc-id").value = generatedReportID;
+        await publishReport(true);
+      } else {
+        const overwrite = await askConfirm({ title: "Overwrite existing report?", message: `This will replace the existing content of report ${generatedReportID}.` });
+        if (overwrite) await publishReport(true);
+      }
+    } else {
+      showToast(`Error: ${data.error}`, true);
+    }
+  } catch (err) {
+    showToast(`Connection error: ${err.message}`, true);
+  }
+}
+document.getElementById("publishReportBtn").addEventListener("click", () => publishReport(false));
+
+document.getElementById("revokeReportBtn").addEventListener("click", async () => {
+  if (!authToken) { showToast("Missing access token", true); return; }
+  const ok = await askConfirm({
+    title: "Revoke this report?",
+    message: `Report ${generatedReportID} will be removed from public view immediately. This cannot be undone from here.`,
+    requireText: generatedReportID,
+  });
+  if (!ok) return;
+  await revokeReportById(generatedReportID);
+});
+
+async function revokeReportById(reportId) {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/reports/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+      body: JSON.stringify({ report_id: reportId, status: "revoked" }),
+    });
+    const data = await res.json();
+    if (res.ok) { showToast(`Report ${reportId} revoked`); loadReportsList(); }
+    else showToast(`Could not revoke: ${data.error}`, true);
+  } catch (err) { showToast(`Connection error: ${err.message}`, true); }
+}
+
+async function loadReportsList() {
+  const tbody = document.getElementById("reports-table-body");
+  try {
+    const res = await fetch(`${WORKER_URL}/api/reports-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const data = await res.json();
+    if (!data || Object.keys(data).length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No reports yet</td></tr>`;
+      return;
+    }
+    const rows = Object.values(data).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    const now = Math.floor(Date.now() / 1000);
+    tbody.innerHTML = rows.map(r => {
+      let badge = `<span class="badge badge-live"><span class="badge-dot"></span>Live</span>`;
+      if (r.status === "revoked") badge = `<span class="badge badge-revoked"><span class="badge-dot"></span>Revoked</span>`;
+      else if (r.expires_at && now > r.expires_at) badge = `<span class="badge badge-offline"><span class="badge-dot"></span>Expired</span>`;
+      return `<tr>
+        <td style="font-family:'DM Mono',monospace;">${r.report_id}</td>
+        <td>${r.observer || "—"}</td>
+        <td>${badge}</td>
+        <td><div class="row-actions">
+          <button class="btn btn-ghost btn-sm" onclick="loadReportIntoEditor('${r.report_id}')">Load</button>
+          <button class="btn btn-revoke btn-sm" onclick="promptRevokeReport('${r.report_id}')">Revoke</button>
+        </div></td>
+      </tr>`;
+    }).join("");
+  } catch (err) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">Failed to load reports</td></tr>`;
+  }
+}
+document.getElementById("refreshReportsBtn").addEventListener("click", loadReportsList);
+
+window.promptRevokeReport = async function (reportId) {
+  const ok = await askConfirm({ title: "Revoke this report?", message: `Report ${reportId} will be removed from public view immediately.`, requireText: reportId });
+  if (ok) await revokeReportById(reportId);
+};
+
+window.loadReportIntoEditor = async function (reportId) {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/reports/${reportId}`);
+    const data = await res.json();
+    if (!res.ok || !data) { showToast("Could not load report", true); return; }
+    generatedReportID = reportId;
+    isEditingExisting = true;
+    document.getElementById("doc-id").value = reportId;
+    document.getElementById("doc-observer").value = data.observer || "";
+    document.getElementById("doc-forecast").value = data.content?.forecast || "";
+    document.getElementById("doc-actual").value = data.content?.actual_weather || "";
+    document.getElementById("doc-verification").value = data.content?.verification || "";
+    document.getElementById("doc-deviations").value = data.content?.deviations || "";
+    document.getElementById("doc-additional").value = data.content?.additional_obs || "";
+    document.getElementById("doc-outlook").value = data.content?.outlook || "";
+    document.querySelector('[data-subtab="edit"]').click();
+    showToast(`Loaded ${reportId} into editor`);
+  } catch (err) { showToast(`Failed to load: ${err.message}`, true); }
+};
+
+/* =========================================================
+   LIVE UPDATES
+   ========================================================= */
+function formatDate(d) { return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear(); }
+function parseDateTs(ddmmyyyy) { if (!ddmmyyyy) return NaN; const [d,m,y] = ddmmyyyy.split('/').map(Number); return new Date(y, m-1, d).getTime(); }
+function todayTs() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime(); }
+function getTimestamp() { return new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }); }
+
+function setBadge(id, state) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  const map = { live: ['badge badge-live','Live'], offline: ['badge badge-offline','Offline'], promoted: ['badge badge-promoted','Promoted'] };
+  const [cls, label] = map[state] || map.offline;
+  b.className = cls;
+  b.innerHTML = `<span class="badge-dot"></span>${label}`;
+}
+
+async function syncLiveDashboard() {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/live`);
+    if (!res.ok) throw new Error("Could not read live state.");
+    const data = await res.json();
+
     const tTs = todayTs();
-    let manualActive = false;
-    let preActive = false;
-    let preJumped = false;
-    let infoActive = !!(data.info_text?.trim());
+    let manualActive = false, preActive = false, preJumped = false;
+    const infoActive = !!(data.info_text?.trim());
 
     if (data.pre_text?.trim()) {
       const preTs = parseDateTs(data.pre_date);
-      if (!isNaN(preTs)) {
-        if (preTs === tTs) preJumped = true; 
-        else if (preTs > tTs) preActive = true; 
-      }
+      if (!isNaN(preTs)) { if (preTs === tTs) preJumped = true; else if (preTs > tTs) preActive = true; }
     }
-
     if (data.manual_text?.trim()) {
       const manualTs = parseDateTs(data.manual_date);
-      if (isNaN(manualTs) || manualTs >= tTs) {
-        manualActive = true;
-        preJumped = false;
-      }
+      if (isNaN(manualTs) || manualTs >= tTs) { manualActive = true; preJumped = false; }
     }
 
-    // Set UI Badges
-    if (manualActive) {
-      setBadge('status-manual', 'live'); setBadge('panel-status-manual', 'live');
-      document.getElementById('manual-promoted-notice').classList.remove('show');
-    } else if (preJumped) {
-      setBadge('status-manual', 'promoted'); setBadge('panel-status-manual', 'promoted');
-      document.getElementById('manual-promoted-notice').classList.add('show');
-    } else {
-      setBadge('status-manual', 'offline'); setBadge('panel-status-manual', 'offline');
-      document.getElementById('manual-promoted-notice').classList.remove('show');
-    }
+    if (manualActive) { setBadge('status-manual','live'); setBadge('panel-status-manual','live'); document.getElementById('manual-promoted-notice').classList.remove('show'); }
+    else if (preJumped) { setBadge('status-manual','promoted'); setBadge('panel-status-manual','promoted'); document.getElementById('manual-promoted-notice').classList.add('show'); }
+    else { setBadge('status-manual','offline'); setBadge('panel-status-manual','offline'); document.getElementById('manual-promoted-notice').classList.remove('show'); }
 
-    setBadge('status-pre', preActive ? 'live' : 'offline');
-    setBadge('panel-status-pre', preActive ? 'live' : 'offline');
-    setBadge('status-info', infoActive ? 'live' : 'offline');
-    setBadge('panel-status-info', infoActive ? 'live' : 'offline');
+    setBadge('status-pre', preActive ? 'live' : 'offline'); setBadge('panel-status-pre', preActive ? 'live' : 'offline');
+    setBadge('status-info', infoActive ? 'live' : 'offline'); setBadge('panel-status-info', infoActive ? 'live' : 'offline');
 
     if (data.last_updated) document.getElementById('lastUpdatedVal').textContent = data.last_updated;
 
-    // Populating forms cleanly
     const todayStr = formatDate(new Date());
     const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
-    
+
     document.getElementById('manual-date').value = data.manual_date || todayStr;
     document.getElementById('manual-text').value = data.manual_text || '';
     document.getElementById('m-blink-on').checked = data.manual_blink === true;
@@ -448,174 +866,125 @@ async function syncDashboardData() {
 
     document.getElementById('info-text').value = data.info_text || '';
 
-    // Render historical view
-    renderHistory();
-
-  } catch (err) {
-    showToast(err.message, true);
-  }
+    loadHistory();
+  } catch (err) { showToast(err.message, true); }
 }
 
-// Fetches the raw history lines directly from your worker database endpoint
-async function renderHistory() {
+async function loadHistory() {
   const body = document.getElementById('history-body');
   try {
-    // We hit the same live lookup but we can read rows through workers cleanly
-    const res = await fetch(`${WORKER_URL}/api/live`);
-    const currentData = await res.json();
-    
-    if (!currentData || !currentData.id) {
-      body.innerHTML = '<div class="history-empty">No logged entries verified inside table.</div>';
+    const res = await fetch(`${WORKER_URL}/api/live/history?limit=25`, { headers: { Authorization: `Bearer ${authToken}` } });
+    if (!res.ok) throw new Error("Could not load history (check access token)");
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      body.innerHTML = '<div class="history-empty">No history yet.</div>';
       return;
     }
-
-    // Build immediate visual item based on latest snapshot entry
-    let badgeClass = "lb-manual";
-    if (currentData.update_type === "preUpdate") badgeClass = "lb-pre";
-    if (currentData.update_type === "info") badgeClass = "lb-info";
-    if (currentData.update_type === "revoke") badgeClass = "lb-revoke";
-
-    body.innerHTML = `
-      <div class="log-record open">
-        <div class="log-record-head">
-          <span class="log-badge ${badgeClass}">${currentData.update_type || 'SYSTEM'}</span>
-          <div class="log-summary">Active State Verified Event <span>- Row #${currentData.id}</span></div>
-          <div class="log-time">${currentData.last_updated || 'Just now'}</div>
+    body.innerHTML = rows.map((r, i) => {
+      const type = r.update_type || 'SYSTEM';
+      const badgeClass = 'lb-' + type;
+      return `
+      <div class="log-record${i === 0 ? ' open' : ''}">
+        <div class="log-record-head" onclick="this.parentElement.classList.toggle('open')">
+          <span class="log-badge ${badgeClass}">${type}</span>
+          <div class="log-summary">Row #${r.id ?? '—'}</div>
+          <div class="log-time">${r.last_updated || r.created_at || ''}</div>
+          <span class="log-chevron">▾</span>
         </div>
-        <div class="log-record-body" style="display:block">
+        <div class="log-record-body">
           <div class="log-detail-grid">
-            <div class="log-detail-cell"><div class="ldc-label">Manual Text</div><div class="ldc-val">${currentData.manual_text || '—'}</div></div>
-            <div class="log-detail-cell"><div class="ldc-label">Pre Text</div><div class="ldc-val">${currentData.pre_text || '—'}</div></div>
-            <div class="log-detail-cell"><div class="ldc-label">Info Content</div><div class="ldc-val">${currentData.info_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Manual text</div><div class="ldc-val">${r.manual_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Pre text</div><div class="ldc-val">${r.pre_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Info content</div><div class="ldc-val">${r.info_text || '—'}</div></div>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
+    }).join('');
   } catch (e) {
-    body.innerHTML = '<div class="history-empty">Error downloading logs.</div>';
+    body.innerHTML = `<div class="history-empty">${e.message}</div>`;
   }
 }
+document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
 
-/* ── SAVE MUTATIONS VIA WORKER ── */
 async function sendToWorker(payload) {
-  const response = await fetch(`${WORKER_URL}/api/update`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${authToken}`
-    },
-    body: JSON.stringify(payload)
+  const res = await fetch(`${WORKER_URL}/api/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+    body: JSON.stringify(payload),
   });
-  if (!response.ok) throw new Error("Worker rejected database transaction.");
-  return await response.json();
+  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || 'Worker rejected the request.'); }
+  return res.json();
 }
 
-window.submitField = async function(path) {
+window.submitField = async function (path) {
   const timestamp = getTimestamp();
-  
-  // Capture current state of ALL inputs to carry forward in our single row setup
   const payload = {
     manual_date: document.getElementById('manual-date').value,
     manual_text: document.getElementById('manual-text').value,
     manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
-    manual_updated_at: path === 'manualUpdate' ? timestamp : undefined,
-    
     pre_date: document.getElementById('pre-date').value,
     pre_text: document.getElementById('pre-text').value,
     pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
-    pre_updated_at: path === 'preUpdate' ? timestamp : undefined,
-    
     info_text: document.getElementById('info-text').value,
-    info_updated_at: path === 'info' ? timestamp : undefined,
-    
     update_type: path,
-    last_updated: timestamp
+    last_updated: timestamp,
   };
-
-  try {
-    await sendToWorker(payload);
-    showToast("Updated successfully via Conductor");
-    syncDashboardData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
+  try { await sendToWorker(payload); showToast('Updated successfully'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
 };
 
-window.revokeField = async function(path) {
-  if (!confirm('Revoke this section?')) return;
+window.revokeField = async function (path) {
+  const labels = { manualUpdate: 'Manual update', preUpdate: 'Pre update', info: 'General info' };
+  const ok = await askConfirm({ title: `Revoke ${labels[path]}?`, message: `This will clear the ${labels[path].toLowerCase()} section on the live site.` });
+  if (!ok) return;
   const timestamp = getTimestamp();
-
-  // Nullify only the targets specified
   const payload = {
     manual_date: path === 'manualUpdate' ? '' : document.getElementById('manual-date').value,
     manual_text: path === 'manualUpdate' ? '' : document.getElementById('manual-text').value,
     manual_blink: path === 'manualUpdate' ? false : document.querySelector('input[name="manualBlink"]:checked').value === 'true',
-    
     pre_date: path === 'preUpdate' ? '' : document.getElementById('pre-date').value,
     pre_text: path === 'preUpdate' ? '' : document.getElementById('pre-text').value,
     pre_blink: path === 'preUpdate' ? false : document.querySelector('input[name="preBlink"]:checked').value === 'true',
-    
     info_text: path === 'info' ? '' : document.getElementById('info-text').value,
-    
     update_type: 'revoke',
-    last_updated: timestamp
+    last_updated: timestamp,
   };
-
-  try {
-    await sendToWorker(payload);
-    showToast("Section revoked");
-    syncDashboardData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
+  try { await sendToWorker(payload); showToast('Section revoked'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
 };
 
-/* ── BULK OPERATIONS ── */
-document.getElementById('submitBtn').addEventListener('click', async () => {
+document.getElementById('submitAllBtn').addEventListener('click', async () => {
+  const ok = await askConfirm({ title: 'Update all sections?', message: 'This will publish the current content of Manual, Pre, and Info sections all at once.' });
+  if (!ok) return;
   const timestamp = getTimestamp();
   const payload = {
     manual_date: document.getElementById('manual-date').value,
     manual_text: document.getElementById('manual-text').value,
     manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
-    
     pre_date: document.getElementById('pre-date').value,
     pre_text: document.getElementById('pre-text').value,
     pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
-    
     info_text: document.getElementById('info-text').value,
-    
     update_type: 'BULK_UPDATE',
-    last_updated: timestamp
+    last_updated: timestamp,
   };
-
-  try {
-    await sendToWorker(payload);
-    showToast("All sections deployed simultaneously");
-    syncDashboardData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
+  try { await sendToWorker(payload); showToast('All sections deployed'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
 });
 
 document.getElementById('revokeAllBtn').addEventListener('click', async () => {
-  if (!confirm('CRITICAL: This will remove ALL live updates. Proceed?')) return;
+  const ok = await askConfirm({ title: 'Revoke everything?', message: 'This clears Manual, Pre, and Info sections on the live site at once.', requireText: 'REVOKE ALL' });
+  if (!ok) return;
   const timestamp = getTimestamp();
-
   const payload = {
     manual_date: '', manual_text: '', manual_blink: false,
     pre_date: '', pre_text: '', pre_blink: false,
     info_text: '',
     update_type: 'revoke',
-    last_updated: timestamp
+    last_updated: timestamp,
   };
-
-  try {
-    await sendToWorker(payload);
-    showToast("All sections cleared");
-    syncDashboardData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
+  try { await sendToWorker(payload); showToast('All sections cleared'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
 });
 </script>
 </body>
