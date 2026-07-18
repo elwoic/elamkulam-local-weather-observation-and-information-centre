@@ -16,15 +16,16 @@ function _wd_init() {
     return;
   }
 
-  var API_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
-  var OW_URL  = "https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric";
+  var API_URL   = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
+  var PIEZO_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/piezo";
+  var OW_URL    = "https://api.openweathermap.org/data/2.5/weather?lat=10.9081&lon=76.2296&appid=ca13a2cbdc07e7613b6af82cff262295&units=metric";
 
   var latestWind      = null;
   var latestCondition = "";
   var latestMain      = {};
 
   /* ══════════════════════════════════════════
-     RAIN MEMORY BUFFER
+     RAIN MEMORY BUFFER (rate-based, ~5 min window)
   ══════════════════════════════════════════ */
   var rainBuf      = [];
   var RAIN_BUF_MAX = 10;
@@ -34,21 +35,6 @@ function _wd_init() {
     rainBuf.push({ rate: rate || 0, daily: daily || 0 });
     if (rainBuf.length > RAIN_BUF_MAX) rainBuf.shift();
     if (daily > lastDailyMm) lastDailyMm = daily;
-  }
-
-  function bufHasRain() {
-    for (var i = 0; i < rainBuf.length; i++) {
-      if (rainBuf[i].rate > 0) return true;
-    }
-    return false;
-  }
-
-  function bufMaxRate() {
-    var mx = 0;
-    for (var i = 0; i < rainBuf.length; i++) {
-      if (rainBuf[i].rate > mx) mx = rainBuf[i].rate;
-    }
-    return mx;
   }
 
   function rainJustStopped() {
@@ -71,6 +57,26 @@ function _wd_init() {
   }
 
   /* ══════════════════════════════════════════
+     PIEZO RAIN-SENSOR LOGIC
+     srain_piezo (elwoic_live_weather, 1 row/min, last 30 min)
+     flips to 1 the instant the sensor gets wet, but stays at 1
+     for a while after rain actually stops (residual water on the
+     piezo disc doesn't dry instantly). So it can never be trusted
+     by itself — it's only used to bridge the gap before the real
+     rain-rate (mm/hr) measurement catches up, and only for a short
+     grace window.
+  ══════════════════════════════════════════ */
+  var PIEZO_GRACE_MINUTES = 4; // how long we trust a piezo-only "മഴ" before calling it stale
+
+  function countTrailingOnes(arr) {
+    var c = 0;
+    for (var i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] === 1) c++; else break;
+    }
+    return c;
+  }
+
+  /* ══════════════════════════════════════════
      BEAUFORT SCALE (client-side)
   ══════════════════════════════════════════ */
   function beaufort(kmh) {
@@ -83,19 +89,40 @@ function _wd_init() {
 
   /* ══════════════════════════════════════════
      CONDITION ENGINE
+     Priority order (highest first):
+       1) rain rate > 0 right now              → intensity label, always wins
+       2) rate just dropped to 0 (rate buffer)  → "rain settling" / normal
+       3) piezo=1 but rate never confirmed it   → generic "മഴ" for ≤4 min, then ignored
+       4) normal solar/uvi/humidity sky read
   ══════════════════════════════════════════ */
-  function getCondition(rain, rainDaily, solar, uvi, humidity, hour) {
+  function getCondition(rain, rainDaily, solar, uvi, humidity, hour, piezoArr) {
     var isDay = (hour >= 6 && hour < 19);
 
-    if (bufHasRain() || rain > 0) {
-      var activeRate = (rain > 0) ? rain : bufMaxRate();
-      return rainLabel(activeRate);
+    /* PRIORITY 1 — a real measured rate always wins, overrides piezo entirely */
+    if (rain > 0) {
+      return rainLabel(rain);
     }
 
+    /* PRIORITY 2 — rate just dropped back to 0 after being active: rain is ending.
+       This takes precedence over the piezo signal even if the piezo is still wet. */
     if (rainJustStopped()) {
       var sunAlreadyOut = (solar != null && solar > 150) || (uvi != null && uvi >= 3);
       if (!sunAlreadyOut) {
         return { text:"🌦 മഴ ശമിച്ചു", key:"partial" };
+      }
+      // sun already out → fall through to normal day condition below
+    } else if (piezoArr && piezoArr.length) {
+      /* PRIORITY 3 — piezo says wet, rate has never confirmed it.
+         Trust it only for a short grace window (fresh rain, rate
+         hasn't caught up yet). Beyond that window it's almost
+         certainly residual moisture, not active rain — ignore it. */
+      var piezoNow = piezoArr[piezoArr.length - 1];
+      if (piezoNow === 1) {
+        var wetStreak = countTrailingOnes(piezoArr);
+        if (wetStreak <= PIEZO_GRACE_MINUTES) {
+          return { text:"🌧 മഴ", key:"rain" };
+        }
+        // wetStreak too long without a real rate → fall through, ignore piezo
       }
     }
 
@@ -196,8 +223,9 @@ function _wd_init() {
   };
 
   condBox.onclick = function() {
-    var m   = latestMain;
-    var buf = rainBuf.map(function(r){ return r.rate; }).join(", ") || "--";
+    var m        = latestMain;
+    var buf       = rainBuf.map(function(r){ return r.rate; }).join(", ") || "--";
+    var piezoBuf  = (m.piezoArr || []).join("") || "--";
     showModal(
       "🌤 കാലാവസ്ഥ വിശദീകരണം",
       mrow("☀️","UVI",                m.uvi         != null ? m.uvi         : "--") +
@@ -209,22 +237,26 @@ function _wd_init() {
       mrow("💧","Outdoor humidity",   (m.humidity   != null ? m.humidity    : "--") + "%") +
       mrow("📊","Pressure (Abs)",     (m.pressureAbs|| "--")                + " hPa") +
       mrow("📊","Pressure (Rel)",     (m.pressureRel|| "--")                + " hPa") +
+      mrow("💦","Piezo സെൻസർ",        (m.piezoNow === 1 ? "നനവ് (1)" : "ഉണക്കം (0)")) +
+      mrow("⏱","നനഞ്ഞ ദൈർഘ്യം",       (m.piezoWetStreak || 0) + " മിനിറ്റ്") +
       "<div style='margin:12px 0 4px;padding:10px;background:#f0f7ff;border-radius:8px;text-align:center;font-size:14px;font-weight:700;color:#1a2233;'>" + latestCondition + "</div>" +
-      "<div class='wx-modal-note' style='font-size:10px;color:#bbb;'>Rain buffer (mm/hr): [" + buf + "]<br>Sensor fusion · 30s refresh</div>",
+      "<div class='wx-modal-note' style='font-size:10px;color:#bbb;'>Rain buffer (mm/hr): [" + buf + "]<br>Piezo buffer (30 min): [" + piezoBuf + "]<br>Sensor fusion · 30s refresh</div>",
       "condition"
     );
   };
 
   /* ══════════════════════════════════════════
-     SINGLE FETCH — unified worker + OWM
+     SINGLE FETCH — unified worker + piezo history + OWM
   ══════════════════════════════════════════ */
   function updateAll() {
     Promise.all([
-      fetch(API_URL, { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-      fetch(OW_URL,  { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; })
+      fetch(API_URL,   { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch(OW_URL,    { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch(PIEZO_URL, { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; })
     ]).then(function(res) {
-      var payload = res[0];
-      var owm     = res[1];
+      var payload  = res[0];
+      var owm      = res[1];
+      var piezoRes = res[2];
       if (!payload) return;
 
       var ld  = payload.live_data || {};
@@ -272,12 +304,17 @@ function _wd_init() {
       /* ── visibility from OWM ── */
       var vis = (owm && owm.visibility) ? (owm.visibility / 1000).toFixed(1) : "--";
 
-      /* ── rain buffer ── */
+      /* ── piezo (rain sensor) history: chronological array of 0/1, last 30 min ── */
+      var piezoArr       = Array.isArray(piezoRes) ? piezoRes.map(function(p){ return p.v; }) : [];
+      var piezoNow       = piezoArr.length ? piezoArr[piezoArr.length - 1] : 0;
+      var piezoWetStreak = countTrailingOnes(piezoArr);
+
+      /* ── rain buffer (rate-based, ~5 min) ── */
       pushRain(rain, rainDaily);
 
       /* ── condition ── */
       var now  = new Date();
-      var cond = getCondition(rain, rainDaily, solar, uvi, h, now.getHours());
+      var cond = getCondition(rain, rainDaily, solar, uvi, h, now.getHours(), piezoArr);
       latestCondition = cond.text;
 
       /* ── store for modals ── */
@@ -294,7 +331,8 @@ function _wd_init() {
         uvi: uvi, solar: solar, vpd: vpd,
         dewOut: dewOut, dewIn: dewIn,
         rain: rain, rainDaily: rainDaily,
-        humidity: h
+        humidity: h,
+        piezoNow: piezoNow, piezoWetStreak: piezoWetStreak, piezoArr: piezoArr
       };
 
       /* ── DOM updates ── */
