@@ -232,28 +232,40 @@ function _wd_init() {
         return { family: "fog", t: cloudPct != null ? clamp01(1 - cloudPct / 100) : 0.4 };
       }
 
-      var cloud = cloudPct != null ? cloudPct : (solar != null ? clamp01(1 - solar / 700) * 100 : 50);
-
-      if (cloud >= 85) {
-        // fully overcast but dry — still let a little solar bleed brighten it
-        var brightBit = solar != null ? clamp01(solar / 300) : (uvi != null ? clamp01(uvi / 4) : 0.2);
-        return { family: "overcast", t: brightBit };
-      }
-
+      /* Solar/UVI come from your own station — they always win over OWM's
+         regional cloud% when they clearly show strong direct light. Cloud
+         cover only gets a say in how "overcast" (vs merely "cloudy") the
+         sky looks once solar/UVI are themselves weak or unavailable —
+         otherwise a hazy-but-bright day gets miscategorized as overcast
+         just because a satellite estimate elsewhere reads high cloud%. */
       if (solar != null) {
         if (solar >= 700)             return { family: "sunny",   t: clamp01((solar - 700) / 300) + 0.5 };
         if (solar >= 350 && uvi >= 4) return { family: "sunny",   t: clamp01((solar - 350) / 350) };
         if (solar >= 120)             return { family: "partial", t: clamp01((solar - 120) / 230) };
-        if (solar >= 20)              return { family: "cloudy",  t: clamp01(solar / 20) };
-        return                              { family: "cloudy",  t: 0.1 };
+
+        // solar itself is weak now — cloud% decides cloudy vs fully overcast
+        var cloudLow = cloudPct != null ? cloudPct : 70;
+        if (cloudLow >= 85) return { family: "overcast", t: clamp01(solar / 120) };
+        if (solar >= 20)    return { family: "cloudy",   t: clamp01(solar / 20) };
+        return                    { family: "cloudy",   t: 0.1 };
       }
       if (uvi != null) {
         if (uvi >= 7) return { family: "sunny",   t: clamp01((uvi - 7) / 5) + 0.5 };
         if (uvi >= 4) return { family: "partial", t: clamp01((uvi - 4) / 3) };
-        if (uvi >= 1) return { family: "cloudy",  t: clamp01(uvi / 4) };
-        return              { family: "cloudy",  t: 0.05 };
+        if (uvi >= 1) {
+          var cloudMid = cloudPct != null ? cloudPct : 60;
+          if (cloudMid >= 85) return { family: "overcast", t: clamp01(uvi / 4) };
+          return { family: "cloudy", t: clamp01(uvi / 4) };
+        }
+        return { family: "cloudy", t: 0.05 };
       }
-      return { family: "partial", t: 0.5 };
+
+      // no solar or UVI reading at all — cloud% is all we have
+      var cloud = cloudPct != null ? cloudPct : 50;
+      if (cloud >= 85) return { family: "overcast", t: 0.2 };
+      if (cloud >= 45) return { family: "cloudy",  t: clamp01(1 - cloud / 100) };
+      if (cloud >= 15) return { family: "partial", t: clamp01(1 - cloud / 100) };
+      return { family: "sunny", t: 0.6 };
     }
 
     /* NIGHT */
