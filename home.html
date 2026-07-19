@@ -349,8 +349,8 @@
     .imd-note a:hover { text-decoration: underline; }
 
      
-   /* ============================================================
-   WEATHER WIDGET — REDESIGNED
+  /* ============================================================
+   WEATHER WIDGET — REDESIGNED (+ continuous color engine, fx layer)
    Drop this block into your <style> section
    ============================================================ */
 
@@ -365,10 +365,16 @@
 /* ── HERO ── */
 .wx-hero {
   position: relative;
+  overflow: hidden;
   padding: 26px 22px 20px;
-  background: linear-gradient(135deg, #1a6fa8 0%, #2d9cdb 55%, #7ec8e3 100%);
+  /* --hc1/--hc2/--hc3 are set continuously by JS every refresh (rain rate,
+     solar, UVI, cloud cover). The literal fallback colors only apply for
+     an instant before the first fetch resolves — the gradient itself is
+     animated frame-by-frame in JS, not via CSS transition (browsers don't
+     reliably tween gradient stops, so a "transition: background" here
+     would fight the JS animation instead of helping it). */
+  background: linear-gradient(135deg, var(--hc1, #1a6fa8) 0%, var(--hc2, #2d9cdb) 55%, var(--hc3, #7ec8e3) 100%);
   color: #fff;
-  transition: background 1.4s ease;
 }
 .wx-hero-label {
   font-size: 11px;
@@ -441,6 +447,64 @@
 }
 .wx-condition-badge:hover {
   background: rgba(255,255,255,0.28);
+}
+
+/* ── FX LAYER — animated stars / drifting clouds behind hero content ── */
+/* Sits under every other hero child regardless of DOM order (the next
+   rule lifts existing hero content above it), so it drops in cleanly
+   without needing to know the hero's internal markup. */
+.wx-fx-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.wx-hero > *:not(.wx-fx-layer) {
+  position: relative;
+  z-index: 2;
+}
+
+.wx-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+@keyframes wxTwinkle {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1;    }
+}
+
+.wx-clouds {
+  position: absolute;
+  inset: 0;
+}
+.wx-cloud {
+  position: absolute;
+  width: 130px;
+  height: 46px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.55);
+  filter: blur(6px);
+  opacity: 0;
+  transition: opacity 1.8s ease;
+  animation: wxDrift linear infinite;
+}
+.wx-cloud.c1 { top: 10%; width: 150px; height: 50px; animation-duration: 70s;  }
+.wx-cloud.c2 { top: 28%; width: 110px; height: 38px; animation-duration: 95s;  animation-delay: -20s; }
+.wx-cloud.c3 { top: 44%; width: 170px; height: 56px; animation-duration: 120s; animation-delay: -55s; }
+.wx-cloud.c4 { top: 20%; width: 90px;  height: 32px; animation-duration: 60s;  animation-delay: -10s; }
+
+@keyframes wxDrift {
+  from { transform: translateX(-20%); }
+  to   { transform: translateX(120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wx-cloud, .wx-stars circle { animation: none !important; }
 }
 
 /* ── STAT STRIP ── */
@@ -598,12 +662,12 @@
 .wx-modal-head.indoor    { background: linear-gradient(135deg, #7d5a00, #c89010); }
 .wx-modal-head.condition { background: linear-gradient(135deg, #145a32, #1e8449); }
 
-/* hero theme variants */
-.wx-hero.sunny  { background: linear-gradient(135deg, #c0550a 0%, #e8820c 45%, #f5c842 100%); }
-.wx-hero.partial{ background: linear-gradient(135deg, #1a6fa8 0%, #2d9cdb 55%, #7ec8e3 100%); }
-.wx-hero.cloudy { background: linear-gradient(135deg, #3d4f63 0%, #5f7284 50%, #8fa0af 100%); }
-.wx-hero.rain   { background: linear-gradient(135deg, #122c45 0%, #1e4976 50%, #2e6ea6 100%); }
-.wx-hero.night  { background: linear-gradient(135deg, #0b1624 0%, #162438 50%, #233852 100%); }
+/* NOTE: the old static ".wx-hero.sunny/.partial/.cloudy/.rain/.night" gradient
+   rules have been removed on purpose. .wx-hero.<family> classes are still set
+   by JS (useful for devtools inspection / future hooks), but the background
+   itself now comes entirely from the --hc1/--hc2/--hc3 vars above, computed
+   continuously from live sensor + OWM cloud-cover data rather than jumping
+   between a fixed set of presets. */
 
 @media (max-width: 500px) {
   .wx-temp-main { font-size: 52px; }
