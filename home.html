@@ -458,11 +458,9 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
-}
-.wx-hero > *:not(.wx-fx-layer) {
-  position: relative;
-  z-index: 2;
+  z-index: -1; /* negative z-index paints behind all other hero content
+                  automatically (normal flow + positioned alike) without
+                  needing to touch any other element's position/z-index */
 }
 
 .wx-stars {
