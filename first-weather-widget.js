@@ -88,7 +88,7 @@ function _wd_init() {
   }
 
   /* ══════════════════════════════════════════
-     CONDITION ENGINE
+     CONDITION ENGINE  (icon + Malayalam label — UNCHANGED)
      Priority order (highest first):
        1) rain rate > 0 right now              → intensity label, always wins
        2) rate just dropped to 0 (rate buffer)  → "rain settling" / normal
@@ -149,6 +149,242 @@ function _wd_init() {
       if (humidity >= 88) return { text:"🌫 മൂടൽ മഞ്ഞ്",  key:"night" };
     }
     return { text:"🌙 രാത്രി ആകാശം", key:"night" };
+  }
+
+  /* ══════════════════════════════════════════
+     COLOR ENGINE
+     Separate from the label engine above on purpose — the label
+     text/icon logic stays untouched, this only decides the hero
+     BACKGROUND. Every family has a "dim" and "bright" color-stop
+     triplet; t (0–1) picks a point between them each refresh, so
+     the dashboard shades continuously with rain intensity / solar
+     / UVI / cloud cover instead of jumping between fixed presets.
+  ══════════════════════════════════════════ */
+  var HERO_PALETTES = {
+    "sunny":       { dim:[[192,85,10],[218,110,10],[235,175,50]],     bright:[[214,100,10],[240,150,15],[250,210,90]] },
+    "partial":     { dim:[[40,95,140],[60,130,175],[110,175,205]],    bright:[[26,111,168],[45,156,219],[126,200,227]] },
+    "cloudy":      { dim:[[50,62,76],[78,92,106],[118,132,146]],      bright:[[75,95,113],[112,130,148],[163,178,190]] },
+    "overcast":    { dim:[[38,46,58],[58,68,80],[92,104,116]],        bright:[[55,65,78],[82,95,108],[122,135,148]] },
+    "fog":         { dim:[[104,112,120],[140,148,154],[176,182,186]], bright:[[130,138,145],[165,172,177],[198,203,206]] },
+    "rain":        { dim:[[10,26,42],[18,46,74],[28,68,102]],         bright:[[46,90,128],[70,124,163],[108,160,190]] },
+    "storm":       { dim:[[8,10,16],[20,18,32],[34,28,48]],           bright:[[18,20,30],[35,32,50],[52,46,68]] },
+    "night-clear": { dim:[[6,13,22],[13,22,35],[21,35,53]],           bright:[[16,28,44],[28,45,68],[44,68,98]] },
+    "night-cloud": { dim:[[18,21,30],[32,37,48],[50,57,70]],          bright:[[36,41,54],[55,62,78],[80,88,104]] }
+  };
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+  function lerp(a,b,t){ return a + (b-a)*t; }
+  function lerpRGB(c1,c2,t){
+    return [ Math.round(lerp(c1[0],c2[0],t)), Math.round(lerp(c1[1],c2[1],t)), Math.round(lerp(c1[2],c2[2],t)) ];
+  }
+  function rgbCss(c){ return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; }
+
+  function paletteFor(familyKey, t) {
+    var p = HERO_PALETTES[familyKey] || HERO_PALETTES.partial;
+    var tt = clamp01(t);
+    return [
+      rgbCss(lerpRGB(p.dim[0], p.bright[0], tt)),
+      rgbCss(lerpRGB(p.dim[1], p.bright[1], tt)),
+      rgbCss(lerpRGB(p.dim[2], p.bright[2], tt))
+    ];
+  }
+
+  /* Decide which color FAMILY applies + how "bright" within it (t).
+     Mirrors getCondition's priority order but folds in cloud cover
+     (from OpenWeatherMap) which the label engine doesn't use. */
+  function computeFamilyAndIntensity(rain, solar, uvi, humidity, piezoArr, cloudPct, isDayFlag) {
+    /* 1) active measured rain always wins */
+    if (rain > 0) {
+      if (rain >= 50) {
+        // heavier than storm threshold → darker as it intensifies further, up to 150mm/hr
+        var extreme = clamp01((rain - 50) / 100);
+        return { family: "storm", t: clamp01(1 - extreme) };
+      }
+      var solarNorm = solar != null ? clamp01(solar / 500) : (uvi != null ? clamp01(uvi / 6) : 0);
+      var rateNorm  = clamp01(rain / 50);
+      // sunshower brightening, suppressed as rate climbs toward storm threshold
+      var t = solarNorm * (1 - rateNorm * 0.6);
+      return { family: "rain", t: t };
+    }
+
+    /* 2) rain just stopped — lingering damp-sky family, brightens as cloud clears */
+    if (rainJustStopped()) {
+      var sunAlreadyOut = (solar != null && solar > 150) || (uvi != null && uvi >= 3);
+      if (!sunAlreadyOut) {
+        var clearFrac = cloudPct != null ? clamp01(1 - cloudPct / 100) : 0.3;
+        return { family: "rain", t: clamp01(0.3 + clearFrac * 0.4) };
+      }
+      // sun already out → fall through to normal sky read below
+    } else if (piezoArr && piezoArr.length) {
+      /* 3) piezo wet, rate unconfirmed — same short grace window as the label engine */
+      var piezoNow = piezoArr[piezoArr.length - 1];
+      if (piezoNow === 1) {
+        var wetStreak = countTrailingOnes(piezoArr);
+        if (wetStreak <= PIEZO_GRACE_MINUTES) {
+          return { family: "rain", t: 0.25 };
+        }
+      }
+    }
+
+    if (isDayFlag) {
+      /* daytime haze/fog: very high humidity + weak/no solar reading */
+      if (humidity != null && humidity >= 95 && (solar == null || solar < 80)) {
+        return { family: "fog", t: cloudPct != null ? clamp01(1 - cloudPct / 100) : 0.4 };
+      }
+
+      var cloud = cloudPct != null ? cloudPct : (solar != null ? clamp01(1 - solar / 700) * 100 : 50);
+
+      if (cloud >= 85) {
+        // fully overcast but dry — still let a little solar bleed brighten it
+        var brightBit = solar != null ? clamp01(solar / 300) : (uvi != null ? clamp01(uvi / 4) : 0.2);
+        return { family: "overcast", t: brightBit };
+      }
+
+      if (solar != null) {
+        if (solar >= 700)             return { family: "sunny",   t: clamp01((solar - 700) / 300) + 0.5 };
+        if (solar >= 350 && uvi >= 4) return { family: "sunny",   t: clamp01((solar - 350) / 350) };
+        if (solar >= 120)             return { family: "partial", t: clamp01((solar - 120) / 230) };
+        if (solar >= 20)              return { family: "cloudy",  t: clamp01(solar / 20) };
+        return                              { family: "cloudy",  t: 0.1 };
+      }
+      if (uvi != null) {
+        if (uvi >= 7) return { family: "sunny",   t: clamp01((uvi - 7) / 5) + 0.5 };
+        if (uvi >= 4) return { family: "partial", t: clamp01((uvi - 4) / 3) };
+        if (uvi >= 1) return { family: "cloudy",  t: clamp01(uvi / 4) };
+        return              { family: "cloudy",  t: 0.05 };
+      }
+      return { family: "partial", t: 0.5 };
+    }
+
+    /* NIGHT */
+    if (humidity != null) {
+      if (humidity >= 95) return { family: "fog", t: 0.15 };
+      if (humidity >= 88) return { family: "fog", t: 0.3 };
+    }
+    var nCloud = cloudPct != null ? cloudPct : 50;
+    if (nCloud >= 45) return { family: "night-cloud", t: clamp01(1 - nCloud / 100) };
+    return { family: "night-clear", t: clamp01(1 - nCloud / 100) };
+  }
+
+  /* Smoothly crossfades the hero gradient's CSS custom properties
+     over ~1.2s using rAF — CSS transitions don't reliably animate
+     gradient stops across browsers, so this is done by hand. */
+  var heroAnim = { raf: null };
+
+  function parseRgb(str) {
+    var m = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/.exec(str || "");
+    return m ? [+m[1], +m[2], +m[3]] : null;
+  }
+
+  function animateHeroBackground(targetCss) {
+    var cs = getComputedStyle(hero);
+    var fromCss = [
+      cs.getPropertyValue("--hc1").trim(),
+      cs.getPropertyValue("--hc2").trim(),
+      cs.getPropertyValue("--hc3").trim()
+    ];
+    var from = [
+      parseRgb(fromCss[0]) || parseRgb(targetCss[0]),
+      parseRgb(fromCss[1]) || parseRgb(targetCss[1]),
+      parseRgb(fromCss[2]) || parseRgb(targetCss[2])
+    ];
+    var to = targetCss.map(parseRgb);
+
+    if (heroAnim.raf) cancelAnimationFrame(heroAnim.raf);
+
+    var start = null;
+    var DURATION = 1200;
+
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min(1, (ts - start) / DURATION);
+      var eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // easeInOutQuad
+      for (var i = 0; i < 3; i++) {
+        hero.style.setProperty("--hc" + (i + 1), rgbCss(lerpRGB(from[i], to[i], eased)));
+      }
+      if (p < 1) heroAnim.raf = requestAnimationFrame(step);
+    }
+    heroAnim.raf = requestAnimationFrame(step);
+  }
+
+  /* ══════════════════════════════════════════
+     STAR / CLOUD FX LAYER
+     Built once (fixed star positions so they don't jump every
+     30s refresh), then only opacity/visibility is toggled based
+     on cloud cover %, time of day, and current weather family.
+  ══════════════════════════════════════════ */
+  function buildFxLayerOnce() {
+    if (document.getElementById("wd-fx-layer")) return;
+
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("id", "wd-fx-stars");
+    svg.setAttribute("viewBox", "0 0 400 220");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.classList.add("wx-stars");
+
+    var STAR_COUNT = 46;
+    for (var i = 0; i < STAR_COUNT; i++) {
+      var cx    = (Math.random() * 400).toFixed(1);
+      var cy    = (Math.random() * 140).toFixed(1); // keep stars in upper portion of hero
+      var r     = (Math.random() * 1.1 + 0.3).toFixed(2);
+      var op    = (Math.random() * 0.6 + 0.35).toFixed(2);
+      var dur   = (Math.random() * 3 + 2.5).toFixed(2);
+      var delay = (Math.random() * 4).toFixed(2);
+      var c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", cx);
+      c.setAttribute("cy", cy);
+      c.setAttribute("r", r);
+      c.setAttribute("fill", "#fff");
+      c.style.opacity = op;
+      c.style.animation = "wxTwinkle " + dur + "s ease-in-out " + delay + "s infinite";
+      svg.appendChild(c);
+    }
+
+    var cloudWrap = document.createElement("div");
+    cloudWrap.className = "wx-clouds";
+    cloudWrap.id = "wd-fx-clouds";
+    ["c1", "c2", "c3", "c4"].forEach(function (cls) {
+      var span = document.createElement("span");
+      span.className = "wx-cloud " + cls;
+      cloudWrap.appendChild(span);
+    });
+
+    var layer = document.createElement("div");
+    layer.id = "wd-fx-layer";
+    layer.className = "wx-fx-layer";
+    layer.setAttribute("aria-hidden", "true");
+    layer.appendChild(svg);
+    layer.appendChild(cloudWrap);
+
+    hero.insertBefore(layer, hero.firstChild);
+  }
+
+  function updateFxLayer(family, cloudPct, isDayFlag) {
+    var starsEl  = document.getElementById("wd-fx-stars");
+    var cloudsEl = document.getElementById("wd-fx-clouds");
+    if (!starsEl || !cloudsEl) return;
+
+    var cloud = cloudPct != null ? cloudPct : 50;
+
+    /* stars only at night, on clear-ish family, fading with cloud cover */
+    var starOpacity = 0;
+    if (!isDayFlag && family !== "rain" && family !== "storm" && family !== "fog") {
+      starOpacity = clamp01(1 - cloud / 85);
+    }
+    starsEl.style.opacity = starOpacity.toFixed(2);
+
+    /* drifting cloud shapes — skip while actively raining, the rain gradient already reads as overcast */
+    var cloudBaseOpacity = 0;
+    if (family !== "rain" && family !== "storm") {
+      cloudBaseOpacity = clamp01((cloud - 15) / 70);
+    }
+    var thresholds = [15, 40, 60, 80]; // more cloud shapes appear as cover increases
+    var kids = cloudsEl.children;
+    for (var i = 0; i < kids.length; i++) {
+      var visible = cloud >= thresholds[i];
+      kids[i].style.opacity = visible ? Math.min(0.85, cloudBaseOpacity + 0.15).toFixed(2) : 0;
+    }
   }
 
   /* ══════════════════════════════════════════
@@ -230,6 +466,7 @@ function _wd_init() {
       "🌤 കാലാവസ്ഥ വിശദീകരണം",
       mrow("☀️","UVI",                m.uvi         != null ? m.uvi         : "--") +
       mrow("🔆","Solar",              (m.solar      != null ? m.solar       : "--") + " W/m²") +
+      mrow("☁️","Cloud cover (OWM)",  (m.cloudPct   != null ? m.cloudPct    : "--") + " %") +
       mrow("🌱","VPD",                (m.vpd        != null ? m.vpd         : "--") + " kPa") +
       mrow("🌡","Dew Point (Out)",    (m.dewOut     != null ? m.dewOut      : "--") + "°C") +
       mrow("🌧","Rain rate (now)",    (m.rain       || 0)                   + " mm/hr") +
@@ -301,8 +538,9 @@ function _wd_init() {
       var rain      = rn.rate_mm_hr != null ? rn.rate_mm_hr : 0;
       var rainDaily = rn.daily_mm   != null ? rn.daily_mm   : 0;
 
-      /* ── visibility from OWM ── */
-      var vis = (owm && owm.visibility) ? (owm.visibility / 1000).toFixed(1) : "--";
+      /* ── visibility + cloud cover from OWM ── */
+      var vis      = (owm && owm.visibility) ? (owm.visibility / 1000).toFixed(1) : "--";
+      var cloudPct = (owm && owm.clouds && owm.clouds.all != null) ? owm.clouds.all : null;
 
       /* ── piezo (rain sensor) history: chronological array of 0/1, last 30 min ── */
       var piezoArr       = Array.isArray(piezoRes) ? piezoRes.map(function(p){ return p.v; }) : [];
@@ -312,10 +550,17 @@ function _wd_init() {
       /* ── rain buffer (rate-based, ~5 min) ── */
       pushRain(rain, rainDaily);
 
-      /* ── condition ── */
+      /* ── condition label (unchanged engine) ── */
       var now  = new Date();
+      var isDayFlag = (now.getHours() >= 6 && now.getHours() < 19);
       var cond = getCondition(rain, rainDaily, solar, uvi, h, now.getHours(), piezoArr);
       latestCondition = cond.text;
+
+      /* ── hero color + fx layer (new engine) ── */
+      var theme = computeFamilyAndIntensity(rain, solar, uvi, h, piezoArr, cloudPct, isDayFlag);
+      animateHeroBackground(paletteFor(theme.family, theme.t));
+      updateFxLayer(theme.family, cloudPct, isDayFlag);
+      hero.className = "wx-hero " + theme.family;
 
       /* ── store for modals ── */
       latestWind = {
@@ -331,7 +576,7 @@ function _wd_init() {
         uvi: uvi, solar: solar, vpd: vpd,
         dewOut: dewOut, dewIn: dewIn,
         rain: rain, rainDaily: rainDaily,
-        humidity: h,
+        humidity: h, cloudPct: cloudPct,
         piezoNow: piezoNow, piezoWetStreak: piezoWetStreak, piezoArr: piezoArr
       };
 
@@ -354,12 +599,11 @@ function _wd_init() {
         : now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
       document.getElementById("wd-last-updated").textContent = updatedAt;
 
-      hero.className = "wx-hero " + cond.key;
-
     }).catch(function(e){ console.error("Weather fetch failed:", e); });
   }
 
-  /* ── INIT — 30 second refresh ── */
+  /* ── INIT — build fx layer once, then 30 second refresh ── */
+  buildFxLayerOnce();
   updateAll();
   setInterval(updateAll, 30000);
 }
