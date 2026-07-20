@@ -6,7 +6,7 @@ let refreshScheduled = false;
 const WARNING_MAP = {
   "1":  "No Warning",
   "2":  "Heavy Rain",
-  "3":  "Heavy Snow",
+  "3":  "Heavy Snow", 
   "4":  "Thunderstorm & Lightning",
   "5":  "Hailstorm",
   "6":  "Dust Storm",
