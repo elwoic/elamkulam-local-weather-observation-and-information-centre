@@ -54,6 +54,7 @@ function getISTDate() {
 async function updateMarqueeLive() {
   const marqueeTextEl = document.getElementById("marqueeText");
   const marqueeContainerEl = document.getElementById("marqueeContainer");
+  
   try {
     const response = await fetch(WORKER_URL);
     if (!response.ok) throw new Error("Network response failed");
@@ -61,22 +62,16 @@ async function updateMarqueeLive() {
     if (data.error) throw new Error(data.error);
 
     const todayIST = getISTDate();
+    const dateStr = todayIST.toLocaleDateString("en-GB");
 
-    const baseDate = new Date(data.Date);
-    baseDate.setHours(0, 0, 0, 0);
-
-    let diffDays = Math.round((todayIST - baseDate) / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) diffDays = 0;
-    if (diffDays > 4) diffDays = 4;
-
-    const warningKey = `Day_${diffDays + 1}`;
-    const colorKey = `Day${diffDays + 1}_Color`;
+    // 🛑 REMOVED the diffDays logic. 
+    // ✅ ALWAYS target Day 1 of the latest available bulletin.
+    const warningKey = "Day_1";
+    const colorKey = "Day1_Color";
 
     const warningText = decodeWarnings(data[warningKey]);
     const colorId = data[colorKey];
     const colorInfo = COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
-
-    const dateStr = todayIST.toLocaleDateString("en-GB");
 
     const prefixParts = [];
     if (data.stale)      prefixParts.push("⚠️ Showing previous IMD bulletin.");
@@ -84,8 +79,11 @@ async function updateMarqueeLive() {
     if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
     const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
 
-    marqueeTextEl.textContent =
+    // The dateStr will dynamically show today's date (20/07/2026), 
+    // but pull the Day_1 data (Yellow) from the JSON.
+    marqueeTextEl.textContent = 
       `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} — ${warningText} | Last Updated: ${data.updated_at || "N/A"} | Source: India Meteorological Department (IMD)`;
+    
     marqueeContainerEl.style.background = colorInfo.css;
 
     if (data.updating && !refreshScheduled) {
