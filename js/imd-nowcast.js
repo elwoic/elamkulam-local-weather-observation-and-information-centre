@@ -3,6 +3,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("nowcast-container");
   const ticker = document.getElementById("nowcast-ticker");
 
+  // Official IMD Category Mapping
+  const imdCategories = {
+    1: "No Severe Weather",
+    2: "Light Rain (< 5 mm/hr)",
+    3: "Light Snow (< 5 cm/hr)",
+    4: "Light Thunderstorms (Wind < 40 kmph)",
+    5: "Slight Dust Storm",
+    6: "Low Lightning Probability (< 30%)",
+    7: "Moderate Rain (5-15 mm/hr)",
+    8: "Moderate Snow (5-15 cm/hr)",
+    9: "Moderate Thunderstorms (Wind 41-61 kmph)",
+    10: "Moderate Dust Storm",
+    11: "Moderate Lightning Probability (30-60%)",
+    12: "Heavy Rain (> 15 mm/hr)",
+    13: "Heavy Snow (> 15 cm/hr)",
+    14: "Severe Thunderstorms (Wind 62-87 kmph)",
+    15: "Very Severe Thunderstorms (Wind > 87 kmph)",
+    // 16 is reserved for custom text, parsed separately below
+    17: "Thunderstorms with Hail",
+    18: "Severe Dust Storm (Wind > 61 kmph)",
+    19: "High Lightning Probability (> 60%)"
+  };
+
   async function fetchNowcast() {
     try {
       const response = await fetch(WORKER_URL);
@@ -14,30 +37,46 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.nowcast) {
         let textElements = [];
         
-        // Grab the relevant text fields based on what IMD sent
-        if (data.nowcast.message) textElements.push(data.nowcast.message);
-        if (data.nowcast.cat16) textElements.push(data.nowcast.cat16);
+        // 1. Parse standard numeric categories (cat1 to cat19, skipping 16)
+        for (let i = 1; i <= 19; i++) {
+          if (i === 16) continue;
+          let catValue = data.nowcast[`cat${i}`];
+          
+          // IMD sets the value to the category number (e.g., "7") when active
+          if (catValue && catValue !== "0" && catValue !== 0) {
+             textElements.push(imdCategories[i].toUpperCase());
+          }
+        }
         
+        // 2. Parse custom text fields (cat16 and message)
+        if (data.nowcast.cat16 && data.nowcast.cat16 !== "0") {
+            textElements.push(data.nowcast.cat16.toUpperCase());
+        }
+        if (data.nowcast.message && data.nowcast.message !== "0") {
+            textElements.push(data.nowcast.message.toUpperCase());
+        }
+        
+        // Clean up and join all active alerts
         let tickerText = textElements.join(" | ");
-        if (!tickerText) tickerText = "Active Nowcast Alert Issued by IMD.";
+        if (!tickerText) tickerText = "ACTIVE NOWCAST ALERT ISSUED";
 
-        // Format validity time (e.g., "1900" -> "19:00")
+        // 3. Format validity time (e.g., "1900" -> "19:00")
         if (data.nowcast.toi && data.nowcast.vupto) {
             const formatTime = (t) => `${t.substring(0,2)}:${t.substring(2)}`;
-            tickerText += ` (Valid: ${formatTime(data.nowcast.toi)} to ${formatTime(data.nowcast.vupto)} IST)`;
+            tickerText += ` (VALID: ${formatTime(data.nowcast.toi)} TO ${formatTime(data.nowcast.vupto)} IST)`;
         }
 
-        // Apply text
+        // Apply finalized text
         ticker.innerText = `🚨 IMD NOWCAST: ${tickerText}`;
         
-        // Reset container classes, then apply the IMD color code class
+        // 4. Apply dynamic IMD color class
         container.className = "nowcast-marquee-container"; 
         container.classList.add(`nowcast-color-${data.nowcast.color_name}`);
         
-        // Make the marquee visible
+        // Reveal the marquee
         container.style.display = "flex"; 
       } else {
-        // No active nowcast -> Hide the marquee completely
+        // If nowcast is null, hide the marquee completely
         container.style.display = "none";
       }
     } catch (error) {
@@ -50,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Fetch immediately on page load
   fetchNowcast();
   
-  // Since you are using Stale-While-Revalidate (SWR) on Cloudflare, 
-  // polling every 10 minutes is completely safe and won't consume Render API limits.
+  // SWR Polling: safely check for new Nowcasts every 10 minutes from Cloudflare
   setInterval(fetchNowcast, 10 * 60 * 1000); 
 });
