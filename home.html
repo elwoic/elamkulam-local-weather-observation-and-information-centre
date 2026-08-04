@@ -348,7 +348,48 @@
     .imd-note a { color: var(--blue); text-decoration: none; }
     .imd-note a:hover { text-decoration: underline; }
 
-     
+
+    /* ============================================================
+   NOWCAST MARQUEE WIDGET
+   ============================================================ */
+.nowcast-marquee-container {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  /* Default subtle background */
+  background: rgba(0, 0, 0, 0.04); 
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.nowcast-marquee {
+  display: inline-block;
+  padding-left: 100%;
+  animation: wx-marquee-scroll 18s linear infinite;
+}
+
+/* Pause scroll when the user hovers over it to read it */
+.nowcast-marquee-container:hover .nowcast-marquee {
+  animation-play-state: paused;
+}
+
+@keyframes wx-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Dynamic IMD Colors applied by JS */
+.nowcast-color-Yellow { background: #fff8e1; border-color: #fbc02d; color: #856404; }
+.nowcast-color-Orange { background: #fff3e0; border-color: #ff9800; color: #e65100; }
+.nowcast-color-Red    { background: #ffebee; border-color: #f44336; color: #b71c1c; }
+.nowcast-color-Green  { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+
+    
   /* ============================================================
    WEATHER WIDGET — REDESIGNED (+ continuous color engine, fx layer)
    Drop this block into your <style> section
@@ -1087,12 +1128,20 @@ Coordinates: 10.908°N, 76.229°E
 <h2 class="sec-head">Current Weather — Elamkulam</h2>
 <div class="grid-6040">
   <div class="card">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24">
-        <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
-      </svg>
-      Live Conditions
-    </div>
+    <div class="card-head" style="display: flex; align-items: center; justify-content: space-between; overflow: hidden; gap: 15px;">
+  <!-- Left side: Icon + Title -->
+  <div style="display: flex; align-items: center; white-space: nowrap; gap: 6px;">
+    <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+      <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+    </svg>
+    Live Conditions
+  </div>
+
+  <!-- Right side: The Nowcast Marquee (Hidden by default) -->
+  <div class="nowcast-marquee-container" id="nowcast-container" style="display: none;">
+    <div class="nowcast-marquee" id="nowcast-ticker">Fetching IMD Nowcast...</div>
+  </div>
+</div>
         <!-- ── HERO ── -->
     <div class="wx-hero partial" id="wd-hero">
  
