@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (i === 16) continue;
           let catValue = data.nowcast[`cat${i}`];
           
-          // IMD sets the value to the category number (e.g., "7") when active
           if (catValue && catValue !== "0" && catValue !== 0) {
              textElements.push(imdCategories[i].toUpperCase());
           }
@@ -56,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
             textElements.push(data.nowcast.message.toUpperCase());
         }
         
-        // Clean up and join all active alerts
         let tickerText = textElements.join(" | ");
         if (!tickerText) tickerText = "ACTIVE NOWCAST ALERT ISSUED";
 
@@ -66,10 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
             tickerText += ` (VALID: ${formatTime(data.nowcast.toi)} TO ${formatTime(data.nowcast.vupto)} IST)`;
         }
 
-        // Apply finalized text
-        ticker.innerText = `🚨 IMD NOWCAST: ${tickerText}`;
+        // 4. ADD THE COLOR NAME TEXT 
+        const alertColor = data.nowcast.color_name ? data.nowcast.color_name.toUpperCase() : "UNKNOWN";
         
-        // 4. Apply dynamic IMD color class
+        // Apply finalized text (Now includes the color explicitly!)
+        ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT): ${tickerText}`;
+        
+        // 5. Apply dynamic IMD background color
         container.className = "nowcast-marquee-container"; 
         container.classList.add(`nowcast-color-${data.nowcast.color_name}`);
         
@@ -81,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error("Error fetching nowcast:", error);
-      // Failsafe: hide on error so UI stays clean
       container.style.display = "none";
     }
   }
