@@ -383,12 +383,30 @@
   100% { transform: translateX(-100%); }
 }
 
-/* Dynamic IMD Colors applied by JS */
-.nowcast-color-Yellow { background: #fff8e1; border-color: #fbc02d; color: #856404; }
-.nowcast-color-Orange { background: #fff3e0; border-color: #ff9800; color: #e65100; }
-.nowcast-color-Red    { background: #ffebee; border-color: #f44336; color: #b71c1c; }
-.nowcast-color-Green  { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+/* Dynamic IMD Colors (Solid Alerts) */
+.nowcast-color-Yellow { 
+  background: #ffc107; /* Solid Yellow */
+  border-color: #f39c12; 
+  color: #000;         /* Black text for contrast */
+}
 
+.nowcast-color-Orange { 
+  background: #f57c00; /* Solid Orange */
+  border-color: #e65100; 
+  color: #fff;         /* White text */
+}
+
+.nowcast-color-Red { 
+  background: #d32f2f; /* Solid Red */
+  border-color: #b71c1c; 
+  color: #fff;         /* White text */
+}
+
+.nowcast-color-Green { 
+  background: #388e3c; /* Solid Green */
+  border-color: #2e7d32; 
+  color: #fff;         /* White text */
+}
     
   /* ============================================================
    WEATHER WIDGET — REDESIGNED (+ continuous color engine, fx layer)
