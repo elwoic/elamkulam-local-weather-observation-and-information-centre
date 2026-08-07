@@ -18,7 +18,6 @@
     --green: #16a34a; --green-bg: #f0fdf4; --green-border: #bbf7d0;
     --red: #dc2626; --red-bg: #fef2f2; --red-border: #fecaca;
     --amber: #d97706; --amber-bg: #fffbeb; --amber-border: #fde68a;
-    --purple: #7c3aed; --purple-bg: #f5f3ff; --purple-border: #ddd6fe;
     --letterhead-blue: #1a5ca4;
     --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -35,7 +34,6 @@
   .login-logo p  { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
   .field-wrap { margin-bottom: 14px; }
   .field-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
-  .field-hint { font-size: 11px; color: var(--text-3); margin-top: 5px; line-height: 1.5; }
   .ctrl-input, .ctrl-select { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical; }
   .ctrl-input:focus, .ctrl-select:focus { border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); background: var(--surface); }
   .ctrl-input::placeholder { color: var(--text-3); }
@@ -69,16 +67,16 @@
   .conn-dot.ok { background: var(--green); }
   .conn-dot.bad { background: var(--red); }
 
-  .tabnav { display: flex; gap: 4px; padding: 0 28px; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; }
-  .tab-btn { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+  .tabnav { display: flex; gap: 4px; padding: 0 28px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tab-btn { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; }
   .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
-  .portal-body { max-width: 1220px; margin: 0 auto; padding: 26px 24px 60px; }
+  .portal-body { max-width: 1180px; margin: 0 auto; padding: 26px 24px 60px; }
 
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-  .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; }
   .panel-title { font-size: 13px; font-weight: 600; }
   .panel-body  { padding: 18px; }
 
@@ -90,52 +88,28 @@
   .badge-offline .badge-dot { background: var(--text-3); }
   .badge-revoked  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
   .badge-revoked .badge-dot { background: var(--red); }
-  .badge-scheduled { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .badge-scheduled .badge-dot { background: var(--amber); }
+  .badge-promoted { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .badge-promoted .badge-dot { animation: pulse 2s infinite; background: var(--amber); }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 
-  /* ---------- DESTINATION CHIPS ---------- */
-  .dest-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 100px; font-family: 'DM Mono', monospace; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); white-space: nowrap; }
-  .dest-chip.site { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
-  .dest-chip.report { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
-  .dest-chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  /* ---------- WEATHER REPORTS TAB ---------- */
+  .subtabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .subtab-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; }
+  .subtab-btn.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
-  /* ---------- COMPOSE TAB ---------- */
-  .status-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-  .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; box-shadow: var(--shadow); }
-  .status-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .sc-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
-  .sc-body { font-size: 13px; line-height: 1.55; color: var(--text-2); max-height: 90px; overflow-y: auto; }
-  .sc-body .sc-line { padding: 3px 0; border-bottom: 1px dashed var(--border); }
-  .sc-body .sc-line:last-child { border-bottom: none; }
-  .sc-empty { color: var(--text-3); font-style: italic; }
-  @media (max-width: 900px) { .status-strip { grid-template-columns: 1fr; } }
+  .reports-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .reports-grid { grid-template-columns: 1fr; } }
 
-  .composer-grid { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 16px; align-items: start; }
-  @media (max-width: 1020px) { .composer-grid { grid-template-columns: 1fr; } }
-
-  .dest-group-label { font-size: 11px; font-weight: 600; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 8px; }
-  .dest-group-label:first-child { margin-top: 0; }
-  .dest-checks { display: flex; flex-direction: column; gap: 7px; }
-  .dest-check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: var(--radius-sm); cursor: pointer; }
-  .dest-check-item:hover { background: var(--surface-2); }
-  .dest-check-item input { accent-color: var(--accent); }
-
-  .timing-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-  @media (max-width: 480px) { .timing-row { grid-template-columns: 1fr; } }
-
-  .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  .filter-chip { padding: 5px 12px; font-size: 11.5px; font-weight: 600; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; font-family: 'DM Mono', monospace; }
-  .filter-chip.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .id-row { display: flex; gap: 10px; align-items: flex-end; }
+  .id-row .field-wrap { flex: 1; margin-bottom: 0; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 
   table.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   table.data-table th { text-align: left; font-family: 'DM Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
-  table.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   table.data-table tr:last-child td { border-bottom: none; }
-  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .row-actions { display: flex; gap: 6px; }
   .empty-row td { text-align: center; color: var(--text-3); padding: 24px; }
-  .block-text-cell { max-width: 260px; word-break: break-word; line-height: 1.5; }
-  .block-window-cell { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); white-space: nowrap; }
 
   /* Letterhead / A4 preview, scoped */
   .a4-preview { font-family: 'Noto Sans Malayalam', sans-serif; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 16mm 12mm; line-height: 1.6; color: #1e293b; }
@@ -152,9 +126,7 @@
   .lh-meta .lbl { font-weight: 700; background: #f8fafc; width: 22%; }
   .lh-section { margin-bottom: 16px; }
   .lh-section h3 { font-family: 'Manjari', sans-serif; font-size: 1rem; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px; }
-  .lh-section p { font-size: .88rem; text-align: justify; color: #334155; white-space: pre-wrap; margin-bottom: 6px; }
-  .lh-section p:last-child { margin-bottom: 0; }
-  .lh-section .lh-empty { color: #94a3b8; font-style: italic; }
+  .lh-section p { font-size: .88rem; text-align: justify; color: #334155; white-space: pre-wrap; }
   .lh-footer { margin-top: 40px; display: flex; justify-content: flex-end; font-family: 'Manjari', sans-serif; }
   .lh-seal { text-align: center; width: 200px; }
   .lh-seal-img { width: 70px; height: 70px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
@@ -167,20 +139,60 @@
     #print-target { position: absolute; top: 0; left: 0; width: 100%; border: none; }
   }
 
+  /* ---------- LIVE UPDATES TAB ---------- */
+  .status-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
+  .status-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); }
+  .sc-label { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
+  .sc-val { margin-top: 3px; }
+  @media (max-width: 700px) { .status-strip { grid-template-columns: 1fr; } }
+
+  .panels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 980px) { .panels-grid { grid-template-columns: 1fr; } }
+  .promoted-notice { display: none; font-size: 11px; color: var(--amber); font-family: 'DM Mono', monospace; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--radius-sm); padding: 6px 10px; margin-bottom: 12px; }
+  .promoted-notice.show { display: block; }
+  .blink-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 8px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .blink-label { font-size: 11px; color: var(--text-2); font-family: 'DM Mono', monospace; flex: 1; text-transform: uppercase; letter-spacing: .06em; }
+  .toggle-wrap { display: flex; gap: 4px; }
+  .radio-btn { display: none; }
+  .radio-label { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); color: var(--text-3); font-family: 'DM Mono', monospace; background: var(--surface); }
+  .radio-btn:checked + .radio-label { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-row .btn { flex: 1; }
+
+  .action-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .action-bar-title { font-size: 11px; font-weight: 600; color: var(--text-3); font-family: 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .action-row { display: flex; gap: 10px; }
+  .action-row .btn { flex: 1; }
+  .last-updated { font-size: 11.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-align: right; margin-top: 12px; }
+
   .section-sep { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; }
   .sep-line { flex: 1; height: 1px; background: var(--border); }
   .sep-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; font-family: 'DM Mono', monospace; }
 
-  .history-body { max-height: 420px; overflow-y: auto; }
+  .history-body { max-height: 480px; overflow-y: auto; }
   .history-empty { padding: 28px; text-align: center; font-size: 13px; color: var(--text-3); }
-  .log-record { border-bottom: 1px solid var(--border); padding: 10px 18px; display: flex; gap: 12px; align-items: baseline; }
+  .log-record { border-bottom: 1px solid var(--border); }
   .log-record:last-child { border-bottom: none; }
-  .log-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
-  .lb-created { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
-  .lb-edited { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .lb-revoked { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .log-summary { font-size: 12.5px; flex: 1; word-break: break-word; }
-  .log-time { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; white-space: nowrap; flex-shrink: 0; }
+  .log-record-head { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding: 11px 18px; cursor: pointer; user-select: none; }
+  .log-record-head:hover { background: var(--surface-2); }
+  .log-record.open .log-record-head { background: var(--surface-2); }
+  .log-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .lb-manualUpdate { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .lb-preUpdate { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .lb-info { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .lb-BULK_UPDATE { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
+  .lb-revoke { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .log-summary { font-size: 13px; }
+  .log-time { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .log-chevron { font-size: 10px; color: var(--text-3); transition: transform .2s; }
+  .log-record.open .log-chevron { transform: rotate(180deg); }
+  .log-record-body { display: none; }
+  .log-record.open .log-record-body { display: block; }
+  .log-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+  .log-detail-cell { background: var(--surface-2); padding: 10px 16px; }
+  .ldc-label { font-size: 10.5px; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .ldc-val { font-size: 13px; word-break: break-word; line-height: 1.5; }
 
   /* ---------- CONFIRM MODAL ---------- */
   .modal-overlay { position: fixed; inset: 0; background: rgba(15,15,13,.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
@@ -193,15 +205,17 @@
   .modal-actions .btn { flex: 1; }
 
   /* ---------- TOAST ---------- */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; box-shadow: var(--shadow-md); opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s; pointer-events: none; white-space: nowrap; z-index: 999; max-width: 90vw; overflow: hidden; text-overflow: ellipsis; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; box-shadow: var(--shadow-md); opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s; pointer-events: none; white-space: nowrap; z-index: 999; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast.err { background: var(--red); }
 
   @media (max-width: 600px) {
+    .action-row { flex-direction: column; }
     .topbar { padding: 0 16px; }
     .portal-body { padding: 16px 14px 60px; }
     .topbar-sub { display: none; }
     .login-card { padding: 28px 22px; }
+    .field-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -213,7 +227,7 @@
     <div class="login-logo">
       <div class="login-mark">ELW</div>
       <h2>ELWOIC Admin Console</h2>
-      <p>Content blocks &amp; weather reports</p>
+      <p>Weather reports &amp; live site updates</p>
     </div>
     <div class="field-wrap">
       <label class="field-label" for="login-password">Access Token</label>
@@ -235,7 +249,7 @@
       <div class="topbar-mark">ELW</div>
       <div>
         <div class="topbar-title">ELWOIC Admin Console</div>
-        <div class="topbar-sub">CONTENT BLOCKS — SINGLE FIREBASE WORKER</div>
+        <div class="topbar-sub">REPORTS &amp; LIVE UPDATES — SINGLE WORKER</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -245,223 +259,203 @@
   </div>
 
   <div class="tabnav">
-    <button class="tab-btn active" data-tab="compose">Compose &amp; Blocks</button>
-    <button class="tab-btn" data-tab="reports">Reports</button>
-    <button class="tab-btn" data-tab="preview">Preview &amp; Print</button>
-    <button class="tab-btn" data-tab="history">Activity Log</button>
+    <button class="tab-btn active" data-tab="reports">Weather Reports</button>
+    <button class="tab-btn" data-tab="live">Live Site Updates</button>
   </div>
 
   <div class="portal-body">
 
-    <!-- ===================== COMPOSE & BLOCKS TAB ===================== -->
-    <div class="tab-panel active" id="tab-compose">
+    <!-- ===================== WEATHER REPORTS TAB ===================== -->
+    <div class="tab-panel active" id="tab-reports">
 
-      <!-- Live site-wide status -->
-      <div class="status-strip">
-        <div class="status-card">
-          <div class="status-card-top"><span class="sc-label">Manual Update</span><span class="badge badge-offline" id="live-badge-manual_update"><span class="badge-dot"></span>Offline</span></div>
-          <div class="sc-body" id="live-body-manual_update"><span class="sc-empty">Nothing active</span></div>
-        </div>
-        <div class="status-card">
-          <div class="status-card-top"><span class="sc-label">Pre Update</span><span class="badge badge-offline" id="live-badge-pre_update"><span class="badge-dot"></span>Offline</span></div>
-          <div class="sc-body" id="live-body-pre_update"><span class="sc-empty">Nothing active</span></div>
-        </div>
-        <div class="status-card">
-          <div class="status-card-top"><span class="sc-label">General Info</span><span class="badge badge-offline" id="live-badge-info"><span class="badge-dot"></span>Offline</span></div>
-          <div class="sc-body" id="live-body-info"><span class="sc-empty">Nothing active</span></div>
-        </div>
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="edit">Edit</button>
+        <button class="subtab-btn" data-subtab="preview">Preview &amp; Print</button>
       </div>
 
-      <div class="composer-grid">
+      <!-- EDIT VIEW -->
+      <div id="subtab-edit">
+        <div class="reports-grid">
 
-        <!-- BLOCK COMPOSER -->
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title" id="composer-title">New block</span>
-            <button class="btn btn-ghost btn-sm" id="cancelEditBtn" style="display:none;">Cancel edit</button>
-          </div>
-          <div class="panel-body">
-            <input type="hidden" id="block-id">
-
-            <div class="field-wrap">
-              <label class="field-label">Text</label>
-              <textarea id="block-text" class="ctrl-input" rows="4" placeholder="Write the sentence or paragraph here..."></textarea>
-            </div>
-
-            <div class="dest-group-label">Site-wide destinations</div>
-            <div class="dest-checks">
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="manual_update" data-group="site"> Manual Update</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="pre_update" data-group="site"> Pre Update</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="info" data-group="site"> General Info</label>
-            </div>
-
-            <div class="dest-group-label">Report destinations (letterhead sections)</div>
-            <div class="dest-checks">
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="forecast" data-group="report"> Issued Forecast</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="actual_weather" data-group="report"> Actual Weather</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="verification" data-group="report"> Verification</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="deviations" data-group="report"> Deviations</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="additional_obs" data-group="report"> Additional Observations</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="outlook" data-group="report"> Outlook</label>
-            </div>
-
-            <div class="field-wrap" id="report-picker-wrap" style="display:none; margin-top:14px;">
-              <label class="field-label">Which report does this belong to?</label>
-              <select id="block-report-id" class="ctrl-select"></select>
-              <div class="field-hint">Required because at least one report destination is ticked above.</div>
-            </div>
-
-            <div class="timing-row" style="margin-top:14px;">
-              <div class="field-wrap" style="margin-bottom:0;">
-                <label class="field-label">Visible from (optional)</label>
-                <input type="datetime-local" id="block-visible-from" class="ctrl-input">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Report editor</span></div>
+            <div class="panel-body">
+              <div class="id-row" style="margin-bottom:14px;">
+                <div class="field-wrap">
+                  <label class="field-label">Report ID</label>
+                  <input type="text" id="doc-id" class="ctrl-input" readonly style="color:var(--letterhead-blue);font-weight:600;">
+                </div>
+                <button class="btn btn-ghost btn-sm" id="newReportBtn" title="Start a fresh report for today">New report</button>
               </div>
-              <div class="field-wrap" style="margin-bottom:0;">
-                <label class="field-label">Expires at (optional)</label>
-                <input type="datetime-local" id="block-expires-at" class="ctrl-input">
+
+              <div class="field-row">
+                <div class="field-wrap" style="margin-bottom:0;">
+                  <label class="field-label">Observer</label>
+                  <input type="text" id="doc-observer" class="ctrl-input" value="സ്റ്റേഷൻ ഡ്യൂട്ടി ഓഫീസർ">
+                </div>
+                <div class="field-wrap" style="margin-bottom:0;">
+                  <label class="field-label">Auto-revoke after</label>
+                  <select id="expiry-lifespan" class="ctrl-select">
+                    <option value="never">Never expire</option>
+                    <option value="1">1 hour</option>
+                    <option value="6">6 hours</option>
+                    <option value="12">12 hours</option>
+                    <option value="24">24 hours</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-wrap"><label class="field-label">Issued forecast</label><textarea id="doc-forecast" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Actual weather</label><textarea id="doc-actual" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Verification</label><textarea id="doc-verification" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Deviations</label><textarea id="doc-deviations" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap"><label class="field-label">Additional (human) observations</label><textarea id="doc-additional" class="ctrl-input" rows="3"></textarea></div>
+              <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Outlook</label><textarea id="doc-outlook" class="ctrl-input" rows="3"></textarea></div>
+
+              <div class="btn-row">
+                <button class="btn btn-update" id="publishReportBtn">Publish / save report</button>
+                <button class="btn btn-revoke" id="revokeReportBtn">Revoke this report</button>
               </div>
             </div>
-
-            <div class="checkbox-row" id="blink-row" style="display:none; margin-top:14px;">
-              <input type="checkbox" id="block-blink">
-              <label for="block-blink">Blink alert (Manual / Pre Update only)</label>
-            </div>
-
-            <div class="btn-row" style="display:flex; gap:8px; margin-top:6px;">
-              <button class="btn btn-update" id="saveBlockBtn" style="flex:1;">Save block</button>
-            </div>
           </div>
-        </div>
 
-        <!-- BLOCKS LIST -->
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">All blocks</span>
-            <button class="btn btn-ghost btn-sm" id="refreshBlocksBtn">Refresh</button>
-          </div>
-          <div class="panel-body">
-            <div class="filter-chips" id="filter-chips">
-              <button class="filter-chip active" data-filter="all">All</button>
-              <button class="filter-chip" data-filter="manual_update">Manual</button>
-              <button class="filter-chip" data-filter="pre_update">Pre</button>
-              <button class="filter-chip" data-filter="info">Info</button>
-              <button class="filter-chip" data-filter="forecast">Forecast</button>
-              <button class="filter-chip" data-filter="actual_weather">Actual</button>
-              <button class="filter-chip" data-filter="verification">Verify</button>
-              <button class="filter-chip" data-filter="deviations">Deviations</button>
-              <button class="filter-chip" data-filter="additional_obs">Additional</button>
-              <button class="filter-chip" data-filter="outlook">Outlook</button>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Recent reports</span>
+              <button class="btn btn-ghost btn-sm" id="refreshReportsBtn">Refresh</button>
             </div>
-            <div style="overflow-x:auto;">
+            <div class="panel-body" style="padding:0;">
               <table class="data-table">
-                <thead><tr><th>Text</th><th>Destinations</th><th>Report</th><th>Window</th><th>Status</th><th></th></tr></thead>
-                <tbody id="blocks-table-body">
-                  <tr class="empty-row"><td colspan="6">Loading blocks…</td></tr>
+                <thead><tr><th>ID</th><th>Observer</th><th>Status</th><th></th></tr></thead>
+                <tbody id="reports-table-body">
+                  <tr class="empty-row"><td colspan="4">Loading reports…</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
+
+      <!-- PREVIEW VIEW -->
+      <div id="subtab-preview" style="display:none;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <button class="btn btn-update btn-sm" id="printReportBtn">Print / Save as PDF</button>
+        </div>
+        <div class="a4-preview" id="print-target">
+          <div class="lh-top">
+            <div class="lh-logo"><img src="images/ELWOIC.png" alt=""></div>
+            <div class="lh-brand">
+              <h1>Elamkulam Local Weather Observation And Information Centre</h1>
+              <h2>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം</h2>
+            </div>
+            <div class="lh-logo"><img src="images/Elamkulam Weather Logo Design.1.png" alt=""></div>
+          </div>
+          <hr class="lh-divider">
+          <div class="lh-title">ഔദ്യോഗിക കാലാവസ്ഥാ നിരീക്ഷണ ഡയറിയും പ്രവചന വിലയിരുത്തൽ റിപ്പോർട്ടും</div>
+          <table class="lh-meta">
+            <tr><td class="lbl">റിപ്പോർട്ട് നമ്പർ</td><td id="pv-id" style="width:35%;font-weight:bold;color:var(--letterhead-blue);"></td><td class="lbl">തീയതി</td><td id="pv-date"></td></tr>
+            <tr><td class="lbl">നിരീക്ഷകൻ</td><td id="pv-observer" colspan="3"></td></tr>
+          </table>
+          <div class="lh-section"><h3>പ്രവചനം (Issued Forecast)</h3><p id="pv-forecast"></p></div>
+          <div class="lh-section"><h3>യഥാർത്ഥ കാലാവസ്ഥ സ്ഥിതി (Actual Weather)</h3><p id="pv-actual"></p></div>
+          <div class="lh-section"><h3>പ്രവചന വിലയിരുത്തൽ (Verification)</h3><p id="pv-verification"></p></div>
+          <div class="lh-section"><h3>ശ്രദ്ധേയമായ മാറ്റങ്ങൾ (Deviations)</h3><p id="pv-deviations"></p></div>
+          <div class="lh-section"><h3>അധിക നിരീക്ഷണങ്ങൾ (Human Observations)</h3><p id="pv-additional"></p></div>
+          <div class="lh-section"><h3>അടുത്ത മണിക്കൂറുകളിലെ സാധ്യത (Outlook)</h3><p id="pv-outlook"></p></div>
+          <div class="lh-footer">
+            <div class="lh-seal">
+              <div class="lh-seal-img"><img src="images/elwoic_seal.png.png" alt=""></div>
+              <p>ELWOIC സ്റ്റേഷൻ റെക്കോർഡ് വിഭാഗം</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ===================== REPORTS TAB ===================== -->
-    <div class="tab-panel" id="tab-reports">
-      <div class="composer-grid">
+    <!-- ===================== LIVE UPDATES TAB ===================== -->
+    <div class="tab-panel" id="tab-live">
+
+      <div class="status-strip">
+        <div class="status-card"><div class="status-icon">📡</div><div><div class="sc-label">Manual update</div><div class="sc-val"><span class="badge badge-offline" id="status-manual"><span class="badge-dot"></span>Offline</span></div></div></div>
+        <div class="status-card"><div class="status-icon">🕐</div><div><div class="sc-label">Pre update</div><div class="sc-val"><span class="badge badge-offline" id="status-pre"><span class="badge-dot"></span>Offline</span></div></div></div>
+        <div class="status-card"><div class="status-icon">📋</div><div><div class="sc-label">General info</div><div class="sc-val"><span class="badge badge-offline" id="status-info"><span class="badge-dot"></span>Offline</span></div></div></div>
+      </div>
+
+      <div class="panels-grid">
+
         <div class="panel">
-          <div class="panel-header"><span class="panel-title">Report metadata</span></div>
+          <div class="panel-header"><span class="panel-title">Manual update</span><span class="badge badge-offline" id="panel-status-manual" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
           <div class="panel-body">
-            <div class="field-wrap" style="display:flex; gap:10px; align-items:flex-end;">
-              <div style="flex:1;">
-                <label class="field-label">Report ID</label>
-                <input type="text" id="report-id" class="ctrl-input" readonly style="color:var(--letterhead-blue);font-weight:600;">
+            <div class="promoted-notice" id="manual-promoted-notice">⚠ Pre-update promoted to current (target date reached)</div>
+            <div class="blink-row"><span class="blink-label">Blink alert</span>
+              <div class="toggle-wrap">
+                <input type="radio" name="manualBlink" value="true" id="m-blink-on" class="radio-btn"><label for="m-blink-on" class="radio-label">ON</label>
+                <input type="radio" name="manualBlink" value="false" id="m-blink-off" class="radio-btn" checked><label for="m-blink-off" class="radio-label">OFF</label>
               </div>
-              <button class="btn btn-ghost btn-sm" id="newReportIdBtn">New ID</button>
             </div>
-            <div class="field-wrap">
-              <label class="field-label">Date</label>
-              <input type="date" id="report-date" class="ctrl-input">
-            </div>
-            <div class="field-wrap" style="margin-bottom:0;">
-              <label class="field-label">Observer</label>
-              <input type="text" id="report-observer" class="ctrl-input" value="സ്റ്റേഷൻ ഡ്യൂട്ടി ഓഫീസർ">
-            </div>
-            <div class="btn-row" style="display:flex; gap:8px; margin-top:14px;">
-              <button class="btn btn-update" id="saveReportBtn" style="flex:1;">Save report</button>
-              <button class="btn btn-revoke" id="revokeReportBtn" style="flex:1;">Revoke report</button>
+            <div class="field-wrap"><label class="field-label">Date</label><input type="text" id="manual-date" class="ctrl-input" placeholder="DD/MM/YYYY"></div>
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Message</label><textarea id="manual-text" class="ctrl-input" rows="4" placeholder="Enter update message..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('manualUpdate')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('manualUpdate')">Revoke</button>
             </div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">All reports</span>
-            <button class="btn btn-ghost btn-sm" id="refreshReportsBtn">Refresh</button>
-          </div>
-          <div class="panel-body" style="padding:0;">
-            <table class="data-table">
-              <thead><tr><th>ID</th><th>Date</th><th>Observer</th><th>Status</th><th></th></tr></thead>
-              <tbody id="reports-table-body">
-                <tr class="empty-row"><td colspan="5">Loading reports…</td></tr>
-              </tbody>
-            </table>
+          <div class="panel-header"><span class="panel-title">Pre update</span><span class="badge badge-offline" id="panel-status-pre" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
+          <div class="panel-body">
+            <div class="blink-row"><span class="blink-label">Blink alert</span>
+              <div class="toggle-wrap">
+                <input type="radio" name="preBlink" value="true" id="p-blink-on" class="radio-btn"><label for="p-blink-on" class="radio-label">ON</label>
+                <input type="radio" name="preBlink" value="false" id="p-blink-off" class="radio-btn" checked><label for="p-blink-off" class="radio-label">OFF</label>
+              </div>
+            </div>
+            <div class="field-wrap"><label class="field-label">Target date</label><input type="text" id="pre-date" class="ctrl-input" placeholder="DD/MM/YYYY"></div>
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Message</label><textarea id="pre-text" class="ctrl-input" rows="4" placeholder="Enter pre-update message..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('preUpdate')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('preUpdate')">Revoke</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ===================== PREVIEW & PRINT TAB ===================== -->
-    <div class="tab-panel" id="tab-preview">
-      <div style="display:flex; gap:10px; margin-bottom:14px; align-items:flex-end; flex-wrap:wrap;">
-        <div class="field-wrap" style="margin-bottom:0; min-width:220px;">
-          <label class="field-label">Report to preview</label>
-          <select id="preview-report-select" class="ctrl-select"></select>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="refreshPreviewBtn">Refresh</button>
-        <button class="btn btn-update btn-sm" id="printReportBtn" style="margin-left:auto;">Print / Save as PDF</button>
-      </div>
-      <div class="a4-preview" id="print-target">
-        <div class="lh-top">
-          <div class="lh-logo"><img src="images/ELWOIC.png" alt=""></div>
-          <div class="lh-brand">
-            <h1>Elamkulam Local Weather Observation And Information Centre</h1>
-            <h2>ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം</h2>
-          </div>
-          <div class="lh-logo"><img src="images/Elamkulam Weather Logo Design.1.png" alt=""></div>
-        </div>
-        <hr class="lh-divider">
-        <div class="lh-title">ഔദ്യോഗിക കാലാവസ്ഥാ നിരീക്ഷണ ഡയറിയും പ്രവചന വിലയിരുത്തൽ റിപ്പോർട്ടും</div>
-        <table class="lh-meta">
-          <tr><td class="lbl">റിപ്പോർട്ട് നമ്പർ</td><td id="pv-id" style="width:35%;font-weight:bold;color:var(--letterhead-blue);"></td><td class="lbl">തീയതി</td><td id="pv-date"></td></tr>
-          <tr><td class="lbl">നിരീക്ഷകൻ</td><td id="pv-observer" colspan="3"></td></tr>
-        </table>
-        <div class="lh-section"><h3>പ്രവചനം (Issued Forecast)</h3><div id="pv-forecast"></div></div>
-        <div class="lh-section"><h3>യഥാർത്ഥ കാലാവസ്ഥ സ്ഥിതി (Actual Weather)</h3><div id="pv-actual_weather"></div></div>
-        <div class="lh-section"><h3>പ്രവചന വിലയിരുത്തൽ (Verification)</h3><div id="pv-verification"></div></div>
-        <div class="lh-section"><h3>ശ്രദ്ധേയമായ മാറ്റങ്ങൾ (Deviations)</h3><div id="pv-deviations"></div></div>
-        <div class="lh-section"><h3>അധിക നിരീക്ഷണങ്ങൾ (Human Observations)</h3><div id="pv-additional_obs"></div></div>
-        <div class="lh-section"><h3>അടുത്ത മണിക്കൂറുകളിലെ സാധ്യത (Outlook)</h3><div id="pv-outlook"></div></div>
-        <div class="lh-footer">
-          <div class="lh-seal">
-            <div class="lh-seal-img"><img src="images/elwoic_seal.png.png" alt=""></div>
-            <p>ELWOIC സ്റ്റേഷൻ റെക്കോർഡ് വിഭാഗം</p>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">General info</span><span class="badge badge-offline" id="panel-status-info" style="font-size:10px;"><span class="badge-dot"></span>Offline</span></div>
+          <div class="panel-body">
+            <div class="field-wrap" style="margin-bottom:0;"><label class="field-label">Content</label><textarea id="info-text" class="ctrl-input" rows="11" placeholder="General news or notes..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-update" onclick="submitField('info')">Update</button>
+              <button class="btn btn-revoke" onclick="revokeField('info')">Revoke</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ===================== ACTIVITY LOG TAB ===================== -->
-    <div class="tab-panel" id="tab-history">
+      </div>
+
+      <div class="action-bar">
+        <div class="action-bar-title">Bulk operations</div>
+        <div class="action-row">
+          <button class="btn btn-success" id="submitAllBtn">↑ Update all sections</button>
+          <button class="btn btn-danger" id="revokeAllBtn">× Revoke all &amp; clear portal</button>
+        </div>
+        <div class="last-updated">Last updated: <span id="lastUpdatedVal" style="color:var(--text-2);">—</span></div>
+      </div>
+
+      <div class="section-sep"><div class="sep-line"></div><div class="sep-label">Change history</div><div class="sep-line"></div></div>
+
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">Block activity (created / edited / revoked)</span>
+          <span class="panel-title">Activity log</span>
           <button class="btn btn-ghost btn-sm" id="refreshHistoryBtn">Refresh</button>
         </div>
         <div class="history-body" id="history-body">
           <div class="history-empty">Loading history…</div>
         </div>
       </div>
+
     </div>
 
   </div>
@@ -486,63 +480,18 @@
 
 <script>
 /* =========================================================
-   CONFIG
-   =========================================================
-   This admin page talks to a single Cloudflare Worker backed
-   entirely by Firebase Realtime Database. Expected endpoints
-   (worker to be built next — this page is written against
-   this exact contract):
-
-   AUTH: every write route requires Authorization: Bearer <ADMIN_SECRET_TOKEN>
-
-   GET  /api/blocks-admin              -> { blockId: {block}, ... }  (ALL blocks, any status/time)
-   POST /api/blocks                    -> body: {id?, text, destinations:{key:true,...},
-                                                  report_id, visible_from, expires_at, blink}
-                                           id present = edit, id absent = create. Returns {success, id}.
-   POST /api/blocks/:id/revoke         -> sets block.status = 'revoked'
-
-   GET  /api/reports-admin             -> { report_id: {report}, ... } (ALL reports)
-   POST /api/reports                   -> body: {report_id, date, observer, status?}
-   POST /api/reports/:id/revoke        -> sets report.status = 'revoked'
-
-   GET  /api/audit?limit=50            -> [{action, block_id, text_snippet, destinations, timestamp}, ...]
-
-   Block shape:
-   {
-     id, text,
-     destinations: { manual_update:true, forecast:true, ... },  // object map, not array
-     report_id: "EWR2508070001" | null,
-     visible_from: <unix ms> | null,
-     expires_at: <unix ms> | null,
-     blink: bool,
-     status: 'active' | 'revoked',
-     created_at, updated_at
-   }
-
-   Report shape:
-   { report_id, date, observer, status: 'published' | 'revoked', created_at }
+   CONFIG — one worker, one token, for everything.
    ========================================================= */
-const WORKER_URL = "https://elwoic-unified-manual-updates.bold-waterfall-0d01.workers.dev"; // <-- update once new worker is deployed
-
-const DESTINATIONS = {
-  manual_update:  { label: "Manual Update",  group: "site",   blinkable: true  },
-  pre_update:     { label: "Pre Update",     group: "site",   blinkable: true  },
-  info:           { label: "General Info",  group: "site",   blinkable: false },
-  forecast:       { label: "Issued Forecast",          group: "report", blinkable: false },
-  actual_weather: { label: "Actual Weather",           group: "report", blinkable: false },
-  verification:   { label: "Verification",             group: "report", blinkable: false },
-  deviations:     { label: "Deviations",                group: "report", blinkable: false },
-  additional_obs: { label: "Additional Observations",  group: "report", blinkable: false },
-  outlook:        { label: "Outlook",                   group: "report", blinkable: false },
-};
-const SITE_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "site");
-const REPORT_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "report");
+const WORKER_URL = "https://elwoic-unified-manual-updates.bold-waterfall-0d01.workers.dev"; // <-- set this to your deployed worker URL
 
 let authToken = sessionStorage.getItem("elwoic_token") || localStorage.getItem("elwoic_token") || "";
-let allBlocks = {};     // cache from /api/blocks-admin
-let allReports = {};    // cache from /api/reports-admin
-let currentFilter = "all";
-let editingBlockId = null;
+
+// Declared here (not down in the "WEATHER REPORTS" section) because showApp() below
+// can run immediately on page load (auto-login), before the script has finished
+// parsing further down — a `let` declared later would still be in its temporal
+// dead zone at that point and throw a ReferenceError.
+let generatedReportID = "";
+let isEditingExisting = false;
 
 /* =========================================================
    TOAST
@@ -555,7 +504,8 @@ function showToast(msg, isErr = false) {
 }
 
 /* =========================================================
-   CONFIRM MODAL
+   CONFIRM MODAL (replaces window.confirm/prompt everywhere,
+   requires exact typed match for anything destructive)
    ========================================================= */
 const confirmModal = document.getElementById("confirm-modal");
 const confirmTitle = document.getElementById("confirm-title");
@@ -580,7 +530,9 @@ function askConfirm({ title, message, requireText = null }) {
     }
     confirmModal.classList.add("show");
 
-    function onInput() { confirmOk.disabled = requireText ? confirmInput.value.trim() !== requireText : false; }
+    function onInput() {
+      confirmOk.disabled = requireText ? confirmInput.value.trim() !== requireText : false;
+    }
     function cleanup(result) {
       confirmModal.classList.remove("show");
       confirmInput.removeEventListener("input", onInput);
@@ -590,7 +542,33 @@ function askConfirm({ title, message, requireText = null }) {
     }
     function onOk() { cleanup(true); }
     function onCancel() { cleanup(false); }
+
     confirmInput.addEventListener("input", onInput);
+    confirmOk.addEventListener("click", onOk);
+    confirmCancel.addEventListener("click", onCancel);
+  });
+}
+
+// Simple text-prompt modal (for report ID suffix on conflict)
+function askText({ title, message, placeholder = "" }) {
+  return new Promise((resolve) => {
+    confirmTitle.textContent = title;
+    confirmMessage.textContent = message;
+    confirmTypeWrap.style.display = "block";
+    confirmInput.placeholder = placeholder;
+    confirmInput.value = "";
+    confirmOk.disabled = false;
+    confirmModal.classList.add("show");
+
+    function cleanup(result) {
+      confirmModal.classList.remove("show");
+      confirmInput.placeholder = "";
+      confirmOk.removeEventListener("click", onOk);
+      confirmCancel.removeEventListener("click", onCancel);
+      resolve(result);
+    }
+    function onOk() { cleanup(confirmInput.value.trim() || null); }
+    function onCancel() { cleanup(null); }
     confirmOk.addEventListener("click", onOk);
     confirmCancel.addEventListener("click", onCancel);
   });
@@ -626,31 +604,23 @@ function showApp() {
   document.getElementById("login-container").style.display = "none";
   document.getElementById("app").style.display = "block";
   checkConnection();
-  generateNewReportId();
-  document.getElementById("report-date").value = new Date().toISOString().split("T")[0];
-  refreshAll();
+  generateSequentialID();
+  loadReportsList();
+  syncLiveDashboard();
 }
 
 async function checkConnection() {
   const dot = document.getElementById("conn-dot");
   const label = document.getElementById("conn-label");
   try {
-    const res = await fetch(`${WORKER_URL}/api/blocks-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const res = await fetch(`${WORKER_URL}/api/live`);
     if (!res.ok) throw new Error();
     dot.className = "conn-dot ok";
     label.textContent = "Connected";
   } catch {
     dot.className = "conn-dot bad";
-    label.textContent = "Worker unreachable — check WORKER_URL / token";
+    label.textContent = "Worker unreachable — check WORKER_URL";
   }
-}
-
-async function refreshAll() {
-  await Promise.all([loadBlocks(), loadReports()]);
-  renderLiveStatus();
-  renderBlocksTable();
-  populateReportDropdowns();
-  loadHistory();
 }
 
 /* =========================================================
@@ -662,383 +632,364 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
     btn.classList.add("active");
     document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
-    if (btn.dataset.tab === "preview") syncPreview();
+  });
+});
+document.querySelectorAll(".subtab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".subtab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const isEdit = btn.dataset.subtab === "edit";
+    document.getElementById("subtab-edit").style.display = isEdit ? "block" : "none";
+    document.getElementById("subtab-preview").style.display = isEdit ? "none" : "block";
+    if (!isEdit) syncPreview();
   });
 });
 
 /* =========================================================
-   HELPERS: time / window resolution
+   WEATHER REPORTS
    ========================================================= */
-function nowMs() { return Date.now(); }
-function toMsOrNull(datetimeLocalValue) { return datetimeLocalValue ? new Date(datetimeLocalValue).getTime() : null; }
-function msToLocalInputValue(ms) {
-  if (!ms) return "";
-  const d = new Date(ms - (new Date().getTimezoneOffset() * 60000));
-  return d.toISOString().slice(0, 16);
-}
-function isBlockActiveNow(block) {
-  if (block.status !== "active") return false;
-  const n = nowMs();
-  if (block.visible_from && n < block.visible_from) return false;
-  if (block.expires_at && n <= block.expires_at === false) { /* handled below */ }
-  if (block.expires_at && n > block.expires_at) return false;
-  return true;
-}
-function blockWindowState(block) {
-  if (block.status === "revoked") return "revoked";
-  const n = nowMs();
-  if (block.visible_from && n < block.visible_from) return "scheduled";
-  if (block.expires_at && n > block.expires_at) return "expired";
-  return "live";
-}
-function getActiveBlocksFor(destKey, reportId = null) {
-  return Object.entries(allBlocks)
-    .map(([id, b]) => ({ id, ...b }))
-    .filter(b => b.destinations && b.destinations[destKey] && isBlockActiveNow(b))
-    .filter(b => DESTINATIONS[destKey].group === "site" ? true : b.report_id === reportId)
-    .sort((a, b) => (a.created_at || 0) - (b.created_at || 0));
+function generateSequentialID() {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  generatedReportID = `EWR${yy}${mm}${dd}001`;
+  document.getElementById("doc-id").value = generatedReportID;
+  isEditingExisting = false;
 }
 
-/* =========================================================
-   BLOCKS: load / render
-   ========================================================= */
-async function loadBlocks() {
-  try {
-    const res = await fetch(`${WORKER_URL}/api/blocks-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
-    const data = await res.json();
-    allBlocks = data && typeof data === "object" ? data : {};
-  } catch (err) {
-    showToast("Failed to load blocks: " + err.message, true);
-    allBlocks = {};
-  }
-}
-
-function renderLiveStatus() {
-  SITE_DESTS.forEach(destKey => {
-    const active = getActiveBlocksFor(destKey);
-    const badge = document.getElementById(`live-badge-${destKey}`);
-    const body = document.getElementById(`live-body-${destKey}`);
-    if (active.length === 0) {
-      badge.className = "badge badge-offline";
-      badge.innerHTML = `<span class="badge-dot"></span>Offline`;
-      body.innerHTML = `<span class="sc-empty">Nothing active</span>`;
-    } else {
-      badge.className = "badge badge-live";
-      badge.innerHTML = `<span class="badge-dot"></span>Live (${active.length})`;
-      body.innerHTML = active.map(b => `<div class="sc-line">${escapeHtml(b.text)}${b.blink ? " ⚠" : ""}</div>`).join("");
-    }
-  });
-}
-
-function escapeHtml(s) { return (s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
-
-function renderBlocksTable() {
-  const tbody = document.getElementById("blocks-table-body");
-  let rows = Object.entries(allBlocks).map(([id, b]) => ({ id, ...b }));
-  if (currentFilter !== "all") rows = rows.filter(b => b.destinations && b.destinations[currentFilter]);
-  rows.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No blocks yet</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = rows.map(b => {
-    const destChips = Object.keys(b.destinations || {}).filter(k => b.destinations[k]).map(k =>
-      `<span class="dest-chip ${DESTINATIONS[k]?.group || ''}">${DESTINATIONS[k]?.label || k}</span>`
-    ).join("");
-    const state = blockWindowState(b);
-    const badgeMap = { live: ["badge-live","Live"], scheduled: ["badge-scheduled","Scheduled"], expired: ["badge-offline","Expired"], revoked: ["badge-revoked","Revoked"] };
-    const [badgeCls, badgeLabel] = badgeMap[state];
-    const fromStr = b.visible_from ? new Date(b.visible_from).toLocaleString() : "immediately";
-    const toStr = b.expires_at ? new Date(b.expires_at).toLocaleString() : "never";
-    return `<tr>
-      <td class="block-text-cell">${escapeHtml(b.text)}${b.blink ? ' <span title="Blink alert on">⚠</span>' : ''}</td>
-      <td><div class="dest-chip-row">${destChips}</div></td>
-      <td style="font-family:'DM Mono',monospace; font-size:11.5px;">${b.report_id || "—"}</td>
-      <td class="block-window-cell">${fromStr} → ${toStr}</td>
-      <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${badgeLabel}</span></td>
-      <td><div class="row-actions">
-        <button class="btn btn-ghost btn-sm" onclick="loadBlockIntoEditor('${b.id}')">Edit</button>
-        ${b.status !== 'revoked' ? `<button class="btn btn-revoke btn-sm" onclick="promptRevokeBlock('${b.id}')">Revoke</button>` : ''}
-      </div></td>
-    </tr>`;
-  }).join("");
-}
-
-document.querySelectorAll(".filter-chip").forEach(chip => {
-  chip.addEventListener("click", () => {
-    document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
-    chip.classList.add("active");
-    currentFilter = chip.dataset.filter;
-    renderBlocksTable();
-  });
+document.getElementById("newReportBtn").addEventListener("click", () => {
+  generateSequentialID();
+  ["doc-forecast","doc-actual","doc-verification","doc-deviations","doc-additional","doc-outlook"].forEach(id => document.getElementById(id).value = "");
+  showToast("Started a new report");
 });
-document.getElementById("refreshBlocksBtn").addEventListener("click", refreshAll);
 
-/* =========================================================
-   BLOCK COMPOSER
-   ========================================================= */
-function updateComposerVisibility() {
-  const checks = document.querySelectorAll(".dest-check");
-  let anyReport = false, anyBlinkable = false;
-  checks.forEach(c => {
-    if (c.checked && DESTINATIONS[c.dataset.dest].group === "report") anyReport = true;
-    if (c.checked && DESTINATIONS[c.dataset.dest].blinkable) anyBlinkable = true;
-  });
-  document.getElementById("report-picker-wrap").style.display = anyReport ? "block" : "none";
-  document.getElementById("blink-row").style.display = anyBlinkable ? "flex" : "none";
-}
-document.querySelectorAll(".dest-check").forEach(c => c.addEventListener("change", updateComposerVisibility));
-
-function resetComposer() {
-  editingBlockId = null;
-  document.getElementById("block-id").value = "";
-  document.getElementById("block-text").value = "";
-  document.querySelectorAll(".dest-check").forEach(c => c.checked = false);
-  document.getElementById("block-visible-from").value = "";
-  document.getElementById("block-expires-at").value = "";
-  document.getElementById("block-blink").checked = false;
-  document.getElementById("composer-title").textContent = "New block";
-  document.getElementById("cancelEditBtn").style.display = "none";
-  updateComposerVisibility();
-}
-document.getElementById("cancelEditBtn").addEventListener("click", resetComposer);
-
-function populateReportDropdowns() {
-  const reportIds = Object.keys(allReports).sort((a, b) => (allReports[b].created_at || 0) - (allReports[a].created_at || 0));
-  const opts = reportIds.map(rid => `<option value="${rid}">${rid} — ${allReports[rid].date || ''}</option>`).join("");
-
-  const blockSelect = document.getElementById("block-report-id");
-  blockSelect.innerHTML = opts || `<option value="">No reports yet — create one in Reports tab</option>`;
-
-  const previewSelect = document.getElementById("preview-report-select");
-  previewSelect.innerHTML = opts || `<option value="">No reports yet</option>`;
+function syncPreview() {
+  document.getElementById("pv-id").textContent = generatedReportID;
+  document.getElementById("pv-date").textContent = new Date().toISOString().split("T")[0];
+  document.getElementById("pv-observer").textContent = document.getElementById("doc-observer").value;
+  document.getElementById("pv-forecast").textContent = document.getElementById("doc-forecast").value;
+  document.getElementById("pv-actual").textContent = document.getElementById("doc-actual").value;
+  document.getElementById("pv-verification").textContent = document.getElementById("doc-verification").value;
+  document.getElementById("pv-deviations").textContent = document.getElementById("doc-deviations").value;
+  document.getElementById("pv-additional").textContent = document.getElementById("doc-additional").value;
+  document.getElementById("pv-outlook").textContent = document.getElementById("doc-outlook").value;
 }
 
-document.getElementById("saveBlockBtn").addEventListener("click", async () => {
+document.getElementById("printReportBtn").addEventListener("click", () => { syncPreview(); window.print(); });
+
+async function publishReport(overrideStatus = false) {
   if (!authToken) { showToast("Missing access token", true); return; }
-  const text = document.getElementById("block-text").value.trim();
-  if (!text) { showToast("Block text is required", true); return; }
 
-  const destinations = {};
-  let anyReport = false;
-  document.querySelectorAll(".dest-check").forEach(c => {
-    if (c.checked) {
-      destinations[c.dataset.dest] = true;
-      if (DESTINATIONS[c.dataset.dest].group === "report") anyReport = true;
-    }
-  });
-  if (Object.keys(destinations).length === 0) { showToast("Select at least one destination", true); return; }
-
-  let reportId = null;
-  if (anyReport) {
-    reportId = document.getElementById("block-report-id").value;
-    if (!reportId) { showToast("Pick which report this block belongs to", true); return; }
-  }
+  let expiresAtUnix = null;
+  const lifespan = document.getElementById("expiry-lifespan").value;
+  if (lifespan !== "never") expiresAtUnix = Math.floor(Date.now() / 1000) + (parseInt(lifespan) * 3600);
 
   const payload = {
-    id: editingBlockId || undefined,
-    text,
-    destinations,
-    report_id: reportId,
-    visible_from: toMsOrNull(document.getElementById("block-visible-from").value),
-    expires_at: toMsOrNull(document.getElementById("block-expires-at").value),
-    blink: document.getElementById("block-blink").checked,
+    report_id: generatedReportID,
+    observer: document.getElementById("doc-observer").value,
+    expires_at: expiresAtUnix,
+    override: overrideStatus || isEditingExisting,
+    content: {
+      forecast: document.getElementById("doc-forecast").value,
+      actual_weather: document.getElementById("doc-actual").value,
+      verification: document.getElementById("doc-verification").value,
+      deviations: document.getElementById("doc-deviations").value,
+      additional_obs: document.getElementById("doc-additional").value,
+      outlook: document.getElementById("doc-outlook").value,
+    },
   };
 
   try {
-    const res = await fetch(`${WORKER_URL}/api/blocks`, {
+    const res = await fetch(`${WORKER_URL}/api/reports/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Save failed");
-    showToast(editingBlockId ? "Block updated" : "Block created");
-    resetComposer();
-    refreshAll();
+
+    if (res.ok) {
+      showToast(`Report ${generatedReportID} published successfully`);
+      loadReportsList();
+    } else if (res.status === 409) {
+      const suffix = await askText({ title: "Report already exists", message: `A report with ID ${generatedReportID} already exists today. Enter a suffix (e.g. A, B) to save this as a new one, or Cancel to overwrite it instead.`, placeholder: "A" });
+      if (suffix) {
+        generatedReportID += suffix.toUpperCase();
+        document.getElementById("doc-id").value = generatedReportID;
+        await publishReport(true);
+      } else {
+        const overwrite = await askConfirm({ title: "Overwrite existing report?", message: `This will replace the existing content of report ${generatedReportID}.` });
+        if (overwrite) await publishReport(true);
+      }
+    } else {
+      showToast(`Error: ${data.error}`, true);
+    }
   } catch (err) {
-    showToast(err.message, true);
+    showToast(`Connection error: ${err.message}`, true);
   }
+}
+document.getElementById("publishReportBtn").addEventListener("click", () => publishReport(false));
+
+document.getElementById("revokeReportBtn").addEventListener("click", async () => {
+  if (!authToken) { showToast("Missing access token", true); return; }
+  const ok = await askConfirm({
+    title: "Revoke this report?",
+    message: `Report ${generatedReportID} will be removed from public view immediately. This cannot be undone from here.`,
+    requireText: generatedReportID,
+  });
+  if (!ok) return;
+  await revokeReportById(generatedReportID);
 });
 
-window.loadBlockIntoEditor = function (id) {
-  const b = allBlocks[id];
-  if (!b) { showToast("Block not found", true); return; }
-  editingBlockId = id;
-  document.getElementById("block-id").value = id;
-  document.getElementById("block-text").value = b.text || "";
-  document.querySelectorAll(".dest-check").forEach(c => c.checked = !!(b.destinations && b.destinations[c.dataset.dest]));
-  document.getElementById("block-visible-from").value = msToLocalInputValue(b.visible_from);
-  document.getElementById("block-expires-at").value = msToLocalInputValue(b.expires_at);
-  document.getElementById("block-blink").checked = !!b.blink;
-  updateComposerVisibility();
-  if (b.report_id) document.getElementById("block-report-id").value = b.report_id;
-  document.getElementById("composer-title").textContent = "Editing block";
-  document.getElementById("cancelEditBtn").style.display = "inline-flex";
-  document.querySelector('[data-tab="compose"]').click();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-window.promptRevokeBlock = async function (id) {
-  const b = allBlocks[id];
-  const ok = await askConfirm({ title: "Revoke this block?", message: `This removes "${escapeHtml((b?.text || '').slice(0,80))}" from every destination it's tagged to, immediately.` });
-  if (!ok) return;
+async function revokeReportById(reportId) {
   try {
-    const res = await fetch(`${WORKER_URL}/api/blocks/${id}/revoke`, { method: "POST", headers: { Authorization: `Bearer ${authToken}` } });
+    const res = await fetch(`${WORKER_URL}/api/reports/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+      body: JSON.stringify({ report_id: reportId, status: "revoked" }),
+    });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Revoke failed");
-    showToast("Block revoked");
-    refreshAll();
-  } catch (err) { showToast(err.message, true); }
-};
-
-/* =========================================================
-   REPORTS
-   ========================================================= */
-function generateNewReportId() {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  document.getElementById("report-id").value = `EWR${yy}${mm}${dd}001`;
+    if (res.ok) { showToast(`Report ${reportId} revoked`); loadReportsList(); }
+    else showToast(`Could not revoke: ${data.error}`, true);
+  } catch (err) { showToast(`Connection error: ${err.message}`, true); }
 }
-document.getElementById("newReportIdBtn").addEventListener("click", generateNewReportId);
 
-async function loadReports() {
+async function loadReportsList() {
+  const tbody = document.getElementById("reports-table-body");
   try {
     const res = await fetch(`${WORKER_URL}/api/reports-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
     const data = await res.json();
-    allReports = data && typeof data === "object" ? data : {};
+    if (!data || Object.keys(data).length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No reports yet</td></tr>`;
+      return;
+    }
+    const rows = Object.values(data).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    const now = Math.floor(Date.now() / 1000);
+    tbody.innerHTML = rows.map(r => {
+      let badge = `<span class="badge badge-live"><span class="badge-dot"></span>Live</span>`;
+      if (r.status === "revoked") badge = `<span class="badge badge-revoked"><span class="badge-dot"></span>Revoked</span>`;
+      else if (r.expires_at && now > r.expires_at) badge = `<span class="badge badge-offline"><span class="badge-dot"></span>Expired</span>`;
+      return `<tr>
+        <td style="font-family:'DM Mono',monospace;">${r.report_id}</td>
+        <td>${r.observer || "—"}</td>
+        <td>${badge}</td>
+        <td><div class="row-actions">
+          <button class="btn btn-ghost btn-sm" onclick="loadReportIntoEditor('${r.report_id}')">Load</button>
+          <button class="btn btn-revoke btn-sm" onclick="promptRevokeReport('${r.report_id}')">Revoke</button>
+        </div></td>
+      </tr>`;
+    }).join("");
   } catch (err) {
-    showToast("Failed to load reports: " + err.message, true);
-    allReports = {};
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">Failed to load reports</td></tr>`;
   }
-  renderReportsTable();
 }
-
-function renderReportsTable() {
-  const tbody = document.getElementById("reports-table-body");
-  const rows = Object.values(allReports).sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">No reports yet</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = rows.map(r => {
-    const badge = r.status === "revoked"
-      ? `<span class="badge badge-revoked"><span class="badge-dot"></span>Revoked</span>`
-      : `<span class="badge badge-live"><span class="badge-dot"></span>Published</span>`;
-    return `<tr>
-      <td style="font-family:'DM Mono',monospace;">${r.report_id}</td>
-      <td>${r.date || "—"}</td>
-      <td>${r.observer || "—"}</td>
-      <td>${badge}</td>
-      <td><div class="row-actions">
-        <button class="btn btn-ghost btn-sm" onclick="loadReportIntoEditor('${r.report_id}')">Load</button>
-        <button class="btn btn-revoke btn-sm" onclick="promptRevokeReport('${r.report_id}')">Revoke</button>
-      </div></td>
-    </tr>`;
-  }).join("");
-}
-document.getElementById("refreshReportsBtn").addEventListener("click", loadReports);
-
-document.getElementById("saveReportBtn").addEventListener("click", async () => {
-  if (!authToken) { showToast("Missing access token", true); return; }
-  const report_id = document.getElementById("report-id").value.trim();
-  const date = document.getElementById("report-date").value;
-  const observer = document.getElementById("report-observer").value.trim();
-  if (!report_id) { showToast("Report ID is required", true); return; }
-
-  try {
-    const res = await fetch(`${WORKER_URL}/api/reports`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
-      body: JSON.stringify({ report_id, date, observer, status: "published" }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Save failed");
-    showToast(`Report ${report_id} saved`);
-    loadReports().then(populateReportDropdowns);
-  } catch (err) { showToast(err.message, true); }
-});
-
-document.getElementById("revokeReportBtn").addEventListener("click", async () => {
-  const report_id = document.getElementById("report-id").value.trim();
-  if (!report_id) return;
-  await promptRevokeReport(report_id);
-});
+document.getElementById("refreshReportsBtn").addEventListener("click", loadReportsList);
 
 window.promptRevokeReport = async function (reportId) {
-  const ok = await askConfirm({ title: "Revoke this report?", message: `Report ${reportId} and all its section content will be hidden from public view.`, requireText: reportId });
-  if (!ok) return;
+  const ok = await askConfirm({ title: "Revoke this report?", message: `Report ${reportId} will be removed from public view immediately.`, requireText: reportId });
+  if (ok) await revokeReportById(reportId);
+};
+
+window.loadReportIntoEditor = async function (reportId) {
   try {
-    const res = await fetch(`${WORKER_URL}/api/reports/${reportId}/revoke`, { method: "POST", headers: { Authorization: `Bearer ${authToken}` } });
+    const res = await fetch(`${WORKER_URL}/api/reports/${reportId}`);
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Revoke failed");
-    showToast(`Report ${reportId} revoked`);
-    loadReports().then(populateReportDropdowns);
-  } catch (err) { showToast(err.message, true); }
-};
-
-window.loadReportIntoEditor = function (reportId) {
-  const r = allReports[reportId];
-  if (!r) { showToast("Report not found", true); return; }
-  document.getElementById("report-id").value = r.report_id;
-  document.getElementById("report-date").value = r.date || "";
-  document.getElementById("report-observer").value = r.observer || "";
-  document.querySelector('[data-tab="reports"]').click();
-  showToast(`Loaded ${reportId} into editor`);
+    if (!res.ok || !data) { showToast("Could not load report", true); return; }
+    generatedReportID = reportId;
+    isEditingExisting = true;
+    document.getElementById("doc-id").value = reportId;
+    document.getElementById("doc-observer").value = data.observer || "";
+    document.getElementById("doc-forecast").value = data.content?.forecast || "";
+    document.getElementById("doc-actual").value = data.content?.actual_weather || "";
+    document.getElementById("doc-verification").value = data.content?.verification || "";
+    document.getElementById("doc-deviations").value = data.content?.deviations || "";
+    document.getElementById("doc-additional").value = data.content?.additional_obs || "";
+    document.getElementById("doc-outlook").value = data.content?.outlook || "";
+    document.querySelector('[data-subtab="edit"]').click();
+    showToast(`Loaded ${reportId} into editor`);
+  } catch (err) { showToast(`Failed to load: ${err.message}`, true); }
 };
 
 /* =========================================================
-   PREVIEW & PRINT
+   LIVE UPDATES
    ========================================================= */
-function renderSectionHtml(destKey, reportId) {
-  const blocks = getActiveBlocksFor(destKey, reportId);
-  const el = document.getElementById(`pv-${destKey}`);
-  if (blocks.length === 0) { el.innerHTML = `<p class="lh-empty">— No content —</p>`; return; }
-  el.innerHTML = blocks.map(b => `<p>${escapeHtml(b.text)}</p>`).join("");
+function formatDate(d) { return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear(); }
+function parseDateTs(ddmmyyyy) { if (!ddmmyyyy) return NaN; const [d,m,y] = ddmmyyyy.split('/').map(Number); return new Date(y, m-1, d).getTime(); }
+function todayTs() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime(); }
+function getTimestamp() { return new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }); }
+
+function setBadge(id, state) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  const map = { live: ['badge badge-live','Live'], offline: ['badge badge-offline','Offline'], promoted: ['badge badge-promoted','Promoted'] };
+  const [cls, label] = map[state] || map.offline;
+  b.className = cls;
+  b.innerHTML = `<span class="badge-dot"></span>${label}`;
 }
 
-function syncPreview() {
-  const reportId = document.getElementById("preview-report-select").value;
-  const report = allReports[reportId];
-  document.getElementById("pv-id").textContent = reportId || "—";
-  document.getElementById("pv-date").textContent = report?.date || "—";
-  document.getElementById("pv-observer").textContent = report?.observer || "—";
-  REPORT_DESTS.forEach(destKey => renderSectionHtml(destKey, reportId));
-}
-document.getElementById("preview-report-select").addEventListener("change", syncPreview);
-document.getElementById("refreshPreviewBtn").addEventListener("click", async () => { await refreshAll(); syncPreview(); });
-document.getElementById("printReportBtn").addEventListener("click", () => { syncPreview(); window.print(); });
-
-/* =========================================================
-   ACTIVITY LOG
-   ========================================================= */
-async function loadHistory() {
-  const body = document.getElementById("history-body");
+async function syncLiveDashboard() {
   try {
-    const res = await fetch(`${WORKER_URL}/api/audit?limit=50`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const res = await fetch(`${WORKER_URL}/api/live`);
+    if (!res.ok) throw new Error("Could not read live state.");
+    const data = await res.json();
+
+    const tTs = todayTs();
+    let manualActive = false, preActive = false, preJumped = false;
+    const infoActive = !!(data.info_text?.trim());
+
+    if (data.pre_text?.trim()) {
+      const preTs = parseDateTs(data.pre_date);
+      if (!isNaN(preTs)) { if (preTs === tTs) preJumped = true; else if (preTs > tTs) preActive = true; }
+    }
+    if (data.manual_text?.trim()) {
+      const manualTs = parseDateTs(data.manual_date);
+      if (isNaN(manualTs) || manualTs >= tTs) { manualActive = true; preJumped = false; }
+    }
+
+    if (manualActive) { setBadge('status-manual','live'); setBadge('panel-status-manual','live'); document.getElementById('manual-promoted-notice').classList.remove('show'); }
+    else if (preJumped) { setBadge('status-manual','promoted'); setBadge('panel-status-manual','promoted'); document.getElementById('manual-promoted-notice').classList.add('show'); }
+    else { setBadge('status-manual','offline'); setBadge('panel-status-manual','offline'); document.getElementById('manual-promoted-notice').classList.remove('show'); }
+
+    setBadge('status-pre', preActive ? 'live' : 'offline'); setBadge('panel-status-pre', preActive ? 'live' : 'offline');
+    setBadge('status-info', infoActive ? 'live' : 'offline'); setBadge('panel-status-info', infoActive ? 'live' : 'offline');
+
+    if (data.last_updated) document.getElementById('lastUpdatedVal').textContent = data.last_updated;
+
+    const todayStr = formatDate(new Date());
+    const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+
+    document.getElementById('manual-date').value = data.manual_date || todayStr;
+    document.getElementById('manual-text').value = data.manual_text || '';
+    document.getElementById('m-blink-on').checked = data.manual_blink === true;
+    document.getElementById('m-blink-off').checked = data.manual_blink !== true;
+
+    document.getElementById('pre-date').value = data.pre_date || formatDate(tmrw);
+    document.getElementById('pre-text').value = data.pre_text || '';
+    document.getElementById('p-blink-on').checked = data.pre_blink === true;
+    document.getElementById('p-blink-off').checked = data.pre_blink !== true;
+
+    document.getElementById('info-text').value = data.info_text || '';
+
+    loadHistory();
+  } catch (err) { showToast(err.message, true); }
+}
+
+async function loadHistory() {
+  const body = document.getElementById('history-body');
+  try {
+    const res = await fetch(`${WORKER_URL}/api/live/history?limit=25`, { headers: { Authorization: `Bearer ${authToken}` } });
     if (!res.ok) throw new Error("Could not load history (check access token)");
     const rows = await res.json();
     if (!Array.isArray(rows) || rows.length === 0) {
-      body.innerHTML = '<div class="history-empty">No activity yet.</div>';
+      body.innerHTML = '<div class="history-empty">No history yet.</div>';
       return;
     }
-    body.innerHTML = rows.map(r => {
-      const badgeClass = { created: "lb-created", edited: "lb-edited", revoked: "lb-revoked" }[r.action] || "lb-edited";
-      return `<div class="log-record">
-        <span class="log-badge ${badgeClass}">${(r.action || "").toUpperCase()}</span>
-        <div class="log-summary">${escapeHtml((r.text_snippet || "").slice(0, 100))}</div>
-        <div class="log-time">${r.timestamp ? new Date(r.timestamp).toLocaleString() : ""}</div>
+    body.innerHTML = rows.map((r, i) => {
+      const type = r.update_type || 'SYSTEM';
+      const badgeClass = 'lb-' + type;
+      return `
+      <div class="log-record${i === 0 ? ' open' : ''}">
+        <div class="log-record-head" onclick="this.parentElement.classList.toggle('open')">
+          <span class="log-badge ${badgeClass}">${type}</span>
+          <div class="log-summary">Row #${r.id ?? '—'}</div>
+          <div class="log-time">${r.last_updated || r.created_at || ''}</div>
+          <span class="log-chevron">▾</span>
+        </div>
+        <div class="log-record-body">
+          <div class="log-detail-grid">
+            <div class="log-detail-cell"><div class="ldc-label">Manual text</div><div class="ldc-val">${r.manual_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Pre text</div><div class="ldc-val">${r.pre_text || '—'}</div></div>
+            <div class="log-detail-cell"><div class="ldc-label">Info content</div><div class="ldc-val">${r.info_text || '—'}</div></div>
+          </div>
+        </div>
       </div>`;
-    }).join("");
+    }).join('');
   } catch (e) {
     body.innerHTML = `<div class="history-empty">${e.message}</div>`;
   }
 }
-document.getElementById("refreshHistoryBtn").addEventListener("click", loadHistory);
+document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
+
+async function sendToWorker(payload) {
+  const res = await fetch(`${WORKER_URL}/api/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || 'Worker rejected the request.'); }
+  return res.json();
+}
+
+window.submitField = async function (path) {
+  const timestamp = getTimestamp();
+  const payload = {
+    manual_date: document.getElementById('manual-date').value,
+    manual_text: document.getElementById('manual-text').value,
+    manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    pre_date: document.getElementById('pre-date').value,
+    pre_text: document.getElementById('pre-text').value,
+    pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    info_text: document.getElementById('info-text').value,
+    update_type: path,
+    last_updated: timestamp,
+  };
+  try { await sendToWorker(payload); showToast('Updated successfully'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
+};
+
+window.revokeField = async function (path) {
+  const labels = { manualUpdate: 'Manual update', preUpdate: 'Pre update', info: 'General info' };
+  const ok = await askConfirm({ title: `Revoke ${labels[path]}?`, message: `This will clear the ${labels[path].toLowerCase()} section on the live site.` });
+  if (!ok) return;
+  const timestamp = getTimestamp();
+  const payload = {
+    manual_date: path === 'manualUpdate' ? '' : document.getElementById('manual-date').value,
+    manual_text: path === 'manualUpdate' ? '' : document.getElementById('manual-text').value,
+    manual_blink: path === 'manualUpdate' ? false : document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    pre_date: path === 'preUpdate' ? '' : document.getElementById('pre-date').value,
+    pre_text: path === 'preUpdate' ? '' : document.getElementById('pre-text').value,
+    pre_blink: path === 'preUpdate' ? false : document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    info_text: path === 'info' ? '' : document.getElementById('info-text').value,
+    update_type: 'revoke',
+    last_updated: timestamp,
+  };
+  try { await sendToWorker(payload); showToast('Section revoked'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
+};
+
+document.getElementById('submitAllBtn').addEventListener('click', async () => {
+  const ok = await askConfirm({ title: 'Update all sections?', message: 'This will publish the current content of Manual, Pre, and Info sections all at once.' });
+  if (!ok) return;
+  const timestamp = getTimestamp();
+  const payload = {
+    manual_date: document.getElementById('manual-date').value,
+    manual_text: document.getElementById('manual-text').value,
+    manual_blink: document.querySelector('input[name="manualBlink"]:checked').value === 'true',
+    pre_date: document.getElementById('pre-date').value,
+    pre_text: document.getElementById('pre-text').value,
+    pre_blink: document.querySelector('input[name="preBlink"]:checked').value === 'true',
+    info_text: document.getElementById('info-text').value,
+    update_type: 'BULK_UPDATE',
+    last_updated: timestamp,
+  };
+  try { await sendToWorker(payload); showToast('All sections deployed'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
+});
+
+document.getElementById('revokeAllBtn').addEventListener('click', async () => {
+  const ok = await askConfirm({ title: 'Revoke everything?', message: 'This clears Manual, Pre, and Info sections on the live site at once.', requireText: 'REVOKE ALL' });
+  if (!ok) return;
+  const timestamp = getTimestamp();
+  const payload = {
+    manual_date: '', manual_text: '', manual_blink: false,
+    pre_date: '', pre_text: '', pre_blink: false,
+    info_text: '',
+    update_type: 'revoke',
+    last_updated: timestamp,
+  };
+  try { await sendToWorker(payload); showToast('All sections cleared'); syncLiveDashboard(); }
+  catch (err) { showToast(err.message, true); }
+});
 </script>
 </body>
 </html>
