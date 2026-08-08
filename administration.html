@@ -663,14 +663,14 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("app").style.display = "none";
 });
 
-function showApp() {
+async function showApp() {
   document.getElementById("login-container").style.display = "none";
   document.getElementById("app").style.display = "block";
   buildDestinationControls();
   checkConnection();
-  generateNewReportId();
   document.getElementById("report-date").value = new Date().toISOString().split("T")[0];
-  refreshAll();
+  await refreshAll();       // load allReports BEFORE generating an ID
+  generateNewReportId();
 }
 
 async function checkConnection() {
@@ -979,10 +979,16 @@ function generateNewReportId() {
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  document.getElementById("report-id").value = `EWR${yy}${mm}${dd}001`;
+  const prefix = `EWR${yy}${mm}${dd}`;
+  let seq = 1;
+  let candidate = `${prefix}${String(seq).padStart(3, "0")}`;
+  while (allReports[candidate]) {          // skip any ID already taken
+    seq++;
+    candidate = `${prefix}${String(seq).padStart(3, "0")}`;
+  }
+  document.getElementById("report-id").value = candidate;
 }
-document.getElementById("newReportIdBtn").addEventListener("click", generateNewReportId);
-
+ 
 async function loadReports() {
   try {
     const res = await fetch(`${WORKER_URL}/api/reports-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
