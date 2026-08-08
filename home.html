@@ -244,6 +244,13 @@
   border-radius: 50%;
 }
 
+.section-meta {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  margin-top: 2px;
+  font-style: italic;
+}
+    
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -1104,18 +1111,20 @@
     <div class="alerts-block">
       <h3 class="alerts-heading alerts-manual-title">Current Update</h3>
       <div id="alert-manual" class="alert-line"></div>
+      <div id="alert-manual-meta" class="section-meta"></div>
     </div>
     <div class="alerts-block">
       <h3 class="alerts-heading alerts-pre-title">Pre-Update</h3>
       <div id="alert-pre" class="alert-line"></div>
+      <div id="alert-pre-meta" class="section-meta"></div>
     </div>
     <div class="alerts-block">
       <h3 class="alerts-heading alerts-info-title">Information</h3>
       <div id="alert-info" class="alert-line"></div>
+      <div id="alert-info-meta" class="section-meta"></div>
     </div>
     <div id="alert-timestamp"></div>
-  </section>
-  
+  </section>  
 
   <!-- ── INTRO MARQUEE ── -->
   <div class="intro-marquee">
