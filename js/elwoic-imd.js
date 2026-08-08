@@ -1,6 +1,12 @@
 /**
  * ELWOIC Unified Weather Monitoring Script
  * Handles Daily Warning Marquee (Black), Live Nowcast Ticker (Yellow), and 5-Day IMD Warnings via ONE single request.
+ *
+ * No logic changes in this version — the 10-min / 3-min polling cadence
+ * already matched the intended design. This file now correctly displays
+ * the ⚠️/🔄 banners on the marquee and status bar too, because the paired
+ * worker.js now actually sets `data.stale` / `data.updating` / `data.fetch_period`,
+ * which this script was already checking for but never used to receive.
  */
 
 (function () {
