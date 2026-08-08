@@ -982,12 +982,14 @@ function generateNewReportId() {
   const prefix = `EWR${yy}${mm}${dd}`;
   let seq = 1;
   let candidate = `${prefix}${String(seq).padStart(3, "0")}`;
-  while (allReports[candidate]) {          // skip any ID already taken
+  while (allReports[candidate]) {
     seq++;
     candidate = `${prefix}${String(seq).padStart(3, "0")}`;
   }
   document.getElementById("report-id").value = candidate;
 }
+document.getElementById("newReportIdBtn").addEventListener("click", generateNewReportId);
+
  
 async function loadReports() {
   try {
