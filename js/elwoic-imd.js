@@ -1,6 +1,6 @@
 /**
  * ELWOIC Unified Weather Monitoring Script
- * Handles Static Marquee, Live Nowcast Ticker, and 5-Day IMD Warnings via a single Worker request.
+ * Handles Daily Warning Marquee (Black), Live Nowcast Ticker (Yellow), and 5-Day IMD Warnings via ONE single request.
  */
 
 (function () {
@@ -16,25 +16,23 @@
   // --- MAPPINGS & LOOKUPS ---
 
   const WARNING_MAP = {
-    "1":  "No Warning",
-    "2":  "Heavy Rain",
-    "3":  "Heavy Snow",
-    "4":  "Thunderstorm & Lightning",
-    "5":  "Hailstorm",
-    "6":  "Dust Storm",
-    "7":  "Dust Raising Winds",
-    "8":  "Strong Surface Winds",
-    "9":  "Heat Wave",
-    "10": "Hot Day",
-    "11": "Warm Night",
-    "12": "Cold Wave",
-    "13": "Cold Day",
-    "14": "Ground Frost",
-    "15": "Fog",
-    "16": "Very Heavy Rain",
-    "17": "Extremely Heavy Rain"
+    "1":  "No Warning", "2":  "Heavy Rain", "3":  "Heavy Snow",
+    "4":  "Thunderstorm & Lightning", "5":  "Hailstorm", "6":  "Dust Storm",
+    "7":  "Dust Raising Winds", "8":  "Strong Surface Winds", "9":  "Heat Wave",
+    "10": "Hot Day", "11": "Warm Night", "12": "Cold Wave",
+    "13": "Cold Day", "14": "Ground Frost", "15": "Fog",
+    "16": "Very Heavy Rain", "17": "Extremely Heavy Rain"
   };
 
+  // Used for the Top Daily Marquee Backgrounds
+  const MARQUEE_COLOR_MAP = {
+    "1": { name: "Red alert (Take Action)",    css: "linear-gradient(90deg, #cb2d3e, #ef473a)" },
+    "2": { name: "Orange alert (Be Prepared)", css: "linear-gradient(90deg, #f46b45, #eea849)" },
+    "3": { name: "Yellow alert (Be Aware)",    css: "linear-gradient(90deg, #f7971e, #ffd200)" },
+    "4": { name: "Green (No Warning)",         css: "linear-gradient(90deg, #1d976c, #93f9b9)" }
+  };
+
+  // Used for the 5-Day Forecast Tabs
   const COLOR_META = {
     "1": { name: "Red alert — Take action",    hex: "#ef4444", dot: "dot-5" },
     "2": { name: "Orange alert — Be prepared", hex: "#f97316", dot: "dot-4" },
@@ -43,23 +41,14 @@
   };
 
   const IMD_CATEGORIES = {
-    1: "No Severe Weather",
-    2: "Light Rain (< 5 mm/hr)",
-    3: "Light Snow (< 5 cm/hr)",
-    4: "Light Thunderstorms (Wind < 40 kmph)",
-    5: "Slight Dust Storm",
-    6: "Low Lightning Probability (< 30%)",
-    7: "Moderate Rain (5-15 mm/hr)",
-    8: "Moderate Snow (5-15 cm/hr)",
-    9: "Moderate Thunderstorms (Wind 41-61 kmph)",
-    10: "Moderate Dust Storm",
-    11: "Moderate Lightning Probability (30-60%)",
-    12: "Heavy Rain (> 15 mm/hr)",
-    13: "Heavy Snow (> 15 cm/hr)",
-    14: "Severe Thunderstorms (Wind 62-87 kmph)",
-    15: "Very Severe Thunderstorms (Wind > 87 kmph)",
-    17: "Thunderstorms with Hail",
-    18: "Severe Dust Storm (Wind > 61 kmph)",
+    1: "No Severe Weather", 2: "Light Rain (< 5 mm/hr)", 3: "Light Snow (< 5 cm/hr)",
+    4: "Light Thunderstorms (Wind < 40 kmph)", 5: "Slight Dust Storm",
+    6: "Low Lightning Probability (< 30%)", 7: "Moderate Rain (5-15 mm/hr)",
+    8: "Moderate Snow (5-15 cm/hr)", 9: "Moderate Thunderstorms (Wind 41-61 kmph)",
+    10: "Moderate Dust Storm", 11: "Moderate Lightning Probability (30-60%)",
+    12: "Heavy Rain (> 15 mm/hr)", 13: "Heavy Snow (> 15 cm/hr)",
+    14: "Severe Thunderstorms (Wind 62-87 kmph)", 15: "Very Severe Thunderstorms (Wind > 87 kmph)",
+    17: "Thunderstorms with Hail", 18: "Severe Dust Storm (Wind > 61 kmph)",
     19: "High Lightning Probability (> 60%)"
   };
 
@@ -105,17 +94,33 @@
 
   // --- UI RENDER MODULES ---
 
-  // 1. Static Marquee Setup (No API network requests)
-  function initStaticMarquee() {
+  // 1. Daily IMD Marquee Render (Replaces the black static bar)
+  function renderDailyMarqueeUI(data) {
     const marqueeTextEl = document.getElementById("marqueeText");
     const marqueeContainerEl = document.getElementById("marqueeContainer");
-    if (marqueeTextEl && marqueeContainerEl) {
-      marqueeTextEl.textContent = "Welcome to the Elamkulam Local Weather Observation & Information Centre (ELWOIC).";
-      marqueeContainerEl.style.background = "#222";
-    }
+    if (!marqueeTextEl || !marqueeContainerEl) return;
+
+    const todayIST = getISTDate();
+    const dateStr = todayIST.toLocaleDateString("en-GB");
+
+    const warningKey = "Day_1";
+    const colorKey = "Day1_Color";
+
+    const warningText = decodeWarnings(data[warningKey]).join(" & ");
+    const colorId = data[colorKey] || "4";
+    const colorInfo = MARQUEE_COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
+
+    const prefixParts = [];
+    if (data.stale)      prefixParts.push("⚠️ Showing previous IMD bulletin.");
+    if (data.updating)   prefixParts.push("🔄 Updating latest IMD data...");
+    if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
+    const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
+
+    marqueeTextEl.textContent = `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} — ${warningText} | Last Updated: ${data.updated_at || "N/A"} | Source: India Meteorological Department (IMD)`;
+    marqueeContainerEl.style.background = colorInfo.css;
   }
 
-  // 2. Nowcast Ticker Render
+  // 2. Nowcast Ticker Render (The yellow bar below it)
   function renderNowcastUI(data) {
     const container = document.getElementById("nowcast-container");
     const ticker = document.getElementById("nowcast-ticker");
@@ -170,12 +175,9 @@
     const statusEl = document.getElementById("imdStatusBar");
 
     if (!daysContainer) return;
-
     cachedImdData = data;
 
-    if (upEl) {
-      upEl.textContent = "System updated: " + (data.updated_at || "N/A");
-    }
+    if (upEl) upEl.textContent = "System updated: " + (data.updated_at || "N/A");
 
     const todayIST = getISTDate();
     const base = new Date(data.Date);
@@ -225,7 +227,6 @@
         <span class="imd-day-date">${offsetDate(base, i)}</span>
       </button>`;
     }
-
     container.innerHTML = html;
     renderDetail(todayDiff);
   }
@@ -270,7 +271,8 @@
 
       const data = await response.json();
 
-      // Render all components from the single payload
+      // Updates ALL UI components from the single network fetch
+      renderDailyMarqueeUI(data);
       renderNowcastUI(data);
       renderDailyWarningsUI(data);
 
@@ -278,15 +280,19 @@
       const isUpdating = data.updating || data.cache_status === "EXPIRED_STALE_UPDATING";
 
       if (isExpired || isUpdating) {
-        // Poll every 3 minutes while expecting an update
-        scheduleNextFetch(RETRY_POLL_INTERVAL);
+        scheduleNextFetch(RETRY_POLL_INTERVAL); // 3-minute poll during updates
       } else {
-        // Normal 10-minute refresh cycle
-        scheduleNextFetch(NORMAL_POLL_INTERVAL);
+        scheduleNextFetch(NORMAL_POLL_INTERVAL); // 10-minute poll normally
       }
 
     } catch (error) {
       console.error("ELWOIC Weather Sync Error:", error);
+
+      // Show fallback text on the daily marquee if fetch fails entirely
+      const marqueeTextEl = document.getElementById("marqueeText");
+      if (marqueeTextEl) {
+          marqueeTextEl.textContent = "⚠️ IMD Alert System currently unavailable. Please check official IMD channels.";
+      }
 
       const daysEl = document.getElementById("imdDays");
       if (daysEl) {
@@ -298,10 +304,6 @@
   }
 
   // --- INITIALIZATION ---
-
-  document.addEventListener("DOMContentLoaded", () => {
-    initStaticMarquee();
-    syncWeatherData();
-  });
+  document.addEventListener("DOMContentLoaded", syncWeatherData);
 
 })();
