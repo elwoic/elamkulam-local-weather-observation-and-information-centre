@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoEl   = document.getElementById("alert-info");
   const timeEl   = document.getElementById("alert-timestamp");
 
-  // Point this to your published Cloudflare Worker domain URL
-  const WORKER_URL = "https://elwoic-manual-update.bold-waterfall-0d01.workers.dev";
+  // Same unified worker the admin console talks to.
+  const WORKER_URL = "https://elwoic-unified-manual-updates.bold-waterfall-0d01.workers.dev";
 
   /* ── IMMEDIATE LOADING STATE ── */
   const loadingHtml = `
@@ -25,108 +25,70 @@ document.addEventListener("DOMContentLoaded", () => {
     if (infoEl)   infoEl.innerHTML   = loadingHtml;
   }
 
-  function parseDateTs(ddmmyyyy) {
-    if (!ddmmyyyy) return NaN;
-    const [d, m, y] = ddmmyyyy.split("/").map(Number);
-    return new Date(y, m - 1, d).getTime();
+  // Fetch the resolved, already-stacked, already-time-filtered blocks
+  // for one destination. The worker only returns blocks that are
+  // status:'active' AND within their visible_from/expires_at window —
+  // no date math needed here anymore.
+  async function fetchDestination(destinationKey) {
+    const res = await fetch(`${WORKER_URL}/api/blocks?destination=${destinationKey}`);
+    if (!res.ok) throw new Error(`Failed to load ${destinationKey}`);
+    return res.json(); // [{ id, text, blink, created_at }, ...]  (may be empty array)
   }
 
-  /* ── FETCH DATA LAYER FROM WORKER ── */
+  function renderStacked(el, blocks, emptyText, color) {
+    if (!el) return { active: false, blink: false, latest: 0 };
+    el.classList.remove("blink");
+
+    if (!blocks || blocks.length === 0) {
+      el.textContent = emptyText;
+      el.style.color = "";
+      return { active: false, blink: false, latest: 0 };
+    }
+
+    // Multiple blocks can be active for the same destination at once —
+    // show every one of them, stacked, rather than picking just one.
+    el.innerHTML = blocks
+      .map(b => `<div class="alert-line">${escapeHtml(b.text)}</div>`)
+      .join("");
+    el.style.color = color;
+
+    const anyBlink = blocks.some(b => b.blink === true);
+    if (anyBlink) el.classList.add("blink");
+
+    const latest = Math.max(...blocks.map(b => b.created_at || 0));
+    return { active: true, blink: anyBlink, latest };
+  }
+
+  function escapeHtml(s) {
+    return (s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+
   async function fetchLiveAlerts() {
     try {
-      const res = await fetch(`${WORKER_URL}/api/live`);
-      if (!res.ok) throw new Error("Network status response returned errors.");
-      const data = await res.json() || {};
-      
-      // Midnight today for clean comparison
-      const now = new Date();
-      const tTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const [manualBlocks, preBlocks, infoBlocks] = await Promise.all([
+        fetchDestination("manual_update"),
+        fetchDestination("pre_update"),
+        fetchDestination("info"),
+      ]);
 
-      // Data containers for our layout slots
-      let finalManualText = null; let finalManualBlink = false;
-      let finalPreText    = null; let finalPreBlink    = false;
-      let finalInfoText   = null;
-      let activeUpdatesCount = 0;
+      const manualResult = renderStacked(manualEl, manualBlocks, "No updates available at this time", "red");
+      const preResult    = renderStacked(preEl, preBlocks, "No updates scheduled", "#f1c40f");
+      const infoResult   = renderStacked(infoEl, infoBlocks, "No general information", "");
 
-      /* ── 1. CHECK PRE-UPDATE FOR JUMPING ── */
-      if (data.pre_text?.trim()) {
-        const preTs = parseDateTs(data.pre_date);
-        if (!isNaN(preTs)) {
-          if (preTs === tTs) {
-            // Target date is today - jump to manual slot
-            finalManualText = data.pre_text;
-            finalManualBlink = (data.pre_blink === true || data.pre_blink === "true");
-          } else if (preTs > tTs) {
-            // Future date - stays in pre slot
-            finalPreText = data.pre_text;
-            finalPreBlink = (data.pre_blink === true || data.pre_blink === "true");
-          }
-        }
+      const activeUpdatesCount =
+        (manualResult.active ? 1 : 0) + (preResult.active ? 1 : 0) + (infoResult.active ? 1 : 0);
+
+      if (timeEl) {
+        const latest = Math.max(manualResult.latest, preResult.latest, infoResult.latest, 0);
+        timeEl.textContent = latest ? "Last updated: " + new Date(latest).toLocaleString() : "";
       }
 
-      /* ── 2. CHECK MANUAL UPDATE (Overrides Jump) ── */
-      if (data.manual_text?.trim()) {
-        const manualTs = parseDateTs(data.manual_date);
-        if (isNaN(manualTs) || manualTs >= tTs) {
-          // Explicit manual update overrides any jumping pre-update
-          finalManualText = data.manual_text;
-          finalManualBlink = (data.manual_blink === true || data.manual_blink === "true");
-        }
-      }
-
-      /* ── 3. CHECK INFO ── */
-      if (data.info_text?.trim()) {
-        finalInfoText = data.info_text;
-      }
-
-      /* ── 4. RENDER TO DOM ── */
-      if (manualEl) {
-        manualEl.classList.remove("blink");
-        if (finalManualText) {
-          manualEl.textContent = finalManualText;
-          manualEl.style.color = "red";
-          if (finalManualBlink) manualEl.classList.add("blink");
-          activeUpdatesCount++;
-        } else {
-          manualEl.textContent = "No updates available at this time";
-          manualEl.style.color = "";
-        }
-      }
-
-      if (preEl) {
-        preEl.classList.remove("blink");
-        if (finalPreText) {
-          preEl.textContent = finalPreText;
-          preEl.style.color = "#f1c40f";
-          if (finalPreBlink) preEl.classList.add("blink");
-          activeUpdatesCount++;
-        } else {
-          preEl.textContent = "No updates scheduled";
-          preEl.style.color = "";
-        }
-      }
-
-      if (infoEl) {
-        if (finalInfoText) {
-          infoEl.textContent = finalInfoText;
-          activeUpdatesCount++;
-        } else {
-          infoEl.textContent = "No general information";
-        }
-      }
-
-      if (timeEl && data.last_updated) {
-        timeEl.textContent = "Last updated: " + data.last_updated;
-      }
-
-      // Hide panel completely ONLY if there are exactly 0 active updates
+      // Hide panel completely ONLY if there are exactly 0 active sections
       if (panel) {
         panel.style.display = (activeUpdatesCount > 0) ? "block" : "none";
       }
-
     } catch (error) {
       console.error("ELWOIC Database Fetch Error:", error);
-      // Clean fallback text states if worker goes down or errors out
       if (manualEl) manualEl.textContent = "Unable to load critical alerts.";
       if (preEl) preEl.textContent = "Failed to sync updates.";
       if (infoEl) infoEl.textContent = "Service momentarily unreachable.";
