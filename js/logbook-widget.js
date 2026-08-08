@@ -1,23 +1,3 @@
-// js/logbook-widget.js
-// Pulls the human-verified "Station Logbook" reports (published via the
-// ELWOIC admin console) into the "എലങ്കുളം കാലാവസ്ഥാ സമഗ്ര റിപ്പോർട്ട്" hub
-// on Forecast.html, alongside the AI-generated essay from elamkulam-forecast.js.
-//
-// Data source: the unified blocks-based Worker API (same one the admin
-// console and manual-update alerts panel talk to). This script does NOT
-// replace the standalone archive page — it links out to it (via
-// ARCHIVE_PAGE below) for the full letterhead / printable document.
-//
-// IMPORTANT SHAPE CHANGE from the old Firebase-only reports worker:
-//   - GET /api/reports        -> metadata ONLY now (id/date/observer/status).
-//                                No section content travels with the list.
-//   - GET /api/reports/:id    -> metadata + resolved `content`, where each
-//                                section (forecast, outlook, etc.) is an
-//                                ARRAY of stacked block texts, not one string
-//                                (multiple blocks can target the same
-//                                section and are meant to show together).
-// So content is now fetched lazily per-report, on demand, and cached.
-
 (function () {
   "use strict";
 
@@ -29,6 +9,7 @@
 
   let reportsMeta = [];       // list from /api/reports (no content)
   let contentCache = {};      // report_id -> resolved full report (meta + content), fetched on demand
+  let renderToken = 0;        // guards against a slow, stale fetch overwriting a newer selection
 
   function todayKey() {
     const now = new Date();
@@ -60,6 +41,14 @@
   async function init() {
     const select = document.getElementById("logbook-select");
     if (!select) return; // markup not present on this page
+
+    // Own the dropdown's change event here, instead of relying on an
+    // inline onchange="..." attribute in the page's HTML. That attribute
+    // is easy to lose or mistype when the surrounding page gets edited,
+    // and if it's ever missing the dropdown silently does nothing.
+    select.addEventListener("change", () => {
+      if (select.value) renderLogbookEntry(select.value);
+    });
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/reports`);
@@ -146,10 +135,20 @@
 
   window.renderLogbookEntry = async function (reportId) {
     const body = document.getElementById("logbook-body");
+    const select = document.getElementById("logbook-select");
     if (!body) return;
     const meta = reportsMeta.find((x) => x.report_id === reportId);
     if (!meta) { showEmptyState(false); return; }
 
+    // Keep the dropdown's visible value in sync even when this is called
+    // programmatically (e.g. from elsewhere on the page), not just from
+    // the dropdown's own change event.
+    if (select && select.value !== reportId) select.value = reportId;
+
+    // Race guard: if the dropdown is switched again before this fetch
+    // resolves, a slower earlier request must not overwrite the newer
+    // selection once it lands.
+    const myToken = ++renderToken;
     showLoadingState();
 
     let full;
@@ -157,11 +156,13 @@
       full = await fetchReportContent(reportId);
     } catch (e) {
       console.warn("logbook-widget: content fetch error", e);
-      if (body) {
+      if (myToken === renderToken && body) {
         body.innerHTML = `<div class="logbook-empty"><div class="logbook-empty-title">ഈ റിപ്പോർട്ട് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല</div></div>`;
       }
       return;
     }
+
+    if (myToken !== renderToken) return; // a newer selection has already superseded this one
 
     const c = full.content || {};
 
