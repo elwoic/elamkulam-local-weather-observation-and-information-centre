@@ -328,6 +328,10 @@
             <button class="btn btn-ghost btn-sm" id="refreshBlocksBtn">Refresh</button>
           </div>
           <div class="panel-body">
+            <div id="report-filter-banner" style="display:none; background:var(--purple-bg); border:1px solid var(--purple-border); color:var(--purple); font-size:12px; font-family:'DM Mono',monospace; padding:8px 12px; border-radius:var(--radius-sm); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <span>Showing blocks for report <strong id="report-filter-label"></strong></span>
+              <button class="btn btn-ghost btn-sm" id="clearReportFilterBtn">Show all blocks</button>
+            </div>
             <div class="filter-chips" id="filter-chips">
               <button class="filter-chip active" data-filter="all">All</button>
               <button class="filter-chip" data-filter="manual_update">Manual</button>
@@ -583,6 +587,7 @@ let authToken = sessionStorage.getItem("elwoic_token") || localStorage.getItem("
 let allBlocks = {};     // cache from /api/blocks-admin
 let allReports = {};    // cache from /api/reports-admin
 let currentFilter = "all";
+let reportFilterId = null; // when set, blocks table + composer scope to one report
 let editingBlockId = null;
 
 /* =========================================================
@@ -663,14 +668,14 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("app").style.display = "none";
 });
 
-async function showApp() {
+function showApp() {
   document.getElementById("login-container").style.display = "none";
   document.getElementById("app").style.display = "block";
   buildDestinationControls();
   checkConnection();
-  document.getElementById("report-date").value = new Date().toISOString().split("T")[0];
-  await refreshAll();       // load allReports BEFORE generating an ID
   generateNewReportId();
+  document.getElementById("report-date").value = new Date().toISOString().split("T")[0];
+  refreshAll();
 }
 
 async function checkConnection() {
@@ -787,10 +792,11 @@ function renderBlocksTable() {
   const tbody = document.getElementById("blocks-table-body");
   let rows = Object.entries(allBlocks).map(([id, b]) => ({ id, ...b }));
   if (currentFilter !== "all") rows = rows.filter(b => b.destinations && b.destinations[currentFilter]);
+  if (reportFilterId) rows = rows.filter(b => b.report_id === reportFilterId);
   rows.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
 
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No blocks yet</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${reportFilterId ? "No blocks tagged to this report yet" : "No blocks yet"}</td></tr>`;
     return;
   }
 
@@ -979,18 +985,10 @@ function generateNewReportId() {
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  const prefix = `EWR${yy}${mm}${dd}`;
-  let seq = 1;
-  let candidate = `${prefix}${String(seq).padStart(3, "0")}`;
-  while (allReports[candidate]) {
-    seq++;
-    candidate = `${prefix}${String(seq).padStart(3, "0")}`;
-  }
-  document.getElementById("report-id").value = candidate;
+  document.getElementById("report-id").value = `EWR${yy}${mm}${dd}001`;
 }
 document.getElementById("newReportIdBtn").addEventListener("click", generateNewReportId);
 
- 
 async function loadReports() {
   try {
     const res = await fetch(`${WORKER_URL}/api/reports-admin`, { headers: { Authorization: `Bearer ${authToken}` } });
@@ -1021,6 +1019,7 @@ function renderReportsTable() {
       <td>${badge}</td>
       <td><div class="row-actions">
         <button class="btn btn-ghost btn-sm" onclick="loadReportIntoEditor('${r.report_id}')">Load</button>
+        <button class="btn btn-ghost btn-sm" onclick="viewReportBlocks('${r.report_id}')">View blocks</button>
         <button class="btn btn-revoke btn-sm" onclick="promptRevokeReport('${r.report_id}')">Revoke</button>
       </div></td>
     </tr>`;
@@ -1075,6 +1074,40 @@ window.loadReportIntoEditor = function (reportId) {
   document.querySelector('[data-tab="reports"]').click();
   showToast(`Loaded ${reportId} into editor`);
 };
+
+// Jump to Compose & Blocks, scoped to just this report's content blocks —
+// this is the "show me the actual weather data for this report" action,
+// separate from loadReportIntoEditor above (which only loads id/date/observer).
+window.viewReportBlocks = function (reportId) {
+  const r = allReports[reportId];
+  if (!r) { showToast("Report not found", true); return; }
+
+  reportFilterId = reportId;
+  currentFilter = "all";
+  document.querySelectorAll(".filter-chip").forEach(c => c.classList.toggle("active", c.dataset.filter === "all"));
+
+  const banner = document.getElementById("report-filter-banner");
+  banner.style.display = "flex";
+  document.getElementById("report-filter-label").textContent = reportId;
+
+  renderBlocksTable();
+
+  // Convenient default: if they add a new block from here, pre-select this report.
+  const blockReportSelect = document.getElementById("block-report-id");
+  if (blockReportSelect && [...blockReportSelect.options].some(o => o.value === reportId)) {
+    blockReportSelect.value = reportId;
+  }
+
+  document.querySelector('[data-tab="compose"]').click();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast(`Showing blocks for ${reportId}`);
+};
+
+document.getElementById("clearReportFilterBtn").addEventListener("click", () => {
+  reportFilterId = null;
+  document.getElementById("report-filter-banner").style.display = "none";
+  renderBlocksTable();
+});
 
 /* =========================================================
    PREVIEW & PRINT
