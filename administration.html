@@ -117,9 +117,24 @@
   .dest-group-label { font-size: 11px; font-weight: 600; color: var(--text-3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 8px; }
   .dest-group-label:first-child { margin-top: 0; }
   .dest-checks { display: flex; flex-direction: column; gap: 7px; }
-  .dest-check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: var(--radius-sm); cursor: pointer; }
+  .dest-row { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .dest-check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 10px; cursor: pointer; }
   .dest-check-item:hover { background: var(--surface-2); }
   .dest-check-item input { accent-color: var(--accent); }
+  .dest-timing { padding: 10px 10px 12px; background: var(--surface-2); border-top: 1px solid var(--border); }
+  .dest-timing .timing-row { margin-bottom: 0; }
+  .dest-timing .checkbox-row { margin-bottom: 0; margin-top: 10px; font-size: 12px; }
+
+  /* per-chip window state, used in the blocks table */
+  .dest-chip-block { display: inline-flex; flex-direction: column; gap: 1px; padding: 4px 9px; border-radius: 8px; font-family: 'DM Mono', monospace; background: var(--surface-2); border: 1px solid var(--border); border-left-width: 3px; }
+  .dest-chip-block .dcb-label { font-size: 10.5px; font-weight: 600; }
+  .dest-chip-block .dcb-window { font-size: 9.5px; color: var(--text-3); white-space: nowrap; }
+  .dest-chip-block.state-live { border-left-color: var(--green); }
+  .dest-chip-block.state-live .dcb-label { color: var(--green); }
+  .dest-chip-block.state-scheduled { border-left-color: var(--amber); }
+  .dest-chip-block.state-scheduled .dcb-label { color: var(--amber); }
+  .dest-chip-block.state-expired { border-left-color: var(--text-3); }
+  .dest-chip-block.state-expired .dcb-label { color: var(--text-3); }
 
   .timing-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
   @media (max-width: 480px) { .timing-row { grid-template-columns: 1fr; } }
@@ -289,21 +304,10 @@
             </div>
 
             <div class="dest-group-label">Site-wide destinations</div>
-            <div class="dest-checks">
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="manual_update" data-group="site"> Manual Update</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="pre_update" data-group="site"> Pre Update</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="info" data-group="site"> General Info</label>
-            </div>
+            <div class="dest-checks" id="dest-controls-site"></div>
 
             <div class="dest-group-label">Report destinations (letterhead sections)</div>
-            <div class="dest-checks">
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="forecast" data-group="report"> Issued Forecast</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="actual_weather" data-group="report"> Actual Weather</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="verification" data-group="report"> Verification</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="deviations" data-group="report"> Deviations</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="additional_obs" data-group="report"> Additional Observations</label>
-              <label class="dest-check-item"><input type="checkbox" class="dest-check" data-dest="outlook" data-group="report"> Outlook</label>
-            </div>
+            <div class="dest-checks" id="dest-controls-report"></div>
 
             <div class="field-wrap" id="report-picker-wrap" style="display:none; margin-top:14px;">
               <label class="field-label">Which report does this belong to?</label>
@@ -311,23 +315,7 @@
               <div class="field-hint">Required because at least one report destination is ticked above.</div>
             </div>
 
-            <div class="timing-row" style="margin-top:14px;">
-              <div class="field-wrap" style="margin-bottom:0;">
-                <label class="field-label">Visible from (optional)</label>
-                <input type="datetime-local" id="block-visible-from" class="ctrl-input">
-              </div>
-              <div class="field-wrap" style="margin-bottom:0;">
-                <label class="field-label">Expires at (optional)</label>
-                <input type="datetime-local" id="block-expires-at" class="ctrl-input">
-              </div>
-            </div>
-
-            <div class="checkbox-row" id="blink-row" style="display:none; margin-top:14px;">
-              <input type="checkbox" id="block-blink">
-              <label for="block-blink">Blink alert (Manual / Pre Update only)</label>
-            </div>
-
-            <div class="btn-row" style="display:flex; gap:8px; margin-top:6px;">
+            <div class="btn-row" style="display:flex; gap:8px; margin-top:14px;">
               <button class="btn btn-update" id="saveBlockBtn" style="flex:1;">Save block</button>
             </div>
           </div>
@@ -354,7 +342,7 @@
             </div>
             <div style="overflow-x:auto;">
               <table class="data-table">
-                <thead><tr><th>Text</th><th>Destinations</th><th>Report</th><th>Window</th><th>Status</th><th></th></tr></thead>
+                <thead><tr><th>Text</th><th>Destinations &amp; windows</th><th>Report</th><th>Status</th><th></th></tr></thead>
                 <tbody id="blocks-table-body">
                   <tr class="empty-row"><td colspan="6">Loading blocks…</td></tr>
                 </tbody>
@@ -538,6 +526,59 @@ const DESTINATIONS = {
 const SITE_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "site");
 const REPORT_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "report");
 
+/* =========================================================
+   PER-DESTINATION TIMING CONTROLS
+   Each destination gets its own visible-from / expires-at
+   (and blink, where applicable) — not shared across the block.
+   ========================================================= */
+function buildDestinationControls() {
+  const siteWrap = document.getElementById("dest-controls-site");
+  const reportWrap = document.getElementById("dest-controls-report");
+  siteWrap.innerHTML = "";
+  reportWrap.innerHTML = "";
+
+  Object.keys(DESTINATIONS).forEach((destKey) => {
+    const cfg = DESTINATIONS[destKey];
+    const row = document.createElement("div");
+    row.className = "dest-row";
+    row.innerHTML = `
+      <label class="dest-check-item">
+        <input type="checkbox" class="dest-check" data-dest="${destKey}" data-group="${cfg.group}">
+        ${cfg.label}
+      </label>
+      <div class="dest-timing" id="timing-${destKey}" style="display:none;">
+        <div class="timing-row">
+          <div class="field-wrap" style="margin-bottom:0;">
+            <label class="field-label">Visible from</label>
+            <input type="datetime-local" class="ctrl-input dest-visible-from" data-dest="${destKey}">
+          </div>
+          <div class="field-wrap" style="margin-bottom:0;">
+            <label class="field-label">Expires at (optional)</label>
+            <input type="datetime-local" class="ctrl-input dest-expires-at" data-dest="${destKey}">
+          </div>
+        </div>
+        ${cfg.blinkable ? `
+        <div class="checkbox-row">
+          <input type="checkbox" class="dest-blink" data-dest="${destKey}" id="blink-${destKey}">
+          <label for="blink-${destKey}">Blink alert for ${cfg.label}</label>
+        </div>` : ""}
+      </div>
+    `;
+    (cfg.group === "site" ? siteWrap : reportWrap).appendChild(row);
+
+    const checkbox = row.querySelector(".dest-check");
+    checkbox.addEventListener("change", () => {
+      const timingDiv = row.querySelector(".dest-timing");
+      timingDiv.style.display = checkbox.checked ? "block" : "none";
+      if (checkbox.checked) {
+        const fromInput = row.querySelector(".dest-visible-from");
+        if (!fromInput.value) fromInput.value = msToLocalInputValue(Date.now());
+      }
+      updateComposerVisibility();
+    });
+  });
+}
+
 let authToken = sessionStorage.getItem("elwoic_token") || localStorage.getItem("elwoic_token") || "";
 let allBlocks = {};     // cache from /api/blocks-admin
 let allReports = {};    // cache from /api/reports-admin
@@ -625,6 +666,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 function showApp() {
   document.getElementById("login-container").style.display = "none";
   document.getElementById("app").style.display = "block";
+  buildDestinationControls();
   checkConnection();
   generateNewReportId();
   document.getElementById("report-date").value = new Date().toISOString().split("T")[0];
@@ -676,27 +718,36 @@ function msToLocalInputValue(ms) {
   const d = new Date(ms - (new Date().getTimezoneOffset() * 60000));
   return d.toISOString().slice(0, 16);
 }
-function isBlockActiveNow(block) {
+// Timing lives INSIDE each destination entry now — the same block can be
+// live in one destination and not-yet-visible or already-expired in another.
+function isDestinationActiveNow(block, destKey) {
   if (block.status !== "active") return false;
+  const entry = block.destinations && block.destinations[destKey];
+  if (!entry) return false;
   const n = nowMs();
-  if (block.visible_from && n < block.visible_from) return false;
-  if (block.expires_at && n <= block.expires_at === false) { /* handled below */ }
-  if (block.expires_at && n > block.expires_at) return false;
+  if (entry.visible_from && n < entry.visible_from) return false;
+  if (entry.expires_at && n > entry.expires_at) return false;
   return true;
 }
-function blockWindowState(block) {
+function destinationWindowState(block, destKey) {
   if (block.status === "revoked") return "revoked";
+  const entry = block.destinations && block.destinations[destKey];
+  if (!entry) return "expired";
   const n = nowMs();
-  if (block.visible_from && n < block.visible_from) return "scheduled";
-  if (block.expires_at && n > block.expires_at) return "expired";
+  if (entry.visible_from && n < entry.visible_from) return "scheduled";
+  if (entry.expires_at && n > entry.expires_at) return "expired";
   return "live";
 }
 function getActiveBlocksFor(destKey, reportId = null) {
   return Object.entries(allBlocks)
     .map(([id, b]) => ({ id, ...b }))
-    .filter(b => b.destinations && b.destinations[destKey] && isBlockActiveNow(b))
+    .filter(b => b.destinations && b.destinations[destKey] && isDestinationActiveNow(b, destKey))
     .filter(b => DESTINATIONS[destKey].group === "site" ? true : b.report_id === reportId)
-    .sort((a, b) => (a.created_at || 0) - (b.created_at || 0));
+    .sort((a, b) => {
+      const aFrom = (a.destinations[destKey].visible_from) || a.created_at || 0;
+      const bFrom = (b.destinations[destKey].visible_from) || b.created_at || 0;
+      return aFrom - bFrom;
+    });
 }
 
 /* =========================================================
@@ -725,7 +776,7 @@ function renderLiveStatus() {
     } else {
       badge.className = "badge badge-live";
       badge.innerHTML = `<span class="badge-dot"></span>Live (${active.length})`;
-      body.innerHTML = active.map(b => `<div class="sc-line">${escapeHtml(b.text)}${b.blink ? " ⚠" : ""}</div>`).join("");
+      body.innerHTML = active.map(b => `<div class="sc-line">${escapeHtml(b.text)}${b.destinations[destKey].blink ? " ⚠" : ""}</div>`).join("");
     }
   });
 }
@@ -744,20 +795,24 @@ function renderBlocksTable() {
   }
 
   tbody.innerHTML = rows.map(b => {
-    const destChips = Object.keys(b.destinations || {}).filter(k => b.destinations[k]).map(k =>
-      `<span class="dest-chip ${DESTINATIONS[k]?.group || ''}">${DESTINATIONS[k]?.label || k}</span>`
-    ).join("");
-    const state = blockWindowState(b);
-    const badgeMap = { live: ["badge-live","Live"], scheduled: ["badge-scheduled","Scheduled"], expired: ["badge-offline","Expired"], revoked: ["badge-revoked","Revoked"] };
-    const [badgeCls, badgeLabel] = badgeMap[state];
-    const fromStr = b.visible_from ? new Date(b.visible_from).toLocaleString() : "immediately";
-    const toStr = b.expires_at ? new Date(b.expires_at).toLocaleString() : "never";
+    const destChips = Object.keys(b.destinations || {}).map(k => {
+      const entry = b.destinations[k] || {};
+      const state = destinationWindowState(b, k);
+      const fromStr = entry.visible_from ? new Date(entry.visible_from).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "immediately";
+      const toStr = entry.expires_at ? new Date(entry.expires_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "never";
+      return `<span class="dest-chip-block state-${state}">
+        <span class="dcb-label">${DESTINATIONS[k]?.label || k}${entry.blink ? ' ⚠' : ''}</span>
+        <span class="dcb-window">${fromStr} → ${toStr}</span>
+      </span>`;
+    }).join("");
+    const overallBadge = b.status === "revoked"
+      ? `<span class="badge badge-revoked"><span class="badge-dot"></span>Revoked</span>`
+      : `<span class="badge badge-live"><span class="badge-dot"></span>Active</span>`;
     return `<tr>
-      <td class="block-text-cell">${escapeHtml(b.text)}${b.blink ? ' <span title="Blink alert on">⚠</span>' : ''}</td>
+      <td class="block-text-cell">${escapeHtml(b.text)}</td>
       <td><div class="dest-chip-row">${destChips}</div></td>
       <td style="font-family:'DM Mono',monospace; font-size:11.5px;">${b.report_id || "—"}</td>
-      <td class="block-window-cell">${fromStr} → ${toStr}</td>
-      <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${badgeLabel}</span></td>
+      <td>${overallBadge}</td>
       <td><div class="row-actions">
         <button class="btn btn-ghost btn-sm" onclick="loadBlockIntoEditor('${b.id}')">Edit</button>
         ${b.status !== 'revoked' ? `<button class="btn btn-revoke btn-sm" onclick="promptRevokeBlock('${b.id}')">Revoke</button>` : ''}
@@ -781,24 +836,21 @@ document.getElementById("refreshBlocksBtn").addEventListener("click", refreshAll
    ========================================================= */
 function updateComposerVisibility() {
   const checks = document.querySelectorAll(".dest-check");
-  let anyReport = false, anyBlinkable = false;
+  let anyReport = false;
   checks.forEach(c => {
     if (c.checked && DESTINATIONS[c.dataset.dest].group === "report") anyReport = true;
-    if (c.checked && DESTINATIONS[c.dataset.dest].blinkable) anyBlinkable = true;
   });
   document.getElementById("report-picker-wrap").style.display = anyReport ? "block" : "none";
-  document.getElementById("blink-row").style.display = anyBlinkable ? "flex" : "none";
 }
-document.querySelectorAll(".dest-check").forEach(c => c.addEventListener("change", updateComposerVisibility));
 
 function resetComposer() {
   editingBlockId = null;
   document.getElementById("block-id").value = "";
   document.getElementById("block-text").value = "";
   document.querySelectorAll(".dest-check").forEach(c => c.checked = false);
-  document.getElementById("block-visible-from").value = "";
-  document.getElementById("block-expires-at").value = "";
-  document.getElementById("block-blink").checked = false;
+  document.querySelectorAll(".dest-timing").forEach(t => t.style.display = "none");
+  document.querySelectorAll(".dest-visible-from, .dest-expires-at").forEach(i => i.value = "");
+  document.querySelectorAll(".dest-blink").forEach(c => c.checked = false);
   document.getElementById("composer-title").textContent = "New block";
   document.getElementById("cancelEditBtn").style.display = "none";
   updateComposerVisibility();
@@ -823,13 +875,27 @@ document.getElementById("saveBlockBtn").addEventListener("click", async () => {
 
   const destinations = {};
   let anyReport = false;
+  let timingError = null;
   document.querySelectorAll(".dest-check").forEach(c => {
-    if (c.checked) {
-      destinations[c.dataset.dest] = true;
-      if (DESTINATIONS[c.dataset.dest].group === "report") anyReport = true;
+    if (!c.checked) return;
+    const destKey = c.dataset.dest;
+    const visibleFromInput = document.querySelector(`.dest-visible-from[data-dest="${destKey}"]`);
+    const expiresAtInput = document.querySelector(`.dest-expires-at[data-dest="${destKey}"]`);
+    const blinkInput = document.querySelector(`.dest-blink[data-dest="${destKey}"]`);
+    const visibleFrom = toMsOrNull(visibleFromInput.value);
+    const expiresAt = toMsOrNull(expiresAtInput.value);
+    if (visibleFrom && expiresAt && expiresAt <= visibleFrom) {
+      timingError = `"${DESTINATIONS[destKey].label}": expiry must be after the visible-from time`;
     }
+    destinations[destKey] = {
+      visible_from: visibleFrom,
+      expires_at: expiresAt,
+      blink: blinkInput ? blinkInput.checked : false,
+    };
+    if (DESTINATIONS[destKey].group === "report") anyReport = true;
   });
   if (Object.keys(destinations).length === 0) { showToast("Select at least one destination", true); return; }
+  if (timingError) { showToast(timingError, true); return; }
 
   let reportId = null;
   if (anyReport) {
@@ -842,9 +908,6 @@ document.getElementById("saveBlockBtn").addEventListener("click", async () => {
     text,
     destinations,
     report_id: reportId,
-    visible_from: toMsOrNull(document.getElementById("block-visible-from").value),
-    expires_at: toMsOrNull(document.getElementById("block-expires-at").value),
-    blink: document.getElementById("block-blink").checked,
   };
 
   try {
@@ -866,13 +929,27 @@ document.getElementById("saveBlockBtn").addEventListener("click", async () => {
 window.loadBlockIntoEditor = function (id) {
   const b = allBlocks[id];
   if (!b) { showToast("Block not found", true); return; }
+  resetComposer();
   editingBlockId = id;
   document.getElementById("block-id").value = id;
   document.getElementById("block-text").value = b.text || "";
-  document.querySelectorAll(".dest-check").forEach(c => c.checked = !!(b.destinations && b.destinations[c.dataset.dest]));
-  document.getElementById("block-visible-from").value = msToLocalInputValue(b.visible_from);
-  document.getElementById("block-expires-at").value = msToLocalInputValue(b.expires_at);
-  document.getElementById("block-blink").checked = !!b.blink;
+
+  document.querySelectorAll(".dest-check").forEach(c => {
+    const destKey = c.dataset.dest;
+    const entry = b.destinations && b.destinations[destKey];
+    c.checked = !!entry;
+    const timingDiv = document.getElementById(`timing-${destKey}`);
+    if (entry) {
+      timingDiv.style.display = "block";
+      const fromInput = document.querySelector(`.dest-visible-from[data-dest="${destKey}"]`);
+      const toInput = document.querySelector(`.dest-expires-at[data-dest="${destKey}"]`);
+      const blinkInput = document.querySelector(`.dest-blink[data-dest="${destKey}"]`);
+      fromInput.value = msToLocalInputValue(entry.visible_from);
+      toInput.value = msToLocalInputValue(entry.expires_at);
+      if (blinkInput) blinkInput.checked = !!entry.blink;
+    }
+  });
+
   updateComposerVisibility();
   if (b.report_id) document.getElementById("block-report-id").value = b.report_id;
   document.getElementById("composer-title").textContent = "Editing block";
