@@ -287,6 +287,22 @@
         </div>
       </div>
 
+      <div class="section-sep"><span class="sep-line"></span><span class="sep-label">WhatsApp broadcast status</span><span class="sep-line"></span></div>
+      <div class="status-strip">
+        <div class="status-card">
+          <div class="status-card-top"><span class="sc-label">WhatsApp Nowcast</span><span class="badge badge-offline" id="live-badge-whatsapp_nowcast"><span class="badge-dot"></span>Offline</span></div>
+          <div class="sc-body" id="live-body-whatsapp_nowcast"><span class="sc-empty">Nothing active</span></div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-top"><span class="sc-label">WhatsApp Forecast</span><span class="badge badge-offline" id="live-badge-whatsapp_forecast"><span class="badge-dot"></span>Offline</span></div>
+          <div class="sc-body" id="live-body-whatsapp_forecast"><span class="sc-empty">Nothing active</span></div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-top"><span class="sc-label">WhatsApp General Info</span><span class="badge badge-offline" id="live-badge-whatsapp_info"><span class="badge-dot"></span>Offline</span></div>
+          <div class="sc-body" id="live-body-whatsapp_info"><span class="sc-empty">Nothing active</span></div>
+        </div>
+      </div>
+
       <div class="composer-grid">
 
         <!-- BLOCK COMPOSER -->
@@ -305,6 +321,9 @@
 
             <div class="dest-group-label">Site-wide destinations</div>
             <div class="dest-checks" id="dest-controls-site"></div>
+
+            <div class="dest-group-label">WhatsApp broadcast destinations</div>
+            <div class="dest-checks" id="dest-controls-whatsapp"></div>
 
             <div class="dest-group-label">Report destinations (letterhead sections)</div>
             <div class="dest-checks" id="dest-controls-report"></div>
@@ -337,6 +356,9 @@
               <button class="filter-chip" data-filter="manual_update">Manual</button>
               <button class="filter-chip" data-filter="pre_update">Pre</button>
               <button class="filter-chip" data-filter="info">Info</button>
+              <button class="filter-chip" data-filter="whatsapp_nowcast">WA Nowcast</button>
+              <button class="filter-chip" data-filter="whatsapp_forecast">WA Forecast</button>
+              <button class="filter-chip" data-filter="whatsapp_info">WA Info</button>
               <button class="filter-chip" data-filter="forecast">Forecast</button>
               <button class="filter-chip" data-filter="actual_weather">Actual</button>
               <button class="filter-chip" data-filter="verification">Verify</button>
@@ -520,6 +542,9 @@ const DESTINATIONS = {
   manual_update:  { label: "Manual Update",  group: "site",   blinkable: true  },
   pre_update:     { label: "Pre Update",     group: "site",   blinkable: true  },
   info:           { label: "General Info",  group: "site",   blinkable: false },
+  whatsapp_nowcast: { label: "WhatsApp Nowcast",             group: "whatsapp", blinkable: false },
+  whatsapp_forecast: { label: "WhatsApp Forecast",           group: "whatsapp", blinkable: false },
+  whatsapp_info:     { label: "WhatsApp General Info",       group: "whatsapp", blinkable: false },
   forecast:       { label: "Issued Forecast",          group: "report", blinkable: false },
   actual_weather: { label: "Actual Weather",           group: "report", blinkable: false },
   verification:   { label: "Verification",             group: "report", blinkable: false },
@@ -528,7 +553,11 @@ const DESTINATIONS = {
   outlook:        { label: "Outlook",                   group: "report", blinkable: false },
 };
 const SITE_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "site");
+const WHATSAPP_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "whatsapp");
 const REPORT_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group === "report");
+// Everything that behaves like a "site-wide" destination for live-status purposes
+// (i.e. not tied to a specific report) — used to drive the status cards.
+const LIVE_STATUS_DESTS = [...SITE_DESTS, ...WHATSAPP_DESTS];
 
 /* =========================================================
    PER-DESTINATION TIMING CONTROLS
@@ -537,8 +566,10 @@ const REPORT_DESTS = Object.keys(DESTINATIONS).filter(k => DESTINATIONS[k].group
    ========================================================= */
 function buildDestinationControls() {
   const siteWrap = document.getElementById("dest-controls-site");
+  const whatsappWrap = document.getElementById("dest-controls-whatsapp");
   const reportWrap = document.getElementById("dest-controls-report");
   siteWrap.innerHTML = "";
+  whatsappWrap.innerHTML = "";
   reportWrap.innerHTML = "";
 
   Object.keys(DESTINATIONS).forEach((destKey) => {
@@ -568,7 +599,8 @@ function buildDestinationControls() {
         </div>` : ""}
       </div>
     `;
-    (cfg.group === "site" ? siteWrap : reportWrap).appendChild(row);
+    const targetWrap = cfg.group === "site" ? siteWrap : cfg.group === "whatsapp" ? whatsappWrap : reportWrap;
+    targetWrap.appendChild(row);
 
     const checkbox = row.querySelector(".dest-check");
     checkbox.addEventListener("change", () => {
@@ -747,7 +779,7 @@ function getActiveBlocksFor(destKey, reportId = null) {
   return Object.entries(allBlocks)
     .map(([id, b]) => ({ id, ...b }))
     .filter(b => b.destinations && b.destinations[destKey] && isDestinationActiveNow(b, destKey))
-    .filter(b => DESTINATIONS[destKey].group === "site" ? true : b.report_id === reportId)
+    .filter(b => DESTINATIONS[destKey].group === "report" ? b.report_id === reportId : true)
     .sort((a, b) => {
       const aFrom = (a.destinations[destKey].visible_from) || a.created_at || 0;
       const bFrom = (b.destinations[destKey].visible_from) || b.created_at || 0;
@@ -770,7 +802,7 @@ async function loadBlocks() {
 }
 
 function renderLiveStatus() {
-  SITE_DESTS.forEach(destKey => {
+  LIVE_STATUS_DESTS.forEach(destKey => {
     const active = getActiveBlocksFor(destKey);
     const badge = document.getElementById(`live-badge-${destKey}`);
     const body = document.getElementById(`live-body-${destKey}`);
