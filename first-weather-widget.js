@@ -528,13 +528,20 @@ function _wd_init() {
       var indoorH = hum.indoor  != null ? hum.indoor  : null;
 
       /* ── wind ── */
-      var windSpeed    = wnd.speed_kmh             != null ? wnd.speed_kmh             : 0;
-      var windGust     = wnd.gust_kmh              != null ? wnd.gust_kmh              : 0;
+      // Ecowitt always transmits wind in MPH to custom servers. 
+      // We multiply by 1.60934 and round to 1 decimal place to get true km/h.
+      var rawSpeed   = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
+      var rawGust    = wnd.gust_kmh  != null ? parseFloat(wnd.gust_kmh)  : 0;
+      var rawDayGust = payload.daily_max_gust_kmh != null ? parseFloat(payload.daily_max_gust_kmh) : null;
+
+      var windSpeed  = Math.round(rawSpeed * 1.60934 * 10) / 10;
+      var windGust   = Math.round(rawGust * 1.60934 * 10) / 10;
+      var dayMaxGust = rawDayGust != null ? Math.round(rawDayGust * 1.60934 * 10) / 10 : "--";
+
       var windDirDeg   = wnd.direction_degrees     != null ? wnd.direction_degrees     : 0;
       var windDirComp  = wnd.direction_compass     || "N";
       var avg10Deg     = wnd.avg_10min_dir_deg     != null ? wnd.avg_10min_dir_deg     : "--";
       var avg10Comp    = wnd.avg_10min_dir_compass || "--";
-      var dayMaxGust   = payload.daily_max_gust_kmh != null ? payload.daily_max_gust_kmh : "--";
       var mlDir        = dirML(windDirDeg);
 
       /* ── pressure ── */
