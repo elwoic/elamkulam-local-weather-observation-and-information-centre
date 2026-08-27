@@ -188,8 +188,13 @@ function loadNowFromStation(payload, owmCurrentData) {
     setEl("owPress0", press !== "--" ? `${press} hPa` : "--");
 
     // --- Wind ---
-    const windSpeed  = wnd.speed_kmh             ?? 0;
-    const windGust   = wnd.gust_kmh              ?? 0;
+    // Fetch raw mph values (checking possible key names from your API)
+    const rawSpeedMph = wnd.speed_mph ?? wnd.speed_kmh ?? wnd.windspeedmph ?? 0;
+    const rawGustMph  = wnd.gust_mph ?? wnd.gust_kmh ?? wnd.windgustmph ?? 0;
+    
+    // Convert mph to km/h and ensure they remain numbers for beaufortDesc()
+    const windSpeed  = Number((rawSpeedMph * 1.60934).toFixed(1));
+    const windGust   = Number((rawGustMph * 1.60934).toFixed(1));
     const windComp   = wnd.direction_compass     ?? "--";
     const avg10Comp  = wnd.avg_10min_dir_compass ?? "--";
     const bft        = beaufortDesc(windSpeed);
@@ -286,11 +291,14 @@ function updateDashboard(payload, owmCurrentRes) {
     const h           = hum.outdoor            ?? "--";
     const feels       = tmp.feels_like_outdoor ?? "--";
     const indoorT     = tmp.indoor             ?? "--";
-    const indoorH     = hum.indoor             ?? "--";
+    const indoorH     = hum.indoor               ?? "--";
     const indoorFeels = tmp.feels_like_indoor  ?? "--";
 
-    const windSpeed  = wnd.speed_kmh         ?? 0;
-    const windGust   = wnd.gust_kmh          ?? 0;
+    const rawSpeedMph = wnd.speed_mph ?? wnd.speed_kmh ?? wnd.windspeedmph ?? 0;
+    const rawGustMph  = wnd.gust_mph ?? wnd.gust_kmh ?? wnd.windgustmph ?? 0;
+    
+    const windSpeed  = (rawSpeedMph * 1.60934).toFixed(1);
+    const windGust   = (rawGustMph * 1.60934).toFixed(1);
     const windDirDeg = wnd.direction_degrees ?? 0;
     const windDir    = dirMap(windDirDeg);
 
