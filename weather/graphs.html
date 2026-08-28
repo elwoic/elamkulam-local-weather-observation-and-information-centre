@@ -3,202 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Outdoor Temperature | ELWOIC</title>
+  <title>ELWOIC Data Explorer</title>
   
-  <!-- Tailwind CSS for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Chart.js for data visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- ELWOIC Minimal Theme Configuration -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
           colors: {
-            elwoic: {
-              red: '#ef4444',
-              surface: '#ffffff',
-              background: '#f8fafc',
-            }
+            elwoic: { red: '#ef4444', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b', purple: '#8b5cf6', teal: '#14b8a6', surface: '#ffffff', bg: '#f8fafc' }
           }
         }
       }
     }
   </script>
 </head>
-<body class="bg-elwoic-background text-slate-800 font-sans antialiased p-4 md:p-8">
+<body class="bg-elwoic-bg text-slate-800 font-sans antialiased p-4 md:p-8">
 
-  <!-- Header Section -->
-  <div class="max-w-5xl mx-auto mb-6">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">ELWOIC Dashboard</h1>
-        <p class="text-slate-500 text-sm">Elamkulam Local Weather Observation and Information Centre</p>
-      </div>
-      
-      <!-- Current Temperature Card -->
-      <div class="bg-elwoic-surface border border-slate-200 px-6 py-3 rounded-lg shadow-sm flex items-center gap-3">
-        <div class="text-slate-500 text-sm font-medium">Current Outdoor</div>
-        <div class="text-2xl font-bold text-elwoic-red" id="current-temp">--°C</div>
-      </div>
+  <!-- Header & Global Time Range -->
+  <div class="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">ELWOIC Data Explorer</h1>
+      <p class="text-slate-500 text-sm mt-1">Live and historical telemetry from Elamkulam</p>
+    </div>
+    
+    <!-- Global Time Range Selector -->
+    <div class="flex bg-slate-200 rounded-lg p-1" role="group">
+      <button onclick="setGlobalRange('24h')" id="btn-global-24h" class="global-range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800">24 Hours</button>
+      <button onclick="setGlobalRange('7d')" id="btn-global-7d" class="global-range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800">7 Days</button>
+      <button onclick="setGlobalRange('30d')" id="btn-global-30d" class="global-range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800">30 Days</button>
     </div>
   </div>
 
-  <!-- Graph Container -->
-  <div class="max-w-5xl mx-auto bg-elwoic-surface border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-    
-    <!-- Graph Header & Controls -->
-    <div class="border-b border-slate-100 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <h2 class="text-lg font-semibold text-slate-800">Outdoor Temperature Trend</h2>
-      
-      <!-- Time Range Buttons -->
-      <div class="flex bg-slate-100 rounded-lg p-1" role="group">
-        <button onclick="loadGraph('24h')" id="btn-24h" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all">24 Hours</button>
-        <button onclick="loadGraph('7d')" id="btn-7d" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all">7 Days</button>
-        <button onclick="loadGraph('30d')" id="btn-30d" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all">30 Days</button>
-      </div>
-    </div>
+  <!-- Tabs Navigation -->
+  <div class="max-w-6xl mx-auto mb-6 border-b border-slate-200">
+    <nav class="flex space-x-8" aria-label="Tabs">
+      <button onclick="switchTab('core')" id="tab-btn-core" class="tab-btn border-b-2 border-elwoic-red py-4 px-1 text-sm font-medium text-elwoic-red">Core Weather</button>
+      <button onclick="switchTab('aqi')" id="tab-btn-aqi" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Air Quality</button>
+      <button onclick="switchTab('indoor')" id="tab-btn-indoor" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Indoor & Misc</button>
+    </nav>
+  </div>
 
-    <!-- Canvas Wrapper -->
-    <div class="p-6 relative h-[400px] w-full">
-      <!-- Loading Overlay -->
-      <div id="loading-state" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-        <p class="text-slate-500 font-medium animate-pulse">Fetching ELWOIC database...</p>
+  <!-- Graph Grid Container -->
+  <div class="max-w-6xl mx-auto">
+    <!-- Grid: 3 Rows x 2 Columns -->
+    <div id="graphs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Graphs are injected here dynamically by JavaScript -->
+    </div>
+  </div>
+
+  <!-- EXPAND MODAL -->
+  <div id="expand-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <h2 id="modal-title" class="text-xl font-bold text-slate-800">Graph Details</h2>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
-      <!-- Chart Canvas -->
-      <canvas id="tempChart"></canvas>
+
+      <!-- Modal Body (Graph + Trends) -->
+      <div class="p-6 flex flex-col lg:flex-row gap-6 overflow-y-auto">
+        <!-- Large Chart -->
+        <div class="flex-grow relative h-[400px] lg:h-[500px]">
+          <canvas id="modalChart"></canvas>
+        </div>
+        
+        <!-- Trend Analysis Sidebar -->
+        <div class="w-full lg:w-64 flex flex-col gap-4">
+          <h3 class="font-semibold text-slate-800 uppercase tracking-wider text-xs">Trend Analysis</h3>
+          
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs text-slate-500 mb-1">Current</p>
+            <p id="trend-current" class="text-2xl font-bold text-slate-800">--</p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs text-slate-500 mb-1">Average</p>
+            <p id="trend-avg" class="text-xl font-semibold text-slate-700">--</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+              <p class="text-[10px] text-red-500 uppercase font-bold mb-1">High</p>
+              <p id="trend-max" class="text-lg font-semibold text-red-700">--</p>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+              <p class="text-[10px] text-blue-500 uppercase font-bold mb-1">Low</p>
+              <p id="trend-min" class="text-lg font-semibold text-blue-700">--</p>
+            </div>
+          </div>
+          <p id="trend-status" class="text-xs text-slate-400 mt-4 italic">Calculating...</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     // ⚠️ REPLACE THIS with your actual Cloudflare Worker URL
-    const API_BASE = "https://elwoic-charts-api.bold-waterfall-0d01.workers.dev";
+    const API_BASE = "https://elwoic-history-api.your-subdomain.workers.dev";
     
-    let chartInstance = null;
+    let currentGlobalRange = '24h';
+    let currentActiveTab = 'core';
+    let activeChartInstances = {}; // Stores small charts
+    let modalChartInstance = null; // Stores large modal chart
 
-   async function loadGraph(range) {
-  document.getElementById('loading-state').style.display = 'flex';
-  updateActiveButton(range);
+    // --- TABS & GRAPH CONFIGURATION ---
+    // Define exactly which 6 graphs go into which tab
+    const tabsConfig = {
+      core: [
+        { param: 'outdoor_temp', title: 'Outdoor Temperature', unit: '°C', color: '#ef4444' },
+        { param: 'outdoor_humidity', title: 'Outdoor Humidity', unit: '%', color: '#3b82f6' },
+        { param: 'wind_speed', title: 'Wind Speed', unit: 'km/h', color: '#10b981' },
+        { param: 'rain_rate', title: 'Rain Rate', unit: 'mm/h', color: '#0ea5e9' },
+        { param: 'pressure_relative', title: 'Relative Pressure', unit: 'hPa', color: '#8b5cf6' },
+        { param: 'solar_radiation', title: 'Solar Radiation', unit: 'W/m²', color: '#f59e0b' }
+      ],
+      aqi: [
+        { param: 'pm02', title: 'PM 2.5 (AirGradient)', unit: 'µg/m³', color: '#ef4444' },
+        { param: 'pm10', title: 'PM 10', unit: 'µg/m³', color: '#f97316' },
+        { param: 'co2', title: 'CO2 Level', unit: 'ppm', color: '#64748b' },
+        { param: 'tvoc_index', title: 'TVOC Index', unit: 'Idx', color: '#84cc16' },
+        { param: 'nox_index', title: 'NOx Index', unit: 'Idx', color: '#eab308' },
+        { param: 'pm01', title: 'PM 1.0', unit: 'µg/m³', color: '#14b8a6' }
+      ],
+      indoor: [
+        { param: 'indoor_temp', title: 'Indoor Temperature', unit: '°C', color: '#f43f5e' },
+        { param: 'indoor_humidity', title: 'Indoor Humidity', unit: '%', color: '#06b6d4' },
+        { param: 'feels_like', title: 'Feels Like', unit: '°C', color: '#ec4899' },
+        { param: 'dew_point', title: 'Dew Point', unit: '°C', color: '#8b5cf6' },
+        { param: 'vpd', title: 'Vapor Pressure Deficit', unit: 'kPa', color: '#6366f1' },
+        { param: 'uvi', title: 'UV Index', unit: 'UVI', color: '#eab308' }
+      ]
+    };
 
-  try {
-    // Make sure API_BASE matches your exact deployed worker URL
-    const response = await fetch(`${API_BASE}/?param=outdoor_temp&range=${range}`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Worker HTTP ${response.status}: ${errorText}`);
+    // --- INITIALIZATION ---
+    window.onload = () => {
+      loadTabGraphs('core');
+    };
+
+    // --- TAB LOGIC ---
+    function switchTab(tabId) {
+      if(currentActiveTab === tabId) return;
+      currentActiveTab = tabId;
+      
+      // Update Tab Styles
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300";
+      });
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      activeBtn.className = "tab-btn border-b-2 border-elwoic-red py-4 px-1 text-sm font-medium text-elwoic-red";
+
+      loadTabGraphs(tabId);
     }
-    
-    const json = await response.json();
-    const labels = json.labels || [];
-    const data = json.data || [];
 
-    if (data.length > 0) {
-      // Find the last non-null value for the display card
-      const validPoints = data.filter(v => v !== null);
-      const latestVal = validPoints.length > 0 ? validPoints[validPoints.length - 1] : null;
-      document.getElementById('current-temp').innerText = latestVal !== null ? `${latestVal}°C` : '--°C';
+    function setGlobalRange(range) {
+      currentGlobalRange = range;
+      
+      // Update global range button styles
+      document.querySelectorAll('.global-range-btn').forEach(btn => {
+        btn.className = "global-range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800";
+      });
+      document.getElementById(`btn-global-${range}`).className = "global-range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800";
+
+      // Reload the current tab with the new time range
+      loadTabGraphs(currentActiveTab);
     }
 
-    renderChart(labels, data, range);
+    // --- GRAPH LOADING LOGIC ---
+    async function loadTabGraphs(tabId) {
+      const grid = document.getElementById('graphs-grid');
+      grid.innerHTML = ''; // Clear existing DOM
+      
+      // Destroy old chart instances to prevent memory leaks
+      Object.keys(activeChartInstances).forEach(key => activeChartInstances[key].destroy());
+      activeChartInstances = {};
 
-  } catch (error) {
-    console.error("ELWOIC Graph Fetch Error:", error);
-    alert(`Could not load chart: ${error.message}`);
-  } finally {
-    document.getElementById('loading-state').style.display = 'none';
-  }
-}
-    function renderChart(labels, data, range) {
-      const ctx = document.getElementById('tempChart').getContext('2d');
+      const configs = tabsConfig[tabId];
 
-      // Destroy the old chart before drawing a new time range
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
+      // Create DOM elements for the 6 graphs
+      configs.forEach(conf => {
+        const cardHtml = `
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-col relative h-[300px]">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-semibold text-slate-700">${conf.title}</h3>
+              <button onclick='openModal(${JSON.stringify(conf)})' class="text-slate-400 hover:text-elwoic-blue transition-colors p-1" title="Expand Graph">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+              </button>
+            </div>
+            <div id="loader-${conf.param}" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10 rounded-xl">
+              <span class="text-xs font-medium text-slate-400 animate-pulse">Loading...</span>
+            </div>
+            <div class="flex-grow relative w-full h-full">
+              <canvas id="canvas-${conf.param}"></canvas>
+            </div>
+          </div>
+        `;
+        grid.insertAdjacentHTML('beforeend', cardHtml);
+      });
 
-      // Configure visual settings based on the data density
-      // For 24h (1440 points), remove the dots so it looks like a clean continuous line
-      const showDots = range !== '24h'; 
+      // Fetch data for all 6 graphs concurrently
+      configs.forEach(async (conf) => {
+        try {
+          const res = await fetch(`${API_BASE}/?param=${conf.param}&range=${currentGlobalRange}`);
+          if (!res.ok) throw new Error("API Error");
+          const json = await res.json();
+          
+          document.getElementById(`loader-${conf.param}`).style.display = 'none';
+          
+          const ctx = document.getElementById(`canvas-${conf.param}`).getContext('2d');
+          activeChartInstances[conf.param] = createChart(ctx, json.labels, json.data, conf, false);
+          
+          // Save the fetched data to the config object so the Modal can open it instantly without re-fetching
+          conf.cachedLabels = json.labels;
+          conf.cachedData = json.data;
+          
+        } catch (err) {
+          console.error(`Failed to load ${conf.param}:`, err);
+          document.getElementById(`loader-${conf.param}`).innerHTML = '<span class="text-xs text-red-400">Failed to load</span>';
+        }
+      });
+    }
 
-      chartInstance = new Chart(ctx, {
+    // --- CHART.JS FACTORY ---
+    function createChart(ctx, labels, data, config, isLargeModal) {
+      const showDots = currentGlobalRange !== '24h' || isLargeModal;
+      
+      // Convert hex color to rgba for the background fill
+      const hex2rgba = (hex, alpha = 0.1) => {
+        const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
+        return `rgba(${r},${g},${b},${alpha})`;
+      };
+
+      return new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [{
-            label: 'Temperature (°C)',
+            label: `${config.title} (${config.unit})`,
             data: data,
-            borderColor: '#ef4444', // ELWOIC Red
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            borderWidth: 2,
-            pointRadius: showDots ? 2 : 0, // Hide points for dense graphs
-            pointHoverRadius: 4,
+            borderColor: config.color,
+            backgroundColor: hex2rgba(config.color, 0.1),
+            borderWidth: isLargeModal ? 2 : 1.5,
+            pointRadius: showDots ? (isLargeModal ? 3 : 1) : 0,
+            pointHoverRadius: 5,
             fill: true,
-            tension: 0.4, // Smooth curves
-            spanGaps: true // Connects the line even if a minute of data was missed
+            tension: 0.3,
+            spanGaps: true
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
+          interaction: { intersect: false, mode: 'index' },
           plugins: {
             legend: { display: false },
             tooltip: {
               backgroundColor: 'rgba(15, 23, 42, 0.9)',
-              titleFont: { size: 13 },
-              bodyFont: { size: 14, weight: 'bold' },
-              padding: 10,
-              displayColors: false,
-              callbacks: {
-                label: function(context) {
-                  return `${context.parsed.y} °C`;
-                }
-              }
+              callbacks: { label: (ctx) => `${ctx.parsed.y} ${config.unit}` }
             }
           },
           scales: {
-            x: {
-              grid: { display: false },
-              ticks: {
-                maxTicksLimit: range === '24h' ? 12 : 7, // Keep x-axis clean
-                color: '#64748b'
-              }
-            },
-            y: {
-              border: { display: false },
-              grid: { color: '#f1f5f9' },
-              ticks: {
-                callback: function(value) { return value + '°'; },
-                color: '#64748b'
-              }
-            }
+            x: { grid: { display: false }, ticks: { maxTicksLimit: isLargeModal ? 15 : 6 } },
+            y: { grid: { color: '#f1f5f9' } }
           }
         }
       });
     }
 
-    function updateActiveButton(activeRange) {
-      const buttons = document.querySelectorAll('.range-btn');
-      buttons.forEach(btn => {
-        if (btn.id === `btn-${activeRange}`) {
-          btn.className = "range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all";
-        } else {
-          btn.className = "range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all";
-        }
-      });
+    // --- MODAL & TREND LOGIC ---
+    function openModal(configObj) {
+      const modal = document.getElementById('expand-modal');
+      document.getElementById('modal-title').innerText = configObj.title;
+      
+      // Display modal with transition
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+
+      // Render Large Chart using the data we already fetched
+      if(modalChartInstance) modalChartInstance.destroy();
+      const ctx = document.getElementById('modalChart').getContext('2d');
+      modalChartInstance = createChart(ctx, configObj.cachedLabels, configObj.cachedData, configObj, true);
+
+      // Calculate Trends
+      calculateTrends(configObj.cachedData, configObj.unit);
     }
 
-    // Load the 24-hour graph automatically when the page opens
-    window.onload = () => loadGraph('24h');
+    function closeModal() {
+      const modal = document.getElementById('expand-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 300); // match duration
+    }
+
+    function calculateTrends(dataArray, unit) {
+      // Filter out nulls (missing minutes)
+      const validData = dataArray.filter(v => v !== null && !isNaN(v));
+      
+      if (validData.length === 0) {
+        document.getElementById('trend-current').innerText = '--';
+        document.getElementById('trend-avg').innerText = '--';
+        document.getElementById('trend-max').innerText = '--';
+        document.getElementById('trend-min').innerText = '--';
+        document.getElementById('trend-status').innerText = "No data available in this period.";
+        return;
+      }
+
+      const current = validData[validData.length - 1];
+      const max = Math.max(...validData);
+      const min = Math.min(...validData);
+      const avg = (validData.reduce((a, b) => a + b, 0) / validData.length);
+
+      // Format based on standard precision
+      const format = (num) => Number.isInteger(num) ? num : num.toFixed(1);
+
+      document.getElementById('trend-current').innerText = `${format(current)} ${unit}`;
+      document.getElementById('trend-avg').innerText = `${format(avg)} ${unit}`;
+      document.getElementById('trend-max').innerText = `${format(max)} ${unit}`;
+      document.getElementById('trend-min').innerText = `${format(min)} ${unit}`;
+      
+      document.getElementById('trend-status').innerText = `Based on ${validData.length} recorded data points over the selected time range.`;
+    }
   </script>
 </body>
 </html>
