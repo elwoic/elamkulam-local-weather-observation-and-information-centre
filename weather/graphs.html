@@ -25,33 +25,6 @@
     /* Hide scrollbar for quick nav */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* Virtual Landscape Mode for Mobile Modals */
-    @media (max-width: 768px) {
-      .mobile-landscape {
-        transform: rotate(90deg);
-        transform-origin: center center;
-        width: 100vh !important;
-        height: 100vw !important;
-        max-width: 100vh !important;
-        max-height: 100vw !important;
-        border-radius: 0 !important;
-        position: absolute;
-      }
-      /* Force elements side-by-side inside the rotated box */
-      .landscape-layout {
-        flex-direction: row !important;
-        align-items: stretch;
-      }
-      /* Shrink sidebar to fit the rotated phone width */
-      .landscape-sidebar {
-        width: 180px !important;
-        flex-shrink: 0;
-        overflow-y: auto;
-      }
-      .landscape-header { padding: 8px 16px !important; }
-      .landscape-chart { min-height: 100% !important; }
-    }
   </style>
 </head>
 <body class="bg-elwoic-bg text-slate-800 font-sans antialiased p-4 md:p-8">
@@ -94,46 +67,45 @@
     </div>
   </div>
 
-  <!-- EXPAND MODAL (With Mobile Landscape) -->
-  <div id="expand-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 opacity-0 transition-opacity duration-300">
-    <div id="modal-container" class="mobile-landscape bg-white md:rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-screen md:max-h-[90vh]">
+  <!-- EXPAND MODAL -->
+  <div id="expand-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
       
-      <div class="landscape-header px-4 md:px-6 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <h2 id="modal-title" class="text-lg md:text-xl font-bold text-slate-800">Graph Details</h2>
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <h2 id="modal-title" class="text-xl font-bold text-slate-800">Graph Details</h2>
         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-2">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
       
-      <div class="landscape-layout p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6 overflow-y-auto h-full">
-        <div class="landscape-chart flex-grow relative min-h-[250px] md:h-[500px]">
+      <div class="p-6 flex flex-col lg:flex-row gap-6 overflow-y-auto">
+        <div class="flex-grow relative h-[300px] md:h-[400px] lg:h-[500px]">
           <canvas id="modalChart"></canvas>
         </div>
         
-        <div class="landscape-sidebar w-full md:w-64 flex flex-col gap-3">
-          <h3 class="font-semibold text-slate-800 uppercase tracking-wider text-[10px] md:text-xs">Trend Analysis</h3>
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <p class="text-[10px] text-slate-500 mb-1">Current</p>
-            <p id="trend-current" class="text-lg md:text-2xl font-bold text-slate-800">--</p>
+        <div class="w-full lg:w-64 flex flex-col gap-4">
+          <h3 class="font-semibold text-slate-800 uppercase tracking-wider text-xs">Trend Analysis</h3>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs text-slate-500 mb-1">Current</p>
+            <p id="trend-current" class="text-2xl font-bold text-slate-800">--</p>
           </div>
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <p class="text-[10px] text-slate-500 mb-1">Average</p>
-            <p id="trend-avg" class="text-base md:text-xl font-semibold text-slate-700">--</p>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs text-slate-500 mb-1">Average</p>
+            <p id="trend-avg" class="text-xl font-semibold text-slate-700">--</p>
           </div>
-          <div class="grid grid-cols-2 gap-2 md:gap-4">
-            <div class="bg-red-50 p-2 rounded-xl border border-red-100">
-              <p class="text-[9px] text-red-500 uppercase font-bold mb-1">High</p>
-              <p id="trend-max" class="text-sm md:text-lg font-semibold text-red-700">--</p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+              <p class="text-[10px] text-red-500 uppercase font-bold mb-1">High</p>
+              <p id="trend-max" class="text-lg font-semibold text-red-700">--</p>
             </div>
-            <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
-              <p class="text-[9px] text-blue-500 uppercase font-bold mb-1">Low</p>
-              <p id="trend-min" class="text-sm md:text-lg font-semibold text-blue-700">--</p>
+            <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+              <p class="text-[10px] text-blue-500 uppercase font-bold mb-1">Low</p>
+              <p id="trend-min" class="text-lg font-semibold text-blue-700">--</p>
             </div>
           </div>
-          <p id="trend-status" class="text-[9px] md:text-xs text-slate-400 mt-2 italic">Calculating...</p>
+          <p id="trend-status" class="text-xs text-slate-400 mt-4 italic">Calculating...</p>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -172,8 +144,6 @@
     }
 
     // --- CONFIGURATION ---
-    // NOTE: Change the VPD multiplier depending on your API's raw unit.
-    // 0.1 for hPa -> kPa.  3.386 for inHg -> kPa.
     const tabsConfig = {
       atmosphere: [
         { param: 'outdoor_temp', title: 'Temperature', unit: '°C', color: '#ef4444' },
@@ -182,7 +152,7 @@
         { param: 'solar_radiation', title: 'Solar Radiation', unit: 'W/m²', color: '#f59e0b' },
         { param: 'uvi', title: 'UV Index', unit: 'UVI', color: '#eab308' },
         { param: 'feels_like', title: 'Feels Like', unit: '°C', color: '#ec4899' },
-        { param: 'vpd', title: 'Vapor Pressure Deficit', unit: 'kPa', color: '#6366f1', multiplier: 0.1 } 
+        { param: 'vpd', title: 'Vapor Pressure Deficit', unit: 'kPa', color: '#6366f1' } 
       ],
       wind_rain: [
         { param: 'wind_speed', title: 'Wind Speed', unit: 'km/h', color: '#10b981' },
