@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outdoor Temperature | ELWOIC</title>
+  
+  <!-- Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ELWOIC Minimal Theme Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            elwoic: {
+              red: '#ef4444',
+              surface: '#ffffff',
+              background: '#f8fafc',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-elwoic-background text-slate-800 font-sans antialiased p-4 md:p-8">
+
+  <!-- Header Section -->
+  <div class="max-w-5xl mx-auto mb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">ELWOIC Dashboard</h1>
+        <p class="text-slate-500 text-sm">Elamkulam Local Weather Observation and Information Centre</p>
+      </div>
+      
+      <!-- Current Temperature Card -->
+      <div class="bg-elwoic-surface border border-slate-200 px-6 py-3 rounded-lg shadow-sm flex items-center gap-3">
+        <div class="text-slate-500 text-sm font-medium">Current Outdoor</div>
+        <div class="text-2xl font-bold text-elwoic-red" id="current-temp">--°C</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graph Container -->
+  <div class="max-w-5xl mx-auto bg-elwoic-surface border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    
+    <!-- Graph Header & Controls -->
+    <div class="border-b border-slate-100 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <h2 class="text-lg font-semibold text-slate-800">Outdoor Temperature Trend</h2>
+      
+      <!-- Time Range Buttons -->
+      <div class="flex bg-slate-100 rounded-lg p-1" role="group">
+        <button onclick="loadGraph('24h')" id="btn-24h" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all">24 Hours</button>
+        <button onclick="loadGraph('7d')" id="btn-7d" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all">7 Days</button>
+        <button onclick="loadGraph('30d')" id="btn-30d" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all">30 Days</button>
+      </div>
+    </div>
+
+    <!-- Canvas Wrapper -->
+    <div class="p-6 relative h-[400px] w-full">
+      <!-- Loading Overlay -->
+      <div id="loading-state" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+        <p class="text-slate-500 font-medium animate-pulse">Fetching ELWOIC database...</p>
+      </div>
+      <!-- Chart Canvas -->
+      <canvas id="tempChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ REPLACE THIS with your actual Cloudflare Worker URL
+    const API_BASE = "https://elwoic-history-api.your-subdomain.workers.dev";
+    
+    let chartInstance = null;
+
+    async function loadGraph(range) {
+      // 1. Update UI state
+      document.getElementById('loading-state').style.display = 'flex';
+      updateActiveButton(range);
+
+      try {
+        // 2. Fetch data from the ELWOIC API
+        const response = await fetch(`${API_BASE}/?param=outdoor_temp&range=${range}`);
+        
+        if (!response.ok) throw new Error("Network response was not ok");
+        const json = await response.json();
+
+        // Extract raw arrays for Chart.js
+        const labels = json.labels;
+        const data = json.data;
+
+        // Update the current temperature display (using the last recorded value)
+        if (data.length > 0) {
+          const latestVal = data[data.length - 1];
+          document.getElementById('current-temp').innerText = latestVal !== null ? `${latestVal}°C` : '--°C';
+        }
+
+        // 3. Render the Graph
+        renderChart(labels, data, range);
+
+      } catch (error) {
+        console.error("Error loading graph data:", error);
+        alert("Failed to load weather data. Please ensure the API Worker is running.");
+      } finally {
+        document.getElementById('loading-state').style.display = 'none';
+      }
+    }
+
+    function renderChart(labels, data, range) {
+      const ctx = document.getElementById('tempChart').getContext('2d');
+
+      // Destroy the old chart before drawing a new time range
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      // Configure visual settings based on the data density
+      // For 24h (1440 points), remove the dots so it looks like a clean continuous line
+      const showDots = range !== '24h'; 
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Temperature (°C)',
+            data: data,
+            borderColor: '#ef4444', // ELWOIC Red
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 2,
+            pointRadius: showDots ? 2 : 0, // Hide points for dense graphs
+            pointHoverRadius: 4,
+            fill: true,
+            tension: 0.4, // Smooth curves
+            spanGaps: true // Connects the line even if a minute of data was missed
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { size: 13 },
+              bodyFont: { size: 14, weight: 'bold' },
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.y} °C`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                maxTicksLimit: range === '24h' ? 12 : 7, // Keep x-axis clean
+                color: '#64748b'
+              }
+            },
+            y: {
+              border: { display: false },
+              grid: { color: '#f1f5f9' },
+              ticks: {
+                callback: function(value) { return value + '°'; },
+                color: '#64748b'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateActiveButton(activeRange) {
+      const buttons = document.querySelectorAll('.range-btn');
+      buttons.forEach(btn => {
+        if (btn.id === `btn-${activeRange}`) {
+          btn.className = "range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all";
+        } else {
+          btn.className = "range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all";
+        }
+      });
+    }
+
+    // Load the 24-hour graph automatically when the page opens
+    window.onload = () => loadGraph('24h');
+  </script>
+</body>
+</html>
