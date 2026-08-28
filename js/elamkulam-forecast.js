@@ -313,7 +313,7 @@ function computeTopAlert({ temp, humidity, aqi, pressureTrend3h, rainRateNow, ra
     alerts.push({ level: 2, text: "ചൂട് ജാഗ്രത" });
   }
   if (rainRateNow != null && rainRateNow > 0) {
-    alerts.push({ level: 3, text: "നിലവിൽ മഴ പെയ്യുന്നു" });
+    alerts.push({ level: 3, text: "നിലവിൽ മഴ ലഭിച്ചുകൊണ്ടിരിക്കുന്നു." });
   } else if (rainProbNow >= 70) {
     alerts.push({ level: 2, text: "ശക്തമായ മഴ സാധ്യത" });
   } else if (rainProbNow >= 30) {
