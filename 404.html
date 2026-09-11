@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -32,7 +33,11 @@
       overflow-x: hidden;
     }
 
-    /* Main 404 area */
+
+    /* -------------------------
+       MAIN PAGE
+       ------------------------- */
+
     .page {
       width: 100%;
       max-width: 1100px;
@@ -57,6 +62,11 @@
       z-index: 2;
     }
 
+    .weather-icon {
+      font-size: 45px;
+      margin-bottom: 5px;
+    }
+
     .error-code {
       font-size: 110px;
       line-height: 1;
@@ -79,11 +89,19 @@
 
       color: #5c7187;
 
-      margin-bottom: 25px;
+      margin-bottom: 22px;
     }
 
 
     /* Requested URL */
+
+    .requested-label {
+      font-size: 13px;
+      color: #7890a4;
+
+      margin-bottom: 6px;
+    }
+
     .requested-page {
       display: inline-block;
 
@@ -105,7 +123,10 @@
     }
 
 
-    /* Buttons */
+    /* -------------------------
+       BUTTONS
+       ------------------------- */
+
     .buttons {
       margin-top: 25px;
     }
@@ -116,6 +137,7 @@
       padding: 13px 21px;
 
       margin-right: 7px;
+      margin-bottom: 7px;
 
       border-radius: 10px;
 
@@ -138,6 +160,48 @@
     .button.secondary {
       background: #e6f0f7;
       color: #31536f;
+    }
+
+
+    /* -------------------------
+       CONTACT INFORMATION
+       ------------------------- */
+
+    .contact {
+      margin-top: 28px;
+
+      padding-top: 20px;
+
+      border-top: 1px solid #dceaf5;
+    }
+
+    .contact-title {
+      font-size: 15px;
+      font-weight: 700;
+
+      color: #31536f;
+
+      margin-bottom: 10px;
+    }
+
+    .contact p {
+      margin: 6px 0;
+
+      font-size: 14px;
+
+      color: #61788d;
+
+      line-height: 1.5;
+    }
+
+    .contact a {
+      color: #2878bd;
+
+      text-decoration: none;
+    }
+
+    .contact a:hover {
+      text-decoration: underline;
     }
 
 
@@ -169,7 +233,6 @@
 
       object-fit: contain;
 
-      /* Removes the ugly inline-video gap */
       vertical-align: bottom;
     }
 
@@ -246,6 +309,10 @@
         margin: 5px;
       }
 
+      .contact {
+        margin-top: 25px;
+      }
+
       .footer {
         position: static;
 
@@ -256,81 +323,139 @@
     }
 
   </style>
-</head>
 
+</head>
 
 <body>
 
   <main class="page">
 
-    <!-- =========================
-         404 MESSAGE
-         ========================= -->
+```
+<!-- =========================
+     404 MESSAGE
+     ========================= -->
 
-    <section class="message">
+<section class="message">
 
-      <div style="font-size: 45px;">🌦️</div>
+  <div class="weather-icon">🌦️</div>
 
-      <h2 class="error-code">404</h2>
+  <h2 class="error-code">404</h2>
 
-      <h1>Page Not Found</h1>
+  <h1>Page Not Found</h1>
 
-      <p class="description">
-        Sorry, the page you're looking for doesn't exist,
-        may have been moved, or is currently under construction.
-      </p>
-
-      <div class="requested-page" id="requestedPage"></div>
-
-      <div class="buttons">
-
-        <a href="/" class="button">
-          🏠 Go to ELWOIC
-        </a>
-
-        <a href="/Forecast.html" class="button secondary">
-          🌤️ Weather Forecast
-        </a>
-
-      </div>
-
-    </section>
+  <p class="description">
+    The page you are looking for is currently unavailable.
+    It may have been removed, moved to another location,
+    placed under construction, or temporarily unavailable
+    due to maintenance.
+  </p>
 
 
-    <!-- =========================
-         ELWOIC CHARACTER
-         ========================= -->
+  <!-- Requested URL -->
 
-    <section class="character-area">
+  <div class="requested-label">
+    Requested page:
+  </div>
 
-      <video
-        class="character-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="auto">
-
-        <source
-          src="elwoic-character.webm"
-          type="video/webm">
-
-        Your browser does not support video.
-      </video>
-
-    </section>
-
-  </main>
+  <div class="requested-page" id="requestedPage"></div>
 
 
-  <div class="footer">
+  <!-- Main Links -->
 
-    Elamkulam Local Weather Observation And Information Centre
-    <br>
-    ELWOIC
+  <div class="buttons">
+
+    <a href="https://elwoic.in/" class="button">
+      🏠 ELWOIC Weather
+    </a>
+
+    <a href="https://info.elwoic.in/" class="button secondary">
+      ℹ️ About ELWOIC
+    </a>
 
   </div>
 
+
+  <!-- Contact Information -->
+
+  <div class="contact">
+
+    <div class="contact-title">
+      Need help or information?
+    </div>
+
+    <p>
+      📞 Phone:
+      <a href="tel:04933316750">
+        04933 316 750
+      </a>
+    </p>
+
+    <p>
+      ✉️ Official email:
+      <a href="mailto:info@elwoic.in">
+        info@elwoic.in
+      </a>
+    </p>
+
+    <p>
+      🏢 Office direct email:
+      <a href="mailto:elwoicelamkulam@gmail.com">
+        elwoicelamkulam@gmail.com
+      </a>
+    </p>
+
+    <p>
+      🛠️ Support:
+      <a href="mailto:support@elwoic.in">
+        support@elwoic.in
+      </a>
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     ELWOIC CHARACTER
+     ========================= -->
+
+<section class="character-area">
+
+  <video
+    class="character-video"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto">
+
+    <source
+      src="elwoic-character.webm"
+      type="video/webm">
+
+    Your browser does not support video.
+
+  </video>
+
+</section>
+```
+
+  </main>
+
+  <!-- =========================
+       FOOTER
+       ========================= -->
+
+  <div class="footer">
+
+```
+Elamkulam Local Weather Observation And Information Centre
+<br>
+ELWOIC
+```
+
+  </div>
 
   <script>
 
