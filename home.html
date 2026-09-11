@@ -475,6 +475,38 @@
   opacity: 0.75;
   margin-top: 6px;
 }
+
+  .wx-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 26px 22px 20px;
+  /* keep the gradient as a fallback (shows briefly before video loads,
+     or if a browser/data-saver mode blocks video) */
+  background: linear-gradient(135deg, var(--hc1, #1a6fa8) 0%, var(--hc2, #2d9cdb) 55%, var(--hc3, #7ec8e3) 100%);
+  color: #fff;
+}
+
+.wx-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* crop to fill, no distortion */
+  z-index: -2;         /* behind everything, but still above .wx-hero's own bg paint */
+}
+
+.wx-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;         /* above video, below text content */
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 20, 35, 0.35) 0%,
+    rgba(10, 20, 35, 0.55) 100%
+  );
+  pointer-events: none;
+}
+       
 .wx-hero-right {
   text-align: right;
   display: flex;
@@ -1170,14 +1202,21 @@ Coordinates: 10.908°N, 76.229°E
 </div>
         <!-- ── HERO ── -->
     <div class="wx-hero partial" id="wd-hero">
- 
-      <div class="wx-condition-badge" id="wd-condition-box">
-        <span id="wd-condition">Loading…</span>
-      </div>
- 
-      <p class="wx-hero-label">🌦 ഏലംകുളം കാലാവസ്ഥ</p>
- 
-      <div class="wx-hero-body">
+
+  <!-- NEW: video background layer -->
+  <video class="wx-video-bg" id="wd-video-bg" autoplay muted loop playsinline poster="">
+    <source id="wd-video-src" src="" type="video/mp4">
+  </video>
+  <div class="wx-hero-overlay"></div>
+  <!-- /NEW -->
+
+  <div class="wx-condition-badge" id="wd-condition-box">
+    <span id="wd-condition">Loading…</span>
+  </div>
+
+  <p class="wx-hero-label">🌦 ഏലംകുളം കാലാവസ്ഥ</p>
+
+  <div class="wx-hero-body">
         <div class="wx-temp-block">
           <div class="wx-temp-main">
             <span id="wd-temp">--</span><sup>°C</sup>
@@ -1193,7 +1232,6 @@ Coordinates: 10.908°N, 76.229°E
           <span class="wx-updated">Updated <span id="wd-last-updated">--</span></span>
         </div>
       </div>
- 
     </div><!-- /hero -->
  
     <!-- ── STAT STRIP ── -->
