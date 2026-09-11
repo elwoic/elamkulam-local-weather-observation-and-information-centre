@@ -291,6 +291,73 @@ function _wd_init() {
   }
 
   /* ══════════════════════════════════════════
+     HERO VIDEO LAYER  (NEW)
+     Only 4 clips exist so far — all "dry daytime sky" conditions.
+     Everything else (rain, storm, fog, night) keeps using the
+     existing CSS gradient/FX layer untouched. When more clips are
+     ready, just add entries to SKY_VIDEOS and extend the family
+     gate below — no other logic needs to change.
+  ══════════════════════════════════════════ */
+  var SKY_VIDEOS = {
+    "clear":         "videos/clear-sky.mp4",
+    "mostly-clear":  "videos/mostly-clear.mp4",
+    "partly-cloudy": "videos/partly-cloudy.mp4",
+    "mostly-cloudy": "videos/mostly-cloudy.mp4"
+  };
+
+  // Families for which we currently have (or plan to have) video coverage.
+  // Everything not in this list falls straight back to the gradient.
+  var DRY_DAYTIME_FAMILIES = ["sunny", "partial", "cloudy", "overcast"];
+
+  var lastVideoKey = null;
+
+  // Prefer the nowcast engine's clear-sky index (kc): it's this station's
+  // own measured solar output vs. the theoretical max for our exact
+  // coordinates/time, so it reflects real local sky conditions rather than
+  // a third-party model's cloud-cover guess. OWM cloudPct is only a fallback
+  // for when the nowcast call fails or hasn't got enough records yet.
+  function skyConditionFromSignals(kc, cloudPct) {
+    if (kc != null) {
+      if (kc > 0.75) return "clear";
+      if (kc > 0.50) return "mostly-clear";
+      if (kc > 0.25) return "partly-cloudy";
+      return "mostly-cloudy";
+    }
+    if (cloudPct != null) {
+      if (cloudPct <= 10) return "clear";
+      if (cloudPct <= 35) return "mostly-clear";
+      if (cloudPct <= 65) return "partly-cloudy";
+      return "mostly-cloudy";
+    }
+    return null;
+  }
+
+  function updateHeroVideo(key) {
+    var videoEl  = document.getElementById("wd-video-bg");
+    var sourceEl = document.getElementById("wd-video-src");
+    if (!videoEl || !sourceEl) return; // HTML not updated yet — silently skip
+
+    if (!key || !SKY_VIDEOS[key]) {
+      // No clip for the current condition (rain/storm/fog/night, or a
+      // signal we couldn't read) — hide video, gradient shows through.
+      if (lastVideoKey !== null) {
+        videoEl.pause();
+        videoEl.style.opacity = "0";
+        lastVideoKey = null;
+      }
+      return;
+    }
+
+    if (key === lastVideoKey) return; // already showing the right clip
+
+    sourceEl.src = SKY_VIDEOS[key];
+    videoEl.load();
+    videoEl.play().catch(function () {}); // ignore autoplay rejections
+    videoEl.style.opacity = "1";
+    lastVideoKey = key;
+  }
+
+  /* ══════════════════════════════════════════
      MODAL
   ══════════════════════════════════════════ */
   modalOk.onclick = function() { modal.classList.remove("open"); };
@@ -335,191 +402,4 @@ function _wd_init() {
     showModal(
       "💨 കാറ്റ് — വിശദ വിവരങ്ങൾ",
       mrow("🌬","ഇപ്പോഴത്തെ വേഗത",             lw.speed + " km/h") +
-      mrow("🧭","ദിശ",                        lw.mlDir + " (" + lw.dirComp + ", " + lw.dirDeg + "°)") +
-      mrow("💨","ഇപ്പോഴത്തെ ഗസ്റ്റ്",            lw.gust + " km/h") +
-      mrow("📈","ഇന്ന് ഏറ്റവും ഉയർന്ന ഗസ്റ്റ്", lw.dayGust + " km/h") +
-      mrow("🌀","Beaufort (speed)",             bft.force + " — " + bft.description) +
-      mrow("🌀","Beaufort (gust)",              gbft.force + " — " + gbft.description) +
-      mrow("📊","10 മിനിറ്റ് ശരാശരി ദിശ",        lw.avg10Comp + " (" + lw.avg10Deg + "°)") +
-      "<div style='margin-top:12px;padding:10px;background:#f8f9fa;border-radius:6px;text-align:center;font-size:14px;font-weight:700;color:#2c3e50;'>" + (latestNowcastWind || "--") + "</div>",
-      "wind"
-    );
-  };
-
-  indoorBox.onclick = function() {
-    var m = latestMain;
-    showModal(
-      "🏠 Indoor Climate",
-      "<div class='wx-modal-note' style='text-align:left;padding-top:10px;color:#888;font-size:12px;'>കോൺക്രീറ്റ് കെട്ടിടത്തിനകത്ത് ഉള്ള അന്തരീക്ഷം</div>" +
-      mrow("🌡","Temperature", (m.indoorT     != null ? m.indoorT     : "--") + "°C") +
-      mrow("🌫","Feels like",  (m.indoorFeels != null ? m.indoorFeels : "--") + "°C") +
-      mrow("💧","Humidity",    (m.indoorH     != null ? m.indoorH     : "--") + "%") +
-      "<div style='margin-top:12px;padding:10px;background:#f0f7ff;border-radius:8px;text-align:center;font-size:14px;font-weight:700;color:#1a2233;'>" + (latestNowcastIndoor || "--") + "</div>",
-      "indoor"
-    );
-  };
-
-  condBox.onclick = function() {
-    var m        = latestMain;
-    var buf      = rainBuf.map(function(r){ return r.rate; }).join(", ") || "--";
-    var piezoBuf = (m.piezoArr || []).join("") || "--";
-    var streakDisplay = (m.piezoWetStreak >= 30) ? ">30 മിനിറ്റ്" : ((m.piezoWetStreak || 0) + " മിനിറ്റ്");
-
-    showModal(
-      "🌤 കാലാവസ്ഥ വിശദീകരണം",
-      mrow("☀️","UVI",                    m.uvi         != null ? m.uvi         : "--") +
-      mrow("🔆","Solar",                  (m.solar      != null ? m.solar       : "--") + " W/m²") +
-      mrow("☁️","Cloud cover (OWM)",      (m.cloudPct   != null ? m.cloudPct    : "--") + " %") +
-      mrow("🌱","VPD",                    (m.vpd        != null ? m.vpd         : "--") + " kPa") +
-      mrow("🌡","Dew Point (Out)",        (m.dewOut     != null ? m.dewOut      : "--") + "°C") +
-      mrow("🌧","Rain rate (now)",        (m.rain       || 0)                         + " mm/hr") +
-      mrow("🌧","Rain today",             (m.rainDaily  || 0)                         + " mm") +
-      mrow("💧","Outdoor humidity",       (m.humidity   != null ? m.humidity    : "--") + "%") +
-      mrow("📊","Pressure (Abs)",         (m.pressureAbs|| "--")                  + " hPa") +
-      mrow("📊","Pressure (Rel)",         (m.pressureRel|| "--")                  + " hPa") +
-      mrow("💦","Piezo സെൻസർ",           (m.piezoNow === 1 ? "നനവ് (1)" : "ഉണക്കം (0)")) +
-      mrow("⏱","നനഞ്ഞ ദൈർഘ്യം",          streakDisplay) +
-      "<div style='margin:12px 0 4px;padding:12px;background:#f0f7ff;border-radius:8px;text-align:center;font-size:14px;font-weight:700;line-height:1.5;color:#1a2233;'>" + (latestNowcastFull || latestCondition) + "</div>" +
-      "<div class='wx-modal-note' style='font-size:10px;color:#bbb;'>Rain buffer (mm/hr): [" + buf + "]<br>Piezo buffer (30 min): [" + piezoBuf + "]<br>Sensor fusion · 30s refresh</div>",
-      "condition"
-    );
-  };
-
-  /* ══════════════════════════════════════════
-     SINGLE FETCH — unified worker + piezo history + OWM + Nowcast
-  ══════════════════════════════════════════ */
-  function updateAll() {
-    Promise.all([
-      fetch(API_URL,     { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-      fetch(OW_URL,      { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-      fetch(PIEZO_URL,   { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-      fetch(NOWCAST_URL, { cache:"no-store" }).then(function(r){ return r.json(); }).catch(function(){ return null; })
-    ]).then(function(res) {
-      var payload  = res[0];
-      var owm      = res[1];
-      var piezoRes = res[2];
-      var nowcast  = res[3] || {};
-      if (!payload) return;
-
-      var ncComps = nowcast.components || {};
-      var ncFull  = nowcast.nowcast || {};
-
-      var ld  = payload.live_data || {};
-      var tmp = ld.temperature  || {};
-      var hum = ld.humidity     || {};
-      var wnd = ld.wind         || {};
-      var prs = ld.pressure     || {};
-      var rn  = ld.rain         || {};
-
-      /* ── temperatures ── */
-      var t           = tmp.outdoor            != null ? tmp.outdoor            : null;
-      var feels       = tmp.feels_like_outdoor != null ? tmp.feels_like_outdoor : null;
-      var indoorT     = tmp.indoor             != null ? tmp.indoor             : null;
-      var indoorFeels = tmp.feels_like_indoor  != null ? tmp.feels_like_indoor  : null;
-      var dewOut      = tmp.dew_point_outdoor  != null ? tmp.dew_point_outdoor  : null;
-      var dewIn       = tmp.dew_point_indoor   != null ? tmp.dew_point_indoor   : null;
-
-      /* ── humidity ── */
-      var h       = hum.outdoor != null ? hum.outdoor : null;
-      var indoorH = hum.indoor  != null ? hum.indoor  : null;
-
-      /* ── wind ── */
-      var rawSpeed   = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
-      var rawGust    = wnd.gust_kmh  != null ? parseFloat(wnd.gust_kmh)  : 0;
-      var rawDayGust = payload.daily_max_gust_kmh != null ? parseFloat(payload.daily_max_gust_kmh) : null;
-
-      var windSpeed  = Math.round(rawSpeed * 1.60934 * 10) / 10;
-      var windGust   = Math.round(rawGust * 1.60934 * 10) / 10;
-      var dayMaxGust = rawDayGust != null ? Math.round(rawDayGust * 10) / 10 : "--";
-
-      var windDirDeg   = wnd.direction_degrees     != null ? wnd.direction_degrees     : 0;
-      var windDirComp  = wnd.direction_compass     || "N";
-      var avg10Deg     = wnd.avg_10min_dir_deg     != null ? wnd.avg_10min_dir_deg     : "--";
-      var avg10Comp    = wnd.avg_10min_dir_compass || "--";
-      var mlDir        = dirML(windDirDeg);
-
-      /* ── pressure ── */
-      var pressureAbs = prs.absolute_hpa != null ? prs.absolute_hpa : null;
-      var pressureRel = prs.relative_hpa != null ? prs.relative_hpa : null;
-
-      /* ── solar / uvi / vpd ── */
-      var uvi   = ld.uvi     != null ? ld.uvi     : null;
-      var solar = ld.solar_wm2 != null ? ld.solar_wm2 : null;
-      var vpd   = ld.vpd_kpa != null ? ld.vpd_kpa : null;
-
-      /* ── rain ── */
-      var rain      = rn.rate_mm_hr != null ? rn.rate_mm_hr : 0;
-      var rainDaily = rn.daily_mm   != null ? rn.daily_mm   : 0;
-
-      /* ── visibility + cloud cover from OWM ── */
-      var vis      = (owm && owm.visibility) ? (owm.visibility / 1000).toFixed(1) : "--";
-      var cloudPct = (owm && owm.clouds && owm.clouds.all != null) ? owm.clouds.all : null;
-
-      /* ── piezo ── */
-      var piezoArr       = Array.isArray(piezoRes) ? piezoRes.map(function(p){ return p.v; }) : [];
-      var piezoNow       = piezoArr.length ? piezoArr[piezoArr.length - 1] : 0;
-      var piezoWetStreak = countTrailingOnes(piezoArr);
-
-      /* ── rain buffer ── */
-      pushRain(rain, rainDaily);
-
-      /* ── Nowcast text integrations ── */
-      latestCondition     = ncComps.rain_ml || ncComps.sky_ml || "--";
-      latestNowcastFull   = ncFull.ml || "--";
-      latestNowcastIndoor = ncComps.indoor_ml || "--";
-      latestNowcastWind   = ncComps.wind_ml || "--";
-
-      /* ── hero color + fx layer ── */
-      var now  = new Date();
-      var isDayFlag = (now.getHours() >= 6 && now.getHours() < 19);
-      var theme = computeFamilyAndIntensity(rain, solar, uvi, h, piezoArr, cloudPct, isDayFlag);
-      animateHeroBackground(paletteFor(theme.family, theme.t));
-      updateFxLayer(theme.family, cloudPct, isDayFlag);
-      hero.className = "wx-hero " + theme.family;
-
-      /* ── store for modals ── */
-      latestWind = {
-        speed: windSpeed, gust: windGust,
-        dirDeg: windDirDeg, dirComp: windDirComp, mlDir: mlDir,
-        avg10Deg: avg10Deg, avg10Comp: avg10Comp,
-        dayGust: dayMaxGust
-      };
-
-      latestMain = {
-        indoorT: indoorT, indoorH: indoorH, indoorFeels: indoorFeels,
-        pressureAbs: pressureAbs, pressureRel: pressureRel,
-        uvi: uvi, solar: solar, vpd: vpd,
-        dewOut: dewOut, dewIn: dewIn,
-        rain: rain, rainDaily: rainDaily,
-        humidity: h, cloudPct: cloudPct,
-        piezoNow: piezoNow, piezoWetStreak: piezoWetStreak, piezoArr: piezoArr
-      };
-
-      /* ── DOM updates ── */
-      document.getElementById("wd-temp").textContent             = t           != null ? t           : "--";
-      document.getElementById("wd-humidity").textContent         = h           != null ? h           : "--";
-      document.getElementById("wd-feels").textContent            = feels       != null ? feels       : "--";
-      document.getElementById("wd-visibility").textContent       = vis;
-      document.getElementById("wd-pressure").textContent         = pressureAbs != null ? pressureAbs : "--";
-      document.getElementById("wd-uvi").textContent              = uvi         != null ? uvi         : "--";
-      document.getElementById("wd-solar").textContent            = solar       != null ? solar       : "--";
-      document.getElementById("wd-condition").textContent        = latestCondition;
-      document.getElementById("wd-wind").textContent             = windSpeed + " km/h";
-      document.getElementById("wd-wind-detail").textContent      = "Gust " + windGust + " km/h · " + mlDir;
-      document.getElementById("wd-indoor-temp").textContent      = indoorT     != null ? indoorT     : "--";
-      document.getElementById("wd-indoor-humidity").textContent  = indoorH     != null ? indoorH     : "--";
-      document.getElementById("wd-indoor-feels").textContent     = indoorFeels != null ? indoorFeels : "--";
-      var updatedAt = payload.updated_at
-        ? new Date(payload.updated_at).toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" })
-        : now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
-      document.getElementById("wd-last-updated").textContent = updatedAt;
-
-    }).catch(function(e){ console.error("Weather fetch failed:", e); });
-  }
-
-  /* ── INIT ── */
-  buildFxLayerOnce();
-  updateAll();
-  setInterval(updateAll, 30000);
-}
-_wd_init();
+      mrow("🧭","ദിശ",                        lw.mlDir + " (" + lw.dirComp + ", " +
