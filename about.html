@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About ELWOIC — Community Weather Station, Elamkulam</title>
   
-<meta name="description" content="Learn about ELWOIC: what we provide, our equipment partners, data sources, and how to support this non-commercial community initiative.">
+<meta name="description" content="ELWOIC is an independent, student-run, non-profit community weather observation and information centre in Elamkulam, Malappuram, Kerala. First online 14 September 2025.">
 <link rel="canonical" href="https://elwoic.in/?page=about.html">
 <meta property="og:title" content="About ELWOIC — Community Weather Station · Elamkulam">
 <meta property="og:description" content="Real-time weather, AQI, IMD alerts and radar for Elamkulam. Powered by Ecowitt, AirGradient and OpenWeather. Independent, non-commercial community project.">
@@ -21,10 +21,11 @@ if (window.top === window.self) {
   window.location.replace("/?page=" + page);
 }
 </script>
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3167954542128621"
+     crossorigin="anonymous"></script>
   <style>
     /* ============================================================
-       TOKENS
+        TOKENS
     ============================================================ */
     :root {
       --navy:       #0d3d6e;
@@ -77,7 +78,7 @@ if (window.top === window.self) {
     }
 
     /* ============================================================
-       LAYOUT
+        LAYOUT
     ============================================================ */
     .wrap {
       max-width: 1000px;
@@ -86,13 +87,12 @@ if (window.top === window.self) {
       position: relative;
       z-index: 1;
       flex: 1;
-      /* Prevent any child from breaking out */
       width: 100%;
       overflow-x: hidden;
     }
 
     /* ============================================================
-       SECTION HEADING
+        SECTION HEADING
     ============================================================ */
     .sec-head {
       font-family: var(--font-serif);
@@ -107,7 +107,7 @@ if (window.top === window.self) {
     .sec-head:first-of-type { margin-top: 0; }
 
     /* ============================================================
-       CARD
+        CARD
     ============================================================ */
     .card {
       background: var(--card-bg);
@@ -136,17 +136,17 @@ if (window.top === window.self) {
     .card-body { padding: 16px; }
 
     /* ============================================================
-       PAGE BANNER
+        PAGE BANNER
     ============================================================ */
     .page-banner {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
       border-radius: var(--radius);
-      padding: 18px 20px;
+      padding: 22px 24px;
       margin-bottom: 24px;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
       box-shadow: var(--shadow);
     }
@@ -156,11 +156,18 @@ if (window.top === window.self) {
       font-weight: 700;
       color: #fff;
       line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .page-banner-ml {
+      font-family: var(--font-ml);
+      font-size: 15px;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-weight: 600;
     }
     .page-banner-sub {
       font-size: 12.5px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 4px;
+      color: rgba(255,255,255,0.7);
       line-height: 1.5;
     }
     .page-banner-badge {
@@ -177,7 +184,23 @@ if (window.top === window.self) {
     }
 
     /* ============================================================
-       DISCLAIMER
+        MASTER DECLARATION BOX
+    ============================================================ */
+    .master-declaration {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .master-declaration strong { color: var(--navy); }
+
+    /* ============================================================
+        DISCLAIMER
     ============================================================ */
     .disclaimer {
       background: #fff5f5;
@@ -222,7 +245,7 @@ if (window.top === window.self) {
     }
 
     /* ============================================================
-       MAINTAINER CARD
+        MAINTAINER CARD
     ============================================================ */
     .maintainer-card {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
@@ -247,6 +270,7 @@ if (window.top === window.self) {
       font-size: 22px;
       flex-shrink: 0;
       color: var(--gold);
+      font-weight: 700;
     }
     .maintainer-info { flex: 1; min-width: 200px; }
     .maintainer-name {
@@ -258,17 +282,17 @@ if (window.top === window.self) {
     }
     .maintainer-role {
       font-size: 12px;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.7);
       margin-bottom: 6px;
     }
     .maintainer-desc {
       font-size: 13px;
-      color: rgba(255,255,255,0.78);
+      color: rgba(255,255,255,0.85);
       line-height: 1.6;
     }
 
     /* ============================================================
-       MISSION HERO — 2 col → 1 col at 600px
+        MISSION HERO
     ============================================================ */
     .mission-hero {
       display: grid;
@@ -292,11 +316,11 @@ if (window.top === window.self) {
       margin-bottom: 8px;
     }
     .mission-block p { font-size: 13.5px; color: var(--text-mid); line-height: 1.75; }
-    .mission-block.accent      { border-top: 3px solid var(--gold); }
+    .mission-block.accent { border-top: 3px solid var(--gold); }
     .mission-block.accent-blue { border-top: 3px solid var(--blue); }
 
     /* ============================================================
-       KEY METRICS — 3 col → 1 col
+        KEY METRICS
     ============================================================ */
     .metrics-row {
       display: grid;
@@ -312,14 +336,14 @@ if (window.top === window.self) {
       padding: 16px 12px;
       text-align: center;
       box-shadow: var(--shadow-sm);
-      min-width: 0; /* prevents overflow */
+      min-width: 0;
     }
     .metric-val {
       font-family: var(--font-serif);
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--navy);
-      line-height: 1.1;
+      line-height: 1.2;
       word-break: break-word;
     }
     .metric-label {
@@ -330,7 +354,7 @@ if (window.top === window.self) {
     }
 
     /* ============================================================
-       WHAT WE PROVIDE — 2 col → 1 col
+        WHAT WE PROVIDE
     ============================================================ */
     .provides-grid {
       display: grid;
@@ -371,14 +395,14 @@ if (window.top === window.self) {
     .provide-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
     /* ============================================================
-       IMPORTANT INFO LIST
+        IMPORTANT INFO LIST & DECLARATION ACCORDION/LIST
     ============================================================ */
     .info-list { list-style: none; padding: 0; }
     .info-list li {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      padding: 10px 0;
+      padding: 12px 0;
       border-bottom: 1px dashed var(--border);
       font-size: 13.5px;
       color: var(--text-mid);
@@ -397,7 +421,7 @@ if (window.top === window.self) {
     .info-list a:hover { text-decoration: underline; }
 
     /* ============================================================
-       DATA SOURCES — 3 col → 2 col → 1 col
+        DATA SOURCES
     ============================================================ */
     .sources-text {
       font-size: 13.5px;
@@ -452,7 +476,7 @@ if (window.top === window.self) {
     .btn-purple { background: #7c3aed; }
 
     /* ============================================================
-       SUPPORT SECTION
+        SUPPORT SECTION
     ============================================================ */
     .support-shell {
       background: linear-gradient(135deg, #f0fdf4, #dcfce7);
@@ -526,8 +550,25 @@ if (window.top === window.self) {
     .transparency-link:hover { text-decoration: underline; }
 
     /* ============================================================
-       CONTACT CTA
+        CONTACT CARD & DETAILS
     ============================================================ */
+    .contact-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .contact-detail-item {
+      background: var(--page-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+    .contact-detail-item strong { color: var(--navy); display: block; margin-bottom: 2px; }
+
     .contact-cta {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -557,7 +598,7 @@ if (window.top === window.self) {
     .contact-cta a.btn-contact:hover { background: var(--navy-mid); }
 
     /* ============================================================
-       FOOTER
+        FOOTER
     ============================================================ */
     .site-footer {
       background: var(--navy);
@@ -631,46 +672,31 @@ if (window.top === window.self) {
     .footer-bottom img { width: 18px; height: 18px; opacity: 0.4; }
 
     /* ============================================================
-       RESPONSIVE BREAKPOINTS
-       All grid collapses happen here — clearly organised
+        RESPONSIVE BREAKPOINTS
     ============================================================ */
-
-    /* Tablet — 760px */
     @media (max-width: 760px) {
       .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
     }
-
-    /* Large mobile — 600px */
     @media (max-width: 600px) {
-      .mission-hero  { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr 1fr; } /* 2 col at 600 */
-      .sources-grid  { grid-template-columns: repeat(2, 1fr); }
-      .footer-inner  { grid-template-columns: 1fr; gap: 20px; }
-      .page-banner   { flex-direction: column; }
+      .mission-hero { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: 1fr 1fr; }
+      .sources-grid { grid-template-columns: repeat(2, 1fr); }
+      .contact-details-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+      .page-banner { flex-direction: column; }
     }
-
-    /* Small mobile — 480px */
     @media (max-width: 480px) {
-      .wrap          { padding: 16px 12px 40px; }
+      .wrap { padding: 16px 12px 40px; }
       .provides-grid { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr; } /* 1 col at 480 */
-      .sources-grid  { grid-template-columns: 1fr 1fr; }
+      .metrics-row { grid-template-columns: 1fr; }
+      .sources-grid { grid-template-columns: 1fr 1fr; }
       .support-inner { flex-direction: column; align-items: center; }
-      .support-qr    { width: 100%; }
+      .support-qr { width: 100%; }
       .support-transparency { width: 100%; min-width: unset; }
-      .contact-cta   { flex-direction: column; align-items: flex-start; }
+      .contact-cta { flex-direction: column; align-items: flex-start; }
       .maintainer-card { flex-direction: column; }
       .page-banner-title { font-size: 19px; }
-      .sec-head      { font-size: 16px; }
-    }
-
-    /* Very small — 360px */
-    @media (max-width: 360px) {
-      .sources-grid  { grid-template-columns: 1fr; }
-      .provides-grid { grid-template-columns: 1fr; }
-      .metrics-row   { grid-template-columns: 1fr; }
-      .card-body     { padding: 12px; }
-      .mission-block { padding: 16px; }
+      .sec-head { font-size: 16px; }
     }
   </style>
 </head>
@@ -688,37 +714,42 @@ if (window.top === window.self) {
   <div class="page-banner">
     <div>
       <div class="page-banner-title">About ELWOIC</div>
-      <div class="page-banner-sub">Our mission, what we provide, data sources &amp; how to support us</div>
+      <div class="page-banner-ml">ഏലംകുളം പ്രാദേശിക കാലാവസ്ഥ നിരീക്ഷണ വിജ്ഞാന കേന്ദ്രം</div>
+      <div class="page-banner-sub">Elamkulam Local Weather Observation And Information Centre</div>
     </div>
-    <div class="page-banner-badge">Elamkulam, Kerala</div>
+    <div class="page-banner-badge">Online Since 14 Sept 2025</div>
   </div>
 
-  <!-- DISCLAIMER -->
+  <!-- MASTER DECLARATION SUMMARY -->
+  <div class="master-declaration">
+    <strong>ELWOIC</strong> — Elamkulam Local Weather Observation And Information Centre — is an independent, student-run, non-profit initiative focused on local weather observation, monitoring, information, awareness and education in the Elamkulam area of Malappuram, Kerala. ELWOIC first came online on <strong>14 September 2025</strong> and operates independently on a non-commercial basis. ELWOIC is not a government organisation, government service or official government weather authority, and its information does not replace official warnings or advisories issued by competent authorities.
+  </div>
+
+  <!-- OFFICIAL DISCLAIMER -->
   <div class="disclaimer">
     <div class="disclaimer-head">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-      <h3>Official Disclaimer</h3>
+      <h3>Official Status &amp; Disclaimer</h3>
     </div>
     <ul>
-      <li>This is a <strong>personal project</strong> for informational purposes and is <strong>not</strong> an official government or panchayat-owned entity.</li>
-      <li>For <strong>official weather alerts and warnings</strong>, always refer to the <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a>.</li>
-      <li>Details shown on this site may vary from official reports. Please <strong>exercise caution</strong> and cross-reference data before taking any action.</li>
+      <li>ELWOIC is an <strong>independent, student-run, non-profit initiative</strong>. It is <strong>not</strong> a government organisation, government department, statutory authority, local self-government institution, or government-owned service. It is not owned, operated, or controlled by the Government of Kerala, Government of India, Elamkulam Grama Panchayat, IMD, or Kerala Police.</li>
+      <li>The use of the geographical name “Elamkulam” identifies the area to which ELWOIC's activities relate and does not indicate government ownership or official government affiliation.</li>
+      <li>For <strong>official weather warnings and emergency advisories</strong>, always refer to the <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener">official IMD Kerala website</a> or competent authorities.</li>
     </ul>
-    <p class="disclaimer-footer">Do not hesitate to contact us for more details. We apologise for any inconvenience caused by the unofficial nature of this website.</p>
+    <p class="disclaimer-footer">ELWOIC weather alerts represent independent informational assessments and must not be interpreted as official government warnings unless explicitly stated.</p>
   </div>
 
-  <!-- WHO WE ARE -->
-  <h2 class="sec-head">Who We Are</h2>
+  <!-- WHO WE ARE & IDENTITY -->
+  <h2 class="sec-head">Identity, Nature &amp; Founder</h2>
 
   <div class="maintainer-card">
     <div class="maintainer-avatar">A</div>
     <div class="maintainer-info">
       <div class="maintainer-name">Aswanth Krishna K</div>
-      <div class="maintainer-role">Founder &amp; Maintainer — ELWOIC</div>
+      <div class="maintainer-role">Founder &amp; Operator — ELWOIC</div>
       <div class="maintainer-desc">
-        This platform is developed and maintained by Aswanth Krishna K, from Elamkulam, Kerala.
-        With a passion for weather monitoring and community service, ELWOIC was created to provide
-        reliable and accessible local weather information for the Elamkulam region.
+        ELWOIC was established and is maintained by Aswanth Krishna K in Elamkulam, Kerala. 
+        First coming online on 14 September 2025, the platform bridges the gap in hyper-local weather data availability for residents, agriculture, and public safety.
       </div>
     </div>
   </div>
@@ -726,13 +757,13 @@ if (window.top === window.self) {
   <div class="mission-hero">
     <div class="mission-block accent">
       <div class="mission-block-icon">🌍</div>
-      <h4>Our Mission</h4>
-      <p>ELWOIC is an independent, real-time weather monitoring project dedicated to serving accurate and reliable weather details for the Elamkulam community in Malappuram, Kerala. We provide timely, accessible data that empowers residents, farmers, and local institutions to make informed decisions about daily activities, agriculture, and safety.</p>
+      <h4>Our Mission &amp; Scope</h4>
+      <p>Dedicated to local weather observation, monitoring, information sharing, reporting, awareness, and educational activities focused on Elamkulam and surrounding areas where general regional forecasts may not reflect micro-climatic conditions.</p>
     </div>
     <div class="mission-block accent-blue">
       <div class="mission-block-icon">🎯</div>
-      <h4>Purpose &amp; Value</h4>
-      <p>The goal of ELWOIC is to serve the Elamkulam community with easy-to-understand, local weather information. Whether planning daily activities, travelling, or staying safe during sudden weather changes, users can rely on this platform for real-time local observations and forecasts tailored specifically to this region.</p>
+      <h4>Non-Commercial Principle</h4>
+      <p>ELWOIC is founded and operated strictly on a non-commercial, non-profit basis in the public interest. It is not established to operate as a profit-making commercial weather service.</p>
     </div>
   </div>
 
@@ -775,7 +806,7 @@ if (window.top === window.self) {
         </div>
         <div class="provide-item">
           <div class="provide-icon pi-amber">🌡️</div>
-          <div><div class="provide-title">Feels Like Temperature</div><div class="provide-desc">Heat index adjusted apparent temperature, accounting for humidity and wind.</div></div>
+          <div><div class="provide-title">Feels Like Temperature</div><div class="provide-desc">Heat index adjusted apparent temperature accounting for humidity and wind.</div></div>
         </div>
         <div class="provide-item">
           <div class="provide-icon pi-purple">🌧️</div>
@@ -787,7 +818,7 @@ if (window.top === window.self) {
         </div>
         <div class="provide-item">
           <div class="provide-icon pi-red">⚠️</div>
-          <div><div class="provide-title">Sudden Weather Alerts</div><div class="provide-desc">Rapid alerts for unexpected weather changes, heavy rain, or hazardous conditions.</div></div>
+          <div><div class="provide-title">Sudden Weather Alerts</div><div class="provide-desc">Rapid informational alerts for unexpected weather changes or heavy rain.</div></div>
         </div>
         <div class="provide-item">
           <div class="provide-icon pi-gold">📡</div>
@@ -797,90 +828,84 @@ if (window.top === window.self) {
     </div>
   </div>
 
-  <!-- IMPORTANT INFO -->
-  <h2 class="sec-head">Important Information</h2>
+  <!-- OPERATIONAL DETAILS & LIMITATIONS -->
+  <h2 class="sec-head">Operational Scope &amp; Limitations</h2>
 
   <div class="card">
     <div class="card-head">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-      Technical &amp; Operational Details
+      Data Sources, Accuracy &amp; Guidelines
     </div>
     <div class="card-body">
       <ul class="info-list">
-        <li>Weather data is updated at least every <strong>30 minutes</strong> using multiple API sources — AccuWeather, Windy, IMD Kerala, OpenWeatherMap, and Open-Meteo.</li>
-        <li>The station covers approximately a <strong>15-kilometre radius</strong> around coordinates <a href="https://maps.app.goo.gl/2SHrmdicqqi2pq6EA" target="_blank" rel="noopener">10.892363, 76.234402</a> with continuous automated monitoring.</li>
-        <li>For technical issues with radar display, we automatically switch to <strong>Windy radar</strong> for uninterrupted monitoring.</li>
-        <li>Details shown on the site may vary slightly across sources. Contacting us is always a good option if you notice any discrepancy.</li>
-        <li>Air quality data is measured locally using an <strong>AirGradient</strong> monitoring device provided through the AirGradient community programme.</li>
+        <li><strong>Data Sources:</strong> Combines observations from ELWOIC weather instruments, permitted APIs (AccuWeather, OpenWeatherMap, Open-Meteo, Windy), official IMD Kerala alerts, and verified local observations.</li>
+        <li><strong>Accuracy &amp; Limitations:</strong> No weather system can guarantee 100% accuracy in every circumstance. Weather conditions can change rapidly over short distances. Users should exercise caution and consult official authorities for high-consequence situations involving safety, property, or travel.</li>
+        <li><strong>Independence:</strong> Support or equipment contributions from partners (Ecowitt, AirGradient, Beetel) do not imply ownership, endorsement, or formal institutional control over ELWOIC.</li>
       </ul>
     </div>
   </div>
 
- <h2 class="sec-head">Data Sources &amp; Partners</h2>
+  <!-- DATA SOURCES & PARTNERS -->
+  <h2 class="sec-head">Data Sources &amp; Partners</h2>
 
-<div class="card">
-  <div class="card-head">
-    <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64C12.11 5.56 12 5.14 12 5c0-1.1.9-2 2-2zm6 17H8V8h12v12z"/></svg>
-    Official Data Sources &amp; Partners
-  </div>
-  <div class="card-body">
-    <p class="sources-text">
-  ELWOIC operates as a <b>Community-Led Observation Centre</b>. Our real-time data is captured by a professional <b>Ecowitt Weather Station</b> installed locally to provide ground-level accuracy for Elamkulam. This infrastructure is dedicated to public safety and is supplemented by official IMD Kerala alerts and AirGradient air quality monitoring.
-</p>
-    
-    <div class="sources-grid">
-      <div class="source-item">
-        <div class="source-icon" style="background:#dbeafe;">📡</div>
-        <div class="source-name">Ecowitt</div>
-        <div class="source-desc">Live Local Sensor</div>
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64C12.11 5.56 12 5.14 12 5c0-1.1.9-2 2-2zm6 17H8V8h12v12z"/></svg>
+      Official Data Sources &amp; Equipment Benefactors
+    </div>
+    <div class="card-body">
+      <p class="sources-text">
+        ELWOIC operates as a community observation centre equipped with professional hardware supported by our technology partners to ensure ground-level accuracy for Elamkulam.
+      </p>
+      
+      <div class="sources-grid">
+        <div class="source-item">
+          <div class="source-icon" style="background:#dbeafe;">📡</div>
+          <div class="source-name">Ecowitt</div>
+          <div class="source-desc">Live Weather Station</div>
+        </div>
+        <div class="source-item">
+          <div class="source-icon" style="background:#dcfce7;">🇮🇳</div>
+          <div class="source-name">IMD Kerala</div>
+          <div class="source-desc">Official alerts &amp; forecasts</div>
+        </div>
+        <div class="source-item">
+          <div class="source-icon" style="background:#fef9c3;">🌤️</div>
+          <div class="source-name">OpenWeather</div>
+          <div class="source-desc">Global current data</div>
+        </div>
+        <div class="source-item">
+          <div class="source-icon" style="background:#ffedd5;">🎯</div>
+          <div class="source-name">AccuWeather</div>
+          <div class="source-desc">Radar &amp; daily reports</div>
+        </div>
+        <div class="source-item">
+          <div class="source-icon" style="background:#cffafe;">🌬️</div>
+          <div class="source-name">Windy</div>
+          <div class="source-desc">Rain tracking &amp; models</div>
+        </div>
+        <div class="source-item">
+          <div class="source-icon" style="background:#ede9fe;">💜</div>
+          <div class="source-name">AirGradient</div>
+          <div class="source-desc">Local AQI monitoring</div>
+        </div>
       </div>
       
-      <div class="source-item">
-        <div class="source-icon" style="background:#dcfce7;">🇮🇳</div>
-        <div class="source-name">IMD Kerala</div>
-        <div class="source-desc">Official alerts &amp; forecasts</div>
-      </div>
-      
-      <div class="source-item">
-        <div class="source-icon" style="background:#fef9c3;">🌤️</div>
-        <div class="source-name">OpenWeather</div>
-        <div class="source-desc">Global current data</div>
-      </div>
-
-      <div class="source-item">
-        <div class="source-icon" style="background:#ffedd5;">🎯</div>
-        <div class="source-name">AccuWeather</div>
-        <div class="source-desc">Radar &amp; daily reports</div>
-      </div>
-      
-      <div class="source-item">
-        <div class="source-icon" style="background:#cffafe;">🌬️</div>
-        <div class="source-name">Windy</div>
-        <div class="source-desc">Rain tracking &amp; models</div>
-      </div>
-      
-      <div class="source-item">
-        <div class="source-icon" style="background:#ede9fe;">💜</div>
-        <div class="source-name">AirGradient</div>
-        <div class="source-desc">Local air quality sensor</div>
+      <div class="source-btns">
+        <a href="https://www.ecowitt.com" target="_blank" rel="noopener" class="source-btn" style="background:#0056b3; color:white;">Ecowitt</a>
+        <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener" class="source-btn btn-green">IMD Kerala</a>
+        <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
+        <a href="https://www.airgradient.com/" target="_blank" rel="noopener" class="source-btn btn-purple">AirGradient</a>
       </div>
     </div>
-    
-    <div class="source-btns">
-      <a href="https://www.ecowitt.com" target="_blank" rel="noopener" class="source-btn" style="background:#0056b3; color:white;">Ecowitt Official</a>
-      <a href="https://mausam.imd.gov.in/thiruvananthapuram/" target="_blank" rel="noopener" class="source-btn btn-green">IMD Kerala</a>
-      <a href="https://www.windy.com/" target="_blank" rel="noopener" class="source-btn btn-cyan">Windy Radar</a>
-      <a href="https://www.airgradient.com/" target="_blank" rel="noopener" class="source-btn btn-purple">AirGradient</a>
-    </div>
   </div>
-</div>
 
   <!-- SUPPORT -->
   <h2 class="sec-head" id="support-project">Support This Community Project</h2>
 
   <div class="support-shell">
     <div class="support-title">💚 Support ELWOIC</div>
-    <p class="support-desc">This is a non-commercial community initiative. Voluntary donations help cover basic expenses such as printing notices and website maintenance.</p>
+    <p class="support-desc">This is a non-commercial community initiative. Voluntary financial contributions, equipment, or service support help cover legitimate expenses such as maintenance, hosting, printing, and operations.</p>
     <p class="support-ml">ഇത് ലാഭോദ്ദേശമില്ലാത്ത ഒരു സാമൂഹിക സംരംഭമാണ്. അച്ചടി ചിലവുകൾക്കും വെബ്സൈറ്റ് പരിപാലനത്തിനും മാത്രം സഹായം ഉപയോഗിക്കുന്നു.</p>
     <div class="support-inner">
       <div class="support-qr">
@@ -901,74 +926,43 @@ if (window.top === window.self) {
       </div>
     </div>
   </div>
-<h2 class="sec-head">Sponsorship & Equipment Partners</h2>
 
-<div class="card">
-  <div class="card-head">
-    <svg viewBox="0 0 24 24"><path d="M11.55 18.33l4.53 4.53 1.41-1.41-4.53-4.53zM16.5 1h-9c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 16h-9V5h9v12z"/></svg>
-    Our Technology Benefactors
-  </div>
-  <div class="card-body">
-    <p class="sources-text">
-      The precision of ELWOIC is made possible through the generous support of our hardware partners. These organizations have <b>sponsored professional-grade equipment</b> to ensure Elamkulam stays informed, connected, and safe.
-    </p>
-    
-    <div class="sources-grid">
-      <!-- Ecowitt -->
-      <div class="source-item">
-        <a href="https://www.ecowitt.com" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-          <div class="source-icon" style="background:#fff; border: 1px solid #e2e8f0;">
-            <!-- Insert your Ecowitt logo here -->
-            <img src="pictures/ecowitt-logo.png" alt="Ecowitt" style="width:24px; height:24px; object-fit:contain;">
-          </div>
-          <div class="source-name" style="text-decoration: underline;">Ecowitt</div>
-        </a>
-        <a href="your-internal-link-here.html" style="text-decoration: none; color: inherit;">
-          <div class="source-desc" style="border-bottom: 1px dotted #666; display: inline-block;">Sponsored full weather station</div>
-        </a>
-      </div>
-      
-      <!-- AirGradient -->
-      <div class="source-item">
-        <a href="https://www.airgradient.com" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-          <div class="source-icon" style="background:#fff; border: 1px solid #e2e8f0;">
-            <!-- Insert your AirGradient logo here -->
-            <img src="pictures/airgradient logo.png" alt="AirGradient" style="width:24px; height:24px; object-fit:contain;">
-          </div>
-          <div class="source-name" style="text-decoration: underline;">AirGradient</div>
-        </a>
-        <a href="https://info.elwoic.in/aqi-info.html" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-          <div class="source-desc" style="border-bottom: 1px dotted #666; display: inline-block;">Sponsored AQI monitoring unit</div>
-        </a>
-      </div>
-      
-      <!-- Beetel -->
-      <div class="source-item">
-        <a href="https://www.beetel.in" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-          <div class="source-icon" style="background:#fff; border: 1px solid #e2e8f0;">
-            <!-- Insert your Beetel logo here -->
-            <img src="pictures/beetel-logo.jpeg" alt="Beetel" style="width:24px; height:24px; object-fit:contain;">
-          </div>
-          <div class="source-name" style="text-decoration: underline;">Beetel</div>
-        </a>
-        <a href="https://info.elwoic.in/ELWOIC Communication.html" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-          <div class="source-desc" style="border-bottom: 1px dotted #666; display: inline-block;">Sponsored F1 4G comms device</div>
-        </a>
+  <!-- OFFICIAL CONTACT & DETAILS -->
+  <h2 class="sec-head">Official Contact Details</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Get in Touch with ELWOIC
+    </div>
+    <div class="card-body">
+      <div class="contact-details-grid">
+        <div class="contact-detail-item">
+          <strong>Location &amp; Address</strong>
+          Elamkulam, Malappuram, Kerala — 679340, India
+        </div>
+        <div class="contact-detail-item">
+          <strong>Phone</strong>
+          04933 316 750
+        </div>
+        <div class="contact-detail-item">
+          <strong>Email Addresses</strong>
+          General: info@elwoic.in<br>
+          Office: elwoicelamkulam@gmail.com<br>
+          Support: support@elwoic.in
+        </div>
+        <div class="contact-detail-item">
+          <strong>Website &amp; Online</strong>
+          Domain: elwoic.in<br>
+          Established: 14 September 2025
+        </div>
       </div>
     </div>
-
-    <div class="source-btns" style="margin-top: 20px;">
-      <span class="source-btn" style="background:#f8fafc; color:#64748b; border:1px dashed #cbd5e1; cursor:default; font-size: 0.8rem;">
-        Official Equipment Partners
-      </span>
-    </div>
   </div>
-</div>
-  <!-- CONTACT -->
-  <h2 class="sec-head">Feedback &amp; Contact</h2>
 
+  <!-- CONTACT CTA -->
   <div class="contact-cta">
-    <p>If you have questions, suggestions, or notice any discrepancies in the weather data, please do not hesitate to reach out. Your feedback directly helps improve the accuracy and usefulness of this site for the Elamkulam community.</p>
+    <p>If you have questions, suggestions, or notice any discrepancies in the weather data, please reach out. Your feedback helps improve accuracy for the Elamkulam community.</p>
     <a href="contact.html#contactForm" class="btn-contact">Contact Us →</a>
   </div>
 
