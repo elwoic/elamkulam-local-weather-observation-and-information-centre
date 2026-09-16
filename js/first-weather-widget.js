@@ -299,10 +299,10 @@ function _wd_init() {
      gate below — no other logic needs to change.
   ══════════════════════════════════════════ */
   var SKY_VIDEOS = {
-    "clear":         "videos/clear-sky.mp4",
-    "mostly-clear":  "videos/mostly-clear.mp4",
-    "partly-cloudy": "videos/partly-cloudy.mp4",
-    "mostly-cloudy": "videos/mostly-cloudy.mp4"
+    "clear":         "/videos/clear sky.mp4",
+    "mostly-clear":  "/videos/mostly clear.mp4",
+    "partly-cloudy": "/videos/partly cloudy.mp4",
+    "mostly-cloudy": "/videos/mostly cloudy.mp4"
   };
 
   // Families for which we currently have (or plan to have) video coverage.
