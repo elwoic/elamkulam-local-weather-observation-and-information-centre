@@ -1,0 +1,338 @@
+/* ============================================================
+   ELWOIC WEATHER WIDGET & LIVE SCENE ENGINE
+   ============================================================ */
+
+.wx-widget {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #dde3ec;
+  background: #fff;
+  font-family: 'Noto Sans Malayalam', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* ── HERO VIEWPORT (The Animated Scene Container) ── */
+.wx-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 240px;
+  padding: 24px 22px 20px;
+  color: #fff;
+  background: #020817; /* Fallback before canvas/SVG renders */
+}
+
+/* Animated Stage (SVG + Particle Canvas) */
+.wx-scene-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#wx-scene-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+#wx-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Contrast Protection: Subtle gradient overlay so text is crisp over clouds/sun */
+.wx-scenery-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 20, 35, 0.35) 0%,
+    rgba(10, 20, 35, 0.15) 50%,
+    rgba(10, 20, 35, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── HERO FOREGROUND CONTENT (z-index: 2 sits above the scene) ── */
+.wx-hero-content {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.wx-hero-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin: 0 0 12px;
+}
+
+.wx-hero-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wx-temp-block {}
+.wx-temp-main {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.wx-temp-main sup {
+  font-size: 24px;
+  font-weight: 500;
+  opacity: 0.85;
+  letter-spacing: 0;
+  vertical-align: super;
+}
+
+.wx-feels {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.wx-hero-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wx-hero-right span {
+  font-size: 13px;
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+.wx-hero-right .wx-updated {
+  font-size: 10.5px;
+  opacity: 0.75;
+  margin-top: 4px;
+}
+
+/* Condition Badge */
+.wx-condition-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 3;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.wx-condition-badge:hover {
+  background: rgba(15, 23, 42, 0.65);
+}
+
+/* ── STAT STRIP ── */
+.wx-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #e0e8f0;
+  background: #fff;
+}
+
+.wx-stat {
+  padding: 13px 8px 11px;
+  text-align: center;
+  border-right: 1px solid #e0e8f0;
+  background: #fff;
+  transition: background 0.15s;
+}
+
+.wx-stat:last-child {
+  border-right: none;
+}
+
+.wx-stat.clickable {
+  cursor: pointer;
+}
+
+.wx-stat.clickable:hover {
+  background: #f4f8ff;
+}
+
+.wx-stat.clickable.gold:hover {
+  background: #fffbf0;
+}
+
+.wx-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #8a97aa;
+  margin-bottom: 5px;
+}
+
+.wx-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a2233;
+  line-height: 1.1;
+}
+
+.wx-stat-sub {
+  font-size: 9.5px;
+  color: #8a97aa;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.wx-stat-hint {
+  font-size: 9px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.wx-stat-hint.blue { color: #2d9cdb; }
+.wx-stat-hint.gold { color: #c89010; }
+
+/* ── FOOTER ── */
+.wx-footer {
+  padding: 8px 16px;
+  text-align: center;
+  border-top: 1px solid #e0e8f0;
+  background: #fafbfd;
+}
+
+.wx-footer p {
+  font-size: 10px;
+  color: #aab0bb;
+  margin: 0;
+}
+
+.wx-footer a {
+  color: #2d9cdb;
+  text-decoration: none;
+}
+
+.wx-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── MODAL ── */
+.wx-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.wx-modal-overlay.open {
+  display: flex;
+}
+
+.wx-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 330px;
+  max-width: 92vw;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  animation: wxSlideUp 0.22s ease;
+}
+
+@keyframes wxSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wx-modal-head {
+  padding: 16px 20px;
+  color: #fff;
+  background: linear-gradient(135deg, #1a6fa8, #2d9cdb);
+}
+
+.wx-modal-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.wx-modal-body {
+  padding: 6px 20px 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.wx-modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f3f7;
+  font-size: 13px;
+}
+
+.wx-modal-row:last-child { border-bottom: none; }
+.wx-modal-row .lbl { color: #6b7a8d; }
+.wx-modal-row .val { font-weight: 700; color: #1a2233; }
+
+.wx-modal-foot {
+  padding: 12px 20px;
+  border-top: 1px solid #eef1f5;
+}
+
+.wx-modal-foot button {
+  width: 100%;
+  background: #1a6fa8;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+
+.wx-modal-foot button:hover { background: #155d8f; }
+.wx-modal-head.wind { background: linear-gradient(135deg, #1a5276, #2980b9); }
+.wx-modal-head.indoor { background: linear-gradient(135deg, #7d5a00, #c89010); }
+.wx-modal-head.condition { background: linear-gradient(135deg, #145a32, #1e8449); }
+
+@media (max-width: 540px) {
+  .wx-temp-main { font-size: 50px; }
+  .wx-strip { grid-template-columns: repeat(2, 1fr); }
+  .wx-stat:nth-child(2) { border-right: none; }
+  .wx-stat:nth-child(3) { border-top: 1px solid #e0e8f0; }
+  .wx-hero { min-height: 220px; }
+}
