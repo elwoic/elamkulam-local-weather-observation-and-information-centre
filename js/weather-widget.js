@@ -1,5 +1,5 @@
 /**
- * ELWOIC Weather Engine V0.5 — Core Widget & Scene Integration
+ * ELWOIC Weather Engine V0.6 — Physics & Viewport Tuned
  */
 
 (function () {
@@ -15,8 +15,8 @@
   const EngineState = {
     time: 0,
     solarElevation: 35.0,
-    windSpeed: 1.5,
-    windGust: 2.5,
+    windSpeed: 0,
+    windGust: 6.5,
     windDirDeg: 245,
     windSign: 1, // 1: Left to Right, -1: Right to Left
     cloudCoverPct: 50,
@@ -66,7 +66,8 @@
       for (let i = 0; i < 120; i++) {
         const star = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         star.setAttribute("cx", Math.random() * 1600);
-        star.setAttribute("cy", Math.random() * 520);
+        // Lowered stars into the visible viewport
+        star.setAttribute("cy", Math.random() * 450); 
         star.setAttribute("r", (Math.random() * 1.4 + 0.3).toFixed(2));
         star.dataset.phase = Math.random() * Math.PI * 2;
         star.dataset.base = Math.random() * 0.5 + 0.3;
@@ -76,7 +77,11 @@
 
     update(solarDeg, cloudCover) {
       if (!this.skyRect) return;
-      const sunY = 560 - (Math.max(-10, Math.min(85, solarDeg)) / 85) * 460;
+      
+      // FIX: Constrained the orbit so the sun/moon never goes higher than Y=320. 
+      // This ensures they stay visible even when the SVG is heavily cropped vertically.
+      const sunY = 560 - (Math.max(-10, Math.min(85, solarDeg)) / 85) * 240; 
+      
       this.sunAura.setAttribute("cy", sunY);
       this.sunCore.setAttribute("cy", sunY);
 
@@ -107,6 +112,7 @@
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
         this.moonGroup.style.opacity = "0.6";
+        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(100, Math.abs(solarDeg)*2)})`);
         this.starField.style.opacity = "0.3";
         this.hazeRect.style.opacity = "0.05";
       } else {
@@ -114,6 +120,7 @@
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
         this.moonGroup.style.opacity = "0.95";
+        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(150, Math.abs(solarDeg)*1.5)})`);
         this.starField.style.opacity = (1 - cloudCover * 0.01).toFixed(2);
         this.hazeRect.style.opacity = "0";
       }
@@ -131,11 +138,14 @@
       if (!this.container) return;
       this.container.innerHTML = "";
       this.cloudPool = [];
+      
+      // FIX: Lowered all Y-coordinates from (40-220) to (280-460) so they sit directly 
+      // above the mountains and are visible in the short, wide widget frame.
       const cloudDefs = [
-        { type: "#cloudCumulus", y: 130, scale: 1.1, speedMult: 1.0, baseOpacity: 0.85 },
-        { type: "#cloudStratocumulus", y: 90, scale: 1.3, speedMult: 0.7, baseOpacity: 0.75 },
-        { type: "#cloudCirrus", y: 40, scale: 1.0, speedMult: 0.4, baseOpacity: 0.5 },
-        { type: "#cloudCumulus", y: 220, scale: 0.9, speedMult: 1.25, baseOpacity: 0.9 }
+        { type: "#cloudCumulus", y: 380, scale: 1.1, speedMult: 1.0, baseOpacity: 0.85 },
+        { type: "#cloudStratocumulus", y: 340, scale: 1.3, speedMult: 0.7, baseOpacity: 0.75 },
+        { type: "#cloudCirrus", y: 280, scale: 1.0, speedMult: 0.4, baseOpacity: 0.5 },
+        { type: "#cloudCumulus", y: 440, scale: 0.9, speedMult: 1.25, baseOpacity: 0.9 }
       ];
 
       cloudDefs.forEach((def, index) => {
@@ -160,13 +170,16 @@
 
     update(windSpeed, windSign, cloudPct) {
       const activeCount = Math.ceil((cloudPct / 100) * this.cloudPool.length);
+      // Ensure even 0 speed has a tiny imperceptible drift to keep it alive
+      const effectiveDriftBase = Math.max(0.5, windSpeed); 
+      
       this.cloudPool.forEach((c, idx) => {
         if (idx >= activeCount) {
           c.el.style.opacity = "0";
           return;
         }
-        const drift = (1.2 + windSpeed * 0.2) * c.speedMult * windSign;
-        c.x += drift * 0.05;
+        const drift = (1.0 + effectiveDriftBase * 0.3) * c.speedMult * windSign;
+        c.x += drift * 0.04;
         if (c.x > 1800) c.x = -250;
         if (c.x < -300) c.x = 1750;
 
@@ -195,24 +208,30 @@
     grassTufts: [...document.querySelectorAll(".tuft")],
 
     update(time, windSpeed, gustSpeed, windSign) {
-      const baseFreq = time * (1.2 + windSpeed * 0.06);
-      const gustFactor = Math.max(1, (gustSpeed / (windSpeed + 0.1)));
-      const windIntensity = (windSpeed * 0.45 + gustSpeed * 0.2) * windSign;
+      // FIX: Much more aggressive and sensitive wind physics math.
+      // Now combines mean speed and gusts so that even 0 km/h wind + 6.5 km/h gust = highly visible movement.
+      const effectiveWind = windSpeed + (gustSpeed * 0.6); 
+      
+      // Base frequency dictates how FAST things sway.
+      const baseFreq = time * (1.5 + effectiveWind * 0.15);
+      
+      // Amplitude dictates how FAR things bend. Greatly increased multipliers.
+      const windIntensity = effectiveWind * windSign * 0.8;
 
       this.trees.forEach((t, i) => {
         const el = document.getElementById(t.id);
         if (!el) return;
-        const trunkFlex = Math.sin(baseFreq + i * 1.5) * (windIntensity * 0.06);
+        const trunkFlex = Math.sin(baseFreq + i * 1.5) * (windIntensity * 0.15); // Was 0.06
         el.setAttribute("transform", `translate(${t.base[0]}, ${t.base[1]}) scale(${t.scale}) skewX(${-trunkFlex.toFixed(2)})`);
 
         el.querySelectorAll(".branch").forEach((br, bi) => {
-          const brSway = Math.sin(baseFreq * 1.4 + i + bi) * (windIntensity * 0.14 * gustFactor);
+          const brSway = Math.sin(baseFreq * 1.4 + i + bi) * (windIntensity * 0.35); // Was 0.14
           const baseRot = bi === 0 ? -12 : bi === 1 ? 14 : 0;
           br.setAttribute("transform", `rotate(${(baseRot + brSway).toFixed(2)})`);
         });
 
         el.querySelectorAll(".canopy-cluster").forEach((lf, li) => {
-          const flutter = Math.sin(time * 3.5 + li * 0.8) * (windIntensity * 0.08);
+          const flutter = Math.sin(time * 4.5 + li * 0.8) * (windIntensity * 0.2); // Was 0.08
           lf.setAttribute("transform", `translate(${flutter.toFixed(1)}, ${(flutter * 0.5).toFixed(1)})`);
         });
       });
@@ -220,11 +239,11 @@
       this.palms.forEach((p, i) => {
         const el = document.getElementById(p.id);
         if (!el) return;
-        const palmLean = Math.sin(baseFreq * 0.9 + i * 2.2) * (windIntensity * 0.16);
+        const palmLean = Math.sin(baseFreq * 0.9 + i * 2.2) * (windIntensity * 0.25); // Was 0.16
         el.setAttribute("transform", `translate(${p.base[0]}, ${p.base[1]}) scale(${p.scale}) skewX(${-palmLean.toFixed(2)})`);
 
         el.querySelectorAll(".frond").forEach((fr, fi) => {
-          const frondBend = Math.sin(baseFreq * 1.8 + fi * 0.7) * (windIntensity * 0.25);
+          const frondBend = Math.sin(baseFreq * 1.8 + fi * 0.7) * (windIntensity * 0.6); // Was 0.25
           fr.setAttribute("transform", `rotate(${frondBend.toFixed(2)})`);
         });
       });
@@ -232,7 +251,7 @@
       this.grassTufts.forEach((tuft, i) => {
         const bx = tuft.dataset.x;
         const by = tuft.dataset.y;
-        const grassSway = (Math.sin(baseFreq * 2.2 + i * 0.8) * 0.6 + 0.4) * (windIntensity * 0.95);
+        const grassSway = (Math.sin(baseFreq * 2.5 + i * 0.8) * 0.6 + 0.4) * (windIntensity * 1.5); // Was 0.95
         tuft.setAttribute("transform", `translate(${bx}, ${by}) rotate(${grassSway.toFixed(1)} 0 0)`);
       });
     }
@@ -248,7 +267,7 @@
       this.drops = [];
       for (let i = 0; i < 350; i++) {
         this.drops.push({
-          x: Math.random() * 800,
+          x: Math.random() * 1200 - 200, // Spread wider to handle sharp wind angles
           y: Math.random() * 400,
           len: Math.random() * 16 + 10,
           speed: Math.random() * 6 + 14
@@ -265,7 +284,8 @@
       }
 
       if (EngineState.isRaining || EngineState.isDrizzle) {
-        const windLean = (windSpeed / 10) * 3.5 * windSign;
+        // Rain angle driven heavily by wind
+        const windLean = ((windSpeed + 5) / 10) * 4.5 * windSign; 
         const dropCount = EngineState.isDrizzle ? 70 : Math.min(350, 100 + EngineState.rainRateMmHr * 45);
 
         ctx.lineWidth = EngineState.isDrizzle ? 0.9 : 1.4;
@@ -276,12 +296,14 @@
           const d = this.drops[i];
           ctx.moveTo(d.x, d.y);
           ctx.lineTo(d.x + windLean, d.y + (EngineState.isDrizzle ? d.len * 0.6 : d.len));
+          
           d.y += EngineState.isDrizzle ? d.speed * 0.45 : d.speed;
-          d.x += windLean * 0.6;
+          d.x += windLean * 0.7;
 
           if (d.y > canvas.height) {
             d.y = -20;
-            d.x = Math.random() * (canvas.width + 100) - 50;
+            // Spawn anywhere across the screen, plus buffer zones so sideways rain doesn't leave gaps
+            d.x = Math.random() * (canvas.width + 600) - 300; 
           }
         }
         ctx.stroke();
@@ -386,7 +408,7 @@
       const rn = ld.rain || {};
 
       // 1. Physical Parameters for Animation Engine
-      EngineState.windSpeed = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 1.2;
+      EngineState.windSpeed = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
       EngineState.windGust = wnd.gust_kmh != null ? parseFloat(wnd.gust_kmh) : EngineState.windSpeed;
       EngineState.windDirDeg = wnd.direction_degrees != null ? parseFloat(wnd.direction_degrees) : 250;
       EngineState.windSign = (EngineState.windDirDeg > 180) ? 1 : -1;
