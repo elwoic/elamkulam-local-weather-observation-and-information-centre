@@ -1,5 +1,20 @@
 /**
- * ELWOIC Weather Engine V0.6 — Physics & Viewport Tuned
+ * ELWOIC Weather Engine V0.7 — Physics & Viewport Tuned
+ *
+ * V0.7 fix: EngineState.isStorm was set from
+ * `nowcast.conditions.thunderstorm.active`, which is true the moment
+ * OWM or Open-Meteo report a thunderstorm ANYWHERE in their regional
+ * grid cell — even when the station's own rain gauge, wind sensor and
+ * pressure reading show nothing unusual. That flag alone drove the
+ * full storm scene (dark overcast sky, sun/moon hidden, lightning
+ * flashes), so a distant/false-positive report could make the widget
+ * show a storm that isn't actually happening at the station.
+ *
+ * The nowcast engine's `conditions.thunderstorm.confirmed` field already
+ * requires at least one local corroborating signal (rain, a gust, or
+ * falling pressure) before it's true — so isStorm now reads that field
+ * instead. A thunderstorm reported nearby but not corroborated locally
+ * no longer triggers the full storm animation.
  */
 
 (function () {
@@ -24,6 +39,7 @@
     isDrizzle: false,
     isRaining: false,
     isStorm: false,
+    stormReportedNearby: false, // thunderstorm reported externally but NOT locally corroborated — no visual effect yet, just kept for optional future UI use
     visibilityMeters: 10000
   };
 
@@ -446,7 +462,16 @@
         EngineState.isDrizzle = false;
       }
 
-      EngineState.isStorm = nowcast?.conditions?.thunderstorm?.active || false;
+      // FIX (V0.7): `.active` fires on a bare external report (OWM/Open-Meteo
+      // regional grid estimate) with no local corroboration at all. `.confirmed`
+      // additionally requires the station's own rain, gusts, or falling
+      // pressure to back it up — see the nowcast engine's classifyThunderstorm().
+      // Only a locally-corroborated storm gets the full dark-sky/lightning
+      // treatment; a report the station itself shows no sign of does not.
+      const thunder = nowcast?.conditions?.thunderstorm || {};
+      EngineState.isStorm = thunder.confirmed || false;
+      EngineState.stormReportedNearby = !!(thunder.active && !thunder.confirmed);
+
       CelestialEngine.update(EngineState.solarElevation, EngineState.cloudCoverPct);
 
       // 3. UI Text & Label Synchronization
