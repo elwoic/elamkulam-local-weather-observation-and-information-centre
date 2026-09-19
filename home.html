@@ -414,362 +414,6 @@
   color: #fff;         /* White text */
 }
     
-  /* ============================================================
-   WEATHER WIDGET — REDESIGNED (+ continuous color engine, fx layer)
-   Drop this block into your <style> section
-   ============================================================ */
-
-.wx-widget {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #dde3ec;
-  background: #fff;
-  font-family: 'Noto Sans Malayalam', sans-serif;
-}
-
-/* ── HERO ── */
-.wx-hero {
-  position: relative;
-  overflow: hidden;
-  padding: 26px 22px 20px;
-  /* --hc1/--hc2/--hc3 are set continuously by JS every refresh (rain rate,
-     solar, UVI, cloud cover). The literal fallback colors only apply for
-     an instant before the first fetch resolves — the gradient itself is
-     animated frame-by-frame in JS, not via CSS transition (browsers don't
-     reliably tween gradient stops, so a "transition: background" here
-     would fight the JS animation instead of helping it). */
-  background: linear-gradient(135deg, var(--hc1, #1a6fa8) 0%, var(--hc2, #2d9cdb) 55%, var(--hc3, #7ec8e3) 100%);
-  color: #fff;
-}
-.wx-hero-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  opacity: 0.75;
-  margin: 0 0 12px;
-}
-.wx-hero-body {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.wx-temp-block {}
-.wx-temp-main {
-  font-size: 68px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -3px;
-}
-.wx-temp-main sup {
-  font-size: 26px;
-  font-weight: 400;
-  opacity: 0.8;
-  letter-spacing: 0;
-  vertical-align: super;
-}
-.wx-feels {
-  font-size: 13px;
-  opacity: 0.75;
-  margin-top: 6px;
-}
-
-  .wx-hero {
-  position: relative;
-  overflow: hidden;
-  padding: 26px 22px 20px;
-  /* keep the gradient as a fallback (shows briefly before video loads,
-     or if a browser/data-saver mode blocks video) */
-  background: linear-gradient(135deg, var(--hc1, #1a6fa8) 0%, var(--hc2, #2d9cdb) 55%, var(--hc3, #7ec8e3) 100%);
-  color: #fff;
-}
-
-.wx-video-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* crop to fill, no distortion */
-  z-index: -2;         /* behind everything, but still above .wx-hero's own bg paint */
-}
-
-.wx-hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: -1;         /* above video, below text content */
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 20, 35, 0.35) 0%,
-    rgba(10, 20, 35, 0.55) 100%
-  );
-  pointer-events: none;
-}
-       
-.wx-hero-right {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.wx-hero-right span {
-  font-size: 13px;
-  opacity: 0.85;
-}
-.wx-hero-right .wx-updated {
-  font-size: 10.5px;
-  opacity: 0.55;
-  margin-top: 4px;
-}
-
-/* condition badge */
-.wx-condition-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 20px;
-  padding: 5px 13px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.wx-condition-badge:hover {
-  background: rgba(255,255,255,0.28);
-}
-
-/* ── FX LAYER — animated stars / drifting clouds behind hero content ── */
-/* Sits under every other hero child regardless of DOM order (the next
-   rule lifts existing hero content above it), so it drops in cleanly
-   without needing to know the hero's internal markup. */
-.wx-fx-layer {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1; /* negative z-index paints behind all other hero content
-                  automatically (normal flow + positioned alike) without
-                  needing to touch any other element's position/z-index */
-}
-
-.wx-stars {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1.6s ease;
-}
-@keyframes wxTwinkle {
-  0%, 100% { opacity: 0.25; }
-  50%      { opacity: 1;    }
-}
-
-.wx-clouds {
-  position: absolute;
-  inset: 0;
-}
-.wx-cloud {
-  position: absolute;
-  width: 130px;
-  height: 46px;
-  border-radius: 50px;
-  background: rgba(255,255,255,0.55);
-  filter: blur(6px);
-  opacity: 0;
-  transition: opacity 1.8s ease;
-  animation: wxDrift linear infinite;
-}
-.wx-cloud.c1 { top: 10%; width: 150px; height: 50px; animation-duration: 70s;  }
-.wx-cloud.c2 { top: 28%; width: 110px; height: 38px; animation-duration: 95s;  animation-delay: -20s; }
-.wx-cloud.c3 { top: 44%; width: 170px; height: 56px; animation-duration: 120s; animation-delay: -55s; }
-.wx-cloud.c4 { top: 20%; width: 90px;  height: 32px; animation-duration: 60s;  animation-delay: -10s; }
-
-@keyframes wxDrift {
-  from { transform: translateX(-20%); }
-  to   { transform: translateX(120%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wx-cloud, .wx-stars circle { animation: none !important; }
-}
-
-/* ── STAT STRIP ── */
-.wx-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid #e0e8f0;
-}
-.wx-stat {
-  padding: 13px 8px 11px;
-  text-align: center;
-  border-right: 1px solid #e0e8f0;
-  background: #fff;
-  transition: background 0.15s;
-}
-.wx-stat:last-child {
-  border-right: none;
-}
-.wx-stat.clickable {
-  cursor: pointer;
-}
-.wx-stat.clickable:hover {
-  background: #f4f8ff;
-}
-.wx-stat.clickable.gold:hover {
-  background: #fffbf0;
-}
-.wx-stat-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: #8a97aa;
-  margin-bottom: 5px;
-}
-.wx-stat-val {
-  font-size: 19px;
-  font-weight: 800;
-  color: #1a2233;
-  line-height: 1.1;
-}
-.wx-stat-sub {
-  font-size: 9.5px;
-  color: #8a97aa;
-  margin-top: 3px;
-  line-height: 1.4;
-}
-.wx-stat-hint {
-  font-size: 9px;
-  margin-top: 4px;
-  font-weight: 600;
-}
-.wx-stat-hint.blue  { color: #2d9cdb; }
-.wx-stat-hint.gold  { color: #c89010; }
-
-/* ── FOOTER ── */
-.wx-footer {
-  padding: 7px 16px;
-  text-align: center;
-  border-top: 1px solid #e0e8f0;
-  background: #fafbfd;
-}
-.wx-footer p {
-  font-size: 10px;
-  color: #aab0bb;
-  margin: 0;
-}
-.wx-footer a {
-  color: #2d9cdb;
-  text-decoration: none;
-}
-.wx-footer a:hover {
-  text-decoration: underline;
-}
-
-/* ── MODAL ── */
-.wx-modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 20, 40, 0.6);
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-}
-.wx-modal-overlay.open {
-  display: flex;
-}
-.wx-modal-box {
-  background: #fff;
-  border-radius: 16px;
-  width: 320px;
-  max-width: 92vw;
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
-  animation: wxSlideUp 0.22s ease;
-}
-@keyframes wxSlideUp {
-  from { opacity:0; transform: translateY(16px); }
-  to   { opacity:1; transform: translateY(0);    }
-}
-.wx-modal-head {
-  padding: 18px 20px 14px;
-  color: #fff;
-  background: linear-gradient(135deg, #1a6fa8, #2d9cdb);
-}
-.wx-modal-head h3 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: 'Noto Sans Malayalam', sans-serif;
-}
-.wx-modal-body {
-  padding: 4px 20px 8px;
-  max-height: 58vh;
-  overflow-y: auto;
-}
-.wx-modal-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f3f7;
-  font-size: 13.5px;
-}
-.wx-modal-row:last-child { border-bottom: none; }
-.wx-modal-row .lbl { color: #6b7a8d; }
-.wx-modal-row .val { font-weight: 700; color: #1a2233; }
-.wx-modal-note {
-  font-size: 11px;
-  color: #aaa;
-  text-align: center;
-  padding: 6px 0 10px;
-}
-.wx-modal-foot {
-  padding: 12px 20px;
-  border-top: 1px solid #eef1f5;
-}
-.wx-modal-foot button {
-  width: 100%;
-  background: #1a6fa8;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  transition: background 0.15s;
-}
-.wx-modal-foot button:hover { background: #155d8f; }
-
-/* modal head themes */
-.wx-modal-head.wind      { background: linear-gradient(135deg, #1a5276, #2980b9); }
-.wx-modal-head.indoor    { background: linear-gradient(135deg, #7d5a00, #c89010); }
-.wx-modal-head.condition { background: linear-gradient(135deg, #145a32, #1e8449); }
-
-/* NOTE: the old static ".wx-hero.sunny/.partial/.cloudy/.rain/.night" gradient
-   rules have been removed on purpose. .wx-hero.<family> classes are still set
-   by JS (useful for devtools inspection / future hooks), but the background
-   itself now comes entirely from the --hc1/--hc2/--hc3 vars above, computed
-   continuously from live sensor + OWM cloud-cover data rather than jumping
-   between a fixed set of presets. */
-
-@media (max-width: 500px) {
-  .wx-temp-main { font-size: 52px; }
-  .wx-strip { grid-template-columns: repeat(2, 1fr); }
-  .wx-stat:nth-child(2) { border-right: none; }
-  .wx-stat:nth-child(3) { border-top: 1px solid #e0e8f0; }
-}
     /* ============================================================
        OPENWEATHER TABLE
     ============================================================ */
@@ -1114,6 +758,7 @@
       .aqi-sensors { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
+  <link rel="stylesheet" href="weather/weather-widget.css">
 </head>
 <body>
 
@@ -1202,36 +847,209 @@ Coordinates: 10.908°N, 76.229°E
 </div>
         <!-- ── HERO ── -->
     <div class="wx-hero partial" id="wd-hero">
+<!-- Live Animated Background Viewport -->
+        <div class="wx-scene-stage">
+          <svg id="wx-scene-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Dynamic Sky Gradients -->
+              <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#389fd6"/>
+                <stop offset="60%" stop-color="#84c5ec"/>
+                <stop offset="100%" stop-color="#cae5d9"/>
+              </linearGradient>
+              <linearGradient id="skyGolden" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#304169"/>
+                <stop offset="45%" stop-color="#bf635a"/>
+                <stop offset="75%" stop-color="#e08f53"/>
+                <stop offset="100%" stop-color="#fcd082"/>
+              </linearGradient>
+              <linearGradient id="skyTwilight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0c122c"/>
+                <stop offset="50%" stop-color="#21214c"/>
+                <stop offset="85%" stop-color="#462c4a"/>
+                <stop offset="100%" stop-color="#693c4e"/>
+              </linearGradient>
+              <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#010611"/>
+                <stop offset="60%" stop-color="#051226"/>
+                <stop offset="100%" stop-color="#0c1b33"/>
+              </linearGradient>
+              <linearGradient id="skyOvercast" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3b4752"/>
+                <stop offset="60%" stop-color="#5a6875"/>
+                <stop offset="100%" stop-color="#84919e"/>
+              </linearGradient>
 
-  <!-- NEW: video background layer -->
-  <video class="wx-video-bg" id="wd-video-bg" autoplay muted loop playsinline poster="">
-    <source id="wd-video-src" src="" type="video/mp4">
-  </video>
-  <div class="wx-hero-overlay"></div>
-  <!-- /NEW -->
+              <!-- Dynamic Ground Gradients -->
+              <linearGradient id="groundDay" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#558a36"/>
+                <stop offset="100%" stop-color="#23421e"/>
+              </linearGradient>
+              <linearGradient id="groundNight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#14281f"/>
+                <stop offset="100%" stop-color="#06120b"/>
+              </linearGradient>
+              <linearGradient id="groundGolden" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#58742d"/>
+                <stop offset="100%" stop-color="#253516"/>
+              </linearGradient>
 
-  <div class="wx-condition-badge" id="wd-condition-box">
-    <span id="wd-condition">Loading…</span>
-  </div>
+              <!-- Celestial Glows -->
+              <radialGradient id="sunGlow">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                <stop offset="25%" stop-color="#fff4b8" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#ffbf5e" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ff9d3b" stop-opacity="0"/>
+              </radialGradient>
 
-  <p class="wx-hero-label">🌦 ഏലംകുളം കാലാവസ്ഥ</p>
+              <!-- Cloud Models -->
+              <g id="cloudCumulus">
+                <ellipse cx="0" cy="22" rx="72" ry="28"/>
+                <ellipse cx="-42" cy="12" rx="40" ry="32"/>
+                <ellipse cx="-8" cy="-8" rx="52" ry="46"/>
+                <ellipse cx="40" cy="10" rx="48" ry="36"/>
+                <ellipse cx="70" cy="22" rx="36" ry="26"/>
+              </g>
+              <g id="cloudCirrus">
+                <path d="M-100,0 C-60,-22 20,-12 80,-25 C120,-32 140,-18 170,-10 C120,-2 60,6 -20,4 C-70,4 -90,-2 -100,0 Z"/>
+              </g>
+              <g id="cloudStratocumulus">
+                <ellipse cx="0" cy="30" rx="140" ry="42"/>
+                <ellipse cx="-90" cy="14" rx="80" ry="50"/>
+                <ellipse cx="-20" cy="-18" rx="110" ry="70"/>
+                <ellipse cx="75" cy="5" rx="95" ry="58"/>
+                <ellipse cx="140" cy="25" rx="75" ry="40"/>
+              </g>
 
-  <div class="wx-hero-body">
-        <div class="wx-temp-block">
-          <div class="wx-temp-main">
-            <span id="wd-temp">--</span><sup>°C</sup>
-          </div>
-          <div class="wx-feels">
-            Feels like <span id="wd-feels">--</span>°C
+              <!-- Coconut Palm Definition -->
+              <g id="palmTree">
+                <ellipse cx="0" cy="0" rx="40" ry="8" fill="#132415" opacity="0.4"/>
+                <path d="M -8,0 C -12,-90 -22,-180 -12,-280 C -8,-320 -2,-350 4,-375 L 14,-373 C 8,-348 2,-318 -2,-279 C -11,-180 -1,-90 6,0 Z" fill="#4d3826"/>
+                <g class="palm-crown" transform="translate(9, -374)">
+                  <path class="frond" d="M0,0 C -40,-20 -110,-10 -150,45 C -115,15 -60,5 0,0" fill="#2d6930"/>
+                  <path class="frond" d="M0,0 C -50,-50 -130,-40 -175,-5 C -130,-15 -70,-20 0,0" fill="#387a3c"/>
+                  <path class="frond" d="M0,0 C -35,-80 -90,-110 -135,-90 C -95,-75 -50,-50 0,0" fill="#448d49"/>
+                  <path class="frond" d="M0,0 C 40,-20 110,-10 150,45 C 115,15 60,5 0,0" fill="#2d6930"/>
+                  <path class="frond" d="M0,0 C 50,-50 130,-40 175,-5 C 130,-15 70,-20 0,0" fill="#387a3c"/>
+                  <path class="frond" d="M0,0 C 35,-80 90,-110 135,-90 C 95,-75 50,-50 0,0" fill="#448d49"/>
+                </g>
+              </g>
+
+              <!-- Broadleaf Field Tree Definition -->
+              <g id="fieldTree">
+                <ellipse cx="0" cy="0" rx="55" ry="10" fill="#132415" opacity="0.35"/>
+                <path class="tree-trunk" d="M -11,0 C -9,-70 -6,-135 0,-175 C 6,-135 9,-70 11,0 Z" fill="#422f20"/>
+                <g class="branch branch-left" transform="translate(-2,-120)">
+                  <path d="M 0,0 C -25,-25 -45,-45 -65,-60" stroke="#422f20" stroke-width="9" stroke-linecap="round" fill="none"/>
+                  <circle class="canopy-cluster" cx="-65" cy="-60" r="42" fill="#285a2b"/>
+                  <circle class="canopy-cluster" cx="-82" cy="-45" r="32" fill="#326e36"/>
+                </g>
+                <g class="branch branch-right" transform="translate(2,-135)">
+                  <path d="M 0,0 C 25,-20 50,-38 72,-52" stroke="#422f20" stroke-width="8" stroke-linecap="round" fill="none"/>
+                  <circle class="canopy-cluster" cx="72" cy="-52" r="44" fill="#285a2b"/>
+                  <circle class="canopy-cluster" cx="90" cy="-38" r="30" fill="#326e36"/>
+                </g>
+                <g class="branch branch-center" transform="translate(0,-170)">
+                  <path d="M 0,0 C -5,-30 5,-55 0,-80" stroke="#422f20" stroke-width="7" stroke-linecap="round" fill="none"/>
+                  <circle class="canopy-cluster" cx="0" cy="-80" r="54" fill="#224d25"/>
+                  <circle class="canopy-cluster" cx="-25" cy="-70" r="38" fill="#285a2b"/>
+                  <circle class="canopy-cluster" cx="25" cy="-70" r="38" fill="#326e36"/>
+                </g>
+              </g>
+            </defs>
+
+            <!-- Sky Rect -->
+            <rect id="wx-sky-rect" width="1600" height="900" fill="url(#skyDay)"/>
+
+            <!-- Sun & Moon -->
+            <g id="wx-sun-group">
+              <circle id="wx-sun-aura" cx="1200" cy="220" r="140" fill="url(#sunGlow)"/>
+              <circle id="wx-sun-core" cx="1200" cy="220" r="38" fill="#ffffff"/>
+            </g>
+            <g id="wx-moon-group" opacity="0">
+              <circle cx="1200" cy="220" r="34" fill="#e6ecf2"/>
+              <path d="M 1200,186 A 34 34 0 0 1 1200,254 A 25 34 0 0 0 1200,186" fill="#051226" opacity="0.8"/>
+            </g>
+            <g id="wx-star-field" opacity="0"></g>
+
+            <!-- Parallax Mountain & Foliage Silhouettes -->
+            <path id="wx-hills-distant" d="M 0,530 C 220,470 380,495 560,520 C 740,460 920,480 1100,525 C 1280,470 1440,500 1600,520 L 1600,700 L 0,700 Z" fill="#588574" opacity="0.45"/>
+            <path d="M 0,565 C 180,530 340,545 520,558 C 720,525 900,548 1140,555 C 1360,530 1490,550 1600,560 L 1600,750 L 0,750 Z" fill="#3c6b4d" opacity="0.65"/>
+            <rect id="wx-haze-rect" width="1600" height="900" fill="#cae5d9" opacity="0.1" pointer-events="none"/>
+
+            <!-- Cloud Container -->
+            <g id="wx-clouds-container"></g>
+
+            <!-- Distant Tree Stand -->
+            <g opacity="0.85">
+              <use href="#palmTree" transform="translate(180, 575) scale(0.42)"/>
+              <use href="#palmTree" transform="translate(230, 580) scale(0.38)"/>
+              <use href="#fieldTree" transform="translate(420, 580) scale(0.5)"/>
+              <use href="#palmTree" transform="translate(890, 578) scale(0.44)"/>
+              <use href="#fieldTree" transform="translate(1320, 582) scale(0.52)"/>
+              <use href="#palmTree" transform="translate(1390, 576) scale(0.4)"/>
+            </g>
+
+            <!-- Main Ground -->
+            <path id="wx-ground-path" d="M 0,590 C 320,570 580,595 860,580 C 1140,568 1380,592 1600,578 L 1600,900 L 0,900 Z" fill="url(#groundDay)"/>
+            
+            <!-- Foreground Trees -->
+            <g id="wx-foreground-vegetation">
+              <g id="wx-tree-left" class="tree-instance" transform="translate(290, 630) scale(0.95)"><use href="#fieldTree"/></g>
+              <g id="wx-palm-left" class="palm-instance" transform="translate(140, 645) scale(1.02)"><use href="#palmTree"/></g>
+              <g id="wx-tree-center" class="tree-instance" transform="translate(740, 620) scale(0.8)"><use href="#fieldTree"/></g>
+              <g id="wx-palm-right" class="palm-instance" transform="translate(1220, 640) scale(0.92)"><use href="#palmTree"/></g>
+              <g id="wx-tree-right" class="tree-instance" transform="translate(1410, 632) scale(1.08)"><use href="#fieldTree"/></g>
+            </g>
+
+            <!-- Strictly Anchored Grass Tufts -->
+            <g id="wx-grass-tufts" stroke="#3d7532" stroke-width="2.6" stroke-linecap="round">
+              <g class="tuft" data-x="90" data-y="680" transform="translate(90, 680)"><path d="M0,0 L-6,-22 M0,0 L1,-26 M0,0 L8,-19"/></g>
+              <g class="tuft" data-x="220" data-y="730" transform="translate(220, 730)"><path d="M0,0 L-7,-25 M0,0 L0,-30 M0,0 L8,-22"/></g>
+              <g class="tuft" data-x="380" data-y="660" transform="translate(380, 660)"><path d="M0,0 L-5,-20 M0,0 L2,-24 M0,0 L7,-18"/></g>
+              <g class="tuft" data-x="510" data-y="780" transform="translate(510, 780)"><path d="M0,0 L-8,-28 M0,0 L-1,-34 M0,0 L9,-25"/></g>
+              <g class="tuft" data-x="670" data-y="690" transform="translate(670, 690)"><path d="M0,0 L-6,-22 M0,0 L1,-27 M0,0 L7,-20"/></g>
+              <g class="tuft" data-x="840" data-y="740" transform="translate(840, 740)"><path d="M0,0 L-7,-26 M0,0 L0,-32 M0,0 L8,-23"/></g>
+              <g class="tuft" data-x="1020" data-y="670" transform="translate(1020, 670)"><path d="M0,0 L-5,-21 M0,0 L2,-25 M0,0 L7,-19"/></g>
+              <g class="tuft" data-x="1160" data-y="770" transform="translate(1160, 770)"><path d="M0,0 L-8,-29 M0,0 L-1,-35 M0,0 L9,-26"/></g>
+              <g class="tuft" data-x="1340" data-y="710" transform="translate(1340, 710)"><path d="M0,0 L-7,-24 M0,0 L1,-28 M0,0 L8,-21"/></g>
+              <g class="tuft" data-x="1510" data-y="680" transform="translate(1510, 680)"><path d="M0,0 L-6,-22 M0,0 L0,-26 M0,0 L7,-19"/></g>
+            </g>
+
+            <rect id="wx-fog-layer" width="1600" height="900" fill="#cbd5e1" opacity="0" pointer-events="none"/>
+            <rect id="wx-flash-screen" width="1600" height="900" fill="#ffffff" opacity="0" pointer-events="none"/>
+          </svg>
+          <canvas id="wx-particle-canvas"></canvas>
+        </div>
+
+        <div class="wx-scenery-overlay"></div>
+
+        <!-- Condition Badge -->
+        <div class="wx-condition-badge" id="wd-condition-box">
+          <span id="wd-condition">Loading…</span>
+        </div>
+
+        <!-- Foreground Meteorological Metrics -->
+        <div class="wx-hero-content">
+          <p class="wx-hero-label">🌦 ഏലംകുളം കാലാവസ്ഥ</p>
+
+          <div class="wx-hero-body">
+            <div class="wx-temp-block">
+              <div class="wx-temp-main">
+                <span id="wd-temp">--</span><sup>°C</sup>
+              </div>
+              <div class="wx-feels">
+                Feels like <span id="wd-feels">--</span>°C
+              </div>
+            </div>
+
+            <div class="wx-hero-right">
+              <span>💧 <span id="wd-humidity">--</span>% humidity</span>
+              <span>👁 <span id="wd-visibility">--</span> km visibility</span>
+              <span class="wx-updated">Updated <span id="wd-last-updated">--</span></span>
+            </div>
           </div>
         </div>
- 
-        <div class="wx-hero-right">
-          <span>💧 <span id="wd-humidity">--</span>% humidity</span>
-          <span>👁 <span id="wd-visibility">--</span> km visibility</span>
-          <span class="wx-updated">Updated <span id="wd-last-updated">--</span></span>
-        </div>
-      </div>
     </div><!-- /hero -->
  
     <!-- ── STAT STRIP ── -->
@@ -1298,8 +1116,7 @@ Coordinates: 10.908°N, 76.229°E
     <button id="wd-modal-ok" style="margin-top:14px;background:#0073e6;color:#fff;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;display:block;width:100%;">OK</button>
   </div>
   </div>
- 
-
+  
     <!-- RIGHT: OpenWeather Forecast Table -->
     <div class="card">
       <div class="card-head">
@@ -1614,7 +1431,7 @@ Coordinates: 10.908°N, 76.229°E
   <script src="js/elwoic-imd.js"></script>
   <script type="module" src="js/elwoic-manual-update.js"></script>
   <script type="module" src="aqi.js"></script>
-  <script src="js/first-weather-widget.js"></script>
+  <script src="js/weather-widget.js"></script>
   <script type="module" src="f-g-weather.js"></script>
   
 
@@ -1661,8 +1478,6 @@ Coordinates: 10.908°N, 76.229°E
     window.resetZoom=()=>{ scale=1;tx=0;ty=0; apply(); };
   });
 </script>
-
-
 
 </body>
 </html>
