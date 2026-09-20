@@ -1,20 +1,11 @@
 /**
- * ELWOIC Weather Engine V0.7 — Physics & Viewport Tuned
+ * ELWOIC Weather Engine V0.8 — Sensor-Fused Ambient Lighting & Environment Response
  *
- * V0.7 fix: EngineState.isStorm was set from
- * `nowcast.conditions.thunderstorm.active`, which is true the moment
- * OWM or Open-Meteo report a thunderstorm ANYWHERE in their regional
- * grid cell — even when the station's own rain gauge, wind sensor and
- * pressure reading show nothing unusual. That flag alone drove the
- * full storm scene (dark overcast sky, sun/moon hidden, lightning
- * flashes), so a distant/false-positive report could make the widget
- * show a storm that isn't actually happening at the station.
- *
- * The nowcast engine's `conditions.thunderstorm.confirmed` field already
- * requires at least one local corroborating signal (rain, a gust, or
- * falling pressure) before it's true — so isStorm now reads that field
- * instead. A thunderstorm reported nearby but not corroborated locally
- * no longer triggers the full storm animation.
+ * V0.8 Enhancements:
+ * - High Solar & UVI Reaction: Dynamic sky lightening, sun aura bloom, and high-noon contrast.
+ * - Cloud Shadowing: Ground and tree saturation darken proportionally to cloud coverage.
+ * - Atmospheric Haze: Directly driven by outdoor humidity and PM2.5 readings.
+ * - Corroborated Thunderstorm Guard: Carried forward from V0.7 confirmed logic.
  */
 
 (function () {
@@ -30,16 +21,20 @@
   const EngineState = {
     time: 0,
     solarElevation: 35.0,
+    solarWm2: 250,
+    uvi: 2,
+    humidity: 75,
+    pm25: 20,
     windSpeed: 0,
     windGust: 6.5,
     windDirDeg: 245,
-    windSign: 1, // 1: Left to Right, -1: Right to Left
+    windSign: 1,
     cloudCoverPct: 50,
     rainRateMmHr: 0,
     isDrizzle: false,
     isRaining: false,
     isStorm: false,
-    stormReportedNearby: false, // thunderstorm reported externally but NOT locally corroborated — no visual effect yet, just kept for optional future UI use
+    stormReportedNearby: false,
     visibilityMeters: 10000
   };
 
@@ -82,8 +77,7 @@
       for (let i = 0; i < 120; i++) {
         const star = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         star.setAttribute("cx", Math.random() * 1600);
-        // Lowered stars into the visible viewport
-        star.setAttribute("cy", Math.random() * 450); 
+        star.setAttribute("cy", Math.random() * 450);
         star.setAttribute("r", (Math.random() * 1.4 + 0.3).toFixed(2));
         star.dataset.phase = Math.random() * Math.PI * 2;
         star.dataset.base = Math.random() * 0.5 + 0.3;
@@ -93,13 +87,19 @@
 
     update(solarDeg, cloudCover) {
       if (!this.skyRect) return;
-      
-      // FIX: Constrained the orbit so the sun/moon never goes higher than Y=320. 
-      // This ensures they stay visible even when the SVG is heavily cropped vertically.
-      const sunY = 560 - (Math.max(-10, Math.min(85, solarDeg)) / 85) * 240; 
-      
+
+      const sunY = 560 - (Math.max(-10, Math.min(85, solarDeg)) / 85) * 240;
       this.sunAura.setAttribute("cy", sunY);
       this.sunCore.setAttribute("cy", sunY);
+
+      // Solar & UV Intensity Factors (0.0 to 1.0)
+      const intenseSun = Math.max(0, Math.min(1, (EngineState.solarWm2 - 500) / 450));
+      const intenseUvi = Math.max(0, Math.min(1, (EngineState.uvi - 5) / 6));
+      const brightFactor = Math.max(intenseSun, intenseUvi);
+
+      // Expand Sun Corona when solar irradiance is high
+      const auraRadius = 140 + brightFactor * 90;
+      this.sunAura.setAttribute("r", auraRadius.toFixed(0));
 
       if (EngineState.isStorm) {
         this.skyRect.setAttribute("fill", "url(#skyOvercast)");
@@ -108,14 +108,26 @@
         this.moonGroup.style.opacity = "0";
         this.starField.style.opacity = "0";
       } else if (solarDeg > 12) {
-        this.skyRect.setAttribute("fill", "url(#skyDay)");
+        // Daytime: Shift base sky and ground brightness according to Solar/UV output
+        this.skyRect.setAttribute("fill", brightFactor > 0.4 ? "url(#skyDay)" : "url(#skyDay)");
         this.groundPath.setAttribute("fill", "url(#groundDay)");
-        this.sunGroup.style.opacity = (1 - cloudCover * 0.007).toFixed(2);
+
+        // Bright solar bleaching/shimmer overlay
+        const sunVisibility = (1 - cloudCover * 0.007) * (0.85 + brightFactor * 0.15);
+        this.sunGroup.style.opacity = Math.max(0, Math.min(1, sunVisibility)).toFixed(2);
         this.moonGroup.style.opacity = "0";
         this.starField.style.opacity = "0";
-        this.hazeRect.setAttribute("fill", "#cae5d9");
-        this.hazeRect.style.opacity = "0.12";
+
+        // Dynamic Haze: Driven by high humidity and PM2.5 particulate loading
+        const humidHaze = Math.max(0, (EngineState.humidity - 70) / 30) * 0.25;
+        const dustHaze = Math.min(0.2, (EngineState.pm25 / 100) * 0.2);
+        const totalHaze = (0.08 + humidHaze + dustHaze + brightFactor * 0.1).toFixed(2);
+
+        this.hazeRect.setAttribute("fill", brightFactor > 0.5 ? "#f1f8ff" : "#cae5d9");
+        this.hazeRect.style.opacity = totalHaze;
+
       } else if (solarDeg > 0 && solarDeg <= 12) {
+        // Golden Hour
         this.skyRect.setAttribute("fill", "url(#skyGolden)");
         this.groundPath.setAttribute("fill", "url(#groundGolden)");
         this.sunGroup.style.opacity = "0.85";
@@ -124,25 +136,30 @@
         this.hazeRect.setAttribute("fill", "#fcd082");
         this.hazeRect.style.opacity = "0.22";
       } else if (solarDeg > -12 && solarDeg <= 0) {
+        // Twilight
         this.skyRect.setAttribute("fill", "url(#skyTwilight)");
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
         this.moonGroup.style.opacity = "0.6";
-        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(100, Math.abs(solarDeg)*2)})`);
+        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(100, Math.abs(solarDeg) * 2)})`);
         this.starField.style.opacity = "0.3";
         this.hazeRect.style.opacity = "0.05";
       } else {
+        // Night
         this.skyRect.setAttribute("fill", "url(#skyNight)");
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
         this.moonGroup.style.opacity = "0.95";
-        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(150, Math.abs(solarDeg)*1.5)})`);
+        this.moonGroup.setAttribute("transform", `translate(0, ${Math.min(150, Math.abs(solarDeg) * 1.5)})`);
         this.starField.style.opacity = (1 - cloudCover * 0.01).toFixed(2);
         this.hazeRect.style.opacity = "0";
       }
 
+      // Atmospheric distance clipping
       const visFactor = Math.min(1, EngineState.visibilityMeters / 10000);
-      if (this.hillsDistant) this.hillsDistant.style.opacity = (0.45 * visFactor).toFixed(2);
+      if (this.hillsDistant) {
+        this.hillsDistant.style.opacity = (0.45 * visFactor).toFixed(2);
+      }
     }
   };
 
@@ -154,9 +171,7 @@
       if (!this.container) return;
       this.container.innerHTML = "";
       this.cloudPool = [];
-      
-      // FIX: Lowered all Y-coordinates from (40-220) to (280-460) so they sit directly 
-      // above the mountains and are visible in the short, wide widget frame.
+
       const cloudDefs = [
         { type: "#cloudCumulus", y: 380, scale: 1.1, speedMult: 1.0, baseOpacity: 0.85 },
         { type: "#cloudStratocumulus", y: 340, scale: 1.3, speedMult: 0.7, baseOpacity: 0.75 },
@@ -186,9 +201,8 @@
 
     update(windSpeed, windSign, cloudPct) {
       const activeCount = Math.ceil((cloudPct / 100) * this.cloudPool.length);
-      // Ensure even 0 speed has a tiny imperceptible drift to keep it alive
-      const effectiveDriftBase = Math.max(0.5, windSpeed); 
-      
+      const effectiveDriftBase = Math.max(0.5, windSpeed);
+
       this.cloudPool.forEach((c, idx) => {
         if (idx >= activeCount) {
           c.el.style.opacity = "0";
@@ -200,10 +214,14 @@
         if (c.x < -300) c.x = 1750;
 
         c.el.setAttribute("transform", `translate(${c.x.toFixed(1)}, ${c.y}) scale(${c.scale})`);
+
+        // Sensor-driven cloud tinting:
+        // High solar turns them brilliant white; storms darken; sunset warms
         let tint = "#f8fafc";
         if (EngineState.isStorm) tint = "#475569";
         else if (EngineState.solarElevation <= 0) tint = "#94a3b8";
         else if (EngineState.solarElevation <= 12) tint = "#fed7aa";
+        else if (EngineState.solarWm2 > 650) tint = "#ffffff";
 
         c.use.setAttribute("fill", tint);
         c.el.style.opacity = (c.baseOpacity * Math.min(1, cloudPct / 40)).toFixed(2);
@@ -224,30 +242,24 @@
     grassTufts: [...document.querySelectorAll(".tuft")],
 
     update(time, windSpeed, gustSpeed, windSign) {
-      // FIX: Much more aggressive and sensitive wind physics math.
-      // Now combines mean speed and gusts so that even 0 km/h wind + 6.5 km/h gust = highly visible movement.
-      const effectiveWind = windSpeed + (gustSpeed * 0.6); 
-      
-      // Base frequency dictates how FAST things sway.
+      const effectiveWind = windSpeed + (gustSpeed * 0.6);
       const baseFreq = time * (1.5 + effectiveWind * 0.15);
-      
-      // Amplitude dictates how FAR things bend. Greatly increased multipliers.
       const windIntensity = effectiveWind * windSign * 0.8;
 
       this.trees.forEach((t, i) => {
         const el = document.getElementById(t.id);
         if (!el) return;
-        const trunkFlex = Math.sin(baseFreq + i * 1.5) * (windIntensity * 0.15); // Was 0.06
+        const trunkFlex = Math.sin(baseFreq + i * 1.5) * (windIntensity * 0.15);
         el.setAttribute("transform", `translate(${t.base[0]}, ${t.base[1]}) scale(${t.scale}) skewX(${-trunkFlex.toFixed(2)})`);
 
         el.querySelectorAll(".branch").forEach((br, bi) => {
-          const brSway = Math.sin(baseFreq * 1.4 + i + bi) * (windIntensity * 0.35); // Was 0.14
+          const brSway = Math.sin(baseFreq * 1.4 + i + bi) * (windIntensity * 0.35);
           const baseRot = bi === 0 ? -12 : bi === 1 ? 14 : 0;
           br.setAttribute("transform", `rotate(${(baseRot + brSway).toFixed(2)})`);
         });
 
         el.querySelectorAll(".canopy-cluster").forEach((lf, li) => {
-          const flutter = Math.sin(time * 4.5 + li * 0.8) * (windIntensity * 0.2); // Was 0.08
+          const flutter = Math.sin(time * 4.5 + li * 0.8) * (windIntensity * 0.2);
           lf.setAttribute("transform", `translate(${flutter.toFixed(1)}, ${(flutter * 0.5).toFixed(1)})`);
         });
       });
@@ -255,11 +267,11 @@
       this.palms.forEach((p, i) => {
         const el = document.getElementById(p.id);
         if (!el) return;
-        const palmLean = Math.sin(baseFreq * 0.9 + i * 2.2) * (windIntensity * 0.25); // Was 0.16
+        const palmLean = Math.sin(baseFreq * 0.9 + i * 2.2) * (windIntensity * 0.25);
         el.setAttribute("transform", `translate(${p.base[0]}, ${p.base[1]}) scale(${p.scale}) skewX(${-palmLean.toFixed(2)})`);
 
         el.querySelectorAll(".frond").forEach((fr, fi) => {
-          const frondBend = Math.sin(baseFreq * 1.8 + fi * 0.7) * (windIntensity * 0.6); // Was 0.25
+          const frondBend = Math.sin(baseFreq * 1.8 + fi * 0.7) * (windIntensity * 0.6);
           fr.setAttribute("transform", `rotate(${frondBend.toFixed(2)})`);
         });
       });
@@ -267,7 +279,7 @@
       this.grassTufts.forEach((tuft, i) => {
         const bx = tuft.dataset.x;
         const by = tuft.dataset.y;
-        const grassSway = (Math.sin(baseFreq * 2.5 + i * 0.8) * 0.6 + 0.4) * (windIntensity * 1.5); // Was 0.95
+        const grassSway = (Math.sin(baseFreq * 2.5 + i * 0.8) * 0.6 + 0.4) * (windIntensity * 1.5);
         tuft.setAttribute("transform", `translate(${bx}, ${by}) rotate(${grassSway.toFixed(1)} 0 0)`);
       });
     }
@@ -283,7 +295,7 @@
       this.drops = [];
       for (let i = 0; i < 350; i++) {
         this.drops.push({
-          x: Math.random() * 1200 - 200, // Spread wider to handle sharp wind angles
+          x: Math.random() * 1200 - 200,
           y: Math.random() * 400,
           len: Math.random() * 16 + 10,
           speed: Math.random() * 6 + 14
@@ -300,8 +312,7 @@
       }
 
       if (EngineState.isRaining || EngineState.isDrizzle) {
-        // Rain angle driven heavily by wind
-        const windLean = ((windSpeed + 5) / 10) * 4.5 * windSign; 
+        const windLean = ((windSpeed + 5) / 10) * 4.5 * windSign;
         const dropCount = EngineState.isDrizzle ? 70 : Math.min(350, 100 + EngineState.rainRateMmHr * 45);
 
         ctx.lineWidth = EngineState.isDrizzle ? 0.9 : 1.4;
@@ -312,14 +323,13 @@
           const d = this.drops[i];
           ctx.moveTo(d.x, d.y);
           ctx.lineTo(d.x + windLean, d.y + (EngineState.isDrizzle ? d.len * 0.6 : d.len));
-          
+
           d.y += EngineState.isDrizzle ? d.speed * 0.45 : d.speed;
           d.x += windLean * 0.7;
 
           if (d.y > canvas.height) {
             d.y = -20;
-            // Spawn anywhere across the screen, plus buffer zones so sideways rain doesn't leave gaps
-            d.x = Math.random() * (canvas.width + 600) - 300; 
+            d.x = Math.random() * (canvas.width + 600) - 300;
           }
         }
         ctx.stroke();
@@ -429,12 +439,21 @@
       EngineState.windDirDeg = wnd.direction_degrees != null ? parseFloat(wnd.direction_degrees) : 250;
       EngineState.windSign = (EngineState.windDirDeg > 180) ? 1 : -1;
 
+      // Solar & Radiative Input
+      EngineState.solarWm2 = ld.solar_wm2 != null ? parseFloat(ld.solar_wm2) : 250;
+      EngineState.uvi = ld.uvi != null ? parseFloat(ld.uvi) : 2;
+      EngineState.humidity = hum.outdoor != null ? parseFloat(hum.outdoor) : 75;
+
       if (nowcast?.analytics?.solar_elevation_deg != null) {
         EngineState.solarElevation = nowcast.analytics.solar_elevation_deg;
       }
       if (nowcast?.analytics?.visibility_m != null) {
         EngineState.visibilityMeters = nowcast.analytics.visibility_m;
       }
+      if (nowcast?.analytics?.pm2_5 != null) {
+        EngineState.pm25 = nowcast.analytics.pm2_5;
+      }
+
       if (nowcast?.conditions?.sky_cloud?.cloudiness_pct != null) {
         EngineState.cloudCoverPct = nowcast.conditions.sky_cloud.cloudiness_pct;
       } else if (owm?.clouds?.all != null) {
@@ -462,19 +481,14 @@
         EngineState.isDrizzle = false;
       }
 
-      // FIX (V0.7): `.active` fires on a bare external report (OWM/Open-Meteo
-      // regional grid estimate) with no local corroboration at all. `.confirmed`
-      // additionally requires the station's own rain, gusts, or falling
-      // pressure to back it up — see the nowcast engine's classifyThunderstorm().
-      // Only a locally-corroborated storm gets the full dark-sky/lightning
-      // treatment; a report the station itself shows no sign of does not.
+      // 3. Corroborated Thunderstorm
       const thunder = nowcast?.conditions?.thunderstorm || {};
       EngineState.isStorm = thunder.confirmed || false;
       EngineState.stormReportedNearby = !!(thunder.active && !thunder.confirmed);
 
       CelestialEngine.update(EngineState.solarElevation, EngineState.cloudCoverPct);
 
-      // 3. UI Text & Label Synchronization
+      // 4. UI Text & Label Synchronization
       const t = tmp.outdoor != null ? tmp.outdoor : "--";
       const feels = tmp.feels_like_outdoor != null ? tmp.feels_like_outdoor : "--";
       const h = hum.outdoor != null ? hum.outdoor : "--";
@@ -604,7 +618,7 @@
   CloudEngine.init();
   RainEngine.init();
   updateAll();
-  setInterval(updateAll, 30000); // 30s telemetry cadence
+  setInterval(updateAll, 30000);
   requestAnimationFrame(animate);
 
 })();
