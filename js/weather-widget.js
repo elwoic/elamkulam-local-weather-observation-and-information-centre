@@ -1,11 +1,9 @@
 /**
- * ELWOIC Weather Engine V0.8 — Sensor-Fused Ambient Lighting & Environment Response
+ * ELWOIC Weather Engine V0.81 — Wind Unit Fix (mph -> km/h)
  *
- * V0.8 Enhancements:
- * - High Solar & UVI Reaction: Dynamic sky lightening, sun aura bloom, and high-noon contrast.
- * - Cloud Shadowing: Ground and tree saturation darken proportionally to cloud coverage.
- * - Atmospheric Haze: Directly driven by outdoor humidity and PM2.5 readings.
- * - Corroborated Thunderstorm Guard: Carried forward from V0.7 confirmed logic.
+ * Update:
+ * - wnd.speed_kmh and wnd.gust_kmh deliver raw imperial values (mph).
+ * - Multiplied by 1.60934 so EngineState and HUD labels receive accurate km/h.
  */
 
 (function () {
@@ -26,7 +24,7 @@
     humidity: 75,
     pm25: 20,
     windSpeed: 0,
-    windGust: 6.5,
+    windGust: 0,
     windDirDeg: 245,
     windSign: 1,
     cloudCoverPct: 50,
@@ -92,12 +90,10 @@
       this.sunAura.setAttribute("cy", sunY);
       this.sunCore.setAttribute("cy", sunY);
 
-      // Solar & UV Intensity Factors (0.0 to 1.0)
       const intenseSun = Math.max(0, Math.min(1, (EngineState.solarWm2 - 500) / 450));
       const intenseUvi = Math.max(0, Math.min(1, (EngineState.uvi - 5) / 6));
       const brightFactor = Math.max(intenseSun, intenseUvi);
 
-      // Expand Sun Corona when solar irradiance is high
       const auraRadius = 140 + brightFactor * 90;
       this.sunAura.setAttribute("r", auraRadius.toFixed(0));
 
@@ -108,26 +104,21 @@
         this.moonGroup.style.opacity = "0";
         this.starField.style.opacity = "0";
       } else if (solarDeg > 12) {
-        // Daytime: Shift base sky and ground brightness according to Solar/UV output
         this.skyRect.setAttribute("fill", brightFactor > 0.4 ? "url(#skyDay)" : "url(#skyDay)");
         this.groundPath.setAttribute("fill", "url(#groundDay)");
 
-        // Bright solar bleaching/shimmer overlay
         const sunVisibility = (1 - cloudCover * 0.007) * (0.85 + brightFactor * 0.15);
         this.sunGroup.style.opacity = Math.max(0, Math.min(1, sunVisibility)).toFixed(2);
         this.moonGroup.style.opacity = "0";
         this.starField.style.opacity = "0";
 
-        // Dynamic Haze: Driven by high humidity and PM2.5 particulate loading
         const humidHaze = Math.max(0, (EngineState.humidity - 70) / 30) * 0.25;
         const dustHaze = Math.min(0.2, (EngineState.pm25 / 100) * 0.2);
         const totalHaze = (0.08 + humidHaze + dustHaze + brightFactor * 0.1).toFixed(2);
 
         this.hazeRect.setAttribute("fill", brightFactor > 0.5 ? "#f1f8ff" : "#cae5d9");
         this.hazeRect.style.opacity = totalHaze;
-
       } else if (solarDeg > 0 && solarDeg <= 12) {
-        // Golden Hour
         this.skyRect.setAttribute("fill", "url(#skyGolden)");
         this.groundPath.setAttribute("fill", "url(#groundGolden)");
         this.sunGroup.style.opacity = "0.85";
@@ -136,7 +127,6 @@
         this.hazeRect.setAttribute("fill", "#fcd082");
         this.hazeRect.style.opacity = "0.22";
       } else if (solarDeg > -12 && solarDeg <= 0) {
-        // Twilight
         this.skyRect.setAttribute("fill", "url(#skyTwilight)");
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
@@ -145,7 +135,6 @@
         this.starField.style.opacity = "0.3";
         this.hazeRect.style.opacity = "0.05";
       } else {
-        // Night
         this.skyRect.setAttribute("fill", "url(#skyNight)");
         this.groundPath.setAttribute("fill", "url(#groundNight)");
         this.sunGroup.style.opacity = "0";
@@ -155,7 +144,6 @@
         this.hazeRect.style.opacity = "0";
       }
 
-      // Atmospheric distance clipping
       const visFactor = Math.min(1, EngineState.visibilityMeters / 10000);
       if (this.hillsDistant) {
         this.hillsDistant.style.opacity = (0.45 * visFactor).toFixed(2);
@@ -215,8 +203,6 @@
 
         c.el.setAttribute("transform", `translate(${c.x.toFixed(1)}, ${c.y}) scale(${c.scale})`);
 
-        // Sensor-driven cloud tinting:
-        // High solar turns them brilliant white; storms darken; sunset warms
         let tint = "#f8fafc";
         if (EngineState.isStorm) tint = "#475569";
         else if (EngineState.solarElevation <= 0) tint = "#94a3b8";
@@ -340,7 +326,7 @@
           this.flashScreen.style.opacity = "0.85";
           setTimeout(() => { this.flashScreen.style.opacity = "0"; }, 50);
           setTimeout(() => { this.flashScreen.style.opacity = "0.4"; }, 120);
-          setTimeout(() => { this.flashScreen.style.opacity = "0"; }, 170);
+          setTimeout(() => { this.flashScreen.style.opacity = "0.17"; }, 170);
         }
         this.lightningTimer = Date.now() + Math.random() * 8000 + 4000;
       }
@@ -433,9 +419,17 @@
       const prs = ld.pressure || {};
       const rn = ld.rain || {};
 
-      // 1. Physical Parameters for Animation Engine
-      EngineState.windSpeed = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
-      EngineState.windGust = wnd.gust_kmh != null ? parseFloat(wnd.gust_kmh) : EngineState.windSpeed;
+      // 1. Wind Unit Conversion: Raw inputs are in mph, convert to km/h
+      const rawSpeedMph = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
+      const rawGustMph = wnd.gust_kmh != null ? parseFloat(wnd.gust_kmh) : rawSpeedMph;
+      const rawDayGustMph = payload.daily_max_gust_kmh != null ? parseFloat(payload.daily_max_gust_kmh) : null;
+
+      const speedKmh = rawSpeedMph * 1.60934;
+      const gustKmh = rawGustMph * 1.60934;
+      const dayGustKmh = rawDayGustMph != null ? rawDayGustMph * 1.60934 : null;
+
+      EngineState.windSpeed = speedKmh;
+      EngineState.windGust = gustKmh;
       EngineState.windDirDeg = wnd.direction_degrees != null ? parseFloat(wnd.direction_degrees) : 250;
       EngineState.windSign = (EngineState.windDirDeg > 180) ? 1 : -1;
 
@@ -493,8 +487,9 @@
       const feels = tmp.feels_like_outdoor != null ? tmp.feels_like_outdoor : "--";
       const h = hum.outdoor != null ? hum.outdoor : "--";
       const vis = owm?.visibility ? (owm.visibility / 1000).toFixed(1) : "--";
-      const windSpeedText = Math.round(EngineState.windSpeed * 10) / 10;
-      const windGustText = Math.round(EngineState.windGust * 10) / 10;
+      const windSpeedText = (Math.round(speedKmh * 10) / 10).toFixed(1);
+      const windGustText = (Math.round(gustKmh * 10) / 10).toFixed(1);
+      const dayGustText = dayGustKmh != null ? (Math.round(dayGustKmh * 10) / 10).toFixed(1) : "--";
       const mlDir = dirML(EngineState.windDirDeg);
 
       const ncComps = nowcast.components || {};
@@ -525,19 +520,31 @@
 
       // Store references for click dialogs
       latestWind = {
-        speed: windSpeedText, gust: windGustText,
-        dirDeg: EngineState.windDirDeg, dirComp: wnd.direction_compass || "W", mlDir: mlDir,
-        avg10Deg: wnd.avg_10min_dir_deg || "--", avg10Comp: wnd.avg_10min_dir_compass || "--",
-        dayGust: payload.daily_max_gust_kmh != null ? payload.daily_max_gust_kmh : "--"
+        speed: windSpeedText,
+        gust: windGustText,
+        dirDeg: EngineState.windDirDeg,
+        dirComp: wnd.direction_compass || "W",
+        mlDir: mlDir,
+        avg10Deg: wnd.avg_10min_dir_deg != null ? Math.round(parseFloat(wnd.avg_10min_dir_deg)) : "--",
+        avg10Comp: wnd.avg_10min_dir_compass || "--",
+        dayGust: dayGustText
       };
 
       latestMain = {
-        indoorT: tmp.indoor, indoorH: hum.indoor, indoorFeels: tmp.feels_like_indoor,
-        pressureAbs: prs.absolute_hpa, pressureRel: prs.relative_hpa,
-        uvi: ld.uvi, solar: ld.solar_wm2, vpd: ld.vpd_kpa,
-        dewOut: tmp.dew_point_outdoor, dewIn: tmp.dew_point_indoor,
-        rain: rainRate, rainDaily: rn.daily_mm,
-        humidity: h, cloudPct: EngineState.cloudCoverPct,
+        indoorT: tmp.indoor,
+        indoorH: hum.indoor,
+        indoorFeels: tmp.feels_like_indoor,
+        pressureAbs: prs.absolute_hpa,
+        pressureRel: prs.relative_hpa,
+        uvi: ld.uvi,
+        solar: ld.solar_wm2,
+        vpd: ld.vpd_kpa,
+        dewOut: tmp.dew_point_outdoor,
+        dewIn: tmp.dew_point_indoor,
+        rain: rainRate,
+        rainDaily: rn.daily_mm,
+        humidity: h,
+        cloudPct: EngineState.cloudCoverPct,
         piezoNow: piezoArr.length ? piezoArr[piezoArr.length - 1] : 0,
         piezoArr: piezoArr
       };
@@ -555,8 +562,8 @@
     windBox.onclick = function () {
       if (!latestWind) return;
       const lw = latestWind;
-      const bft = beaufort(lw.speed);
-      const gbft = beaufort(lw.gust);
+      const bft = beaufort(parseFloat(lw.speed));
+      const gbft = beaufort(parseFloat(lw.gust));
       showModal(
         "💨 കാറ്റ് — വിശദ വിവരങ്ങൾ",
         mrow("🌬", "ഇപ്പോഴത്തെ വേഗത", lw.speed + " km/h") +
