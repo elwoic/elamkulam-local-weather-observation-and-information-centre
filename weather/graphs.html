@@ -46,12 +46,12 @@
       <!-- Resolution / Aggregation Selector -->
       <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
         <label for="resolution-select" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Resolution</label>
-        <select id="resolution-select" onchange="setResolution(this.value)" class="text-xs font-medium text-slate-700 bg-transparent outline-none cursor-pointer">
-          <option value="raw">Raw (Full Detail)</option>
-          <option value="15m">15-Min Avg</option>
-          <option value="1h">1-Hour Avg</option>
-          <option value="6h">6-Hour Avg</option>
-        </select>
+        <select id="resolution-select" onchange="setResolution(this.value)" class="...">
+  <option value="raw">Raw (Full Detail)</option>
+  <option value="15m">15-Min Avg</option>
+  <option value="1h" selected>1-Hour Avg</option>
+  <option value="6h">6-Hour Avg</option>
+</select>
       </div>
 
       <!-- Time Range Buttons -->
@@ -134,7 +134,7 @@
     
     let currentGlobalRange = '24h';
     let currentActiveTab = 'atmosphere';
-    let currentResolution = 'raw';
+    let currentResolution = '1h';
     let activeChartInstances = {}; 
     let modalChartInstance = null;
     let modalActiveConfig = null;
