@@ -1,9 +1,12 @@
 /**
- * ELWOIC Weather Engine V0.81 — Wind Unit Fix (mph -> km/h)
+ * ELWOIC Weather Engine V0.9 — Comprehensive Rain Arbiter & State Machine
  *
- * Update:
- * - wnd.speed_kmh and wnd.gust_kmh deliver raw imperial values (mph).
- * - Multiplied by 1.60934 so EngineState and HUD labels receive accurate km/h.
+ * Updates:
+ * - Piezo trailing 1-hit detection with 4-minute tipping bucket timeout.
+ * - Exact Malayalam rainfall intensity categories.
+ * - Easing trend detection ("മഴ കുറയുന്നു").
+ * - Cessation state ("മഴ ശമിച്ചു") with automatic 5-minute expiry.
+ * - Wind unit conversion (mph -> km/h).
  */
 
 (function () {
@@ -34,6 +37,13 @@
     isStorm: false,
     stormReportedNearby: false,
     visibilityMeters: 10000
+  };
+
+  // Rain History & State Tracker
+  const RainTracker = {
+    rateHistory: [],       // Last 5 rain rate readings
+    cessationTimestamp: 0, // When rain rate dropped from >0 to 0
+    wasRaining: false      // State latch
   };
 
   // Cached Telemetry for Modals
@@ -104,7 +114,7 @@
         this.moonGroup.style.opacity = "0";
         this.starField.style.opacity = "0";
       } else if (solarDeg > 12) {
-        this.skyRect.setAttribute("fill", brightFactor > 0.4 ? "url(#skyDay)" : "url(#skyDay)");
+        this.skyRect.setAttribute("fill", "url(#skyDay)");
         this.groundPath.setAttribute("fill", "url(#groundDay)");
 
         const sunVisibility = (1 - cloudCover * 0.007) * (0.85 + brightFactor * 0.15);
@@ -393,6 +403,15 @@
     return { force: b === -1 ? 12 : b, description: desc[b === -1 ? 12 : b] };
   }
 
+  function countTrailingOnes(arr) {
+    let count = 0;
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] === 1) count++;
+      else break;
+    }
+    return count;
+  }
+
   /* -------------------------------------------------------------
    * D. DATA FETCH & DISPATCHER PIPELINE
    * ------------------------------------------------------------- */
@@ -419,7 +438,7 @@
       const prs = ld.pressure || {};
       const rn = ld.rain || {};
 
-      // 1. Wind Unit Conversion: Raw inputs are in mph, convert to km/h
+      // 1. Wind Unit Conversion: Raw mph to km/h
       const rawSpeedMph = wnd.speed_kmh != null ? parseFloat(wnd.speed_kmh) : 0;
       const rawGustMph = wnd.gust_kmh != null ? parseFloat(wnd.gust_kmh) : rawSpeedMph;
       const rawDayGustMph = payload.daily_max_gust_kmh != null ? parseFloat(payload.daily_max_gust_kmh) : null;
@@ -454,26 +473,87 @@
         EngineState.cloudCoverPct = owm.clouds.all;
       }
 
-      // 2. Strict Piezo vs Tipping Bucket Detection
+      // ---------------------------------------------------------
+      // 2. COMPREHENSIVE RAIN ARBITER & STATE MACHINE
+      // ---------------------------------------------------------
       const rainRate = rn.rate_mm_hr != null ? parseFloat(rn.rate_mm_hr) : 0;
-      let isPiezoActive = false;
       const piezoArr = Array.isArray(piezo) ? piezo.map(p => p.v) : [];
-      if (piezoArr.length) {
-        const recentPiezo = piezoArr.slice(-5);
-        isPiezoActive = recentPiezo.some(v => v === 1);
+      const trailingOnes = countTrailingOnes(piezoArr);
+      const currentTimeMs = Date.now();
+
+      // Track historical rates (max 5 records)
+      RainTracker.rateHistory.push(rainRate);
+      if (RainTracker.rateHistory.length > 5) RainTracker.rateHistory.shift();
+
+      let computedCondition = "";
+      let rainActiveNow = false;
+      let drizzleActiveNow = false;
+
+      // Check if previous record was raining
+      const wasRainingBefore = RainTracker.wasRaining;
+
+      if (rainRate > 0) {
+        // --- CASE 1: CONFIRMED RAIN VIA TIPPING BUCKET ---
+        rainActiveNow = true;
+        drizzleActiveNow = false;
+        RainTracker.wasRaining = true;
+        RainTracker.cessationTimestamp = 0; // Clear cessation timer
+
+        // Intensity Scale Table
+        let intensityText = "";
+        if (rainRate < 0.5) intensityText = "🌦️ ചാറ്റൽമഴ";
+        else if (rainRate < 2.0) intensityText = "🌧️ നേരിയ മഴ";
+        else if (rainRate < 5.0) intensityText = "🌧️ മിതമായ മഴ";
+        else if (rainRate < 15.0) intensityText = "🌧️ ഇടത്തരം മഴ";
+        else if (rainRate < 30.0) intensityText = "🌧️ ശക്തമായ മഴ";
+        else if (rainRate < 60.0) intensityText = "⛈️ അതിശക്തമായ മഴ";
+        else intensityText = "🌩️ അതിതീവ്ര മഴ";
+
+        // Check if rain rate is easing compared to previous reading
+        const len = RainTracker.rateHistory.length;
+        if (len >= 2 && rainRate < RainTracker.rateHistory[len - 2]) {
+          computedCondition = `${intensityText} (മഴ കുറയുന്നു)`;
+        } else {
+          computedCondition = intensityText;
+        }
+
+      } else {
+        // rate_mm_hr === 0
+        if (wasRainingBefore) {
+          // Rain was active previously and has just ceased
+          RainTracker.wasRaining = false;
+          RainTracker.cessationTimestamp = currentTimeMs;
+        }
+
+        // Check cessation grace period (5 minutes = 300,000 ms)
+        const inCessationWindow = (currentTimeMs - RainTracker.cessationTimestamp) < 300000 && RainTracker.cessationTimestamp !== 0;
+
+        if (inCessationWindow) {
+          // --- CASE 2: RAIN CESSATION GRACE PERIOD ---
+          // Ignore wet sensor lingering 1s
+          computedCondition = "മഴ ശമിച്ചു";
+          rainActiveNow = false;
+          drizzleActiveNow = false;
+        } else if (trailingOnes >= 1 && trailingOnes <= 4) {
+          // --- CASE 3: EARLY DETECTED RAIN (PIEZO 1s, 1 to 4 MINUTES) ---
+          computedCondition = "മഴ";
+          rainActiveNow = false;
+          drizzleActiveNow = true;
+        } else {
+          // --- CASE 4: TIMEOUT OR DRY (5+ ones with rate 0, or zero hits) ---
+          // Reset: stop showing "മഴ", return to ambient nowcast
+          rainActiveNow = false;
+          drizzleActiveNow = false;
+          RainTracker.cessationTimestamp = 0;
+
+          const ncComps = nowcast.components || {};
+          computedCondition = ncComps.rain_ml || ncComps.sky_ml || "--";
+        }
       }
 
       EngineState.rainRateMmHr = rainRate;
-      if (rainRate > 0) {
-        EngineState.isRaining = true;
-        EngineState.isDrizzle = false;
-      } else if (isPiezoActive) {
-        EngineState.isRaining = false;
-        EngineState.isDrizzle = true;
-      } else {
-        EngineState.isRaining = false;
-        EngineState.isDrizzle = false;
-      }
+      EngineState.isRaining = rainActiveNow;
+      EngineState.isDrizzle = drizzleActiveNow;
 
       // 3. Corroborated Thunderstorm
       const thunder = nowcast?.conditions?.thunderstorm || {};
@@ -493,7 +573,7 @@
       const mlDir = dirML(EngineState.windDirDeg);
 
       const ncComps = nowcast.components || {};
-      latestCondition = ncComps.rain_ml || ncComps.sky_ml || "--";
+      latestCondition = computedCondition;
       latestNowcastFull = nowcast.nowcast?.ml || "--";
       latestNowcastIndoor = ncComps.indoor_ml || "--";
       latestNowcastWind = ncComps.wind_ml || "--";
