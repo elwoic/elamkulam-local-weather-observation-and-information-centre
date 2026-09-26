@@ -1160,7 +1160,11 @@
 
       var res=await fetchChartsApi(param, apiOpts);
       var labels=res.labels||[];
-      var rawData=res.data||[];
+      // rain_rate and rain_daily come from the API in inches — convert to mm
+      var needsConversion=(param==="rain_rate"||param==="rain_daily");
+      var rawData=(res.data||[]).map(function(v){
+        return (needsConversion&&isNum(v)) ? Number(v)*25.4 : v;
+      });
       var vals=rawData.filter(isNum).map(Number);
 
       if(!vals.length){
