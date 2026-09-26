@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Weather Alerts Archive | ELWOIC</title>
+<meta name="description" content="Historical EWA and EWAE weather alert publications by ELWOIC — Elamkulam Local Weather Observation and Information Centre.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:           #F1F3EE;
+  --surface:      #FFFFFF;
+  --surface-2:    #FBFAF6;
+  --ink:          #1A2233;
+  --ink-soft:     #4E5768;
+  --ink-faint:    #7B8394;
+  --rule:         #DBE0D8;
+  --rule-strong:  #C4CBC1;
+
+  --teal:         #146661;
+  --teal-ink:     #0E4E4A;
+  --teal-tint:    #E4F0EC;
+
+  --ewa-bg:       #E8F0F7;
+  --ewa-ink:      #1A3A5C;
+  --ewa-border:   #24527E;
+  --ewa-icon:     #24527E;
+
+  --ewae-bg:      #FBE7E3;
+  --ewae-ink:     #8C3324;
+  --ewae-border:  #C0392B;
+  --ewae-icon:    #C0392B;
+
+  --good-bg:      #E3F3E9; --good-ink: #1F5B37;
+  --warn-bg:      #FBEFDD; --warn-ink: #8A5316;
+
+  --serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+  --sans:  "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --content-w: 44rem;
+  --wide-w: 64rem;
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #10151A;
+    --surface:     #171E24;
+    --surface-2:   #131A1F;
+    --ink:         #E9EDE9;
+    --ink-soft:    #AEB7B0;
+    --ink-faint:   #7C877E;
+    --rule:        #2A3A38;
+    --rule-strong: #37524E;
+    --teal:        #5CC2B8;
+    --teal-ink:    #8AD8CF;
+    --teal-tint:   #16302C;
+    --ewa-bg:      #17232F;
+    --ewa-ink:     #7FADD9;
+    --ewa-border:  #7FADD9;
+    --ewa-icon:    #7FADD9;
+    --ewae-bg:     #331714;
+    --ewae-ink:    #E68A7C;
+    --ewae-border: #E68A7C;
+    --ewae-icon:   #E68A7C;
+    --good-bg:     #16301F; --good-ink: #78D69B;
+    --warn-bg:     #332512; --warn-ink: #E3AA5C;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+a { color: var(--teal-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--teal); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 3px;
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--ink); color: var(--bg);
+  padding: .6rem 1rem; z-index: 100; border-radius: 0 0 6px 0;
+}
+.skip-link:focus { left: 0; }
+
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0 0 .5rem; letter-spacing: -0.01em; }
+p { margin: 0 0 1rem; color: var(--ink-soft); }
+p:last-child { margin-bottom: 0; }
+
+.wrap { max-width: var(--content-w); margin: 0 auto; padding: 0 1.25rem; }
+.wrap-wide { max-width: var(--wide-w); margin: 0 auto; padding: 0 1.25rem; }
+
+/* ── HEADER ── */
+header.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 0; z-index: 20;
+}
+.site-header-inner {
+  max-width: var(--wide-w); margin: 0 auto; padding: .75rem 1.25rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.wordmark { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.wordmark span { color: var(--teal-ink); }
+.nav-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.nav-links a { font-size: .85rem; color: var(--ink-faint); text-decoration: none; white-space: nowrap; }
+.nav-links a:hover { color: var(--teal-ink); }
+
+/* ── HERO ── */
+.page-hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  padding: 3rem 0 2.5rem;
+}
+.hero-kicker {
+  font-size: .8rem; font-weight: 600; color: var(--teal-ink);
+  letter-spacing: .04em; margin-bottom: .5rem;
+}
+.page-hero h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-bottom: .75rem;
+}
+.page-hero .subtitle {
+  font-size: 1rem; color: var(--ink-soft); max-width: 36rem; margin-bottom: 1.25rem;
+}
+.archive-note {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--teal-tint); border-radius: 99px;
+  padding: .3rem .85rem; font-size: .8rem; color: var(--teal-ink); font-weight: 600;
+}
+
+/* ── SECTIONS ── */
+section { padding: 2.5rem 0; border-bottom: 1px solid var(--rule); }
+section:last-of-type { border-bottom: none; }
+
+.section-label {
+  font-size: .78rem; font-weight: 600; color: var(--teal-ink);
+  margin-bottom: .4rem;
+}
+
+/* ── EWA / EWAE explanation cards ── */
+.alert-type-grid {
+  display: grid; grid-template-columns: 1fr; gap: 1rem;
+}
+@media (min-width: 600px) { .alert-type-grid { grid-template-columns: 1fr 1fr; } }
+
+.type-card {
+  border-radius: var(--radius); padding: 1.4rem 1.5rem;
+  border-left: 4px solid;
+}
+.type-card.ewa  { background: var(--ewa-bg);  border-color: var(--ewa-border);  }
+.type-card.ewae { background: var(--ewae-bg); border-color: var(--ewae-border); }
+.type-card .tc-header { display: flex; align-items: center; gap: .55rem; margin-bottom: .6rem; }
+.type-card .tc-icon { font-size: 1.3rem; line-height: 1; }
+.type-card .tc-title { font-family: var(--serif); font-weight: 600; font-size: 1.1rem; }
+.type-card.ewa  .tc-title { color: var(--ewa-ink);  }
+.type-card.ewae .tc-title { color: var(--ewae-ink); }
+.type-card .tc-desc { font-size: .9rem; color: var(--ink-soft); margin-bottom: .75rem; }
+.type-card ul { margin: 0; padding-left: 1.1rem; color: var(--ink-soft); font-size: .88rem; }
+.type-card ul li { margin-bottom: .2rem; }
+.important-note {
+  background: var(--warn-bg); border-radius: var(--radius); padding: 1rem 1.15rem;
+  font-size: .88rem; color: var(--warn-ink); border: 1px solid #E2A85B33;
+  margin-top: 1.25rem;
+}
+.important-note strong { display: block; margin-bottom: .2rem; }
+
+/* ── ACCORDIONS ── */
+details.disclosure { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); margin-top: .9rem; overflow: hidden; }
+details.disclosure summary {
+  cursor: pointer; list-style: none; padding: 1rem 1.25rem;
+  font-family: var(--serif); font-weight: 600; font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+details.disclosure summary::-webkit-details-marker { display: none; }
+details.disclosure summary::after { content: "+"; font-family: var(--sans); font-weight: 400; color: var(--ink-faint); font-size: 1.4rem; line-height: 1; flex: none; }
+details.disclosure[open] summary::after { content: "–"; }
+details.disclosure .disclosure-body { padding: 0 1.25rem 1.25rem; color: var(--ink-soft); font-size: .95rem; }
+details.disclosure .disclosure-body p:last-child { margin-bottom: 0; }
+
+/* ── BROWSE / SEARCH ── */
+.browse-section { padding: 2rem 0; }
+.filters-bar {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 1.25rem 1.35rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;
+}
+.filter-group { display: flex; flex-direction: column; gap: .35rem; flex: 1; min-width: 9rem; }
+.filter-label { font-size: .75rem; font-weight: 600; color: var(--ink-faint); }
+.filter-input, .filter-select {
+  font-family: var(--sans); font-size: .88rem; padding: .48rem .75rem;
+  border: 1px solid var(--rule); border-radius: 8px;
+  background: var(--bg); color: var(--ink); width: 100%;
+}
+.filter-input:focus, .filter-select:focus { border-color: var(--teal); }
+
+.type-toggle { display: flex; gap: .4rem; }
+.type-btn {
+  font-family: var(--sans); font-size: .83rem; font-weight: 600;
+  padding: .42rem .85rem; border-radius: 8px; border: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink-faint); cursor: pointer;
+}
+.type-btn.active { color: #fff; }
+.type-btn.all.active  { background: var(--teal); border-color: var(--teal); }
+.type-btn.ewa.active  { background: var(--ewa-border); border-color: var(--ewa-border); }
+.type-btn.ewae.active { background: var(--ewae-border); border-color: var(--ewae-border); }
+.type-btn:hover:not(.active) { border-color: var(--rule-strong); color: var(--ink); }
+
+.sort-row {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: .75rem; margin: 1.25rem 0 .75rem;
+}
+.results-count { font-size: .85rem; color: var(--ink-faint); }
+.sort-select {
+  font-family: var(--sans); font-size: .83rem; padding: .38rem .65rem;
+  border: 1px solid var(--rule); border-radius: 8px;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+
+/* ── ARCHIVE LIST ── */
+.year-group { margin-bottom: 2.5rem; }
+.year-heading {
+  font-family: var(--serif); font-size: 1.6rem; font-weight: 600;
+  color: var(--ink); border-bottom: 2px solid var(--rule-strong);
+  padding-bottom: .4rem; margin-bottom: 1.5rem;
+}
+.month-group { margin-bottom: 1.5rem; }
+.month-heading {
+  font-size: .78rem; font-weight: 600; color: var(--ink-faint);
+  letter-spacing: .05em; text-transform: uppercase; margin-bottom: .65rem;
+}
+
+.alert-card {
+  background: var(--surface); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 1.1rem 1.25rem;
+  display: flex; align-items: flex-start; gap: 1rem;
+  margin-bottom: .65rem; cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  text-decoration: none; color: inherit;
+}
+.alert-card:hover {
+  border-color: var(--rule-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.alert-card.ewa-card   { border-left: 3px solid var(--ewa-border); }
+.alert-card.ewae-card  { border-left: 3px solid var(--ewae-border); }
+
+.card-icon { font-size: 1.3rem; flex: none; margin-top: .05rem; }
+.card-body { flex: 1; min-width: 0; }
+.card-top { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; margin-bottom: .25rem; }
+.type-badge {
+  font-size: .72rem; font-weight: 700; padding: .18rem .55rem;
+  border-radius: 99px; letter-spacing: .03em;
+}
+.type-badge.ewa  { background: var(--ewa-bg);  color: var(--ewa-ink);  }
+.type-badge.ewae { background: var(--ewae-bg); color: var(--ewae-ink); }
+.card-id { font-size: .78rem; font-weight: 600; color: var(--ink-faint); font-family: monospace; }
+.card-datetime { font-size: .78rem; color: var(--ink-faint); }
+.card-title {
+  font-size: .95rem; color: var(--ink); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card-arrow { font-size: .85rem; color: var(--ink-faint); flex: none; align-self: center; margin-left: auto; padding-left: .5rem; }
+
+.status-badge {
+  font-size: .72rem; font-weight: 600; padding: .18rem .55rem;
+  border-radius: 99px; background: var(--rule); color: var(--ink-faint);
+}
+
+.empty-state {
+  text-align: center; padding: 4rem 2rem; color: var(--ink-faint);
+  font-size: .95rem;
+}
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+
+.loading-state {
+  text-align: center; padding: 3rem; color: var(--ink-faint);
+  font-size: .9rem;
+}
+.spinner {
+  display: inline-block; width: 24px; height: 24px;
+  border: 2.5px solid var(--rule); border-top-color: var(--teal);
+  border-radius: 50%; animation: spin .7s linear infinite;
+  margin-bottom: .75rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── DETAIL OVERLAY ── */
+.overlay-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 40;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(3px);
+  overflow-y: auto;
+}
+.overlay-backdrop.open { display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+@media (max-width: 600px) { .overlay-backdrop.open { padding: 0; align-items: flex-end; } }
+
+.overlay-panel {
+  background: var(--surface); border-radius: var(--radius);
+  width: 100%; max-width: 40rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  overflow: hidden;
+  animation: slideUp .25s ease;
+}
+@media (max-width: 600px) {
+  .overlay-panel { border-radius: var(--radius) var(--radius) 0 0; max-height: 92vh; overflow-y: auto; }
+}
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.overlay-header {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+}
+.overlay-header-left { flex: 1; }
+.overlay-type-row { display: flex; align-items: center; gap: .55rem; margin-bottom: .35rem; flex-wrap: wrap; }
+.overlay-id { font-size: .82rem; font-family: monospace; color: var(--ink-faint); font-weight: 600; }
+.overlay-close {
+  background: none; border: none; cursor: pointer; padding: .4rem;
+  color: var(--ink-faint); font-size: 1.4rem; line-height: 1; flex: none;
+  border-radius: 6px;
+}
+.overlay-close:hover { color: var(--ink); background: var(--bg); }
+
+.overlay-body { padding: 1.5rem; }
+
+.alert-text-block {
+  background: var(--surface-2); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 1.25rem 1.35rem;
+  font-size: .95rem; line-height: 1.75; color: var(--ink);
+  white-space: pre-wrap; word-break: break-word;
+  font-family: var(--sans);
+  margin-bottom: 1.25rem;
+}
+
+.meta-table { width: 100%; border-collapse: collapse; font-size: .86rem; margin-bottom: 1.25rem; }
+.meta-table td { padding: .5rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.meta-table tr:last-child td { border-bottom: none; }
+.meta-table td:first-child { color: var(--ink-faint); width: 45%; font-weight: 500; }
+.meta-table td:last-child { color: var(--ink); font-weight: 600; }
+
+.overlay-archive-note {
+  background: var(--bg); border-radius: 8px; padding: .8rem 1rem;
+  font-size: .82rem; color: var(--ink-faint); border: 1px solid var(--rule);
+}
+
+/* ── CTA FOOTER ── */
+.cta-section { padding: 2.75rem 0; background: var(--surface-2); }
+.cta-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem;
+}
+.cta-card {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 1.15rem 1.25rem; text-decoration: none; color: var(--ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+.cta-card:hover { border-color: var(--rule-strong); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.cta-card .cta-icon { font-size: 1.35rem; margin-bottom: .45rem; }
+.cta-card .cta-label { font-size: .78rem; color: var(--ink-faint); margin-bottom: .15rem; }
+.cta-card .cta-title { font-family: var(--serif); font-weight: 600; font-size: 1rem; color: var(--ink); }
+
+/* ── SITE FOOTER ── */
+footer.site-footer { background: var(--surface-2); border-top: 1px solid var(--rule); padding: 2rem 0 2.5rem; }
+.footer-grid { display: flex; flex-wrap: wrap; gap: 2rem 3rem; justify-content: space-between; }
+.footer-nav { display: flex; flex-direction: column; gap: .5rem; }
+.footer-nav a { color: var(--ink-soft); text-decoration: none; font-size: .9rem; }
+.footer-nav a:hover { color: var(--teal-ink); }
+.footer-meta { font-size: .82rem; color: var(--ink-faint); max-width: 26rem; }
+.footer-copy { margin-top: 1.5rem; font-size: .78rem; color: var(--ink-faint); border-top: 1px solid var(--rule); padding-top: 1rem; }
+
+.disclaimer-block {
+  background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 1.1rem 1.25rem; font-size: .86rem; color: var(--ink-soft); margin-top: .75rem;
+}
+.disclaimer-block strong { color: var(--ink); }
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="wordmark" href="/weather/alerts.html">ELWO<span>IC</span></a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="/weather/weather.html">Current Weather</a>
+      <a href="/weather/weather.html#forecast">Forecast</a>
+      <a href="/weather/weather.html#records">Records</a>
+      <a href="/how-elwoic-works.html">How ELWOIC Works</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ── HERO ── -->
+  <div class="page-hero">
+    <div class="wrap">
+      <div class="hero-kicker">ELWOIC Public Archive</div>
+      <h1>Weather Alerts &amp; Publications</h1>
+      <p class="subtitle">Historical EWA and EWAE publications from the Elamkulam Local Weather Observation and Information Centre — a chronological record of local weather assessments and public information.</p>
+      <div class="archive-note">📋 Archive: All published alerts from ELWOIC</div>
+    </div>
+  </div>
+
+  <!-- ── WHAT ARE EWA & EWAE ── -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">About the alert types</p>
+      <h2>What are EWA and EWAE?</h2>
+      <div class="alert-type-grid" style="margin-top:1.1rem;">
+
+        <div class="type-card ewa">
+          <div class="tc-header">
+            <span class="tc-icon">🌦️</span>
+            <span class="tc-title">EWA — ELWOIC Weather Alert</span>
+          </div>
+          <p class="tc-desc">Used for regular weather information and alerts concerning expected, developing or changing weather conditions affecting Elamkulam.</p>
+          <ul>
+            <li>Expected rainfall</li>
+            <li>Changes in rainfall conditions</li>
+            <li>Increasing or decreasing heat</li>
+            <li>Developing weather patterns</li>
+            <li>Short-term local weather situations</li>
+          </ul>
+        </div>
+
+        <div class="type-card ewae">
+          <div class="tc-header">
+            <span class="tc-icon">🚨</span>
+            <span class="tc-title">EWAE — Emergency / Event Alert</span>
+          </div>
+          <p class="tc-desc">Used for shorter-notice or more significant weather situations requiring more immediate public attention.</p>
+          <ul>
+            <li>A significant weather event approaching</li>
+            <li>Rapidly developing rainfall</li>
+            <li>An ongoing event requiring immediate attention</li>
+            <li>Other locally relevant situations assessed as requiring an emergency alert</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="important-note">
+        <strong>Important distinction</strong>
+        The use of an EWAE designation describes ELWOIC's publication category. It does not make the alert an official government emergency warning.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW ALERTS ARE PREPARED ── -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">Methodology</p>
+      <h2>How ELWOIC alerts are prepared</h2>
+      <p>ELWOIC alerts are prepared using available information at the time of assessment. This may include local observations from the ELWOIC observation system, processed weather data, available numerical weather prediction information, radar and satellite imagery, external weather-service information and direct observation of developing local conditions.</p>
+      <p>Alert assessments may be updated when new observations or weather information become available.</p>
+      <a href="/how-elwoic-works.html">Learn how ELWOIC processes weather information →</a>
+    </div>
+  </section>
+
+  <!-- ── READING THE ARCHIVE ── -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">Before you read</p>
+      <h2>Reading the historical archive</h2>
+      <p>Archived alerts represent the information and assessment available to ELWOIC <strong>at the time each alert was published</strong>. Weather conditions can develop differently from an earlier assessment, and later observations may differ from an earlier expectation.</p>
+      <p>An archived alert should be understood as a <strong>historical publication</strong>, not a current forecast or active warning.</p>
+    </div>
+  </section>
+
+  <!-- ── BROWSE ── -->
+  <section class="browse-section" id="browse">
+    <div class="wrap-wide">
+      <p class="section-label">Browse alerts</p>
+      <h2>Alert Archive</h2>
+
+      <!-- Filters -->
+      <div class="filters-bar" style="margin-top:1.1rem;" role="search" aria-label="Filter alerts">
+        <div class="filter-group" style="flex:2;min-width:14rem;">
+          <label class="filter-label" for="searchInput">Search alert ID or keyword</label>
+          <input class="filter-input" id="searchInput" type="search" placeholder="e.g. EWA260921058 or rainfall…" aria-label="Search alerts">
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Type</div>
+          <div class="type-toggle" role="group" aria-label="Filter by type">
+            <button class="type-btn all active" data-type="all">All</button>
+            <button class="type-btn ewa" data-type="EWA">EWA</button>
+            <button class="type-btn ewae" data-type="EWAE">EWAE</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="yearSelect">Year</label>
+          <select class="filter-select" id="yearSelect" aria-label="Filter by year">
+            <option value="">All years</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="monthSelect">Month</label>
+          <select class="filter-select" id="monthSelect" aria-label="Filter by month">
+            <option value="">All months</option>
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Sort + count -->
+      <div class="sort-row">
+        <span class="results-count" id="resultsCount">Loading…</span>
+        <select class="sort-select" id="sortSelect" aria-label="Sort order">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+
+      <!-- Alert list -->
+      <div id="alertList" aria-live="polite" aria-label="Alert list">
+        <div class="loading-state">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Loading alert archive…</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── LIMITATIONS ── -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">Archive limitations</p>
+      <h2>About this archive</h2>
+      <p>The archive contains ELWOIC publications that have been preserved in the ELWOIC information system. Older publications may have differences in formatting or available metadata depending on how they were originally published.</p>
+      <p>Historical publications represent ELWOIC's assessment at the time of publication and should not be used as current weather information.</p>
+
+      <div class="disclaimer-block" style="margin-top:1rem;">
+        <strong>Important:</strong> ELWOIC is an independent, student-run, non-profit weather observation and information initiative. ELWOIC alerts are independent informational assessments and are not official government weather warnings. For current official warnings, emergency instructions and authoritative weather advisories, refer to the relevant competent authorities, including the <a href="https://mausam.imd.gov.in/" target="_blank" rel="noopener">India Meteorological Department</a>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <div class="cta-section">
+    <div class="wrap">
+      <p class="section-label" style="margin-bottom:.75rem;">Explore ELWOIC</p>
+      <div class="cta-grid">
+        <a class="cta-card" href="/weather/weather.html">
+          <div class="cta-icon">🌡️</div>
+          <div class="cta-label">Live data</div>
+          <div class="cta-title">Current Weather</div>
+        </a>
+        <a class="cta-card" href="/weather/weather.html#forecast">
+          <div class="cta-icon">🔭</div>
+          <div class="cta-label">3-hour prediction</div>
+          <div class="cta-title">Weather Forecast</div>
+        </a>
+        <a class="cta-card" href="/weather/weather.html#records">
+          <div class="cta-icon">📊</div>
+          <div class="cta-label">Historical observations</div>
+          <div class="cta-title">Weather Records</div>
+        </a>
+        <a class="cta-card" href="/how-elwoic-works.html">
+          <div class="cta-icon">⚙️</div>
+          <div class="cta-label">Behind the scenes</div>
+          <div class="cta-title">How ELWOIC Works</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── DETAIL OVERLAY ── -->
+<div class="overlay-backdrop" id="overlayBackdrop" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+  <div class="overlay-panel" id="overlayPanel">
+    <div class="overlay-header">
+      <div class="overlay-header-left">
+        <div class="overlay-type-row">
+          <span class="type-badge" id="overlayBadge"></span>
+          <span class="overlay-id" id="overlayId"></span>
+          <span class="status-badge">Archived</span>
+        </div>
+        <div id="overlayTitle" style="font-family:var(--serif);font-weight:600;font-size:1.1rem;color:var(--ink);"></div>
+      </div>
+      <button class="overlay-close" id="overlayClose" aria-label="Close alert detail">×</button>
+    </div>
+    <div class="overlay-body">
+      <div class="alert-text-block" id="overlayText"></div>
+      <table class="meta-table" id="overlayMeta" aria-label="Publication details">
+        <caption class="visually-hidden">Alert publication metadata</caption>
+        <tbody></tbody>
+      </table>
+      <div class="overlay-archive-note">
+        📁 This is a historical publication. It represents ELWOIC's assessment at the time it was issued and should not be read as a current forecast or active warning.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap-wide footer-grid">
+    <nav class="footer-nav" aria-label="Site sections">
+      <a href="/weather/weather.html">Current Weather</a>
+      <a href="/weather/weather.html#forecast">Forecast</a>
+      <a href="/weather/weather.html#records">Weather Records</a>
+      <a href="/weather/alerts.html">Alert Archive</a>
+      <a href="/how-elwoic-works.html">How ELWOIC Works</a>
+    </nav>
+    <p class="footer-meta">ELWOIC (Elamkulam Local Weather Observation and Information Centre) is a community-focused, student-run hyperlocal weather project for Elamkulam Panchayat, Malappuram, Kerala.</p>
+  </div>
+  <div class="wrap-wide footer-copy">© <span id="footerYear"></span> ELWOIC — Elamkulam Local Weather Observation and Information Centre.</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ─────────────────────────────────────────
+     CONFIG
+  ───────────────────────────────────────── */
+  var API = 'https://elwoic-whatsapp-api.aswanthkrishnak822.workers.dev/ewa/public';
+
+  var MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+  var MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+  /* ─────────────────────────────────────────
+     PARSE ALERT ID
+     EWA260921058  → type=EWA, yy=26,mm=09,dd=21,seq=058
+     EWAE260822001 → type=EWAE ...
+  ───────────────────────────────────────── */
+  function parseId(id) {
+    id = id.toUpperCase();
+    var m = id.match(/^(EWAE?)(\d{2})(\d{2})(\d{2})(\d+)([A-Z]?)$/);
+    if (!m) return null;
+    var type = m[1], yy = m[2], mm = m[3], dd = m[4], seq = m[5];
+    var year = 2000 + parseInt(yy, 10);
+    return { type, yy, mm, dd, seq, year,
+      dateStr: dd + '/' + mm + '/' + year,
+      isoDate: year + '-' + mm + '-' + dd,
+      monthKey: year + '-' + mm };
+  }
+
+  function fmtTimestamp(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    return d.toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    }) + ' · ' + d.toLocaleTimeString('en-IN', {
+      hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
+    }) + ' IST';
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
+  }
+
+  function fmtTime(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    return d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) + ' IST';
+  }
+
+  /* Extract a one-line title/summary from alert text */
+  function extractTitle(text) {
+    if (!text) return 'Weather Alert';
+    // First non-empty line that isn't just the ID
+    var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i];
+      // Skip lines that look like IDs or headers only
+      if (/^(EWA|EWAE)\d/i.test(l)) continue;
+      if (l.length < 6) continue;
+      return l.length > 80 ? l.slice(0, 78) + '…' : l;
+    }
+    return lines[0] || 'Weather Alert';
+  }
+
+  /* ─────────────────────────────────────────
+     STATE
+  ───────────────────────────────────────── */
+  var allAlerts = [];   // [{id, parsed, text, timestamp}]
+  var filtered  = [];
+  var activeType = 'all';
+  var activeYear = '';
+  var activeMonth = '';
+  var searchQuery = '';
+  var sortOrder = 'newest';
+
+  /* ─────────────────────────────────────────
+     FETCH
+  ───────────────────────────────────────── */
+  async function loadAlerts() {
+    try {
+      var res = await fetch(API);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var json = await res.json();
+      var data = json.data || {};
+
+      allAlerts = Object.keys(data).map(function(key) {
+        return { id: key, parsed: parseId(key), text: data[key].text || '', timestamp: data[key].timestamp || 0 };
+      }).filter(function(a) { return a.parsed; });
+
+      populateYearFilter();
+      applyFilters();
+    } catch (e) {
+      document.getElementById('alertList').innerHTML =
+        '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Unable to load the alert archive right now. Please try again shortly.</p></div>';
+      document.getElementById('resultsCount').textContent = '';
+    }
+  }
+
+  function populateYearFilter() {
+    var years = {};
+    allAlerts.forEach(function(a) { years[a.parsed.year] = true; });
+    var sorted = Object.keys(years).sort(function(a,b){ return b-a; });
+    var sel = document.getElementById('yearSelect');
+    sorted.forEach(function(y) {
+      var opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      sel.appendChild(opt);
+    });
+  }
+
+  /* ─────────────────────────────────────────
+     FILTER + SORT
+  ───────────────────────────────────────── */
+  function applyFilters() {
+    var q = searchQuery.toLowerCase().trim();
+
+    filtered = allAlerts.filter(function(a) {
+      // Type
+      if (activeType !== 'all' && a.parsed.type !== activeType) return false;
+      // Year
+      if (activeYear && String(a.parsed.year) !== activeYear) return false;
+      // Month
+      if (activeMonth && a.parsed.mm !== activeMonth) return false;
+      // Search
+      if (q) {
+        var haystack = (a.id + ' ' + a.text).toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+
+    // Sort
+    filtered.sort(function(a, b) {
+      var ta = a.timestamp || 0, tb = b.timestamp || 0;
+      return sortOrder === 'newest' ? tb - ta : ta - tb;
+    });
+
+    renderList();
+    updateCount();
+
+    // Handle ?id= deep link after first render
+    handleDeepLink();
+  }
+
+  function updateCount() {
+    var total = allAlerts.length;
+    var shown = filtered.length;
+    document.getElementById('resultsCount').textContent =
+      shown === total ? total + ' alerts in archive' : shown + ' of ' + total + ' alerts';
+  }
+
+  /* ─────────────────────────────────────────
+     RENDER
+  ───────────────────────────────────────── */
+  function renderList() {
+    var list = document.getElementById('alertList');
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>No alerts match your current filters.</p></div>';
+      return;
+    }
+
+    // Group by year → month
+    var groups = {}; // { "2026": { "09": [...] } }
+    filtered.forEach(function(a) {
+      var y = String(a.parsed.year);
+      var m = a.parsed.mm;
+      if (!groups[y]) groups[y] = {};
+      if (!groups[y][m]) groups[y][m] = [];
+      groups[y][m].push(a);
+    });
+
+    // Years sorted
+    var years = Object.keys(groups).sort(function(a,b){ return sortOrder==='newest'?b-a:a-b; });
+
+    var html = '';
+    years.forEach(function(year) {
+      html += '<div class="year-group">';
+      html += '<div class="year-heading">' + year + '</div>';
+
+      var months = Object.keys(groups[year]).sort(function(a,b){ return sortOrder==='newest'?b-a:a-b; });
+      months.forEach(function(mm) {
+        var mIdx = parseInt(mm, 10) - 1;
+        html += '<div class="month-group">';
+        html += '<div class="month-heading">' + MONTHS[mIdx] + '</div>';
+
+        groups[year][mm].forEach(function(a) {
+          var p = a.parsed;
+          var isEwae = p.type === 'EWAE';
+          var title = extractTitle(a.text);
+          var dt = a.timestamp ? fmtTimestamp(a.timestamp) : (p.dd + ' ' + MONTHS_SHORT[parseInt(p.mm,10)-1] + ' ' + p.year);
+
+          html += '<a class="alert-card ' + (isEwae?'ewae-card':'ewa-card') + '" data-id="' + esc(a.id) + '" href="?id=' + esc(a.id) + '" role="article" aria-label="' + esc(p.type + ' ' + a.id) + '">';
+          html += '<div class="card-icon" aria-hidden="true">' + (isEwae?'🚨':'🌦️') + '</div>';
+          html += '<div class="card-body">';
+          html += '<div class="card-top">';
+          html += '<span class="type-badge ' + p.type.toLowerCase() + '">' + p.type + '</span>';
+          html += '<span class="card-id">' + esc(a.id) + '</span>';
+          html += '</div>';
+          html += '<div class="card-title">' + esc(title) + '</div>';
+          html += '<div class="card-datetime">' + esc(dt) + '</div>';
+          html += '</div>';
+          html += '<span class="card-arrow" aria-hidden="true">›</span>';
+          html += '</a>';
+        });
+
+        html += '</div>'; // month-group
+      });
+
+      html += '</div>'; // year-group
+    });
+
+    list.innerHTML = html;
+
+    // Attach click handlers
+    list.querySelectorAll('.alert-card').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        e.preventDefault();
+        var id = card.getAttribute('data-id');
+        openAlert(id);
+        history.pushState(null, '', '?id=' + id);
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────
+     DETAIL OVERLAY
+  ───────────────────────────────────────── */
+  function openAlert(id) {
+    var alert = allAlerts.find(function(a){ return a.id === id; });
+    if (!alert) return;
+    var p = alert.parsed;
+    var isEwae = p.type === 'EWAE';
+
+    document.getElementById('overlayBadge').textContent = p.type;
+    document.getElementById('overlayBadge').className = 'type-badge ' + p.type.toLowerCase();
+    document.getElementById('overlayId').textContent = id;
+    document.getElementById('overlayTitle').textContent = extractTitle(alert.text);
+    document.getElementById('overlayText').textContent = alert.text;
+
+    // Meta table
+    var tbody = document.querySelector('#overlayMeta tbody');
+    var rows = [
+      ['Alert ID',             id],
+      ['Type',                 p.type + (isEwae ? ' — Emergency / Event Alert' : ' — Weather Alert')],
+      ['Published',            alert.timestamp ? fmtDate(alert.timestamp) : p.dd+'/'+p.mm+'/'+p.year],
+      ['Time',                 alert.timestamp ? fmtTime(alert.timestamp) : '—'],
+      ['Area',                 'Elamkulam, Malappuram, Kerala'],
+      ['Publishing body',      'ELWOIC Public Information Team'],
+      ['Status',               'Archived — Historical publication']
+    ];
+    tbody.innerHTML = rows.map(function(r){
+      return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>';
+    }).join('');
+
+    var backdrop = document.getElementById('overlayBackdrop');
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('overlayClose').focus();
+  }
+
+  function closeOverlay() {
+    document.getElementById('overlayBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+    history.pushState(null, '', location.pathname);
+  }
+
+  document.getElementById('overlayClose').addEventListener('click', closeOverlay);
+  document.getElementById('overlayBackdrop').addEventListener('click', function(e) {
+    if (e.target === this) closeOverlay();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeOverlay();
+  });
+
+  /* Deep link: ?id=EWA260921058 */
+  var deepLinkHandled = false;
+  function handleDeepLink() {
+    if (deepLinkHandled) return;
+    var params = new URLSearchParams(location.search);
+    var id = params.get('id');
+    if (id) {
+      deepLinkHandled = true;
+      openAlert(id.toUpperCase());
+    }
+  }
+
+  /* ─────────────────────────────────────────
+     CONTROLS
+  ───────────────────────────────────────── */
+  // Type toggle
+  document.querySelectorAll('.type-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeType = btn.getAttribute('data-type');
+      applyFilters();
+    });
+  });
+
+  // Year
+  document.getElementById('yearSelect').addEventListener('change', function() {
+    activeYear = this.value;
+    applyFilters();
+  });
+
+  // Month
+  document.getElementById('monthSelect').addEventListener('change', function() {
+    activeMonth = this.value;
+    applyFilters();
+  });
+
+  // Search (debounced)
+  var searchTimer;
+  document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    var v = this.value;
+    searchTimer = setTimeout(function() {
+      searchQuery = v;
+      applyFilters();
+    }, 250);
+  });
+
+  // Sort
+  document.getElementById('sortSelect').addEventListener('change', function() {
+    sortOrder = this.value;
+    applyFilters();
+  });
+
+  /* ─────────────────────────────────────────
+     UTILITIES
+  ───────────────────────────────────────── */
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ─────────────────────────────────────────
+     INIT
+  ───────────────────────────────────────── */
+  loadAlerts();
+
+})();
+</script>
+</body>
+</html>
