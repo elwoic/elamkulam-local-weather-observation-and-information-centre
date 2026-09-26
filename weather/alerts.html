@@ -990,6 +990,15 @@ footer.site-footer { background: var(--surface-2); border-top: 1px solid var(--r
     var v = this.value;
     searchTimer = setTimeout(function() {
       searchQuery = v;
+      
+      // Automatically override and reset year/month filters when a search is active
+      if (searchQuery.trim() !== '') {
+        activeYear = '';
+        activeMonth = '';
+        document.getElementById('yearSelect').value = '';
+        document.getElementById('monthSelect').value = '';
+      }
+      
       applyFilters();
     }, 250);
   });
