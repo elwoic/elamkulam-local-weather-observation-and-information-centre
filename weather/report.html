@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Current Weather in Elamkulam | ELWOIC</title>
+<meta name="description" content="Live weather observations from the ELWOIC observation site in Elamkulam, Malappuram — temperature, rainfall, wind, pressure and air quality, updated continuously.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  :root{
+    --bg:            #F1F3EE;
+    --surface:       #FFFFFF;
+    --surface-2:     #FBFAF6;
+    --ink:           #1A2233;
+    --ink-soft:      #4E5768;
+    --ink-faint:     #7B8394;
+    --rule:          #DBE0D8;
+    --rule-strong:   #C4CBC1;
+
+    --teal:          #146661;
+    --teal-ink:      #0E4E4A;
+    --teal-tint:     #E4F0EC;
+
+    --amber:         #B9711F;
+    --amber-tint:    #F7ECDA;
+
+    --rain:          #24527E;
+    --rain-tint:     #E6EEF6;
+
+    --good-bg:       #E3F3E9; --good-ink: #1F5B37;
+    --warn-bg:       #FBEFDD; --warn-ink: #8A5316;
+    --bad-bg:        #FBE7E3; --bad-ink:  #8C3324;
+
+    --serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+    --sans:  "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+    --content-w: 42rem;
+    --wide-w: 60rem;
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:          #10151A;
+      --surface:     #171E24;
+      --surface-2:   #131A1F;
+      --ink:         #E9EDE9;
+      --ink-soft:    #AEB7B0;
+      --ink-faint:   #7C877E;
+      --rule:        #2A3A38;
+      --rule-strong: #37524E;
+      --teal:        #5CC2B8;
+      --teal-ink:    #8AD8CF;
+      --teal-tint:   #16302C;
+      --amber:       #E2A85B;
+      --amber-tint:  #34281A;
+      --rain:        #7FADD9;
+      --rain-tint:   #17232F;
+      --good-bg:     #16301F; --good-ink: #78D69B;
+      --warn-bg:     #332512; --warn-ink: #E3AA5C;
+      --bad-bg:      #331714; --bad-ink:  #E68A7C;
+    }
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:var(--teal-ink); text-decoration-thickness:1px; text-underline-offset:2px; }
+  a:hover{ color:var(--teal); }
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:2px;
+    border-radius:3px;
+  }
+
+  .skip-link{
+    position:absolute; left:-999px; top:0;
+    background:var(--ink); color:var(--bg);
+    padding:.6rem 1rem; z-index:100; border-radius:0 0 6px 0;
+  }
+  .skip-link:focus{ left:0; }
+
+  h1,h2,h3{
+    font-family:var(--serif);
+    font-weight:600;
+    line-height:1.15;
+    margin:0 0 .5rem;
+    letter-spacing:-0.01em;
+  }
+  p{ margin:0 0 1rem; color:var(--ink-soft); }
+  .lede p{ color:var(--ink); }
+
+  .wrap{ max-width:var(--content-w); margin:0 auto; padding:0 1.25rem; }
+  .wrap-wide{ max-width:var(--wide-w); margin:0 auto; padding:0 1.25rem; }
+
+  section{ padding:2.75rem 0; border-bottom:1px solid var(--rule); }
+  section:last-of-type{ border-bottom:none; }
+
+  .eyebrow{
+    font-size:.8rem;
+    color:var(--teal-ink);
+    font-weight:600;
+    margin:0 0 .35rem;
+  }
+
+  /* ============================================================
+     HEADER + NAV
+     ============================================================ */
+  header.site-header{
+    background:var(--surface);
+    border-bottom:1px solid var(--rule);
+  }
+  .site-header-inner{
+    max-width:var(--wide-w); margin:0 auto; padding:0 1.25rem;
+    display:flex; align-items:center; justify-content:space-between;
+    min-height:64px; gap:1rem; flex-wrap:wrap;
+  }
+  .wordmark{
+    font-family:var(--serif); font-weight:600; font-size:1.15rem;
+    color:var(--ink); text-decoration:none; letter-spacing:-0.01em;
+  }
+  .wordmark span{ color:var(--teal-ink); }
+  nav.primary-nav{ display:flex; gap:1.4rem; flex-wrap:wrap; }
+  nav.primary-nav a{
+    color:var(--ink-soft); text-decoration:none; font-size:.92rem; font-weight:500;
+    padding:.4rem 0; border-bottom:2px solid transparent;
+  }
+  nav.primary-nav a:hover{ color:var(--ink); }
+  nav.primary-nav a[aria-current="page"]{
+    color:var(--teal-ink); border-bottom-color:var(--teal);
+  }
+
+  /* ============================================================
+     INTRO
+     ============================================================ */
+  .page-intro{ padding-top:3rem; }
+  .page-intro h1{ font-size:clamp(2rem, 4vw, 2.7rem); }
+  .page-intro .kicker{
+    font-family:var(--sans); font-weight:500; color:var(--ink-faint);
+    font-size:1.05rem; margin:0 0 1.1rem;
+  }
+  .on-this-page{
+    margin-top:1.4rem; display:flex; flex-wrap:wrap; gap:.5rem 1.1rem;
+    font-size:.86rem;
+  }
+  .on-this-page a{ color:var(--ink-faint); text-decoration:none; }
+  .on-this-page a:hover{ color:var(--teal-ink); text-decoration:underline; }
+
+  /* ============================================================
+     DASHBOARD
+     ============================================================ */
+  .dashboard-section{ padding-top:1.75rem; padding-bottom:2.5rem; }
+  .status-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:.75rem; flex-wrap:wrap; margin-bottom:1.25rem;
+  }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.82rem; font-weight:600; padding:.32rem .7rem;
+    border-radius:99px;
+  }
+  .status-pill .dot{ width:.45rem; height:.45rem; border-radius:50%; background:currentColor; }
+  .status-pill.receiving{ background:var(--good-bg); color:var(--good-ink); }
+  .status-pill.delayed{   background:var(--warn-bg); color:var(--warn-ink); }
+  .status-pill.interrupted,
+  .status-pill.error{     background:var(--bad-bg);  color:var(--bad-ink); }
+  .status-pill.loading{   background:var(--rule); color:var(--ink-faint); }
+
+  .updated-at{ font-size:.82rem; color:var(--ink-faint); }
+
+  .dashboard-card{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+  }
+
+  .hero-card{
+    display:grid; grid-template-columns:1fr;
+    gap:1.5rem; padding:1.75rem;
+  }
+  @media (min-width:640px){
+    .hero-card{ grid-template-columns:auto 1fr; align-items:center; }
+  }
+  .hero-temp{
+    font-family:var(--serif); font-weight:600;
+    font-size:clamp(3.4rem, 11vw, 5rem);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .hero-temp sup{ font-size:.42em; font-weight:500; color:var(--ink-faint); top:-1.2em; }
+  .hero-sub{ font-size:.92rem; color:var(--ink-faint); margin-top:.35rem; }
+  .hero-secondary{
+    display:flex; gap:2rem; flex-wrap:wrap;
+  }
+  .hero-stat .label{ font-size:.8rem; color:var(--ink-faint); margin-bottom:.2rem; }
+  .hero-stat .value{
+    font-family:var(--sans); font-weight:600; font-size:1.3rem;
+    font-variant-numeric:tabular-nums; color:var(--ink);
+  }
+
+  .conditions-grid{
+    margin-top:1rem;
+    display:grid; grid-template-columns:1fr;
+    gap:1rem;
+  }
+  @media (min-width:640px){
+    .conditions-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media (min-width:960px){
+    .conditions-grid{ grid-template-columns:repeat(4, 1fr); }
+  }
+
+  .cond-card{ padding:1.15rem 1.25rem 1.3rem; }
+  .cond-card h3{
+    font-family:var(--sans); font-size:.86rem; font-weight:600;
+    color:var(--ink-faint); margin-bottom:.85rem;
+  }
+  .cond-row{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding:.3rem 0; border-top:1px solid var(--rule);
+  }
+  .cond-row:first-of-type{ border-top:none; padding-top:0; }
+  .cond-row .k{ font-size:.85rem; color:var(--ink-soft); }
+  .cond-row .v{
+    font-weight:600; font-variant-numeric:tabular-nums; color:var(--ink);
+    font-size:.95rem;
+  }
+
+  .wind-card .compass{
+    display:flex; align-items:center; gap:.9rem; margin-bottom:.9rem;
+  }
+  .compass svg{ width:44px; height:44px; flex:none; }
+  .compass-needle{ transform-origin:32px 32px; transition:transform .5s ease; }
+  .compass-readout .value{ font-size:1.15rem; }
+  .compass-readout .label{ font-size:.78rem; color:var(--ink-faint); }
+
+  .fade-in{ animation:fadeIn .4s ease both; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(2px);} to{ opacity:1; transform:none; } }
+
+  .dashboard-note{
+    margin-top:1.1rem; font-size:.82rem; color:var(--ink-faint);
+  }
+
+  /* ============================================================
+     MEASUREMENT GLOSSARY
+     ============================================================ */
+  .glossary{
+    display:grid; grid-template-columns:1fr; gap:1.4rem;
+  }
+  @media (min-width:640px){
+    .glossary{ grid-template-columns:1fr 1fr; column-gap:2.5rem; }
+  }
+  .gloss-item dt{
+    font-family:var(--serif); font-weight:600; font-size:1.05rem;
+    color:var(--ink); margin-bottom:.25rem;
+  }
+  .gloss-item dd{ margin:0; color:var(--ink-soft); font-size:.95rem; }
+
+  /* ============================================================
+     SOURCE TABLE
+     ============================================================ */
+  table.source-table{
+    width:100%; border-collapse:collapse; margin-top:1.4rem;
+    font-size:.92rem;
+  }
+  table.source-table caption{ text-align:left; sr-only:none; }
+  .source-table th, .source-table td{
+    text-align:left; padding:.65rem .75rem; border-bottom:1px solid var(--rule);
+  }
+  .source-table th{
+    font-weight:600; color:var(--ink-faint); font-size:.8rem;
+    border-bottom:1px solid var(--rule-strong);
+  }
+  .source-table td:first-child{ color:var(--ink); font-weight:500; }
+  .source-table td:last-child{ color:var(--ink-soft); }
+
+  /* ============================================================
+     DATA TIMESTAMP PANEL
+     ============================================================ */
+  .timestamp-panel{
+    background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius);
+    padding:1.4rem 1.5rem; margin-top:1.2rem;
+  }
+  .timestamp-panel dl{ margin:0; display:grid; gap:.6rem; }
+  .timestamp-panel .row{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .timestamp-panel dt{ color:var(--ink-faint); font-size:.85rem; }
+  .timestamp-panel dd{ margin:0; font-weight:600; font-variant-numeric:tabular-nums; }
+
+  /* ============================================================
+     ACCORDIONS
+     ============================================================ */
+  details.disclosure{
+    border:1px solid var(--rule); border-radius:var(--radius);
+    background:var(--surface); margin-top:.9rem; overflow:hidden;
+  }
+  details.disclosure + details.disclosure{ margin-top:.9rem; }
+  details.disclosure summary{
+    cursor:pointer; list-style:none; padding:1rem 1.25rem;
+    font-family:var(--serif); font-weight:600; font-size:1.05rem;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  }
+  details.disclosure summary::-webkit-details-marker{ display:none; }
+  details.disclosure summary::after{
+    content:"+"; font-family:var(--sans); font-weight:400; color:var(--ink-faint);
+    font-size:1.4rem; line-height:1; flex:none;
+  }
+  details.disclosure[open] summary::after{ content:"–"; }
+  details.disclosure .disclosure-body{
+    padding:0 1.25rem 1.25rem; color:var(--ink-soft); font-size:.95rem;
+  }
+  details.disclosure .disclosure-body p:last-child{ margin-bottom:0; }
+
+  /* ============================================================
+     CLOSING / ABOUT
+     ============================================================ */
+  .about-block{
+    background:var(--teal-tint); border-radius:var(--radius);
+    padding:1.6rem 1.75rem; margin-top:.5rem;
+  }
+  .about-block h2{ font-size:1.3rem; }
+  .about-block p{ color:var(--ink-soft); }
+  .about-block p:last-child{ margin-bottom:0; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer.site-footer{
+    background:var(--surface-2); border-top:1px solid var(--rule);
+    padding:2.5rem 0 3rem;
+  }
+  .footer-grid{
+    display:flex; flex-wrap:wrap; gap:2rem 3rem; justify-content:space-between;
+  }
+  .footer-nav{ display:flex; flex-direction:column; gap:.5rem; }
+  .footer-nav a{ color:var(--ink-soft); text-decoration:none; font-size:.9rem; }
+  .footer-nav a:hover{ color:var(--teal-ink); }
+  .footer-meta{ font-size:.82rem; color:var(--ink-faint); max-width:26rem; }
+  .footer-copy{
+    margin-top:2rem; font-size:.78rem; color:var(--ink-faint);
+    border-top:1px solid var(--rule); padding-top:1.2rem;
+  }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to weather data</a>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="wordmark" href="/">ELWO<span>IC</span></a>
+    <!-- Adjust these hrefs to match your actual filenames -->
+    <nav class="primary-nav" aria-label="Weather pages">
+      <a href="/current-weather.html" aria-current="page">Current Weather</a>
+      <a href="/Forecast.html">Forecast</a>
+      <a href="/weather-records.html">Weather Records</a>
+      <a href="/weather-data.html">Data &amp; Methodology</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="page-intro">
+    <div class="wrap">
+      <p class="kicker">Current Weather</p>
+      <h1>Live local weather conditions in Elamkulam</h1>
+      <div class="lede">
+        <p>This page shows the latest observations from the ELWOIC observation site in Elamkulam, gathered continuously and processed through ELWOIC's own systems, together with supporting information from external weather sources where it adds useful context.</p>
+      </div>
+      <nav class="on-this-page" aria-label="On this page">
+        <a href="#dashboard">Current conditions</a>
+        <a href="#measurements">What these mean</a>
+        <a href="#data-source">Where the data comes from</a>
+        <a href="#data-timestamp">Data freshness</a>
+        <a href="#limitations">Limitations</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="dashboard-section" id="dashboard">
+    <div class="wrap-wide">
+
+      <div class="status-row">
+        <span class="status-pill loading" id="statusPill">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="statusText">Loading current conditions…</span>
+        </span>
+        <span class="updated-at" id="updatedAtText"></span>
+      </div>
+
+      <div class="dashboard-card hero-card" id="heroCard" aria-live="polite">
+        <div>
+          <div class="hero-temp" id="tempValue">—<sup>°C</sup></div>
+          <div class="hero-sub">Outdoor air temperature, Elamkulam observation site</div>
+        </div>
+        <div class="hero-secondary">
+          <div class="hero-stat">
+            <div class="label">Feels like</div>
+            <div class="value" id="feelsLikeValue">—</div>
+          </div>
+          <div class="hero-stat">
+            <div class="label">Dew point</div>
+            <div class="value" id="dewPointValue">—</div>
+          </div>
+          <div class="hero-stat">
+            <div class="label">Humidity</div>
+            <div class="value" id="humidityValue">—</div>
+          </div>
+          <div class="hero-stat">
+            <div class="label">Pressure</div>
+            <div class="value" id="pressureValue">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="conditions-grid">
+
+        <div class="dashboard-card cond-card wind-card">
+          <h3>Wind</h3>
+          <div class="compass">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="none" stroke="var(--rule-strong)" stroke-width="1.5"/>
+              <text x="32" y="10" text-anchor="middle" font-size="7" fill="var(--ink-faint)" font-family="var(--sans)">N</text>
+              <g class="compass-needle" id="windNeedle">
+                <polygon points="32,12 27,34 32,30 37,34" fill="var(--rain)"/>
+              </g>
+              <circle cx="32" cy="32" r="2.5" fill="var(--ink-faint)"/>
+            </svg>
+            <div class="compass-readout">
+              <div class="value" id="windDirValue">—</div>
+              <div class="label">Direction</div>
+            </div>
+          </div>
+          <div class="cond-row"><span class="k">Speed</span><span class="v" id="windSpeedValue">—</span></div>
+          <div class="cond-row"><span class="k">Gust</span><span class="v" id="windGustValue">—</span></div>
+        </div>
+
+        <div class="dashboard-card cond-card">
+          <h3>Rainfall</h3>
+          <div class="cond-row"><span class="k">Today's total</span><span class="v" id="rainDailyValue">—</span></div>
+          <div class="cond-row"><span class="k">Current rate</span><span class="v" id="rainRateValue">—</span></div>
+        </div>
+
+        <div class="dashboard-card cond-card">
+          <h3>Sun</h3>
+          <div class="cond-row"><span class="k">UV index</span><span class="v" id="uvValue">—</span></div>
+          <div class="cond-row"><span class="k">Solar radiation</span><span class="v" id="solarValue">—</span></div>
+        </div>
+
+        <div class="dashboard-card cond-card">
+          <h3>Air quality</h3>
+          <div class="cond-row"><span class="k">Condition</span><span class="v" id="aqiCondValue">—</span></div>
+          <div class="cond-row"><span class="k">PM2.5</span><span class="v" id="pm25Value">—</span></div>
+          <div class="cond-row"><span class="k">PM10</span><span class="v" id="pm10Value">—</span></div>
+        </div>
+
+      </div>
+
+      <p class="dashboard-note">Readings refresh automatically about once a minute. Some figures — like air quality — depend on a second data source and may take a little longer to appear or occasionally be unavailable.</p>
+    </div>
+  </section>
+
+  <section id="measurements">
+    <div class="wrap">
+      <p class="eyebrow">About these observations</p>
+      <h2>What these measurements mean</h2>
+      <dl class="glossary">
+        <div class="gloss-item">
+          <dt>Temperature</dt>
+          <dd>Air temperature measured at the ELWOIC local observation site.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Feels like temperature</dt>
+          <dd>An apparent-temperature estimate of how current conditions may feel to the human body. It accounts for temperature, humidity and wind.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Humidity</dt>
+          <dd>Relative humidity: how much moisture is in the air compared to the maximum the air can hold at the current temperature.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Wind</dt>
+          <dd>Speed, direction and gust readings describe air movement measured at the observation site itself.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Rainfall</dt>
+          <dd>Precipitation detected by the local weather station. Rainfall can vary considerably over short distances, even within Elamkulam.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Atmospheric pressure</dt>
+          <dd>Air pressure at the observation site. Changes in pressure are a useful early signal when weather conditions are developing.</dd>
+        </div>
+        <div class="gloss-item">
+          <dt>Air quality</dt>
+          <dd>Measurements from ELWOIC's outdoor air-quality monitor, including particulate matter (PM2.5, PM10) where available.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="data-source">
+    <div class="wrap">
+      <p class="eyebrow">Observation source</p>
+      <h2>Where does this data come from?</h2>
+      <p>ELWOIC combines local observations with selected external weather information. The primary readings on this page come from equipment operating at the ELWOIC observation site in Elamkulam.</p>
+
+      <table class="source-table">
+        <caption class="visually-hidden">Source of each measurement shown on this page</caption>
+        <thead>
+          <tr><th scope="col">Information</th><th scope="col">Source</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Temperature</td><td>ELWOIC local weather station</td></tr>
+          <tr><td>Humidity</td><td>ELWOIC local weather station</td></tr>
+          <tr><td>Wind</td><td>ELWOIC local weather station</td></tr>
+          <tr><td>Rainfall</td><td>ELWOIC local weather station</td></tr>
+          <tr><td>Air quality</td><td>ELWOIC outdoor air-quality monitor</td></tr>
+          <tr><td>Supporting weather information</td><td>External weather sources</td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:1.2rem;">Local observations are transmitted automatically to ELWOIC's backend systems and are generally processed at roughly one-minute intervals, subject to equipment, network and service availability.</p>
+    </div>
+  </section>
+
+  <section id="data-timestamp">
+    <div class="wrap">
+      <p class="eyebrow">Data timestamp</p>
+      <h2>How fresh is this data?</h2>
+      <div class="timestamp-panel">
+        <dl>
+          <div class="row">
+            <dt>Last observation received</dt>
+            <dd id="tsLastObserved">Loading…</dd>
+          </div>
+          <div class="row">
+            <dt>Data status</dt>
+            <dd id="tsStatus">Loading…</dd>
+          </div>
+        </dl>
+      </div>
+      <p style="margin-top:1.1rem;">Observation time refers to when the measurement itself was taken, and may differ slightly from the time you're viewing this page.</p>
+    </div>
+  </section>
+
+  <section id="limitations">
+    <div class="wrap">
+      <p class="eyebrow">Reading this data carefully</p>
+      <h2>Local observation limitations</h2>
+
+      <details class="disclosure">
+        <summary>About local observations</summary>
+        <div class="disclosure-body">
+          <p>The measurements shown here represent conditions at the ELWOIC observation site. Weather can vary between locations, even within Elamkulam — so the ELWOIC observation system isn't intended to represent every location in the area.</p>
+          <p>Readings can also be affected by sensor characteristics, installation conditions, temporary communication problems and equipment availability.</p>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>External weather information</summary>
+        <div class="disclosure-body">
+          <p>Some information on ELWOIC may originate from external weather services or publicly available meteorological information, rather than from ELWOIC's own equipment. Where it's used, it's identified separately from ELWOIC's direct local observations, and it may follow a different geographical coverage, update schedule and methodology.</p>
+          <!-- Update this href to your actual "How ELWOIC Works" page -->
+          <p>Read more on <a href="/how-elwoic-works.html">How ELWOIC Works</a>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="about-block">
+        <h2>About ELWOIC Weather Information</h2>
+        <p>ELWOIC is an independent, student-run, non-profit local weather observation and information project operating in Elamkulam, Malappuram, Kerala.</p>
+        <p>The information on this page is intended for local weather awareness. It should not be treated as a replacement for official weather warnings or emergency instructions issued by competent authorities.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap-wide footer-grid">
+    <nav class="footer-nav" aria-label="Weather pages">
+      <a href="/current-weather.html">Current Weather</a>
+      <a href="/Forecast.html">Forecast</a>
+      <a href="/weather-records.html">Weather Records</a>
+      <a href="/weather-data.html">Data &amp; Methodology</a>
+      <a href="/how-elwoic-works.html">How ELWOIC Works</a>
+    </nav>
+    <p class="footer-meta">ELWOIC (Elamkulam Local Weather Observation and Information Centre) is a community-focused, student-run hyperlocal weather project for Elamkulam Panchayat, Malappuram, Kerala.</p>
+  </div>
+  <div class="wrap-wide footer-copy">
+    © <span id="footerYear"></span> ELWOIC — Elamkulam Local Weather Observation and Information Centre.
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var PETRICHOR_URL = "https://elwoic-petrichor-dx3n8-stream.bold-waterfall-0d01.workers.dev/live";
+  var NOWCAST_URL    = "https://elwoic-nowcast-engine.bold-waterfall-0d01.workers.dev/";
+  var REFRESH_MS     = 60000;
+
+  document.getElementById("footerYear").textContent = new Date().getFullYear();
+
+  function $(id){ return document.getElementById(id); }
+
+  function setText(id, text){
+    var el = $(id);
+    if (!el) return;
+    el.textContent = text;
+  }
+
+  function fmt(num, digits){
+    if (num === null || num === undefined || isNaN(num)) return null;
+    return Number(num).toFixed(digits === undefined ? 1 : digits);
+  }
+
+  function fmtIST(isoString){
+    try{
+      var d = new Date(isoString);
+      var formatted = new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "numeric", month: "long", year: "numeric",
+        hour: "numeric", minute: "2-digit", hour12: true
+      }).format(d);
+      return formatted + " IST";
+    } catch (e){
+      return "Unavailable";
+    }
+  }
+
+  function minutesSince(isoString){
+    var then = new Date(isoString).getTime();
+    if (isNaN(then)) return null;
+    return (Date.now() - then) / 60000;
+  }
+
+  function applyStatus(minsAgo){
+    var pill = $("statusPill");
+    var text = $("statusText");
+    if (minsAgo === null){
+      pill.className = "status-pill error";
+      text.textContent = "Data status unknown";
+      setText("tsStatus", "Unknown — could not read the last observation time.");
+      return;
+    }
+    var label, cls, tsLabel;
+    if (minsAgo <= 3){
+      cls = "receiving"; label = "Receiving normally";
+      tsLabel = "Receiving normally";
+    } else if (minsAgo <= 15){
+      cls = "delayed"; label = "Data delayed";
+      tsLabel = "Delayed — last update " + Math.round(minsAgo) + " min ago.";
+    } else {
+      cls = "interrupted"; label = "Data interrupted";
+      tsLabel = "Interrupted — last update " + Math.round(minsAgo) + " min ago. This page will keep trying.";
+    }
+    pill.className = "status-pill " + cls;
+    text.textContent = label;
+    setText("tsStatus", tsLabel);
+  }
+
+  function compassLabel(deg){
+    var dirs = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+    if (deg === null || deg === undefined || isNaN(deg)) return null;
+    return dirs[Math.round(deg / 22.5) % 16];
+  }
+
+  function markFresh(el){
+    if (!el) return;
+    el.classList.remove("fade-in");
+    // force reflow so the animation can replay
+    void el.offsetWidth;
+    el.classList.add("fade-in");
+  }
+
+  async function loadStation(){
+    var res = await fetch(PETRICHOR_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Station fetch failed: " + res.status);
+    var data = await res.json();
+    var live = data.live_data || {};
+    var temp = live.temperature || {};
+    var hum  = live.humidity || {};
+    var pres = live.pressure || {};
+    var wind = live.wind || {};
+    var rain = live.rain || {};
+
+    var t = temp.outdoor;
+    if (t !== null && t !== undefined){
+      $("tempValue").innerHTML = fmt(t, 1) + "<sup>°C</sup>";
+    }
+    setText("feelsLikeValue", fmt(temp.feels_like_outdoor, 1) !== null ? fmt(temp.feels_like_outdoor, 1) + "°C" : "—");
+    setText("dewPointValue",  fmt(temp.dew_point_outdoor, 1)  !== null ? fmt(temp.dew_point_outdoor, 1) + "°C"  : "—");
+    setText("humidityValue",  hum.outdoor !== undefined && hum.outdoor !== null ? Math.round(hum.outdoor) + "%" : "—");
+    setText("pressureValue",  fmt(pres.relative_hpa, 1) !== null ? fmt(pres.relative_hpa, 1) + " hPa" : "—");
+
+    var dirDeg = wind.direction_degrees;
+    var dirLabel = wind.direction_compass || compassLabel(dirDeg);
+    setText("windDirValue", dirLabel || "—");
+    setText("windSpeedValue", fmt(wind.speed_kmh, 1) !== null ? fmt(wind.speed_kmh, 1) + " km/h" : "—");
+    setText("windGustValue",  fmt(wind.gust_kmh, 1)  !== null ? fmt(wind.gust_kmh, 1)  + " km/h" : "—");
+    var needle = $("windNeedle");
+    if (needle && dirDeg !== undefined && dirDeg !== null && !isNaN(dirDeg)){
+      needle.style.transform = "rotate(" + dirDeg + "deg)";
+    }
+
+    setText("rainDailyValue", fmt(rain.daily_mm, 1) !== null ? fmt(rain.daily_mm, 1) + " mm" : "—");
+    setText("rainRateValue",  fmt(rain.rate_mm_hr, 1) !== null ? fmt(rain.rate_mm_hr, 1) + " mm/hr" : "—");
+
+    setText("uvValue", fmt(live.uvi, 1) !== null ? fmt(live.uvi, 1) : "—");
+    setText("solarValue", live.solar_wm2 !== undefined && live.solar_wm2 !== null ? Math.round(live.solar_wm2) + " W/m²" : "—");
+
+    ["tempValue","feelsLikeValue","dewPointValue","humidityValue","pressureValue",
+     "windDirValue","windSpeedValue","windGustValue","rainDailyValue","rainRateValue",
+     "uvValue","solarValue"].forEach(function(id){ markFresh($(id)); });
+
+    var updatedAt = data.updated_at;
+    if (updatedAt){
+      setText("tsLastObserved", fmtIST(updatedAt));
+      setText("updatedAtText", "Updated " + fmtIST(updatedAt));
+      applyStatus(minutesSince(updatedAt));
+    } else {
+      applyStatus(null);
+    }
+  }
+
+  async function loadAirQuality(){
+    try{
+      var res = await fetch(NOWCAST_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("Nowcast fetch failed: " + res.status);
+      var data = await res.json();
+      var aq = (data.conditions && data.conditions.air_quality) || {};
+      var an = data.analytics || {};
+      setText("aqiCondValue", aq.en || "—");
+      setText("pm25Value", an.pm2_5 !== undefined && an.pm2_5 !== null ? Math.round(an.pm2_5) + " µg/m³" : "—");
+      setText("pm10Value", an.pm10 !== undefined && an.pm10 !== null ? Math.round(an.pm10) + " µg/m³" : "—");
+      ["aqiCondValue","pm25Value","pm10Value"].forEach(function(id){ markFresh($(id)); });
+    } catch(e){
+      setText("aqiCondValue", "Not available right now");
+      setText("pm25Value", "—");
+      setText("pm10Value", "—");
+    }
+  }
+
+  async function refresh(){
+    try{
+      await loadStation();
+    } catch(e){
+      var pill = $("statusPill");
+      pill.className = "status-pill error";
+      setText("statusText", "Unable to load current conditions");
+      setText("tsStatus", "Unable to reach the ELWOIC station feed right now. Retrying automatically.");
+    }
+    loadAirQuality();
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+})();
+</script>
+
+</body>
+</html>
