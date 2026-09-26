@@ -1190,14 +1190,26 @@
       var minV=vals.reduce(function(a,b){return a<b?a:b;});
       var avgV=vals.reduce(function(a,b){return a+b;})/vals.length;
 
-      if(param==="rain_daily"||param==="rain_rate"){
-        var total=vals.reduce(function(a,b){return a+b;},0);
+      if(param==="rain_daily"){
+        // rain_daily is a CUMULATIVE counter that resets at midnight.
+        // Summing readings gives nonsense. The peak value = the day's max accumulation.
+        // For multi-day views the peak of the counter is the best "total" to show.
         renderStats([
-          {label:"Total",value:fmt(total,1)+meta.unit},
-          {label:"Peak",value:fmt(maxV,1)+meta.unit,sub:maxIdx>=0?labels[maxIdx]:""},
+          {label:"Peak accumulation",value:fmt(maxV,1)+meta.unit,sub:maxIdx>=0?labels[maxIdx]:""},
+          {label:"Latest reading",value:fmt(vals[vals.length-1],1)+meta.unit},
           {label:"Readings",value:vals.length.toString()}
         ]);
-        setText("recordsNarrative","Total accumulation over the selected period: "+fmt(total,1)+meta.unit+".");
+        setText("recordsNarrative","The daily rain counter peaked at "+fmt(maxV,1)+meta.unit+(maxIdx>=0?" (at "+labels[maxIdx]+")":"")+". This is a cumulative counter that resets each midnight.");
+      } else if(param==="rain_rate"){
+        // rain_rate is a per-minute intensity value — show peak and non-zero average
+        var rainingVals=vals.filter(function(v){return v>0;});
+        var rainAvg=rainingVals.length?rainingVals.reduce(function(a,b){return a+b;})/rainingVals.length:0;
+        renderStats([
+          {label:"Peak rate",value:fmt(maxV,1)+meta.unit,sub:maxIdx>=0?labels[maxIdx]:""},
+          {label:"Avg (when raining)",value:rainingVals.length?fmt(rainAvg,1)+meta.unit:"No rain"},
+          {label:"Readings",value:vals.length.toString()}
+        ]);
+        setText("recordsNarrative","Peak rain rate of "+fmt(maxV,1)+meta.unit+(maxIdx>=0?" at "+labels[maxIdx]:"")+".");
       } else {
         renderStats([
           {label:"Average",value:fmt(avgV,1)+meta.unit},
