@@ -658,7 +658,7 @@
           <div class="control-group">
             <div class="control-label">Time range</div>
             <div class="segmented" id="rangeSegmented" role="group" aria-label="Select time range">
-              <button type="button" data-range="24h" aria-pressed="true">24 hours</button>
+              <button type="button" data-range="today" aria-pressed="true">Today</button>
               <button type="button" data-range="7d" aria-pressed="false">7 days</button>
               <button type="button" data-range="30d" aria-pressed="false">30 days</button>
               <button type="button" data-range="custom" aria-pressed="false">Custom date</button>
@@ -1111,7 +1111,7 @@
   /* ───────────────────────────────────────────────
      WEATHER RECORDS
   ─────────────────────────────────────────────── */
-  var recState = { param:"outdoor_temp", range:"24h" };
+  var recState = { param:"outdoor_temp", range:"today" };
 
   function renderStats(list){
     var el=$("recordsStats");
@@ -1139,7 +1139,7 @@
     var param=recState.param;
     var meta=PARAM_META[param]||{label:param,unit:"",color:"var(--teal)"};
     var rangeLabel={
-      "24h":"last 24 hours","7d":"last 7 days","30d":"last 30 days","custom":"selected date"
+      "today":"today","7d":"last 7 days","30d":"last 30 days","custom":"selected date"
     }[recState.range]||recState.range;
 
     setText("recordsChartTitle",meta.label+" — "+rangeLabel);
@@ -1154,6 +1154,9 @@
         var dv=$("customDateInput").value;
         if(!dv){showChartMsg("Pick a date to view.");return;}
         apiOpts.date=dv;
+      } else if(recState.range==="today"){
+        // Fetch from 00:00 IST today using the date parameter
+        apiOpts.date=getISTDateStr(new Date());
       } else {
         apiOpts.range=recState.range;
       }
