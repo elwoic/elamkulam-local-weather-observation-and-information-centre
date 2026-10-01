@@ -461,230 +461,485 @@
     .wind-bar { gap: 14px; }
   }
 
-    /* ============================================================
-       IMD BOX
+        /* ============================================================
+       IMD ALERT + MALAPPURAM DISTRICT MAP
+       Everything is scoped under .imdm so the generic class names
+       (.day-tab, .alert-red, .panel-header …) cannot leak into the
+       rest of this page. Colours live in --imd-* variables so they
+       do not clash with the page-level --red / --green / --navy-mid.
     ============================================================ */
-      /* ---- IMD BOX ---- */
-  .imd-box {
-    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
- 
-  .imd-box-header {
-    padding: 16px 20px 12px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
- 
-  .imd-box-header h3 {
-    font-family: var(--font-serif);
-    font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 3px;
-  }
- 
-  .imd-box-header p {
-    font-size: 11.5px;
-    color: rgba(255,255,255,0.5);
-    margin: 0;
-    line-height: 1.5;
-  }
- 
-  .imd-updated {
-    font-size: 10px;
-    color: rgba(255,255,255,0.3);
-    margin-top: 5px;
-  }
- 
-  .btn-imd {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px 14px;
-    background: var(--gold);
-    color: var(--navy);
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 6px;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-    flex-shrink: 0;
-  }
- 
-  .btn-imd:hover { background: var(--gold-dim); color: #fff; }
- 
-  /* ---- DAY TABS ---- */
-  .imd-days {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
- 
-  .imd-days::-webkit-scrollbar { display: none; }
- 
-  .imd-day-btn {
-    flex: 1 0 72px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 11px 6px 10px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    border-right: 1px solid rgba(255,255,255,0.07);
-    transition: background 0.12s;
-    position: relative;
-  }
- 
-  .imd-day-btn:last-child { border-right: none; }
- 
-  .imd-day-btn:hover { background: rgba(255,255,255,0.05); }
- 
-  .imd-day-btn.active { background: rgba(255,255,255,0.08); }
- 
-  .imd-day-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--gold);
-  }
- 
-  .imd-day-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.45);
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
- 
-  .imd-day-btn.active .imd-day-label,
-  .imd-day-label.today {
-    color: var(--gold);
-  }
- 
-  .imd-color-dot {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    transition: border-color 0.12s;
-  }
- 
-  .imd-day-btn.active .imd-color-dot {
-    border-color: rgba(255,255,255,0.4);
-  }
- 
-  .imd-day-date {
-    font-size: 10px;
-    color: rgba(255,255,255,0.28);
-  }
- 
-  /* dot colors */
-  .dot-1 { background: #22c55e; }
-  .dot-3 { background: #eab308; }
-  .dot-4 { background: #f97316; }
-  .dot-5 { background: #ef4444; }
-  .dot-x { background: rgba(255,255,255,0.15); }
- 
-  /* ---- DETAIL PANEL ---- */
-  .imd-detail {
-    padding: 14px 20px 16px;
-    min-height: 72px;
-  }
- 
-  .imd-detail-top {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 10px;
-  }
- 
-  .imd-alert-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
- 
-  .imd-alert-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-  }
- 
-  .imd-alert-date {
-    font-size: 11px;
-    color: rgba(255,255,255,0.38);
-    margin-left: auto;
-  }
- 
-  .imd-warning-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
- 
-  .imd-warning-tag {
-    font-size: 11.5px;
-    padding: 4px 10px;
-    border-radius: 5px;
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.7);
-    border: 1px solid rgba(255,255,255,0.1);
-  }
- 
-  /* ---- STATUS BAR ---- */
-  .imd-status-bar {
-    font-size: 10.5px;
-    color: rgba(255,255,255,0.3);
-    padding: 6px 20px;
-    background: rgba(0,0,0,0.15);
-    border-top: 1px solid rgba(255,255,255,0.05);
-    display: none;
-  }
- 
-  /* ---- LOADING ---- */
-  .imd-loading-row {
-    padding: 18px 20px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.35);
-  }
-
-    /* Kerala widget card */
-    .kerala-widget-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
+    .imdm {
+      --imd-navy: #0d3d6e;
+      --imd-navy-dark: #082a4c;
+      --imd-navy-mid: #17578f;
+      --imd-gold: #d1aa34;
+      --imd-border: #d7e2ec;
+      --imd-red: #e7474f;
+      --imd-orange: #f48132;
+      --imd-yellow: #e9b923;
+      --imd-green: #35a96b;
+      --alert: #8fa8bd; /* neutral default while loading */
     }
-    .kerala-widget-head {
-      font-size: 12px;
+ 
+    .imdm button, .imdm a { font: inherit; }
+ 
+    .imdm button:focus-visible,
+    .imdm a:focus-visible,
+    .imdm .district-map:focus-visible {
+      outline: 3px solid rgba(209, 170, 52, 0.8);
+      outline-offset: 3px;
+    }
+ 
+    .imdm .panel-kicker {
+      margin: 0;
+      color: var(--imd-gold);
+      font-size: 10px;
       font-weight: 700;
-      color: var(--navy);
-      letter-spacing: 0.6px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      background: #f7fafd;
+    }
+ 
+    .imdm .preview-notice {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 9px 13px;
+      border: 1px solid #ead99f;
+      border-radius: 8px;
+      color: #775d12;
+      background: #fffae8;
+      font-size: 11px;
+    }
+ 
+    .imdm .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.95fr);
+      overflow: hidden;
+      border: 1px solid var(--imd-border);
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 20px 50px rgba(12, 48, 81, 0.1);
+    }
+ 
+    .imdm .imd-panel {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      color: #fff;
+      background:
+        radial-gradient(circle at 90% 0, rgba(64,142,202,0.22), transparent 23rem),
+        linear-gradient(145deg, var(--imd-navy-dark), var(--imd-navy));
+    }
+ 
+    .imdm .panel-header,
+    .imdm .map-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+ 
+    .imdm .panel-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.09);
+    }
+ 
+    .imdm .panel-heading h2,
+    .imdm .map-panel-header h2 {
+      margin: 4px 0 3px;
+      font-family: var(--font-serif);
+    }
+ 
+    .imdm .panel-heading h2 { font-size: 19px; color: #fff; }
+ 
+    .imdm .panel-heading p:last-child {
+      margin: 0;
+      color: rgba(255,255,255,0.45);
+      font-size: 10px;
+    }
+ 
+    .imdm .source-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 11px;
+      border-radius: 7px;
+      color: var(--imd-navy-dark);
+      background: var(--imd-gold);
+      font-size: 10px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+ 
+    .imdm .day-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+ 
+    .imdm .day-tab {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      flex-direction: column;
+      gap: 6px;
+      padding: 11px 5px 9px;
+      border: 0;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.5);
+      background: transparent;
+      cursor: pointer;
+    }
+ 
+    .imdm .day-tab:last-child { border-right: 0; }
+    .imdm .day-tab:hover,
+    .imdm .day-tab.active {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+    }
+ 
+    .imdm .day-tab.active::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--imd-gold);
+      content: "";
+    }
+ 
+    .imdm .day-tab span {
+      overflow: hidden;
+      max-width: 100%;
+      font-size: 10px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+ 
+    .imdm .day-tab small {
+      color: rgba(255,255,255,0.28);
+      font-size: 9px;
+    }
+ 
+    .imdm .alert-red    { --alert: var(--imd-red); }
+    .imdm .alert-orange { --alert: var(--imd-orange); }
+    .imdm .alert-yellow { --alert: var(--imd-yellow); }
+    .imdm .alert-green  { --alert: var(--imd-green); }
+ 
+    .imdm .alert-dot {
+      display: block;
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      background: var(--alert);
+    }
+ 
+    .imdm .warning-detail {
+      flex: 1;
+      padding: 18px 20px 22px;
+    }
+ 
+    .imdm .warning-summary {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 13px;
     }
-    .kerala-widget-head svg { width: 13px; height: 13px; fill: var(--gold); }
-    .kerala-widget-body { padding: 10px 12px; }
+ 
+    .imdm .warning-summary .alert-dot {
+      width: 13px;
+      height: 13px;
+      border-width: 2px;
+    }
+ 
+    .imdm .warning-summary p {
+      margin: 0 0 3px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+ 
+    .imdm .warning-summary span {
+      color: rgba(255,255,255,0.4);
+      font-size: 10px;
+    }
+ 
+    .imdm .warning-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 14px;
+    }
+ 
+    .imdm .warning-tags span {
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.74);
+      background: rgba(255,255,255,0.06);
+      font-size: 11px;
+    }
+ 
+    .imdm .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 8px 20px;
+      color: rgba(255,255,255,0.34);
+      background: rgba(0,0,0,0.15);
+      font-size: 9px;
+    }
+ 
+    .imdm .map-panel {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      border-left: 1px solid var(--imd-border);
+      background: #fbfdff;
+    }
+ 
+    .imdm .map-panel-header {
+      align-items: center;
+      padding: 14px 20px 12px;
+    }
+ 
+    .imdm .map-panel-header h2 {
+      color: var(--imd-navy);
+      font-size: 19px;
+    }
+ 
+    .imdm .current-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      border: 1px solid color-mix(in srgb, var(--alert), transparent 58%);
+      border-radius: 99px;
+      color: color-mix(in srgb, var(--alert), #142f43 34%);
+      background: color-mix(in srgb, var(--alert), white 88%);
+      font-size: 9px;
+      font-weight: 700;
+    }
+ 
+    .imdm .current-alert i,
+    .imdm .map-day-switcher i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--alert);
+    }
+ 
+    .imdm .weather-marquee {
+      overflow: hidden;
+      border-block: 1px solid #dde7ef;
+      color: #61798d;
+      background: #f2f6f9;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+ 
+    .imdm .marquee-track {
+      display: flex;
+      width: max-content;
+      align-items: center;
+      gap: 30px;
+      padding: 7px 20px;
+      animation: imdm-marquee 24s linear infinite;
+    }
+ 
+    .imdm .marquee-track b { color: var(--imd-navy); }
+ 
+    @keyframes imdm-marquee {
+      from { transform: translateX(10%); }
+      to   { transform: translateX(-70%); }
+    }
+ 
+    .imdm .district-map-wrap {
+      position: relative;
+      display: grid;
+      min-height: 240px;
+      flex: 1;
+      place-items: center;
+      overflow: hidden;
+      padding: 14px 20px 10px;
+      background:
+        linear-gradient(rgba(26,80,124,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,80,124,0.035) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+ 
+    .imdm .district-map {
+      z-index: 1;
+      width: min(160px, 60%);
+      max-height: 210px;
+      overflow: visible;
+      cursor: pointer;
+      filter: drop-shadow(0 14px 18px rgba(12,52,84,0.13));
+    }
+ 
+    /* The outline path is defined once in <defs> and drawn twice via <use>
+       (soft halo + coloured shape). Presentation properties inherit into the
+       referenced path, so styling lives on the <use> elements. */
+    .imdm .district-shadow {
+      fill: none;
+      stroke: rgba(13,61,110,0.1);
+      stroke-linejoin: round;
+      stroke-width: 28px;
+    }
+ 
+    .imdm .district-shape {
+      fill: color-mix(in srgb, var(--alert), white 11%);
+      stroke: #0c3559;
+      stroke-linejoin: round;
+      stroke-width: 20px; /* ≈ 4px on screen at the default map width */
+      transition: fill 300ms ease, filter 200ms ease, transform 200ms ease;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+ 
+    .imdm .district-map:hover .district-shape,
+    .imdm .district-map:focus .district-shape {
+      filter: saturate(1.08) brightness(1.03);
+      transform: scale(1.012);
+    }
+ 
+    .imdm .map-hover-card {
+      position: absolute;
+      z-index: 3;
+      right: 12px;
+      bottom: 12px;
+      width: 175px;
+      padding: 11px;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(8,42,76,0.94);
+      box-shadow: 0 14px 35px rgba(8,42,76,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      backdrop-filter: blur(8px);
+    }
+ 
+    .imdm .district-map-wrap.is-active .map-hover-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+ 
+    .imdm .map-hover-card p {
+      margin: 0 0 6px;
+      color: rgba(255,255,255,0.48);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+ 
+    .imdm .map-hover-card strong,
+    .imdm .map-hover-card > span { display: block; }
+ 
+    .imdm .map-hover-card strong {
+      font-family: var(--font-serif);
+      font-size: 14px;
+    }
+ 
+    .imdm .map-hover-card > span {
+      margin-top: 3px;
+      color: rgba(255,255,255,0.48);
+      font-size: 9px;
+    }
+ 
+    .imdm .map-hover-card div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 10px;
+    }
+ 
+    .imdm .map-hover-card div span {
+      padding: 3px 5px;
+      border-radius: 4px;
+      color: rgba(255,255,255,0.72);
+      background: rgba(255,255,255,0.08);
+      font-size: 8px;
+    }
+ 
+    .imdm .map-day-switcher {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      padding: 0 18px 12px;
+    }
+ 
+    .imdm .map-day-switcher button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 9px 4px;
+      border: 1px solid var(--imd-border);
+      border-right: 0;
+      color: #71879a;
+      background: #fff;
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+ 
+    .imdm .map-day-switcher button:first-child { border-radius: 7px 0 0 7px; }
+    .imdm .map-day-switcher button:last-child {
+      border-right: 1px solid var(--imd-border);
+      border-radius: 0 7px 7px 0;
+    }
+ 
+    .imdm .map-day-switcher button:hover,
+    .imdm .map-day-switcher button.active {
+      color: var(--imd-navy);
+      background: #eef5fa;
+      box-shadow: inset 0 0 0 1px var(--imd-navy);
+    }
+ 
+    .imdm .map-source {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 18px;
+      border-top: 1px solid var(--imd-border);
+      color: #9aabb9;
+      background: #f6f9fb;
+      font-size: 7px;
+    }
+ 
+    @media (max-width: 900px) {
+      .imdm .overview-grid { grid-template-columns: 1fr; }
+      .imdm .map-panel { border-top: 1px solid var(--imd-border); border-left: 0; }
+    }
+ 
+    @media (max-width: 600px) {
+      .imdm .panel-header { padding: 14px 14px 12px; }
+      .imdm .day-tab small { display: none; }
+      .imdm .warning-detail { padding: 16px 16px 20px; }
+      .imdm .district-map-wrap { min-height: 280px; }
+      .imdm .district-map { width: min(150px, 55%); align-self: start; }
+      .imdm .map-hover-card {
+        right: 18px;
+        bottom: 18px;
+        left: 18px;
+        width: auto;
+        opacity: 1;
+        transform: none;
+      }
+      .imdm .map-day-switcher { padding-inline: 12px; }
+      .imdm .map-source { align-items: flex-start; flex-direction: column; }
+    }
+ 
+    @media (prefers-reduced-motion: reduce) {
+      .imdm *, .imdm *::before, .imdm *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
 
     /* ============================================================
        OPEN-METEO
@@ -1045,7 +1300,6 @@
     ============================================================ */
     @media (max-width: 600px) {
       .page-banner { flex-direction: column; align-items: flex-start; }
-      .imd-box     { flex-direction: column; align-items: flex-start; }
       .om-temp     { font-size: 36px; }
     }
   </style>
@@ -1202,48 +1456,104 @@ if (window.top === window.self) {
 </div>
 
 <!-- ══════════════════════════════════════
-     NEW ROW — IMD Alert + Kerala 7-Day (was the broken/orphaned "grid-6040")
+     IMD Alert + Malappuram District Map
+     (replaces the old IMD box + Kerala weatherwidget row)
+     Driven by js/elwoic-imd-map.js — it looks up the element ids below,
+     so do not rename them.
 ══════════════════════════════════════ -->
 <h2 class="sec-head">IMD Alert &amp; Kerala Overview</h2>
-<div class="grid-6040">
 
-  <!-- IMD BOX HTML -->
-  <div class="imd-box">
-    <div class="imd-box-header">
-      <div class="imd-box-left">
-        <h3>&#127470;&#127475; IMD Kerala Alert</h3>
-        <p>Met Centre Thiruvananthapuram<br>Official District-wise Warnings — Malappuram</p>
-        <div class="imd-updated" id="imdUpdatedAt">Loading...</div>
-      </div>
-      <a href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&day=Day_1"
-         target="_blank" rel="noopener" class="btn-imd">Open IMD ↗</a>
-    </div>
+<div class="imdm">
 
-    <div class="imd-days" id="imdDays" role="tablist">
-      <div class="imd-loading-row">Loading forecast...</div>
-    </div>
-
-    <div class="imd-detail" id="imdDetail" role="tabpanel"></div>
-
-    <div class="imd-status-bar" id="imdStatusBar"><a href="https://info.elwoic.in/how-imd-alert-collects.html" target="_blank" rel="noopener noreferrer">
-        Click here to see how IMD alert updates work →
-    </a></div>
+  <div class="preview-notice" id="previewNotice" role="status">
+    Preview data is displayed. Live IMD data loads automatically on elwoic.in.
   </div>
 
-  <!-- Kerala 7-day weatherwidget.io -->
-  <div class="kerala-widget-card">
-    <div class="kerala-widget-head">
-      <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-      Kerala — 7-Day Overview
-    </div>
-    <div class="kerala-widget-body">
-      <div class="widget-pad">
-        <div id="ww_7d443210e054f" v='1.3' loc='id' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":["wl396"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'><a href="https://weatherwidget.org/" id="ww_7d443210e054f_u" target="_blank">Free weather widget for website</a></div>
-      </div>
-    </div>
-  </div>
+  <section class="overview-grid" aria-label="Malappuram district forecast">
 
-</div><!-- /grid-6040 -->
+    <!-- LEFT: official IMD warning, 5 day tabs -->
+    <article class="imd-panel">
+      <header class="panel-header">
+        <div class="panel-heading">
+          <p class="panel-kicker">Official district warning</p>
+          <h2>IMD Kerala Alert</h2>
+          <p>Met Centre Thiruvananthapuram · Malappuram</p>
+        </div>
+        <a
+          class="source-link"
+          href="https://mausam.imd.gov.in/imd_latest/contents/districtwise-warning_mc.php?id=4&amp;day=Day_1"
+          target="_blank"
+          rel="noopener"
+        >Open IMD ↗</a>
+      </header>
+
+      <div class="day-tabs" id="imdDays" role="tablist" aria-label="Select forecast day"></div>
+      <div class="warning-detail" id="imdDetail" role="tabpanel"></div>
+
+      <footer class="panel-footer">
+        <span id="imdUpdatedAt">Loading official feed…</span>
+        <span>Official IMD feed</span>
+      </footer>
+    </article>
+
+    <!-- RIGHT: district map coloured by the selected day's alert level -->
+    <article class="map-panel">
+      <header class="map-panel-header">
+        <div>
+          <p class="panel-kicker">Kerala — 7-day overview</p>
+          <h2>Malappuram District</h2>
+        </div>
+        <span class="current-alert alert-green" id="mapAlertBadge">
+          <i aria-hidden="true"></i>
+          <span>Loading</span>
+        </span>
+      </header>
+
+      <div class="weather-marquee" aria-label="Kerala weather overview">
+        <div class="marquee-track" id="mapMarquee">
+          <span>Kerala weather overview</span>
+          <b>Loading Malappuram forecast…</b>
+        </div>
+      </div>
+
+      <div class="district-map-wrap" id="districtMapWrap">
+        <svg
+          class="district-map"
+          id="districtMap"
+          viewBox="0 0 800 951.233"
+          role="img"
+          tabindex="0"
+          aria-labelledby="districtMapTitle districtMapDesc"
+        >
+          <title id="districtMapTitle">Malappuram district warning map</title>
+          <desc id="districtMapDesc">Select a forecast day to view its IMD warning level.</desc>
+
+          <defs>
+            <path id="imdmDistrictOutline" d="M0.000,457.173 L0.095,457.659 L0.166,457.789 L0.326,457.831 L0.486,457.902 L0.907,458.518 L1.730,459.596 L2.151,460.639 L2.370,461.172 L2.524,461.682 L2.696,461.901 L2.968,462.037 L3.543,462.908 L4.058,464.140 L4.236,464.401 L4.449,464.573 L4.723,465.327 L5.166,466.564 L5.966,468.833 L6.352,470.046 L6.558,470.693 L7.032,471.931 L7.171,472.470 L7.607,474.159 L8.691,477.435 L9.758,480.445 L10.237,481.843 L10.504,482.625 L11.340,485.167 L12.329,488.147 L13.147,490.872 L13.302,491.420 L13.315,491.450 L13.698,492.791 L14.142,494.877 L14.426,496.139 L14.675,496.927 L14.748,497.136 L15.315,498.752 L16.097,501.358 L16.725,503.349 L17.390,505.464 L17.489,505.671 L18.094,507.822 L18.485,509.339 L19.136,511.537 L19.411,512.546 L19.675,513.515 L20.363,515.737 L21.241,518.903 L21.376,519.387 L22.104,521.839 L22.330,522.817 L22.851,524.831 L22.886,524.988 L23.278,526.715 L23.746,528.783 L23.916,529.495 L24.001,529.848 L24.060,530.092 L24.622,531.988 L25.102,534.382 L25.592,536.923 L25.635,537.149 L26.092,539.240 L26.658,541.684 L26.721,541.957 L26.779,542.208 L26.939,543.174 L27.093,543.897 L27.312,544.477 L27.650,545.692 L27.724,545.999 L28.153,547.765 L28.657,550.242 L29.125,552.481 L29.723,555.734 L29.769,555.984 L30.138,558.021 L30.511,559.828 L30.630,560.799 L30.950,562.429 L31.355,564.092 L31.495,564.668 L31.927,566.445 L32.295,568.051 L32.411,568.534 L32.650,569.520 L33.029,570.877 L33.465,572.693 L33.568,573.033 L33.948,574.017 L34.463,575.646 L34.931,577.554 L35.482,579.752 L35.986,582.080 L36.329,583.200 L36.780,584.811 L36.981,585.297 L37.366,586.447 L38.018,588.771 L38.681,591.092 L38.966,592.004 L39.502,593.937 L39.997,595.719 L40.530,597.709 L40.730,598.553 L40.950,599.481 L41.410,601.193 L41.443,601.307 L42.257,604.072 L42.304,604.241 L42.565,605.177 L42.829,606.276 L43.311,608.462 L43.616,609.570 L43.751,610.168 L43.904,610.850 L44.233,612.503 L44.375,613.119 L44.458,613.623 L44.547,614.307 L44.517,615.347 L44.446,615.634 L44.452,615.809 L44.520,615.906 L44.858,615.832 L44.985,615.859 L45.157,616.075 L45.376,616.514 L45.560,616.928 L45.809,617.367 L45.927,617.767 L45.968,617.964 L46.001,618.122 L46.111,618.658 L46.217,619.115 L46.300,619.488 L46.380,620.021 L46.404,620.107 L46.588,620.305 L46.709,620.507 L46.768,621.093 L46.719,621.388 L46.662,621.727 L46.561,622.015 L46.520,622.157 L46.514,622.255 L46.703,622.634 L47.044,623.336 L47.272,623.949 L47.604,624.879 L47.781,625.637 L48.244,627.504 L48.757,629.364 L49.221,631.047 L49.680,632.614 L49.938,633.458 L50.181,634.092 L50.243,634.412 L50.225,634.735 L50.291,635.588 L50.376,636.082 L50.839,637.860 L50.943,638.269 L51.447,640.243 L51.834,641.755 L52.249,643.402 L52.326,643.577 L52.429,643.956 L52.420,644.066 L52.477,644.329 L52.774,645.516 L52.936,646.160 L53.149,647.099 L53.487,648.607 L53.682,649.590 L54.058,651.033 L54.547,652.707 L54.630,652.956 L54.648,653.193 L54.678,653.601 L54.792,654.086 L55.169,655.675 L55.284,656.081 L55.711,657.592 L57.070,664.122 L57.741,666.384 L57.922,667.021 L58.138,668.010 L58.475,669.521 L59.038,672.086 L59.216,672.880 L59.494,674.160 L59.622,674.702 L60.158,676.986 L61.035,681.162 L61.395,682.816 L61.722,684.320 L63.084,691.201 L63.553,693.000 L64.098,695.861 L64.696,698.794 L65.059,700.518 L65.407,702.171 L66.011,705.098 L66.444,707.248 L67.332,711.632 L67.528,712.622 L67.771,713.848 L68.008,714.837 L68.257,715.939 L68.820,718.937 L69.270,721.041 L69.584,722.883 L69.962,724.745 L70.301,726.408 L71.006,729.465 L71.669,733.103 L72.108,735.105 L72.469,736.557 L72.623,737.096 L73.375,740.793 L73.778,742.991 L74.233,745.031 L74.329,745.461 L74.962,748.362 L74.981,748.447 L75.615,751.025 L76.205,753.445 L76.290,753.797 L76.788,755.829 L77.243,757.970 L77.777,760.480 L78.412,763.434 L79.535,768.670 L80.118,771.370 L80.805,774.794 L81.468,778.011 L82.055,781.175 L83.198,786.400 L83.544,788.006 L83.773,789.072 L84.229,791.234 L84.632,792.982 L85.171,795.334 L85.438,796.726 L86.350,800.939 L87.828,807.352 L88.341,809.577 L89.550,815.572 L90.219,818.973 L91.056,822.406 L91.906,826.359 L92.405,828.411 L92.787,830.461 L92.960,831.841 L93.025,833.557 L92.887,835.067 L92.266,835.500 L91.742,835.820 L91.673,835.821 L91.626,835.837 L91.587,835.875 L91.569,835.947 L91.598,836.030 L91.635,836.063 L91.680,836.081 L91.751,836.089 L91.815,836.072 L92.494,835.663 L93.474,834.892 L93.916,834.493 L94.352,834.033 L94.785,835.136 L95.462,836.649 L93.682,837.712 L93.384,837.840 L93.314,837.952 L93.323,838.130 L93.396,838.198 L93.501,838.222 L93.593,838.184 L93.653,838.154 L93.779,838.222 L93.907,838.370 L94.054,838.637 L94.158,838.850 L94.122,839.071 L94.178,839.213 L94.189,839.357 L94.147,839.436 L94.145,839.531 L94.190,839.592 L94.253,839.609 L94.337,839.548 L94.379,839.452 L94.387,839.309 L94.339,839.144 L94.328,839.017 L94.275,838.868 L94.601,838.589 L94.871,838.467 L95.266,838.451 L95.700,838.501 L96.161,838.635 L96.714,838.992 L97.378,839.744 L97.963,840.531 L98.491,841.439 L99.183,842.500 L99.995,844.473 L100.421,845.580 L101.138,846.890 L101.618,847.802 L101.978,848.453 L102.662,849.882 L102.767,850.101 L102.974,850.652 L103.140,851.250 L104.319,854.621 L105.254,857.067 L105.941,858.865 L106.002,859.023 L106.072,859.230 L106.654,860.954 L106.895,861.616 L107.825,864.164 L108.206,865.208 L108.756,866.534 L109.112,867.395 L109.867,869.185 L110.048,869.616 L110.552,870.801 L110.902,871.625 L111.701,873.242 L112.335,874.427 L112.703,875.091 L112.916,875.428 L113.698,877.407 L114.314,879.184 L115.255,881.752 L115.386,882.111 L115.546,882.627 L115.552,882.858 L115.594,883.171 L116.091,884.516 L116.541,885.631 L117.318,887.556 L117.762,888.699 L118.497,890.417 L119.350,892.349 L119.581,892.869 L120.327,894.547 L120.766,895.631 L121.110,896.336 L121.115,896.762 L121.115,897.071 L121.258,897.331 L121.506,897.621 L121.966,897.903 L122.448,898.273 L122.549,898.700 L122.721,899.026 L122.911,899.314 L123.248,899.825 L123.740,900.690 L124.783,902.776 L125.464,904.026 L125.891,904.861 L125.926,905.252 L125.891,905.549 L125.701,905.768 L125.642,906.177 L125.757,906.591 L126.033,907.095 L126.237,907.513 L126.495,908.078 L126.720,908.511 L126.933,908.837 L127.609,910.220 L127.795,910.647 L128.160,911.577 L128.717,913.002 L129.108,913.899 L129.682,915.179 L130.177,916.216 L130.500,916.853 L130.737,917.270 L130.995,917.783 L131.448,918.503 L131.889,919.196 L132.393,920.141 L132.858,921.009 L133.278,921.847 L133.513,922.454 L133.652,922.937 L133.673,923.156 L133.696,923.420 L133.755,923.675 L134.019,924.341 L134.455,925.425 L134.664,925.892 L134.843,926.101 L134.943,926.187 L135.166,926.436 L135.394,926.803 L135.656,927.368 L135.903,927.899 L136.217,928.785 L136.670,929.934 L137.085,930.997 L137.291,931.573 L137.615,932.405 L138.457,934.419 L138.480,934.579 L138.409,934.757 L138.356,934.857 L138.723,935.882 L139.390,937.591 L139.508,937.875 L139.816,938.613 L140.305,939.828 L141.214,941.869 L141.369,942.153 L141.937,943.495 L142.290,944.313 L142.364,944.485 L142.681,945.222 L142.782,945.524 L143.075,946.108 L143.484,947.097 L143.904,948.022 L144.286,948.718 L144.583,949.304 L144.792,949.759 L144.977,950.157 L145.184,950.513 L145.300,950.750 L145.504,951.233 L150.103,951.049 L154.219,946.896 L155.639,945.643 L157.082,944.369 L159.175,944.901 L159.659,945.024 L161.481,944.632 L162.888,944.330 L164.588,942.383 L166.833,943.893 L168.381,943.325 L168.504,941.624 L169.901,941.655 L170.217,941.662 L170.939,941.879 L171.763,942.861 L172.173,944.672 L172.432,946.605 L172.422,948.405 L172.419,948.890 L174.384,950.137 L175.929,950.302 L175.641,948.078 L176.453,945.580 L177.743,944.859 L178.202,944.456 L178.391,944.428 L180.065,944.182 L181.722,943.937 L183.320,943.534 L184.122,943.332 L186.994,942.383 L189.543,942.092 L191.938,939.993 L192.552,937.400 L193.302,936.613 L193.410,940.031 L194.627,942.451 L197.241,943.369 L197.509,943.465 L198.660,943.879 L199.921,944.871 L201.468,945.297 L206.431,944.530 L207.237,943.490 L210.364,939.455 L214.643,937.048 L216.066,936.955 L216.502,936.998 L219.492,937.295 L220.782,936.943 L221.880,935.180 L225.072,934.985 L226.062,934.593 L226.552,934.479 L228.070,933.960 L228.706,932.753 L230.427,932.402 L232.350,931.003 L234.430,929.106 L235.160,926.764 L235.754,926.108 L236.426,925.273 L236.911,925.367 L237.427,925.862 L237.856,927.322 L238.439,927.744 L239.162,927.091 L239.976,925.722 L240.724,925.484 L241.275,926.112 L241.371,927.219 L242.158,927.437 L242.856,926.887 L243.241,925.940 L243.676,925.779 L244.841,926.093 L245.725,925.837 L246.282,925.504 L246.755,925.817 L246.787,926.522 L246.448,927.520 L246.512,928.013 L246.986,928.300 L247.818,928.596 L248.291,928.553 L250.067,928.393 L249.860,926.381 L250.462,925.708 L254.843,920.631 L255.152,918.766 L255.996,917.424 L257.700,914.714 L260.330,912.368 L260.318,911.467 L260.987,910.441 L261.432,909.758 L261.492,909.666 L263.518,907.628 L262.973,905.732 L262.380,903.481 L262.191,901.881 L262.520,901.526 L262.653,901.384 L263.494,901.170 L266.077,902.083 L267.973,903.718 L269.632,903.884 L269.908,903.720 L270.829,903.173 L270.852,901.727 L269.881,900.720 L269.491,899.791 L270.130,899.310 L269.032,897.485 L268.523,895.679 L269.083,895.441 L268.680,891.977 L269.497,891.318 L266.690,890.027 L266.110,888.406 L263.435,884.505 L261.445,884.136 L260.957,886.008 L259.210,884.020 L266.201,881.376 L265.196,881.127 L262.867,881.868 L261.503,882.840 L260.627,883.124 L258.851,882.978 L256.665,884.137 L255.283,884.913 L254.418,884.712 L253.790,883.871 L252.653,884.247 L251.965,884.475 L249.169,884.653 L247.507,884.102 L246.171,883.219 L246.151,882.491 L246.123,881.453 L244.547,880.618 L243.943,879.380 L244.251,878.219 L246.147,876.820 L246.929,873.834 L245.370,873.250 L244.818,872.639 L244.758,870.962 L243.674,870.567 L241.295,870.136 L240.681,870.025 L238.860,869.936 L239.334,866.918 L239.768,864.906 L238.753,864.568 L238.731,864.477 L238.545,863.703 L240.517,860.843 L240.162,858.436 L238.474,855.807 L237.478,854.051 L238.468,847.026 L238.521,844.872 L238.844,840.707 L239.176,836.834 L240.516,833.115 L240.282,832.071 L239.749,829.690 L241.703,825.458 L242.981,824.821 L246.891,822.871 L247.649,820.465 L247.271,818.487 L245.381,818.572 L245.877,816.144 L244.894,814.166 L240.937,814.246 L233.424,812.051 L231.359,809.281 L233.919,804.422 L232.947,802.432 L230.080,801.792 L229.155,799.043 L226.288,798.071 L222.117,796.294 L223.665,793.210 L225.071,792.082 L225.056,792.005 L225.431,791.457 L225.601,791.199 L225.674,790.671 L225.412,789.112 L231.928,788.876 L235.198,779.255 L240.602,766.742 L245.497,767.718 L251.465,768.908 L251.691,769.144 L259.702,777.501 L261.798,777.467 L274.001,777.267 L280.400,777.354 L290.584,776.755 L292.839,776.622 L296.033,776.434 L297.994,775.830 L299.361,775.409 L301.032,774.895 L306.492,769.604 L306.297,761.214 L306.194,756.764 L306.145,754.651 L306.859,749.996 L305.971,745.954 L305.955,744.083 L306.578,742.116 L307.826,741.381 L309.802,742.892 L311.056,744.067 L311.640,744.541 L312.775,745.464 L314.846,746.978 L316.062,748.481 L317.741,747.346 L317.904,745.014 L317.821,739.030 L318.924,736.279 L319.268,734.152 L318.995,732.570 L319.477,729.200 L322.376,729.257 L326.408,730.812 L329.148,732.905 L333.157,734.472 L333.439,734.517 L335.720,734.881 L337.156,734.856 L338.172,731.866 L337.331,729.530 L336.733,725.663 L336.816,715.697 L337.702,714.809 L340.549,711.348 L341.209,711.566 L343.379,712.284 L348.334,716.644 L353.689,719.998 L356.059,719.784 L359.247,718.303 L361.650,714.818 L365.029,709.917 L366.439,707.213 L367.254,702.792 L367.316,697.520 L368.207,695.444 L370.831,694.531 L372.240,693.831 L374.958,692.425 L379.341,690.600 L381.535,690.885 L382.637,692.769 L383.229,697.188 L384.035,700.305 L385.909,701.331 L388.099,700.763 L388.708,700.286 L393.680,696.394 L396.334,695.624 L397.211,695.609 L399.060,695.577 L401.785,696.442 L402.018,696.928 L402.188,697.283 L401.986,699.013 L401.809,700.719 L400.090,704.558 L399.664,706.750 L400.221,708.409 L402.318,709.843 L404.151,710.491 L408.859,709.926 L411.224,709.434 L412.674,709.132 L415.327,709.761 L417.674,710.317 L419.831,708.966 L420.495,704.914 L422.698,702.710 L425.114,699.526 L425.730,695.761 L425.856,694.990 L426.461,694.071 L426.792,693.568 L428.042,692.265 L429.652,692.112 L429.991,692.130 L431.182,692.851 L431.364,693.127 L432.415,694.724 L432.484,697.397 L432.747,699.961 L433.268,701.312 L435.875,703.516 L436.958,705.891 L438.458,709.179 L445.875,720.246 L445.899,722.948 L447.013,724.512 L449.252,724.974 L452.675,724.811 L452.985,724.797 L456.878,723.947 L462.274,723.707 L466.832,725.031 L468.389,725.484 L471.517,725.413 L472.323,723.991 L474.147,721.716 L477.252,713.848 L478.963,711.409 L483.088,705.529 L482.198,700.749 L483.512,698.782 L489.527,690.813 L491.927,691.481 L494.125,692.093 L500.007,690.234 L500.577,690.054 L506.537,693.755 L512.751,691.524 L513.070,691.184 L517.586,686.358 L518.723,685.564 L519.938,685.837 L521.994,687.099 L523.226,688.444 L524.666,690.618 L524.838,690.830 L526.769,693.201 L530.561,695.766 L532.771,695.512 L535.683,694.537 L538.174,693.965 L546.723,695.059 L546.839,698.101 L546.877,699.108 L547.446,701.430 L551.214,702.757 L559.896,702.936 L560.432,702.947 L564.915,702.437 L563.821,697.446 L563.300,691.927 L559.738,692.131 L559.752,691.929 L559.773,691.636 L559.785,691.475 L559.899,689.862 L560.314,684.017 L559.391,680.328 L553.955,677.053 L551.105,674.111 L550.133,662.272 L550.728,650.753 L550.844,648.507 L554.410,642.817 L556.950,638.495 L555.590,633.445 L557.337,623.371 L558.749,619.859 L565.037,618.681 L565.456,620.619 L568.961,624.542 L571.372,624.657 L574.910,624.827 L581.751,624.528 L582.200,624.581 L595.525,626.152 L596.107,623.204 L596.786,619.765 L600.322,613.313 L603.300,605.279 L603.897,601.344 L600.624,599.173 L589.896,597.875 L586.235,598.945 L582.790,599.905 L578.552,601.085 L570.212,598.182 L565.274,596.926 L560.693,595.760 L555.547,594.419 L553.451,591.298 L553.031,590.515 L554.384,583.581 L556.188,578.589 L556.840,576.786 L558.233,573.519 L557.835,571.455 L553.976,570.670 L552.105,570.756 L552.366,568.594 L551.675,567.810 L550.331,568.251 L548.579,568.412 L548.525,566.714 L548.009,564.671 L546.268,564.909 L544.996,565.808 L541.215,566.252 L537.582,565.220 L533.938,567.067 L530.874,564.951 L528.831,566.413 L524.628,566.045 L522.929,569.004 L520.865,569.735 L517.845,569.025 L512.341,572.551 L511.204,572.574 L509.535,569.695 L509.083,568.915 L511.409,565.071 L510.141,562.717 L511.728,559.816 L512.047,558.398 L510.992,557.431 L508.477,557.318 L507.882,556.285 L510.245,552.795 L510.588,552.498 L512.211,551.096 L514.693,551.366 L516.193,548.991 L517.198,548.179 L518.353,545.191 L520.880,542.401 L520.347,538.553 L522.871,538.008 L524.992,539.339 L526.437,540.247 L529.945,543.032 L532.539,543.529 L534.408,542.450 L537.718,539.299 L539.566,538.008 L540.008,538.079 L542.809,538.528 L545.903,539.677 L547.742,538.849 L548.690,537.700 L550.107,538.499 L553.098,539.595 L555.515,537.581 L558.003,536.278 L559.792,534.986 L559.852,533.706 L559.129,532.699 L559.863,531.716 L562.150,531.064 L562.115,528.220 L562.150,525.495 L561.025,525.590 L560.835,521.277 L560.148,520.755 L558.916,520.187 L557.754,518.291 L558.371,516.584 L556.380,512.970 L556.806,512.935 L558.015,514.215 L558.785,514.357 L559.218,513.849 L559.662,513.255 L561.262,512.579 L561.451,511.940 L562.778,511.750 L564.603,510.565 L566.072,508.503 L567.565,508.598 L570.954,502.531 L571.286,499.119 L572.661,497.033 L574.438,497.176 L574.959,496.441 L576.689,496.678 L578.568,494.664 L580.623,492.033 L587.259,491.275 L590.482,485.824 L595.837,486.393 L598.254,486.298 L599.866,485.113 L607.497,486.914 L614.867,483.170 L620.626,484.924 L621.905,483.597 L622.711,479.947 L619.488,474.781 L618.185,473.667 L618.730,470.420 L624.323,469.899 L632.901,468.193 L637.830,466.155 L643.755,462.458 L643.992,456.012 L643.924,454.516 L643.423,450.419 L643.897,446.627 L645.651,444.115 L646.030,439.470 L648.542,438.049 L649.490,436.485 L648.898,434.778 L645.888,432.693 L645.840,428.427 L642.997,426.721 L641.196,423.972 L641.575,420.322 L643.755,419.422 L645.509,416.152 L646.978,414.113 L646.931,412.360 L646.362,411.507 L646.504,410.559 L648.826,408.284 L649.490,403.781 L647.831,402.786 L645.840,398.046 L644.845,396.861 L642.428,395.487 L641.954,394.491 L641.196,391.221 L640.579,389.041 L637.641,386.766 L636.835,384.965 L637.144,383.810 L639.218,381.984 L641.243,378.424 L641.101,376.576 L640.058,373.116 L641.764,372.026 L641.433,370.461 L639.181,369.703 L638.968,368.352 L639.073,367.714 L639.371,365.556 L639.395,364.869 L637.807,362.096 L639.442,360.153 L640.200,360.153 L643.281,361.361 L646.006,359.750 L649.727,358.612 L652.381,359.347 L654.680,361.219 L658.922,360.579 L661.955,360.556 L665.794,362.546 L667.216,365.153 L667.453,366.551 L667.643,367.002 L670.107,368.423 L673.236,368.566 L674.563,367.570 L675.795,366.196 L677.704,367.547 L688.480,364.767 L689.816,355.809 L691.895,334.165 L692.183,332.303 L693.150,326.537 L707.429,320.189 L715.044,315.344 L718.093,313.085 L730.413,305.368 L743.227,299.880 L745.011,299.819 L746.657,299.688 L747.303,299.373 L750.198,298.049 L756.519,295.440 L769.248,291.391 L771.295,282.267 L772.430,277.588 L773.600,272.394 L785.018,266.112 L795.089,258.793 L788.385,254.193 L787.073,248.864 L786.105,243.001 L788.389,239.660 L790.059,237.197 L790.920,235.769 L800.000,224.274 L796.973,208.518 L797.612,195.054 L797.533,192.759 L790.972,193.509 L787.342,194.040 L781.144,194.717 L775.835,195.477 L767.186,196.507 L753.713,198.101 L761.427,191.989 L764.296,178.598 L745.167,172.775 L743.737,171.306 L717.268,164.105 L711.535,162.612 L702.764,159.785 L693.819,152.909 L692.146,151.624 L651.164,120.156 L655.096,98.626 L644.010,102.040 L631.991,106.567 L622.897,100.028 L610.639,90.356 L604.521,88.199 L603.494,85.550 L602.516,84.442 L596.338,82.010 L588.741,79.020 L577.159,74.395 L574.330,72.859 L570.449,69.646 L567.024,73.619 L566.058,76.063 L563.824,76.022 L558.151,80.025 L552.023,85.572 L544.945,80.067 L540.417,77.112 L535.284,73.372 L533.626,73.138 L531.473,71.007 L529.784,69.335 L519.928,71.935 L518.344,71.651 L516.848,71.730 L514.571,68.461 L513.527,67.314 L516.069,66.414 L516.733,64.471 L517.260,63.268 L510.653,55.917 L506.744,52.162 L503.741,56.039 L502.301,56.058 L500.022,56.178 L496.356,58.731 L490.689,58.167 L489.838,57.025 L488.793,55.276 L486.919,54.499 L485.212,54.382 L483.616,55.089 L474.917,61.782 L466.071,68.493 L467.206,54.276 L468.024,42.193 L468.238,37.859 L468.534,34.802 L470.144,33.652 L470.536,32.461 L470.466,30.972 L469.434,29.111 L467.630,26.411 L467.089,25.811 L467.457,22.972 L467.779,18.443 L466.878,17.251 L466.663,14.418 L464.458,14.304 L463.753,14.309 L462.777,13.734 L461.841,12.743 L461.519,11.490 L460.724,11.330 L460.442,9.210 L458.178,7.222 L457.016,6.021 L455.934,5.050 L456.277,3.007 L455.739,2.728 L455.152,2.062 L454.430,1.823 L454.161,1.666 L453.845,1.131 L453.564,0.998 L453.435,0.781 L453.160,0.601 L452.914,0.538 L452.625,0.297 L452.357,0.286 L451.976,0.280 L451.619,0.190 L451.071,0.000 L450.810,0.186 L450.506,0.306 L450.313,0.365 L450.027,0.687 L449.495,1.287 L449.166,1.377 L448.882,1.602 L448.795,2.259 L448.571,2.541 L448.255,2.815 L447.804,2.968 L447.112,3.364 L446.891,3.659 L446.897,4.075 L446.563,4.347 L446.307,4.419 L445.907,4.837 L445.635,5.165 L445.621,6.096 L445.333,6.450 L444.968,6.908 L444.750,7.598 L444.539,8.204 L444.136,8.670 L444.026,9.125 L444.128,9.496 L444.262,10.218 L443.905,10.796 L443.591,11.448 L443.533,11.909 L443.526,13.925 L443.248,14.986 L442.873,15.417 L442.874,16.129 L442.840,17.446 L442.145,18.155 L441.249,18.484 L441.037,18.853 L440.554,19.071 L440.270,19.151 L439.987,19.049 L439.304,18.926 L438.550,18.958 L437.028,19.363 L436.749,19.739 L435.695,19.673 L435.173,19.887 L434.451,20.337 L433.562,20.645 L432.969,20.894 L432.223,21.391 L431.607,21.617 L430.860,21.486 L430.339,21.309 L429.834,21.369 L429.640,21.391 L428.822,21.320 L427.922,21.522 L427.128,21.901 L426.429,22.102 L425.658,22.162 L424.817,22.185 L423.549,22.304 L422.850,22.624 L422.305,22.861 L421.642,23.240 L420.895,23.915 L420.376,24.337 L420.326,24.377 L420.247,24.413 L419.770,24.626 L418.976,24.934 L418.205,25.065 L417.340,24.934 L416.404,24.662 L416.250,24.579 L416.073,24.484 L415.397,24.425 L414.757,24.508 L414.366,24.745 L414.334,24.770 L414.094,24.958 L413.864,25.044 L413.715,25.100 L413.106,25.761 L412.693,26.210 L411.515,27.488 L411.277,27.695 L410.975,27.957 L410.212,28.620 L410.213,29.099 L410.218,30.498 L409.851,30.701 L409.639,30.817 L409.281,31.015 L409.172,31.103 L408.762,31.433 L408.439,31.693 L408.083,32.097 L407.654,32.582 L406.807,33.206 L405.647,34.443 L405.201,35.511 L405.072,35.652 L404.721,36.035 L404.576,36.552 L404.485,36.598 L403.837,36.932 L403.819,37.061 L403.749,37.583 L403.702,37.927 L403.594,37.972 L403.357,38.070 L403.087,38.182 L402.413,38.141 L402.327,38.417 L402.258,38.637 L400.977,39.095 L402.403,40.688 L401.955,41.277 L401.163,41.914 L400.525,42.281 L399.878,42.657 L400.089,43.197 L400.563,43.409 L400.632,43.757 L400.384,43.958 L399.511,43.891 L399.368,43.880 L398.747,44.588 L398.645,44.581 L398.272,44.554 L397.940,44.530 L397.656,44.879 L397.712,45.232 L397.773,45.406 L397.956,45.928 L397.758,46.146 L397.497,46.173 L397.293,46.193 L396.935,46.105 L397.009,46.313 L397.154,46.720 L397.092,47.198 L397.074,47.332 L396.994,47.920 L396.977,48.042 L396.999,48.304 L397.041,48.788 L397.049,48.892 L396.871,49.342 L397.236,49.957 L397.187,50.253 L397.084,50.385 L396.871,50.659 L396.680,50.987 L396.326,51.124 L396.114,51.070 L395.872,51.008 L395.578,50.894 L395.067,50.825 L394.733,50.649 L394.499,50.675 L394.180,50.813 L394.009,50.846 L393.641,51.366 L393.693,51.730 L394.701,52.791 L396.129,54.115 L397.953,56.497 L398.648,58.182 L398.278,60.470 L397.195,60.858 L394.613,61.219 L392.932,62.901 L391.409,65.074 L388.403,65.752 L386.251,68.752 L383.716,69.574 L381.491,70.075 L379.326,71.046 L377.496,73.417 L375.971,75.848 L374.509,78.545 L372.779,80.587 L370.742,82.575 L369.121,82.575 L368.097,81.483 L367.284,81.710 L366.813,82.158 L365.921,83.271 L361.467,85.213 L359.242,86.788 L356.331,85.958 L354.067,87.180 L351.473,87.237 L350.915,87.814 L349.785,91.606 L348.760,93.682 L346.634,95.462 L346.051,97.673 L345.859,100.852 L346.423,102.954 L348.274,106.210 L350.467,108.863 L354.265,111.596 L351.699,120.303 L347.425,123.772 L344.947,123.617 L344.263,122.702 L342.036,119.807 L339.281,117.533 L337.580,114.963 L334.769,117.338 L332.120,120.783 L330.718,124.214 L328.201,126.269 L326.366,128.289 L325.061,130.498 L324.462,133.965 L322.273,136.378 L319.141,135.252 L316.430,134.165 L313.729,134.117 L309.764,135.028 L310.055,140.409 L309.860,143.093 L308.237,145.406 L307.349,147.615 L306.314,149.009 L303.533,150.935 L303.602,154.184 L303.132,157.312 L303.048,157.871 L302.643,159.500 L302.286,160.622 L301.914,162.579 L301.223,164.826 L301.699,170.665 L301.915,172.297 L302.126,173.723 L303.761,178.501 L304.538,180.752 L302.701,183.370 L299.726,187.137 L296.933,192.435 L295.846,195.481 L297.006,198.122 L294.291,198.954 L295.114,200.659 L297.363,205.319 L299.325,207.324 L300.999,209.254 L303.396,212.109 L303.985,211.537 L308.288,213.443 L313.726,214.983 L317.801,215.696 L319.337,219.473 L321.426,220.505 L320.558,222.239 L320.115,223.375 L320.382,224.510 L322.527,226.579 L324.184,228.093 L325.128,229.575 L325.091,232.301 L323.649,235.738 L322.409,237.732 L319.141,241.368 L315.720,242.788 L315.153,242.546 L313.596,241.880 L311.519,241.498 L310.352,241.958 L308.687,243.321 L308.397,243.450 L307.170,243.996 L305.807,244.055 L301.885,244.174 L300.700,244.980 L299.160,245.643 L297.785,245.762 L296.221,245.525 L294.894,244.743 L293.140,244.553 L291.031,245.146 L289.278,245.738 L286.647,247.468 L285.202,248.416 L285.960,249.553 L286.126,251.354 L285.581,252.587 L284.443,253.937 L276.718,259.080 L273.775,261.029 L271.386,262.611 L270.931,263.030 L270.177,263.725 L269.561,264.839 L269.608,265.715 L270.367,267.327 L271.812,267.991 L273.210,268.251 L272.926,272.280 L268.281,274.034 L267.750,274.161 L265.508,274.697 L262.049,275.953 L260.887,276.996 L259.845,279.058 L257.427,281.925 L257.403,282.655 L257.356,284.105 L255.295,285.006 L254.383,285.482 L253.162,286.120 L253.108,286.174 L250.199,289.106 L248.280,291.310 L247.907,292.669 L247.711,293.182 L247.557,293.514 L246.597,293.703 L245.199,293.987 L242.071,294.888 L239.038,294.509 L235.270,294.485 L231.881,294.604 L231.735,294.623 L229.619,294.908 L229.061,294.983 L227.165,294.841 L226.122,294.201 L222.686,292.921 L220.949,292.847 L217.164,292.684 L215.885,292.902 L214.249,293.182 L213.731,293.376 L213.016,293.644 L212.543,293.822 L212.439,293.848 L210.789,294.272 L208.443,294.675 L206.263,297.163 L205.031,299.722 L204.723,300.362 L204.130,302.069 L202.471,303.490 L199.059,304.533 L198.563,304.560 L196.355,304.682 L195.196,304.746 L192.143,305.121 L191.728,308.297 L189.421,311.338 L189.239,311.577 L184.461,305.410 L180.622,302.661 L179.992,301.989 L178.844,300.765 L178.009,300.459 L175.740,299.628 L173.157,298.537 L170.597,297.044 L168.412,294.912 L167.659,294.177 L166.711,293.561 L164.981,293.514 L162.635,294.319 L161.010,295.284 L159.601,296.120 L155.312,300.623 L153.274,302.993 L151.753,305.555 L151.544,305.908 L149.242,309.119 L148.842,309.676 L146.070,311.927 L143.297,312.993 L138.818,314.178 L131.069,314.771 L125.079,315.675 L121.021,316.287 L118.409,316.955 L113.698,318.160 L110.333,319.416 L108.721,320.601 L107.762,321.975 L106.517,323.373 L105.114,325.493 L104.953,325.743 L103.816,327.899 L102.465,329.084 L101.019,329.819 L99.384,329.843 L97.749,329.890 L93.666,327.857 L93.294,327.497 L91.706,326.193 L89.384,324.511 L87.820,323.776 L86.398,323.278 L85.118,323.326 L83.409,323.121 L83.032,323.231 L82.037,323.776 L81.634,325.245 L81.255,326.525 L81.113,328.113 L81.635,330.649 L81.776,331.336 L81.374,333.326 L79.051,336.834 L78.394,337.022 L77.061,337.403 L74.833,337.592 L71.373,337.876 L68.458,338.659 L65.919,340.074 L62.462,342.000 L58.623,344.441 L57.107,345.507 L56.751,347.356 L56.616,348.018 L56.230,349.915 L54.666,352.996 L51.775,358.375 L51.047,359.423 L48.646,362.878 L47.390,363.565 L46.348,364.063 L44.381,364.561 L42.698,364.987 L40.447,365.224 L38.646,365.485 L37.461,364.963 L36.892,364.087 L35.589,362.215 L34.830,363.542 L35.233,365.591 L34.712,367.724 L34.475,368.945 L35.162,369.928 L36.584,370.236 L37.386,370.454 L38.598,371.552 L38.635,373.175 L38.646,373.637 L38.930,374.964 L36.797,375.343 L36.537,376.647 L38.089,377.275 L38.247,379.105 L39.143,380.225 L40.020,381.126 L40.257,382.239 L40.905,382.499 L41.027,382.548 L43.672,382.796 L43.931,382.702 L44.402,382.925 L45.506,383.448 L47.992,384.353 L48.208,384.432 L49.879,383.768 L50.884,384.328 L51.431,384.633 L52.249,384.992 L52.995,385.320 L53.931,385.913 L55.519,386.256 L55.934,386.908 L56.147,389.159 L56.197,389.186 L57.107,389.669 L58.552,389.906 L59.251,389.930 L59.832,389.515 L60.306,388.970 L61.422,388.292 L61.574,388.200 L62.842,388.022 L63.979,387.951 L64.654,388.140 L65.828,388.828 L66.133,390.242 L66.219,390.640 L66.586,391.991 L68.505,392.406 L68.484,393.143 L68.162,394.503 L67.968,395.009 L67.872,395.863 L67.676,396.956 L67.854,397.904 L67.415,399.681 L68.245,399.966 L68.908,400.167 L69.264,400.937 L68.920,401.790 L68.766,401.803 L68.478,401.889 L67.972,402.170 L67.309,402.102 L65.745,401.912 L64.545,401.645 L63.780,401.456 L63.016,401.157 L62.281,401.055 L61.752,400.982 L61.168,401.444 L61.372,403.183 L61.325,404.800 L60.217,404.966 L59.139,405.357 L58.061,406.168 L57.225,406.797 L56.348,407.241 L55.690,407.024 L55.288,406.891 L54.535,407.140 L54.156,406.684 L54.091,405.778 L53.708,405.466 L53.647,405.416 L52.355,405.701 L50.898,404.439 L49.055,404.101 L49.411,402.383 L49.743,401.636 L49.908,401.139 L49.904,400.735 L49.405,400.493 L48.421,400.694 L47.236,400.748 L46.466,400.843 L45.275,401.459 L44.849,403.313 L43.409,404.646 L43.042,405.013 L41.999,405.428 L41.975,405.831 L41.845,406.009 L41.910,406.323 L41.715,406.732 L41.205,406.749 L40.844,406.684 L40.186,406.524 L39.754,406.423 L39.469,406.477 L39.192,406.598 L39.037,406.666 L39.023,406.756 L38.835,407.140 L38.770,407.614 L38.883,408.053 L39.084,408.764 L39.136,408.987 L39.155,409.332 L39.025,409.682 L38.664,410.114 L38.415,410.814 L38.124,411.495 L37.840,412.052 L37.573,412.425 L37.645,412.828 L37.704,413.296 L37.970,413.527 L38.480,414.262 L38.510,414.878 L38.379,415.257 L38.154,415.435 L37.846,415.666 L37.467,416.377 L37.046,416.987 L36.916,417.437 L36.756,417.846 L36.572,418.113 L36.276,418.314 L35.867,418.450 L34.499,418.758 L34.303,419.197 L34.102,419.523 L34.063,419.678 L33.995,419.789 L33.681,419.979 L33.296,420.062 L32.757,420.056 L32.129,419.926 L31.738,419.955 L31.252,420.192 L30.879,420.808 L30.434,421.330 L30.328,421.578 L30.014,421.839 L29.534,422.106 L29.214,422.408 L29.030,422.852 L28.864,423.279 L28.758,423.694 L28.870,423.966 L29.232,424.144 L29.723,424.233 L30.091,424.250 L30.470,424.310 L30.577,424.384 L30.701,424.470 L31.166,425.025 L31.584,425.524 L32.318,426.626 L32.508,427.183 L32.419,427.497 L32.064,427.752 L31.797,428.054 L31.548,428.421 L31.625,428.931 L31.797,429.334 L32.010,429.559 L32.342,429.861 L32.698,430.056 L33.237,430.139 L33.705,430.122 L34.155,430.145 L34.558,430.205 L34.890,430.513 L35.014,431.081 L35.174,431.662 L35.281,432.900 L35.464,433.587 L36.726,433.807 L37.319,436.579 L37.105,437.302 L35.920,437.907 L34.475,438.546 L33.663,438.866 L32.982,439.127 L31.347,437.705 L30.103,436.437 L28.669,434.684 L26.963,434.044 L25.920,434.186 L23.100,434.826 L20.066,436.390 L17.768,439.163 L16.156,441.319 L12.957,443.807 L10.255,445.751 L8.431,447.196 L7.340,448.286 L6.156,449.021 L4.189,450.230 L2.980,451.509 L2.198,452.813 L1.345,453.998 L0.602,455.034Z"/>
+          </defs>
+
+          <use href="#imdmDistrictOutline" class="district-shadow alert-green" id="districtShadow"></use>
+          <use href="#imdmDistrictOutline" class="district-shape alert-green" id="districtShape"></use>
+        </svg>
+
+        <div class="map-hover-card" id="mapHoverCard" aria-live="polite">
+          <p>Malappuram district</p>
+          <strong id="mapDetailAlert">Loading forecast…</strong>
+          <span id="mapDetailDate"></span>
+          <div id="mapDetailWarnings"></div>
+        </div>
+      </div>
+
+      <div class="map-day-switcher" id="mapDaySwitcher" aria-label="Map forecast days"></div>
+
+      <footer class="map-source">
+        <span>Map: OpenStreetMap contributors · ODbL 1.0</span>
+        <span>Warnings: India Meteorological Department</span>
+      </footer>
+    </article>
+
+  </section>
+</div><!-- /imdm -->
 
 
   <!-- ══════════════════════════════════════
@@ -1429,10 +1739,9 @@ if (window.top === window.self) {
      SCRIPTS
 ══════════════════════════════════════ -->
 
-<!-- weatherwidget.io — loaded after its div -->
-<script async src="https://app3.weatherwidget.org/js/?id=ww_7d443210e054f"></script>
-
 <!-- Extracted feature scripts (moved out of this page) -->
+
+<!-- IMD alert + Malappuram map (replaces js/elwoic-imd.js and the weatherwidget.io script) -->
 <script src="js/elwoic-imd.js"></script>
 <script type="module" src="js/elamkulam-forecast.js"></script>
 <script src="js/current-conditions.js"></script>
