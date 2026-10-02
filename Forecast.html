@@ -940,7 +940,82 @@
       }
     }
 
+/* ============================================================
+   DAILY REPORT (inside #report)
+============================================================ */
+#report { font-family: 'Noto Sans Malayalam', var(--font-sans); color: var(--text); }
 
+#report .rp-head {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  color: #fff; padding: 18px 22px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 14px; flex-wrap: wrap; border-bottom: 3px solid var(--gold);
+}
+#report .rp-title { font-size: 20px; font-weight: 700; }
+#report .rp-place { font-size: 13px; opacity: .75; margin-top: 3px; }
+#report .rp-date  { display: flex; gap: 6px; flex-wrap: wrap; }
+#report .rp-date span {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 20px; padding: 4px 11px; font-size: 11.5px;
+}
+
+#report .rp-body { padding: 18px; display: grid; gap: 14px; }
+
+#report .rp-sec {
+  border: 1px solid var(--border); border-left: 4px solid var(--gold);
+  border-radius: 8px; padding: 14px 16px; background: #fff;
+}
+#report .rp-sec h3 {
+  font-size: 14.5px; font-weight: 700; color: var(--navy);
+  margin: 0 0 8px; display: flex; align-items: center; gap: 8px;
+}
+#report .rp-sec p { font-size: 14px; line-height: 1.85; color: var(--text-mid); margin: 0 0 6px; }
+
+/* section accents */
+#report .rp-imd     { border-left-color: var(--amber); background: #fffdf5; }
+#report .rp-impact  { border-left-color: var(--red);   background: #fff8f8; }
+#report .rp-actions { border-left-color: var(--green); background: #f6fdf8; }
+#report .rp-current { border-left-color: var(--blue); }
+
+/* lists */
+#report .rp-list { list-style: none; display: grid; gap: 6px; margin: 6px 0 0; padding: 0; }
+#report .rp-list li {
+  font-size: 13.5px; line-height: 1.75; color: var(--text-mid);
+  padding-left: 16px; position: relative;
+}
+#report .rp-list li::before {
+  content: ""; position: absolute; left: 2px; top: .8em;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+}
+#report .rp-list li.rp-row {
+  padding: 9px 12px; background: #f7fafd;
+  border: 1px solid var(--border); border-radius: 7px;
+}
+#report .rp-list li.rp-row::before { display: none; }
+
+#report .rp-week .rp-row {
+  display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 4px 14px; align-items: start;
+}
+#report .rp-imd .rp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+
+#report .rp-label { font-weight: 700; color: var(--navy); font-size: 13px; }
+#report .rp-hz    { color: var(--text-mid); font-size: 13px; }
+
+/* IMD colour chips (same palette as the IMD map above) */
+#report .rp-chip { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px; color: #fff; white-space: nowrap; }
+#report .rp-chip.rp-red    { background: #e7474f; }
+#report .rp-chip.rp-orange { background: #f48132; }
+#report .rp-chip.rp-yellow { background: #e9b923; color: #3a2f00; }
+#report .rp-chip.rp-green  { background: #35a96b; }
+
+#report .rp-foot { font-size: 11.5px; color: var(--text-muted); line-height: 1.6; padding: 0 18px 16px; margin: 0; }
+#report .rp-err  { padding: 18px; color: var(--text-muted); font-size: 13px; }
+
+@media (max-width: 600px) {
+  #report .rp-body { padding: 12px; }
+  #report .rp-week .rp-row { grid-template-columns: 1fr; }
+}
+        
     /* ============================================================
        OPEN-METEO
     ============================================================ */
@@ -1753,45 +1828,6 @@ if (window.top === window.self) {
 
 <!-- NEW: Station Logbook widget — merges the Public Logbook Archive into this page -->
 <script src="js/logbook-widget.js"></script>
-<script>
-const REPORT_URL = "https://elwoic-forecast-report.bold-waterfall-0d01.workers.dev/";
-const CORE_URL   = "https://elwoic-core-for-public-side.elwoicelamkulam.workers.dev/";
 
-const esc = s => String(s).replace(/[&<>"']/g, c =>
-  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-
-function renderReport(rep) {
-  const footer = rep.essay_ml.trim().split("\n").pop();
-  const body = rep.sections.map(s => {
-    const bullets = s.lines.filter(l => l.startsWith("• "));
-    const paras   = s.lines.filter(l => !l.startsWith("• "));
-    return `
-      <section class="sec sec-${esc(s.key)}">
-        <h3>${esc(s.title)}</h3>
-        ${paras.map(p => `<p>${esc(p)}</p>`).join("")}
-        ${bullets.length ? `<ul>${bullets.map(b => `<li>${esc(b.slice(2))}</li>`).join("")}</ul>` : ""}
-      </section>`;
-  }).join("");
-
-  return `
-    <h2>ദൈനിക കാലാവസ്ഥാവിവരണം</h2>
-    <p><strong>എലങ്കുളം, മലപ്പുറം</strong></p>
-    <p>${esc(rep.date_line)}</p>
-    ${body}
-    <p class="foot"><small>${esc(footer)}</small></p>`;
-}
-
-// the two requests are independent, so one failing doesn't break the other
-fetch(REPORT_URL).then(r => r.json())
-  .then(rep => { document.getElementById("report").innerHTML = renderReport(rep); })
-  .catch(() => { document.getElementById("report").textContent = "റിപ്പോർട്ട് ലഭ്യമല്ല."; });
-
-fetch(CORE_URL).then(r => r.json())
-  .then(core => {
-    document.getElementById("live").textContent =
-      `${core.thermal.outdoor.temperature}°C | കാറ്റ് ${core.wind.speed} km/h`;
-  })
-  .catch(() => {});
-</script>
 </body>
 </html>
