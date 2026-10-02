@@ -3,49 +3,58 @@ const REPORT_URL = "https://elwoic-forecast-report.bold-waterfall-0d01.workers.d
 const esc = s => String(s).replace(/[&<>"']/g, c =>
   ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
-const ICONS = { current:"🌡️", summary:"📋", week:"📅", today:"🕒", imd:"⚠️", impact:"⚡", actions:"🛡️" };
-const colorClass = t => t.includes("ചുവപ്പ്") ? "red" : t.includes("ഓറഞ്ച്") ? "orange" : t.includes("മഞ്ഞ") ? "yellow" : "green";
+function splitLabel(t) {                       // "label: text" -> [label, text]
+  const i = t.indexOf(": ");
+  return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : ["", t];
+}
 
-function renderBullet(sec, text) {
-  const i = text.indexOf(": ");
-  if ((sec.key === "week" || sec.key === "imd") && i > 0) {
-    const label = text.slice(0, i), rest = text.slice(i + 2);
-    if (sec.key === "imd") {
-      const [lvl, ...hz] = rest.split(" — ");
-      return `<li class="rp-row"><span class="rp-label">${esc(label)}</span>
-        <span class="rp-chip rp-${colorClass(lvl)}">${esc(lvl)}</span>
-        ${hz.length ? `<span class="rp-hz">${esc(hz.join(" — "))}</span>` : ""}</li>`;
-    }
-    return `<li class="rp-row"><span class="rp-label">${esc(label)}</span><span>${esc(rest)}</span></li>`;
+function renderSection(s) {
+  const title = `<span class="doc-h">${esc(s.title)}</span>`;
+  const paras = s.lines.filter(l => !l.startsWith("• "));
+  const bullets = s.lines.filter(l => l.startsWith("• ")).map(l => l.slice(2));
+
+  // warning section -> bordered table, like the PDF
+  if (s.key === "imd" && bullets.length) {
+    const rows = bullets.map(b => {
+      const [date, rest] = splitLabel(b);
+      const [level, ...hz] = rest.split(" — ");
+      return `<tr><td>${esc(date)}</td><td>${esc(level)}</td><td>${esc(hz.join(" — ") || "-")}</td></tr>`;
+    }).join("");
+    return `<div class="doc-sec">${title}
+      <div class="doc-table-wrap"><table>
+        <thead><tr><th>തീയതി</th><th>മുന്നറിയിപ്പ്</th><th>അപകടസാധ്യത</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></div>`;
   }
-  return `<li>${esc(text)}</li>`;
+
+  // paragraph sections: heading runs on into the first paragraph, as in the PDF
+  if (paras.length && !bullets.length) {
+    return `<div class="doc-sec"><p>${title} ${esc(paras[0])}</p>
+      ${paras.slice(1).map(p => `<p>${esc(p)}</p>`).join("")}</div>`;
+  }
+
+  // forecast / precaution lists
+  return `<div class="doc-sec">${title}
+    ${paras.map(p => `<p>${esc(p)}</p>`).join("")}
+    <ul>${bullets.map(b => {
+      const [label, rest] = splitLabel(b);
+      return label && s.key === "week"
+        ? `<li><strong>${esc(label)}:</strong> ${esc(rest)}</li>`
+        : `<li>${esc(b)}</li>`;
+    }).join("")}</ul></div>`;
 }
 
 function renderReport(rep) {
   const footer = rep.essay_ml.trim().split("\n").pop();
-  const body = rep.sections.map(s => {
-    const paras   = s.lines.filter(l => !l.startsWith("• "));
-    const bullets = s.lines.filter(l => l.startsWith("• ")).map(l => l.slice(2));
-    return `
-      <section class="rp-sec rp-${esc(s.key)}">
-        <h3><span>${ICONS[s.key] || "•"}</span>${esc(s.title.replace(/:$/, ""))}</h3>
-        ${paras.map(p => `<p>${esc(p)}</p>`).join("")}
-        ${bullets.length ? `<ul class="rp-list">${bullets.map(b => renderBullet(s, b)).join("")}</ul>` : ""}
-      </section>`;
-  }).join("");
-
   return `
-    <header class="rp-head">
-      <div>
-        <div class="rp-title">ദൈനിക കാലാവസ്ഥാവിവരണം</div>
-        <div class="rp-place">എലങ്കുളം, മലപ്പുറം</div>
-      </div>
-      <div class="rp-date">${rep.date_line.split(" | ").map(d => `<span>${esc(d)}</span>`).join("")}</div>
-    </header>
-    <div class="rp-body">${body}</div>
-    <p class="rp-foot">${esc(footer)}</p>`;
+    <div class="doc-head">
+      <h2 class="doc-title">ദൈനിക കാലാവസ്ഥാവിവരണം</h2>
+      <p class="doc-sub" style="text-align:center">എലങ്കുളം, മലപ്പുറം</p>
+      <p class="doc-date" style="text-align:center">${esc(rep.date_line)}</p>
+    </div>
+    ${rep.sections.map(renderSection).join("")}
+    <p class="doc-foot">${esc(footer)}</p>`;
 }
 
 fetch(REPORT_URL).then(r => r.json())
   .then(rep => { document.getElementById("report").innerHTML = renderReport(rep); })
-  .catch(() => { document.getElementById("report").innerHTML = '<p class="rp-err">റിപ്പോർട്ട് ലഭ്യമല്ല. ദയവായി പിന്നീട് ശ്രമിക്കുക.</p>'; });
+  .catch(() => { document.getElementById("report").innerHTML = '<p class="doc-err">റിപ്പോർട്ട് ലഭ്യമല്ല. ദയവായി പിന്നീട് ശ്രമിക്കുക.</p>'; });
