@@ -1581,6 +1581,8 @@ if (window.top === window.self) {
         <span class="verify-banner-text">ഇന്നത്തെ AI പ്രവചനം സ്റ്റേഷൻ ഓഫീസർ പരിശോധിച്ച് സ്ഥിരീകരിച്ചു.</span>
         <button class="verify-banner-link" onclick="switchReportTab('logbook')">ലോഗ്ബുക്ക് കാണുക →</button>
       </div>
+      <div id="live"></div>
+      <div id="report"></div>
       <div id="elamkulam-forecast-report"></div>
     </div>
 
@@ -1752,6 +1754,45 @@ if (window.top === window.self) {
 
 <!-- NEW: Station Logbook widget — merges the Public Logbook Archive into this page -->
 <script src="js/logbook-widget.js"></script>
+<script>
+const REPORT_URL = "https://elwoic-forecast-report.bold-waterfall-0d01.workers.dev/";
+const CORE_URL   = "https://elwoic-core-for-public-side.elwoicelamkulam.workers.dev/";
 
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+function renderReport(rep) {
+  const footer = rep.essay_ml.trim().split("\n").pop();
+  const body = rep.sections.map(s => {
+    const bullets = s.lines.filter(l => l.startsWith("• "));
+    const paras   = s.lines.filter(l => !l.startsWith("• "));
+    return `
+      <section class="sec sec-${esc(s.key)}">
+        <h3>${esc(s.title)}</h3>
+        ${paras.map(p => `<p>${esc(p)}</p>`).join("")}
+        ${bullets.length ? `<ul>${bullets.map(b => `<li>${esc(b.slice(2))}</li>`).join("")}</ul>` : ""}
+      </section>`;
+  }).join("");
+
+  return `
+    <h2>ദൈനിക കാലാവസ്ഥാവിവരണം</h2>
+    <p><strong>എലങ്കുളം, മലപ്പുറം</strong></p>
+    <p>${esc(rep.date_line)}</p>
+    ${body}
+    <p class="foot"><small>${esc(footer)}</small></p>`;
+}
+
+// the two requests are independent, so one failing doesn't break the other
+fetch(REPORT_URL).then(r => r.json())
+  .then(rep => { document.getElementById("report").innerHTML = renderReport(rep); })
+  .catch(() => { document.getElementById("report").textContent = "റിപ്പോർട്ട് ലഭ്യമല്ല."; });
+
+fetch(CORE_URL).then(r => r.json())
+  .then(core => {
+    document.getElementById("live").textContent =
+      `${core.thermal.outdoor.temperature}°C | കാറ്റ് ${core.wind.speed} km/h`;
+  })
+  .catch(() => {});
+</script>
 </body>
 </html>
