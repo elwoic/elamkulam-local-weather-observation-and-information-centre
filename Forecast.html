@@ -941,80 +941,49 @@
     }
 
 /* ============================================================
-   DAILY REPORT (inside #report)
+   DAILY REPORT — plain document style (like the IMD PDF)
 ============================================================ */
-#report { font-family: 'Noto Sans Malayalam', var(--font-sans); color: var(--text); }
-
-#report .rp-head {
-  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-  color: #fff; padding: 18px 22px;
-  display: flex; justify-content: space-between; align-items: flex-end;
-  gap: 14px; flex-wrap: wrap; border-bottom: 3px solid var(--gold);
-}
-#report .rp-title { font-size: 20px; font-weight: 700; }
-#report .rp-place { font-size: 13px; opacity: .75; margin-top: 3px; }
-#report .rp-date  { display: flex; gap: 6px; flex-wrap: wrap; }
-#report .rp-date span {
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
-  border-radius: 20px; padding: 4px 11px; font-size: 11.5px;
+#report {
+  font-family: 'Noto Sans Malayalam', 'Segoe UI', Arial, sans-serif;
+  color: #000;
+  background: #fff;
+  padding: 28px 40px 22px;
+  font-size: 14px;
+  line-height: 1.75;
 }
 
-#report .rp-body { padding: 18px; display: grid; gap: 14px; }
-
-#report .rp-sec {
-  border: 1px solid var(--border); border-left: 4px solid var(--gold);
-  border-radius: 8px; padding: 14px 16px; background: #fff;
+#report .doc-head { text-align: center; margin-bottom: 16px; }
+#report .doc-title {
+  font-size: 19px; font-weight: 700; margin: 0;
+  text-decoration: underline; text-underline-offset: 4px;
 }
-#report .rp-sec h3 {
-  font-size: 14.5px; font-weight: 700; color: var(--navy);
-  margin: 0 0 8px; display: flex; align-items: center; gap: 8px;
+#report .doc-sub  { font-size: 16px; font-weight: 700; margin: 2px 0 0; }
+#report .doc-date {
+  font-size: 14.5px; font-weight: 700; margin: 12px 0 0;
+  padding-top: 10px; border-top: 1px solid #000;
 }
-#report .rp-sec p { font-size: 14px; line-height: 1.85; color: var(--text-mid); margin: 0 0 6px; }
 
-/* section accents */
-#report .rp-imd     { border-left-color: var(--amber); background: #fffdf5; }
-#report .rp-impact  { border-left-color: var(--red);   background: #fff8f8; }
-#report .rp-actions { border-left-color: var(--green); background: #f6fdf8; }
-#report .rp-current { border-left-color: var(--blue); }
+#report p { margin: 0 0 8px; text-align: justify; }
+#report .doc-h { font-weight: 700; color: #2e6db4; }          /* blue bold heading like the PDF */
+#report .doc-sec { margin: 0 0 14px; }
+#report .doc-sec > .doc-h { display: block; margin-bottom: 4px; }
 
-/* lists */
-#report .rp-list { list-style: none; display: grid; gap: 6px; margin: 6px 0 0; padding: 0; }
-#report .rp-list li {
-  font-size: 13.5px; line-height: 1.75; color: var(--text-mid);
-  padding-left: 16px; position: relative;
+#report ul { margin: 4px 0 6px 6px; padding-left: 22px; }
+#report li { margin-bottom: 5px; text-align: justify; }
+#report li strong { font-weight: 700; }
+
+#report .doc-table-wrap { overflow-x: auto; margin: 6px 0 4px; }
+#report table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+#report th, #report td { border: 1px solid #000; padding: 6px 10px; text-align: left; vertical-align: top; }
+#report th { font-weight: 700; background: #fff; }
+
+#report .doc-foot {
+  margin-top: 18px; padding-top: 10px; border-top: 1px solid #2e6db4;
+  text-align: center; font-weight: 700; color: #d00000; font-size: 13px; line-height: 1.6;
 }
-#report .rp-list li::before {
-  content: ""; position: absolute; left: 2px; top: .8em;
-  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
-}
-#report .rp-list li.rp-row {
-  padding: 9px 12px; background: #f7fafd;
-  border: 1px solid var(--border); border-radius: 7px;
-}
-#report .rp-list li.rp-row::before { display: none; }
+#report .doc-err { color: #555; }
 
-#report .rp-week .rp-row {
-  display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 4px 14px; align-items: start;
-}
-#report .rp-imd .rp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
-
-#report .rp-label { font-weight: 700; color: var(--navy); font-size: 13px; }
-#report .rp-hz    { color: var(--text-mid); font-size: 13px; }
-
-/* IMD colour chips (same palette as the IMD map above) */
-#report .rp-chip { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px; color: #fff; white-space: nowrap; }
-#report .rp-chip.rp-red    { background: #e7474f; }
-#report .rp-chip.rp-orange { background: #f48132; }
-#report .rp-chip.rp-yellow { background: #e9b923; color: #3a2f00; }
-#report .rp-chip.rp-green  { background: #35a96b; }
-
-#report .rp-foot { font-size: 11.5px; color: var(--text-muted); line-height: 1.6; padding: 0 18px 16px; margin: 0; }
-#report .rp-err  { padding: 18px; color: var(--text-muted); font-size: 13px; }
-
-@media (max-width: 600px) {
-  #report .rp-body { padding: 12px; }
-  #report .rp-week .rp-row { grid-template-columns: 1fr; }
-}
+@media (max-width: 600px) { #report { padding: 18px 16px; } }
         
     /* ============================================================
        OPEN-METEO
