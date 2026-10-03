@@ -178,3 +178,7 @@ async function printReport() {
   // Native browser printing.
   window.print();
 }
+
+/* Print button */
+document.getElementById("printReportBtn")
+  ?.addEventListener("click", printReport);
