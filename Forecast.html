@@ -952,17 +952,27 @@
   line-height: 1.75;
 }
 
-#report .doc-head { text-align: center; margin-bottom: 16px; }
+/* ---- header: logo | title | logo ---- */
+#report .doc-head {
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+#report .doc-titles { text-align: center; }
 #report .doc-title {
   font-size: 19px; font-weight: 700; margin: 0;
   text-decoration: underline; text-underline-offset: 4px;
 }
-#report .doc-sub  { font-size: 16px; font-weight: 700; margin: 2px 0 0; }
+#report .doc-sub  { font-size: 16px; font-weight: 700; margin: 4px 0 0; text-align: center; }
+#report .doc-logo { width: 84px; height: 84px; object-fit: contain; justify-self: center; }
 #report .doc-date {
-  font-size: 14.5px; font-weight: 700; margin: 12px 0 0;
-  padding-top: 10px; border-top: 1px solid #000;
+  font-size: 14.5px; font-weight: 700; text-align: center;
+  margin: 12px 0 14px; padding-top: 10px; border-top: 1px solid #000;
 }
 
+/* ---- body text ---- */
 #report p { margin: 0 0 8px; text-align: justify; }
 #report .doc-h { font-weight: 700; color: #2e6db4; }          /* blue bold heading like the PDF */
 #report .doc-sec { margin: 0 0 14px; }
@@ -972,18 +982,34 @@
 #report li { margin-bottom: 5px; text-align: justify; }
 #report li strong { font-weight: 700; }
 
+/* ---- IMD warning table ---- */
 #report .doc-table-wrap { overflow-x: auto; margin: 6px 0 4px; }
 #report table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 #report th, #report td { border: 1px solid #000; padding: 6px 10px; text-align: left; vertical-align: top; }
 #report th { font-weight: 700; background: #fff; }
 
+/* ---- footer line ---- */
 #report .doc-foot {
   margin-top: 18px; padding-top: 10px; border-top: 1px solid #2e6db4;
   text-align: center; font-weight: 700; color: #d00000; font-size: 13px; line-height: 1.6;
 }
 #report .doc-err { color: #555; }
 
-@media (max-width: 600px) { #report { padding: 18px 16px; } }
+/* ---- print button (outside #report, above it) ---- */
+.report-toolbar { text-align: right; padding: 12px 16px 0; }
+.btn-print {
+  background: var(--navy); color: #fff; border: 0; border-radius: 6px;
+  padding: 8px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+.btn-print:hover { background: var(--navy-mid); }
+
+/* ---- mobile ---- */
+@media (max-width: 600px) {
+  #report { padding: 18px 16px; }
+  #report .doc-head { grid-template-columns: 52px 1fr 52px; gap: 8px; }
+  #report .doc-logo { width: 48px; height: 48px; }
+  #report .doc-title { font-size: 16px; }
+}
         
     /* ============================================================
        OPEN-METEO
@@ -1625,7 +1651,9 @@ if (window.top === window.self) {
         <span class="verify-banner-text">ഇന്നത്തെ AI പ്രവചനം സ്റ്റേഷൻ ഓഫീസർ പരിശോധിച്ച് സ്ഥിരീകരിച്ചു.</span>
         <button class="verify-banner-link" onclick="switchReportTab('logbook')">ലോഗ്ബുക്ക് കാണുക →</button>
       </div>
-      <div id="live"></div>
+      <div class="report-toolbar">
+  <button type="button" class="btn-print" onclick="printReport()">🖨️ PDF / പ്രിന്റ്</button>
+      </div>
       <div id="report"></div>
     </div>
 
