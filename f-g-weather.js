@@ -1,5 +1,5 @@
 const VAYU_CORE = "https://elwoic-vayu-core.bold-waterfall-0d01.workers.dev/";
-
+ 
 function setEl(id,val){ const el=document.getElementById(id); if(el) el.textContent=val??"--"; }
 function displayRainStatus(id,isRaining,text,isError=false){
   const r=document.getElementById(id); if(!r)return;
