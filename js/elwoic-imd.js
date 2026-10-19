@@ -2,8 +2,8 @@
  * ELWOIC Unified Weather Monitoring Script
  *
  * ONE request to the IMD worker drives every IMD element on the site:
- *   1. Daily IMD Warning Marquee      (#marqueeContainer / #marqueeText)
- *   2. Live Nowcast Ticker            (#nowcast-container / #nowcast-ticker)
+ *   1. Daily IMD Warning Marquee     (#marqueeContainer / #marqueeText)
+ *   2. Live Nowcast Ticker           (#nowcast-container / #nowcast-ticker)
  *   3. 5-Day IMD warnings + district map (Forecast page: #imdDays, #imdDetail,
  *      #districtMap …). If a page still has the OLD 5-day box (no #districtMap)
  *      the old tab renderer is used, so nothing that worked before breaks.
@@ -11,7 +11,10 @@
  * Every renderer checks that its elements exist first, so the same file is
  * safe to load on any page (shell, forecast, etc.).
  *
- * Polling: 10 min normally, 3 min while the bulletin/nowcast is updating.
+ * Polling:
+ *   - 10 min normally
+ *   - 3 min while the bulletin/nowcast is waking up the bridge and updating
+ *   - Falls back to 10 min (stops rapid polling) if the worker reports `imd_issue`
  */
 
 (function () {
@@ -159,13 +162,20 @@
     const colorId = data["Day1_Color"] || "4";
     const colorInfo = MARQUEE_COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
 
+    const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
     const prefixParts = [];
-    if (data.stale)      prefixParts.push("⚠️ Showing previous IMD bulletin.");
-    if (data.updating)   prefixParts.push("🔄 Updating latest IMD data...");
-    if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
-    const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
 
-    marqueeTextEl.textContent = `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} — ${warningText} | Last Updated: ${data.updated_at || "N/A"} | Source: India Meteorological Department (IMD)`;
+    if (isImdIssue) {
+      prefixParts.push("⚠️ IMD side issue — showing last available bulletin.");
+    } else {
+      if (data.stale)      prefixParts.push("⚠️ Showing previous IMD bulletin.");
+      if (data.updating)   prefixParts.push("🔄 Updating latest IMD data...");
+      if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
+    }
+    const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
+    const lastUpdated = data.updated_at || data.last_updated_ist || "N/A";
+
+    marqueeTextEl.textContent = `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} — ${warningText} | Last Updated: ${lastUpdated} | Source: India Meteorological Department (IMD)`;
     marqueeContainerEl.style.background = colorInfo.css;
   }
 
@@ -203,9 +213,12 @@
       }
 
       const alertColor = data.nowcast.color_name ? data.nowcast.color_name.toUpperCase() : "UNKNOWN";
+      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
       const expired = data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms);
 
-      if (expired || data.cache_status === "EXPIRED_STALE_UPDATING") {
+      if (isImdIssue) {
+        ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT) [IMD SIDE ISSUE - SHOWING LAST ALERT]: ${tickerText}`;
+      } else if (expired || data.cache_status === "EXPIRED_STALE_UPDATING") {
         ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT) [EXPIRED - UPDATING...]: ${tickerText}`;
       } else {
         ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT): ${tickerText}`;
@@ -349,15 +362,18 @@
     const notice = document.getElementById("previewNotice");
     if (notice) notice.style.display = isPreview ? "flex" : "none";
 
+    const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
     const updated = document.getElementById("imdUpdatedAt");
     if (updated) {
-      updated.textContent = data.updating
-        ? "Updating latest bulletin…"
-        : data.stale
-          ? "Showing previous bulletin"
-          : data.error_mode
-            ? "Showing backup data"
-            : "Updated " + (data.updated_at || "recently");
+      updated.textContent = isImdIssue
+        ? "IMD side issue — showing previous bulletin"
+        : data.updating
+          ? "Updating latest bulletin…"
+          : data.stale
+            ? "Showing previous bulletin"
+            : data.error_mode
+              ? "Showing backup data"
+              : "Updated " + (data.updated_at || data.last_updated_ist || "recently");
     }
 
     renderMapDayControls();
@@ -425,15 +441,22 @@
     if (!daysContainer) return;
     cachedImdData = data;
 
-    if (upEl) upEl.textContent = "System updated: " + (data.updated_at || "N/A");
+    if (upEl) upEl.textContent = "System updated: " + (data.updated_at || data.last_updated_ist || "N/A");
 
     renderDaysTab(getTodayDiff(data));
 
     if (statusEl) {
+      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
       const parts = [];
-      if (data.stale) parts.push("⚠ Showing previous bulletin");
-      if (data.updating) parts.push("🔄 Updating latest data...");
-      if (data.error_mode) parts.push("⚠ Using backup data");
+
+      if (isImdIssue) {
+        parts.push("⚠ IMD side issue — showing previous bulletin");
+      } else {
+        if (data.stale) parts.push("⚠ Showing previous bulletin");
+        if (data.updating) parts.push("🔄 Updating latest data...");
+        if (data.error_mode) parts.push("⚠ Using backup data");
+      }
+
       if (data.is_cached) parts.push("Served from cache · " + (data.fetch_period || ""));
 
       if (parts.length) {
@@ -515,10 +538,12 @@
       if (hasMapSection()) renderMapUI(data, false);
       else renderDailyWarningsUI(data);
 
+      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
       const isExpired = data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms);
       const isUpdating = data.updating || data.cache_status === "EXPIRED_STALE_UPDATING";
 
-      scheduleNextFetch(isExpired || isUpdating ? RETRY_POLL_INTERVAL : NORMAL_POLL_INTERVAL);
+      // Poll every 3 min while actively updating; drop back to 10 min once fresh or if IMD has a side issue
+      scheduleNextFetch((!isImdIssue && (isExpired || isUpdating)) ? RETRY_POLL_INTERVAL : NORMAL_POLL_INTERVAL);
 
     } catch (error) {
       console.error("ELWOIC Weather Sync Error:", error);
