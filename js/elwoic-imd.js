@@ -1,20 +1,23 @@
 /**
- * ELWOIC Unified Weather Monitoring Script
+ * ELWOIC Unified Weather Monitoring Script — REVISED VERSION
  *
- * ONE request to the IMD worker drives every IMD element on the site:
+ * Coordinates with the updated `imdalert` Cloudflare Worker:
  *   1. Daily IMD Warning Marquee     (#marqueeContainer / #marqueeText)
  *   2. Live Nowcast Ticker           (#nowcast-container / #nowcast-ticker)
  *   3. 5-Day IMD warnings + district map (Forecast page: #imdDays, #imdDetail,
- *      #districtMap …). If a page still has the OLD 5-day box (no #districtMap)
- *      the old tab renderer is used, so nothing that worked before breaks.
+ *      #districtMap …) with full backward support for the legacy 5-day box.
  *
- * Every renderer checks that its elements exist first, so the same file is
- * safe to load on any page (shell, forecast, etc.).
- *
- * Polling:
- *   - 10 min normally
- *   - 3 min while the bulletin/nowcast is waking up the bridge and updating
- *   - Falls back to 10 min (stops rapid polling) if the worker reports `imd_issue`
+ * Key Polling & Status Behaviour:
+ *   - All Render fetching, locking, retry cooldowns, and KV updates remain
+ *     strictly inside the Cloudflare Worker. The frontend never contacts Render directly.
+ *   - Normal polling (10 min) when the nowcast is valid and no urgent update is needed
+ *     (Case B & Case C, where background checks run transparently on the worker).
+ *   - Rapid polling (3 min) when the nowcast validity has expired and an urgent update
+ *     is in progress (Case A), or after a temporary network/cold-start error.
+ *   - Automatic fallback to 10-min polling with clear user-facing status notices
+ *     when the worker reports a persistent IMD/bridge outage (`imd_issue: true`).
+ *   - Clear loading / temporary-unavailability messaging if Case D (cold start with
+ *     no prior cached bulletin) fails or is still waking up the bridge.
  */
 
 (function () {
@@ -22,19 +25,18 @@
 
   const WORKER_URL = "https://imdalert.aswanthkrishnak822.workers.dev";
 
-  const NORMAL_POLL_INTERVAL = 10 * 60 * 1000;
-  const RETRY_POLL_INTERVAL = 3 * 60 * 1000;
+  const NORMAL_POLL_INTERVAL = 10 * 60 * 1000; // 10 minutes — normal valid state or persistent outage backoff
+  const RETRY_POLL_INTERVAL = 3 * 60 * 1000;   // 3 minutes — active expiry refresh or temporary network/wakeup retry
 
-  // The worker's CORS policy only allows elwoic.in. Preview data is shown
-  // ONLY when the page is opened somewhere else (e.g. an online editor), never
-  // on the real site — so residents can never see made-up alerts.
+  // Preview data is shown ONLY when opened outside elwoic.in (e.g., local/online editor),
+  // never on the live production domain.
   const IS_LIVE_HOST = /(^|\.)elwoic\.in$/i.test(window.location.hostname);
 
   let pollTimer = null;
-  let cachedImdData = null;   // latest worker payload
+  let cachedImdData = null;   // latest valid worker payload
   let forecastData = null;    // same payload, used by the map renderer
   let selectedDay = 0;
-  let userPickedDay = null;   // keeps the viewer's chosen day across refreshes
+  let userPickedDay = null;   // preserves the viewer's chosen day tab across background polls
 
   // --- MAPPINGS & LOOKUPS ---
 
@@ -49,26 +51,26 @@
 
   // Daily marquee backgrounds
   const MARQUEE_COLOR_MAP = {
-    "1": { name: "Red alert (Take Action)",    css: "linear-gradient(90deg, #cb2d3e, #ef473a)" },
-    "2": { name: "Orange alert (Be Prepared)", css: "linear-gradient(90deg, #f46b45, #eea849)" },
-    "3": { name: "Yellow alert (Be Aware)",    css: "linear-gradient(90deg, #f7971e, #ffd200)" },
-    "4": { name: "Green (No Warning)",         css: "linear-gradient(90deg, #1d976c, #93f9b9)" }
+    "1": { name: "Red alert (Take Action)",     css: "linear-gradient(90deg, #cb2d3e, #ef473a)" },
+    "2": { name: "Orange alert (Be Prepared)",  css: "linear-gradient(90deg, #f46b45, #eea849)" },
+    "3": { name: "Yellow alert (Be Aware)",     css: "linear-gradient(90deg, #f7971e, #ffd200)" },
+    "4": { name: "Green (No Warning)",          css: "linear-gradient(90deg, #1d976c, #93f9b9)" }
   };
 
   // Legacy 5-day box (old markup)
   const COLOR_META = {
-    "1": { name: "Red alert — Take action",    hex: "#ef4444", dot: "dot-5" },
-    "2": { name: "Orange alert — Be prepared", hex: "#f97316", dot: "dot-4" },
-    "3": { name: "Yellow alert — Be aware",    hex: "#eab308", dot: "dot-3" },
-    "4": { name: "Green — No warning",         hex: "#22c55e", dot: "dot-1" }
+    "1": { name: "Red alert — Take action",     hex: "#ef4444", dot: "dot-5" },
+    "2": { name: "Orange alert — Be prepared",  hex: "#f97316", dot: "dot-4" },
+    "3": { name: "Yellow alert — Be aware",     hex: "#eab308", dot: "dot-3" },
+    "4": { name: "Green — No warning",          hex: "#22c55e", dot: "dot-1" }
   };
 
   // New map section
   const MAP_ALERTS = {
-    "1": { name: "Red alert — Take action",    shortName: "Red alert",    className: "alert-red" },
-    "2": { name: "Orange alert — Be prepared", shortName: "Orange alert", className: "alert-orange" },
-    "3": { name: "Yellow alert — Be aware",    shortName: "Yellow alert", className: "alert-yellow" },
-    "4": { name: "Green — No warning",         shortName: "No warning",   className: "alert-green" }
+    "1": { name: "Red alert — Take action",     shortName: "Red alert",    className: "alert-red" },
+    "2": { name: "Orange alert — Be prepared",  shortName: "Orange alert", className: "alert-orange" },
+    "3": { name: "Yellow alert — Be aware",     shortName: "Yellow alert", className: "alert-yellow" },
+    "4": { name: "Green — No warning",          shortName: "No warning",   className: "alert-green" }
   };
 
   const ALERT_CLASSES = ["alert-red", "alert-orange", "alert-yellow", "alert-green"];
@@ -89,15 +91,26 @@
 
   function decodeWarnings(codeStr) {
     if (!codeStr || codeStr === "0") return ["No specific warning"];
-    return String(codeStr).split(",").map(c => WARNING_MAP[c.trim()] || ("Weather event " + c.trim()));
+    return String(codeStr)
+      .split(",")
+      .map(c => WARNING_MAP[c.trim()] || ("Weather event " + c.trim()));
   }
 
   function getISTDate() {
-    const s = new Date().toLocaleDateString("en-US", {
+    const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: "Asia/Kolkata",
-      year: "numeric", month: "2-digit", day: "2-digit"
-    });
-    return new Date(s);
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
+
+    let year = 1970, month = 1, day = 1;
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].type === "year") year = parseInt(parts[i].value, 10);
+      if (parts[i].type === "month") month = parseInt(parts[i].value, 10);
+      if (parts[i].type === "day") day = parseInt(parts[i].value, 10);
+    }
+    return new Date(year, month - 1, day);
   }
 
   // "YYYY-MM-DD" -> local midnight (avoids the UTC shift of new Date("YYYY-MM-DD"))
@@ -119,8 +132,9 @@
     return addDays(baseDate, days).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   }
 
-  // Which of the 5 forecast days is "today" in IST (bulletin may be a day old)
+  // Which of the 5 forecast days is "today" in IST (bulletin may be from yesterday prior to 04:15 IST refresh)
   function getTodayDiff(data) {
+    if (!data || !data.Date) return 0;
     const base = parseBaseDate(data.Date);
     let diff = Math.round((getISTDate() - base) / 86400000);
     if (isNaN(diff) || diff < 0) diff = 0;
@@ -129,8 +143,10 @@
   }
 
   function isNowcastExpired(nowcast, validUntilMs) {
-    if (validUntilMs && Date.now() > validUntilMs) return true;
-    if (nowcast && nowcast.vupto && nowcast.vupto.length >= 4) {
+    if (typeof validUntilMs === "number" && validUntilMs > 0) {
+      return Date.now() > validUntilMs;
+    }
+    if (nowcast && nowcast.vupto && nowcast.vupto.length >= 4 && nowcast.vupto !== "0000") {
       const now = new Date();
       const istNow = new Date(now.getTime() + (now.getTimezoneOffset() + 330) * 60000);
       const currentHHMM = (istNow.getHours() * 100) + istNow.getMinutes();
@@ -158,8 +174,11 @@
     const todayIST = getISTDate();
     const dateStr = todayIST.toLocaleDateString("en-GB");
 
-    const warningText = decodeWarnings(data["Day_1"]).join(" & ");
-    const colorId = data["Day1_Color"] || "4";
+    const dayNumber = getTodayDiff(data) + 1;
+    const warningCode = data["Day_" + dayNumber] || data["Day_1"];
+    const colorId = data["Day" + dayNumber + "_Color"] || data["Day1_Color"] || "4";
+
+    const warningText = decodeWarnings(warningCode).join(" & ");
     const colorInfo = MARQUEE_COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
 
     const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
@@ -207,14 +226,19 @@
 
       let tickerText = textElements.join(" | ") || "ACTIVE NOWCAST ALERT ISSUED";
 
-      if (data.nowcast.toi && data.nowcast.vupto) {
+      if (
+        data.nowcast.toi &&
+        data.nowcast.vupto &&
+        data.nowcast.vupto !== "0" &&
+        data.nowcast.vupto !== "0000"
+      ) {
         const formatTime = (t) => `${t.substring(0, 2)}:${t.substring(2)}`;
         tickerText += ` (VALID: ${formatTime(data.nowcast.toi)} TO ${formatTime(data.nowcast.vupto)} IST)`;
       }
 
       const alertColor = data.nowcast.color_name ? data.nowcast.color_name.toUpperCase() : "UNKNOWN";
       const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
-      const expired = data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms);
+      const expired = Boolean(data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms));
 
       if (isImdIssue) {
         ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT) [IMD SIDE ISSUE - SHOWING LAST ALERT]: ${tickerText}`;
@@ -321,7 +345,9 @@
     setAlertClass(shape, day.alert.className);
     setAlertClass(shadow, day.alert.className);
 
-    if (badge) badge.querySelector("span").textContent = day.alert.shortName;
+    if (badge && badge.querySelector("span")) {
+      badge.querySelector("span").textContent = day.alert.shortName;
+    }
 
     if (marquee) {
       marquee.innerHTML =
@@ -380,8 +406,12 @@
     renderMapSelectedDay();
   }
 
-  // Live site + worker unreachable: show an honest "unavailable" state
-  function renderMapUnavailable() {
+  // Live site + no cached bulletin available (Case D cold start waking up or bridge unreachable)
+  function renderMapUnavailable(statusOptions) {
+    const opts = statusOptions || {};
+    const isWakingUp = Boolean(opts.wakingUp);
+    const isPersistentIssue = Boolean(opts.imdIssue);
+
     const tabs = document.getElementById("imdDays");
     const switcher = document.getElementById("mapDaySwitcher");
     const detail = document.getElementById("imdDetail");
@@ -393,27 +423,44 @@
     if (notice) notice.style.display = "none";
     if (tabs) tabs.innerHTML = "";
     if (switcher) switcher.innerHTML = "";
-    if (updated) updated.textContent = "Live IMD data unavailable";
+
+    const headlineText = isWakingUp
+      ? "Connecting to IMD weather bridge…"
+      : isPersistentIssue
+        ? "IMD weather bridge persistently unavailable"
+        : "IMD data currently unavailable";
+
+    const subText = isWakingUp
+      ? "Fetching the latest Malappuram district bulletin. This page will update automatically."
+      : "Please check the official IMD website for warnings while service is restored.";
+
+    if (updated) {
+      updated.textContent = isWakingUp
+        ? "Fetching initial IMD bulletin…"
+        : "Live IMD data unavailable";
+    }
 
     if (detail) {
       detail.innerHTML =
-        '<div class="warning-summary"><div><p>IMD data currently unavailable</p>' +
-        "<span>Please check the official IMD website for warnings.</span></div></div>";
+        '<div class="warning-summary"><div><p>' + headlineText + "</p>" +
+        "<span>" + subText + "</span></div></div>";
     }
 
     setAlertClass(badge, null);
     setAlertClass(document.getElementById("districtShape"), null);
     setAlertClass(document.getElementById("districtShadow"), null);
-    if (badge) badge.querySelector("span").textContent = "Unavailable";
+    if (badge && badge.querySelector("span")) {
+      badge.querySelector("span").textContent = isWakingUp ? "Loading…" : "Unavailable";
+    }
 
     if (marquee) {
-      marquee.innerHTML = "<span>Kerala weather overview</span><b>IMD data currently unavailable</b>";
+      marquee.innerHTML = "<span>Kerala weather overview</span><b>" + headlineText + "</b>";
     }
 
     const hoverAlert = document.getElementById("mapDetailAlert");
     const hoverDate = document.getElementById("mapDetailDate");
     const hoverWarnings = document.getElementById("mapDetailWarnings");
-    if (hoverAlert) hoverAlert.textContent = "Data unavailable";
+    if (hoverAlert) hoverAlert.textContent = isWakingUp ? "Loading IMD data…" : "Data unavailable";
     if (hoverDate) hoverDate.textContent = "";
     if (hoverWarnings) hoverWarnings.innerHTML = "";
   }
@@ -443,7 +490,8 @@
 
     if (upEl) upEl.textContent = "System updated: " + (data.updated_at || data.last_updated_ist || "N/A");
 
-    renderDaysTab(getTodayDiff(data));
+    const activeDayIndex = userPickedDay !== null ? userPickedDay : getTodayDiff(data);
+    renderDaysTab(getTodayDiff(data), activeDayIndex);
 
     if (statusEl) {
       const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
@@ -468,10 +516,11 @@
     }
   }
 
-  function renderDaysTab(todayDiff) {
+  function renderDaysTab(todayDiff, activeIndex) {
     const container = document.getElementById("imdDays");
     if (!container || !cachedImdData) return;
 
+    const selected = typeof activeIndex === "number" ? activeIndex : todayDiff;
     let html = "";
     const base = parseBaseDate(cachedImdData.Date);
 
@@ -479,18 +528,18 @@
       const colorId = cachedImdData["Day" + (i + 1) + "_Color"] || "4";
       const meta = COLOR_META[colorId] || { dot: "dot-x", hex: "#888" };
       const isToday = i === todayDiff;
-      const isActive = isToday ? "active" : "";
+      const isActive = i === selected ? "active" : "";
       const labelClass = isToday ? "imd-day-label today" : "imd-day-label";
       const labelText = isToday ? "Today" : offsetDate(base, i);
 
-      html += `<button class="imd-day-btn ${isActive}" role="tab" aria-selected="${isToday}" data-day="${i}" onclick="window._imdSelect(${i})">
+      html += `<button class="imd-day-btn ${isActive}" role="tab" aria-selected="${i === selected}" data-day="${i}" onclick="window._imdSelect(${i})">
         <span class="${labelClass}">${labelText}</span>
         <div class="imd-color-dot ${meta.dot}"></div>
         <span class="imd-day-date">${offsetDate(base, i)}</span>
       </button>`;
     }
     container.innerHTML = html;
-    renderDetail(todayDiff);
+    renderDetail(selected);
   }
 
   function renderDetail(i) {
@@ -514,6 +563,7 @@
   }
 
   window._imdSelect = function (i) {
+    userPickedDay = i;
     document.querySelectorAll(".imd-day-btn").forEach((btn, idx) => {
       btn.classList.toggle("active", idx === i);
       btn.setAttribute("aria-selected", idx === i);
@@ -529,7 +579,20 @@
   async function syncWeatherData() {
     try {
       const response = await fetch(WORKER_URL);
-      if (!response.ok) throw new Error("Worker network response was not ok");
+
+      if (!response.ok) {
+        let errPayload = null;
+        try {
+          errPayload = await response.json();
+        } catch (_) {}
+
+        const err = new Error(
+          (errPayload && errPayload.error) || `Worker responded with HTTP ${response.status}`
+        );
+        err.status = response.status;
+        err.payload = errPayload;
+        throw err;
+      }
 
       const data = await response.json();
 
@@ -539,36 +602,60 @@
       else renderDailyWarningsUI(data);
 
       const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
-      const isExpired = data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms);
-      const isUpdating = data.updating || data.cache_status === "EXPIRED_STALE_UPDATING";
+      const isExpired = Boolean(data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms));
+      const isUpdating = Boolean(data.updating || data.cache_status === "EXPIRED_STALE_UPDATING");
 
-      // Poll every 3 min while actively updating; drop back to 10 min once fresh or if IMD has a side issue
+      // Poll every 3 min while an expired nowcast is actively refreshing;
+      // use 10-min normal polling when valid/fresh or when backing off during a persistent IMD issue.
       scheduleNextFetch((!isImdIssue && (isExpired || isUpdating)) ? RETRY_POLL_INTERVAL : NORMAL_POLL_INTERVAL);
 
     } catch (error) {
       console.error("ELWOIC Weather Sync Error:", error);
 
-      // Marquee fallback (any page that has it)
-      const marqueeTextEl = document.getElementById("marqueeText");
-      if (marqueeTextEl) {
-        marqueeTextEl.textContent = "⚠️ IMD Alert System currently unavailable. Please check official IMD channels.";
-      }
+      const errPayload = (error && error.payload) || {};
+      const isWakingUp = Boolean(errPayload.cold_start_pending || errPayload.updating || error.status === 503);
+      const isPersistentIssue = Boolean(errPayload.imd_issue);
 
-      if (hasMapSection()) {
-        if (IS_LIVE_HOST) {
-          renderMapUnavailable();
-        } else {
-          // Opened outside elwoic.in (CORS blocks the worker): demo data + notice
-          renderMapUI(PREVIEW_DATA, true);
-        }
+      // If we already rendered a valid bulletin earlier in this browser session,
+      // keep it on screen and update status notices rather than wiping out the UI.
+      if (cachedImdData || forecastData) {
+        const fallbackData = {
+          ...(forecastData || cachedImdData),
+          stale: true,
+          updating: !isPersistentIssue,
+          imd_issue: isPersistentIssue,
+          error_mode: true
+        };
+        renderDailyMarqueeUI(fallbackData);
+        renderNowcastUI(fallbackData);
+        if (hasMapSection()) renderMapUI(fallbackData, false);
+        else renderDailyWarningsUI(fallbackData);
       } else {
-        const daysEl = document.getElementById("imdDays");
-        if (daysEl) {
-          daysEl.innerHTML = '<div class="imd-loading-row">⚠ Could not load IMD data. Please check official IMD channels.</div>';
+        // Case D failure: no cached bulletin available yet
+        const marqueeTextEl = document.getElementById("marqueeText");
+        if (marqueeTextEl) {
+          marqueeTextEl.textContent = isWakingUp
+            ? "🔄 Connecting to IMD Weather Bridge and loading latest Malappuram bulletin..."
+            : "⚠️ IMD Alert System temporarily unavailable. Please check official IMD channels.";
+        }
+
+        if (hasMapSection()) {
+          if (IS_LIVE_HOST) {
+            renderMapUnavailable({ wakingUp: isWakingUp, imdIssue: isPersistentIssue });
+          } else {
+            renderMapUI(PREVIEW_DATA, true);
+          }
+        } else {
+          const daysEl = document.getElementById("imdDays");
+          if (daysEl) {
+            daysEl.innerHTML = isWakingUp
+              ? '<div class="imd-loading-row">🔄 Loading latest IMD bulletin… Please wait.</div>'
+              : '<div class="imd-loading-row">⚠ Could not load IMD data. Please check official IMD channels.</div>';
+          }
         }
       }
 
-      scheduleNextFetch(RETRY_POLL_INTERVAL);
+      scheduleNextFetch(isPersistentIssue ? NORMAL_POLL_INTERVAL : RETRY_POLL_INTERVAL);
     }
   }
 
