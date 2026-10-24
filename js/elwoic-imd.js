@@ -8,8 +8,9 @@
  *      #districtMap …) with full backward support for the legacy 5-day box.
  *
  * Key Polling & Status Behaviour:
- *   - All Render fetching (`/wake`, `/distw`, `/distn`, `/`), locking, strict 4h/2h/3h
- *     time gates, and KV updates remain strictly inside the Cloudflare Worker.
+ *   - Strictly separates District Warning status (`warning_imd_issue`) from
+ *     District Nowcast status (`nowcast_imd_issue`) so a valid Nowcast NEVER
+ *     displays `[IMD SIDE ISSUE]` while inside its validity window!
  *   - Quick Follow-Up Read (25s): When a visitor request triggers a background KV update
  *     (or an expired-nowcast refresh) and Render is awake, performs a single 25s follow-up
  *     read from KV so the browser displays the newly fetched bulletin immediately without
@@ -194,8 +195,6 @@
     if (pollTimer) clearTimeout(pollTimer);
     nextScheduledDueAt = Date.now() + ms;
 
-    // If the browser tab is currently hidden, wait until the user switches back
-    // to this tab before firing network requests.
     if (typeof document !== "undefined" && document.hidden) {
       return;
     }
@@ -203,16 +202,6 @@
     pollTimer = setTimeout(syncWeatherData, ms);
   }
 
-  /**
-   * Computes the optimal next poll interval based on the Worker's strict quota state:
-   *   1. If `wakeup_pending` is true -> poll in 3 minutes (Render `/wake` was spinning up).
-   *   2. If the Worker just initiated a background check (`EXPIRED_STALE_UPDATING` or
-   *      `STALE_UPDATING_IN_BACKGROUND` before `nowcast_2h_3h_called` is set) and we haven't
-   *      done a quick follow-up read for this bulletin cycle yet -> do 1 quick read in 25s
-   *      so the visitor sees the updated KV data right away.
-   *   3. Otherwise -> poll every 10 minutes (matching the Worker's 10m×3 expired retry
-   *      interval and normal fresh state).
-   */
   function computeNextPollInterval(data) {
     if (!data) return WAKEUP_POLL_INTERVAL;
 
@@ -247,7 +236,7 @@
   }
 
   // =====================================================================
-  // 1. DAILY IMD MARQUEE
+  // 1. DAILY IMD MARQUEE (Uses `warning_imd_issue` only)
   // =====================================================================
   function renderDailyMarqueeUI(data) {
     const marqueeTextEl = document.getElementById("marqueeText");
@@ -264,15 +253,14 @@
     const warningText = decodeWarnings(warningCode).join(" & ");
     const colorInfo = MARQUEE_COLOR_MAP[colorId] || { name: "Unknown", css: "#333" };
 
-    const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
+    // Only show an IMD side issue on the Daily Warning Marquee if `/distw` itself failed
+    const isWarningIssue = Boolean(data.warning_imd_issue);
     const prefixParts = [];
 
-    if (isImdIssue) {
+    if (isWarningIssue) {
       prefixParts.push("⚠️ IMD side issue — showing last available bulletin.");
-    } else {
-      if (data.stale)      prefixParts.push("⚠️ Showing previous IMD bulletin.");
-      if (data.updating)   prefixParts.push("🔄 Updating latest IMD data...");
-      if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
+    } else if (data.error_mode) {
+      prefixParts.push("⚠️ Using backup data.");
     }
     const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
     const lastUpdated = getWarningLastUpdatedLabel(data);
@@ -282,7 +270,7 @@
   }
 
   // =====================================================================
-  // 2. NOWCAST TICKER
+  // 2. NOWCAST TICKER (Uses `nowcast_imd_issue` & Nowcast validity ONLY)
   // =====================================================================
   function renderNowcastUI(data) {
     const container = document.getElementById("nowcast-container");
@@ -320,10 +308,11 @@
       }
 
       const alertColor = data.nowcast.color_name ? data.nowcast.color_name.toUpperCase() : "UNKNOWN";
-      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
       const expired = Boolean(data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms));
+      // Strictly check that the Nowcast is ACTUALLY expired before showing any issue/updating tag!
+      const isNowcastIssue = expired && Boolean(data.nowcast_imd_issue || data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
 
-      if (isImdIssue) {
+      if (isNowcastIssue) {
         ticker.innerText = "🇮🇳 IMD NOWCAST (" + alertColor + " ALERT) [IMD SIDE ISSUE - SHOWING LAST ALERT]: " + tickerText;
       } else if (expired || data.cache_status === "EXPIRED_STALE_UPDATING") {
         ticker.innerText = "🇮🇳 IMD NOWCAST (" + alertColor + " ALERT) [EXPIRED - UPDATING...]: " + tickerText;
@@ -361,7 +350,6 @@
     };
   }
 
-  // className === null -> neutral (no alert colour)
   function setAlertClass(element, className) {
     if (!element) return;
     ALERT_CLASSES.forEach(function (c) { element.classList.remove(c); });
@@ -471,25 +459,20 @@
     const notice = document.getElementById("previewNotice");
     if (notice) notice.style.display = isPreview ? "flex" : "none";
 
-    const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
+    const isWarningIssue = Boolean(data.warning_imd_issue);
     const updated = document.getElementById("imdUpdatedAt");
     if (updated) {
-      updated.textContent = isImdIssue
+      updated.textContent = isWarningIssue
         ? "IMD side issue — showing previous bulletin"
-        : data.updating
-          ? "Updating latest bulletin…"
-          : data.stale
-            ? "Showing previous bulletin"
-            : data.error_mode
-              ? "Showing backup data"
-              : "Updated " + getWarningLastUpdatedLabel(data);
+        : data.error_mode
+          ? "Showing backup data"
+          : "Updated " + getWarningLastUpdatedLabel(data);
     }
 
     renderMapDayControls();
     renderMapSelectedDay();
   }
 
-  // Live site + no cached bulletin available (Case D cold start waking up or bridge unreachable)
   function renderMapUnavailable(statusOptions) {
     const opts = statusOptions || {};
     const isWakingUp = Boolean(opts.wakingUp);
@@ -561,7 +544,7 @@
   }
 
   // =====================================================================
-  // 3b. 5-DAY WARNINGS — LEGACY BOX (only if a page still has the old markup)
+  // 3b. 5-DAY WARNINGS — LEGACY BOX
   // =====================================================================
   function renderDailyWarningsUI(data) {
     const daysContainer = document.getElementById("imdDays");
@@ -577,15 +560,13 @@
     renderDaysTab(getTodayDiff(data), activeDayIndex);
 
     if (statusEl) {
-      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
+      const isWarningIssue = Boolean(data.warning_imd_issue);
       const parts = [];
 
-      if (isImdIssue) {
+      if (isWarningIssue) {
         parts.push("⚠ IMD side issue — showing previous bulletin");
-      } else {
-        if (data.stale) parts.push("⚠ Showing previous bulletin");
-        if (data.updating) parts.push("🔄 Updating latest data...");
-        if (data.error_mode) parts.push("⚠ Using backup data");
+      } else if (data.error_mode) {
+        parts.push("⚠ Using backup data");
       }
 
       if (data.is_cached) parts.push("Served from cache · " + (data.fetch_period || ""));
@@ -655,7 +636,7 @@
   };
 
   // =====================================================================
-  // CENTRALIZED FETCH HANDLER — one request updates everything
+  // CENTRALIZED FETCH HANDLER
   // =====================================================================
   const hasMapSection = function () { return !!document.getElementById("districtMap"); };
 
@@ -693,8 +674,6 @@
       const isWakingUp = Boolean(errPayload.cold_start_pending || errPayload.updating || error.status === 503);
       const isPersistentIssue = Boolean(errPayload.imd_issue);
 
-      // If we already rendered a valid bulletin earlier in this browser session,
-      // keep it on screen and update status notices rather than wiping out the UI.
       if (cachedImdData || forecastData) {
         const fallbackData = {
           ...(forecastData || cachedImdData),
@@ -708,7 +687,6 @@
         if (hasMapSection()) renderMapUI(fallbackData, false);
         else renderDailyWarningsUI(fallbackData);
       } else {
-        // Case D failure: no cached bulletin available yet
         const marqueeTextEl = document.getElementById("marqueeText");
         if (marqueeTextEl) {
           marqueeTextEl.textContent = isWakingUp
@@ -736,7 +714,6 @@
     }
   }
 
-  // Pause background timers when tab is hidden; resume when user returns to tab
   function bindVisibilityHandler() {
     if (typeof document === "undefined" || typeof document.addEventListener !== "function") return;
     document.addEventListener("visibilitychange", function () {
@@ -756,7 +733,6 @@
     });
   }
 
-  // Demo data — used ONLY off elwoic.in (see IS_LIVE_HOST)
   const PREVIEW_DATA = {
     Date: new Date().toISOString().slice(0, 10),
     District: "MALAPPURAM",
@@ -765,7 +741,6 @@
     updated_at: "Preview data"
   };
 
-  // --- INITIALIZATION ---
   function init() {
     bindMapInteractions();
     bindVisibilityHandler();
