@@ -1,23 +1,24 @@
 /**
- * ELWOIC Unified Weather Monitoring Script — REVISED VERSION
+ * ELWOIC Unified Weather Monitoring Script — QUOTA-ALIGNED VERSION
  *
- * Coordinates with the updated `imdalert` Cloudflare Worker:
+ * Coordinates with the strict quota-guarded `imdalert` Cloudflare Worker:
  *   1. Daily IMD Warning Marquee     (#marqueeContainer / #marqueeText)
  *   2. Live Nowcast Ticker           (#nowcast-container / #nowcast-ticker)
  *   3. 5-Day IMD warnings + district map (Forecast page: #imdDays, #imdDetail,
  *      #districtMap …) with full backward support for the legacy 5-day box.
  *
  * Key Polling & Status Behaviour:
- *   - All Render fetching, locking, retry cooldowns, and KV updates remain
- *     strictly inside the Cloudflare Worker. The frontend never contacts Render directly.
- *   - Normal polling (10 min) when the nowcast is valid and no urgent update is needed
- *     (Case B & Case C, where background checks run transparently on the worker).
- *   - Rapid polling (3 min) when the nowcast validity has expired and an urgent update
- *     is in progress (Case A), or after a temporary network/cold-start error.
- *   - Automatic fallback to 10-min polling with clear user-facing status notices
- *     when the worker reports a persistent IMD/bridge outage (`imd_issue: true`).
- *   - Clear loading / temporary-unavailability messaging if Case D (cold start with
- *     no prior cached bulletin) fails or is still waking up the bridge.
+ *   - All Render fetching (`/wake`, `/distw`, `/distn`, `/`), locking, strict 4h/2h/3h
+ *     time gates, and KV updates remain strictly inside the Cloudflare Worker.
+ *   - Quick Follow-Up Read (25s): When a visitor request triggers a background KV update
+ *     (or an expired-nowcast refresh) and Render is awake, performs a single 25s follow-up
+ *     read from KV so the browser displays the newly fetched bulletin immediately without
+ *     waiting 10 minutes.
+ *   - Wakeup Retry Poll (3 min): Used when Render is waking up (`wakeup_pending: true`)
+ *     or after a temporary 503 cold-start response.
+ *   - Normal / Expired Retry Poll (10 min): Matches the Worker's 10-minute × 3 expired
+ *     retry cadence and normal fresh state, and pauses automatically while the browser
+ *     tab is hidden (`document.hidden`).
  */
 
 (function () {
@@ -25,14 +26,19 @@
 
   const WORKER_URL = "https://imdalert.aswanthkrishnak822.workers.dev";
 
-  const NORMAL_POLL_INTERVAL = 10 * 60 * 1000; // 10 minutes — normal valid state or persistent outage backoff
-  const RETRY_POLL_INTERVAL = 3 * 60 * 1000;   // 3 minutes — active expiry refresh or temporary network/wakeup retry
+  const NORMAL_POLL_INTERVAL = 10 * 60 * 1000;      // 10 minutes — normal valid state & 10m×3 expired retry cadence
+  const WAKEUP_POLL_INTERVAL = 3 * 60 * 1000;       // 3 minutes — when Render `/wake` is spinning up the bridge
+  const QUICK_FOLLOWUP_INTERVAL = 25 * 1000;        // 25 seconds — 1-shot KV read after triggering a background update
 
   // Preview data is shown ONLY when opened outside elwoic.in (e.g., local/online editor),
   // never on the live production domain.
   const IS_LIVE_HOST = /(^|\.)elwoic\.in$/i.test(window.location.hostname);
 
   let pollTimer = null;
+  let nextScheduledDueAt = 0;
+  let didQuickFollowupForCycle = false;
+  let lastSeenUpdateMs = 0;
+
   let cachedImdData = null;   // latest valid worker payload
   let forecastData = null;    // same payload, used by the map renderer
   let selectedDay = 0;
@@ -93,7 +99,7 @@
     if (!codeStr || codeStr === "0") return ["No specific warning"];
     return String(codeStr)
       .split(",")
-      .map(c => WARNING_MAP[c.trim()] || ("Weather event " + c.trim()));
+      .map(function (c) { return WARNING_MAP[c.trim()] || ("Weather event " + c.trim()); });
   }
 
   function getISTDate() {
@@ -132,7 +138,7 @@
     return addDays(baseDate, days).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   }
 
-  // Which of the 5 forecast days is "today" in IST (bulletin may be from yesterday prior to 04:15 IST refresh)
+  // Which of the 5 forecast days is "today" in IST
   function getTodayDiff(data) {
     if (!data || !data.Date) return 0;
     const base = parseBaseDate(data.Date);
@@ -158,9 +164,86 @@
     return false;
   }
 
+  function formatIstTimestamp(ms) {
+    if (!ms || typeof ms !== "number") return null;
+    try {
+      return new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      }).format(new Date(ms));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function getWarningLastUpdatedLabel(data) {
+    if (!data) return "N/A";
+    if (data.updated_at) return data.updated_at;
+    if (data.warning_last_updated_ms) {
+      const formatted = formatIstTimestamp(data.warning_last_updated_ms);
+      if (formatted) return formatted + " IST";
+    }
+    return data.last_updated_ist || "N/A";
+  }
+
   function scheduleNextFetch(ms) {
     if (pollTimer) clearTimeout(pollTimer);
+    nextScheduledDueAt = Date.now() + ms;
+
+    // If the browser tab is currently hidden, wait until the user switches back
+    // to this tab before firing network requests.
+    if (typeof document !== "undefined" && document.hidden) {
+      return;
+    }
+
     pollTimer = setTimeout(syncWeatherData, ms);
+  }
+
+  /**
+   * Computes the optimal next poll interval based on the Worker's strict quota state:
+   *   1. If `wakeup_pending` is true -> poll in 3 minutes (Render `/wake` was spinning up).
+   *   2. If the Worker just initiated a background check (`EXPIRED_STALE_UPDATING` or
+   *      `STALE_UPDATING_IN_BACKGROUND` before `nowcast_2h_3h_called` is set) and we haven't
+   *      done a quick follow-up read for this bulletin cycle yet -> do 1 quick read in 25s
+   *      so the visitor sees the updated KV data right away.
+   *   3. Otherwise -> poll every 10 minutes (matching the Worker's 10m×3 expired retry
+   *      interval and normal fresh state).
+   */
+  function computeNextPollInterval(data) {
+    if (!data) return WAKEUP_POLL_INTERVAL;
+
+    const currentUpdateMs =
+      data.nowcast_last_updated_ms || data.last_data_update_ms || data.fetch_timestamp || 0;
+
+    if (currentUpdateMs && currentUpdateMs !== lastSeenUpdateMs) {
+      lastSeenUpdateMs = currentUpdateMs;
+      didQuickFollowupForCycle = false;
+    }
+
+    const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
+    if (isImdIssue) {
+      return NORMAL_POLL_INTERVAL;
+    }
+
+    if (data.wakeup_pending) {
+      return WAKEUP_POLL_INTERVAL;
+    }
+
+    const isActivelyUpdating =
+      Boolean(data.updating) ||
+      data.cache_status === "EXPIRED_STALE_UPDATING" ||
+      (data.cache_status === "STALE_UPDATING_IN_BACKGROUND" && !data.nowcast_2h_3h_called);
+
+    if (isActivelyUpdating && !didQuickFollowupForCycle) {
+      didQuickFollowupForCycle = true;
+      return QUICK_FOLLOWUP_INTERVAL;
+    }
+
+    return NORMAL_POLL_INTERVAL;
   }
 
   // =====================================================================
@@ -192,7 +275,7 @@
       if (data.error_mode) prefixParts.push("⚠️ Using backup data.");
     }
     const prefix = prefixParts.length ? prefixParts.join(" ") + " " : "";
-    const lastUpdated = data.updated_at || data.last_updated_ist || "N/A";
+    const lastUpdated = getWarningLastUpdatedLabel(data);
 
     marqueeTextEl.textContent = `${prefix}IMD Alert for Malappuram district ${dateStr}: ${colorInfo.name} — ${warningText} | Last Updated: ${lastUpdated} | Source: India Meteorological Department (IMD)`;
     marqueeContainerEl.style.background = colorInfo.css;
@@ -211,17 +294,17 @@
 
       for (let i = 1; i <= 19; i++) {
         if (i === 16) continue;
-        const catValue = data.nowcast[`cat${i}`];
+        const catValue = data.nowcast["cat" + i];
         if (catValue && catValue !== "0" && catValue !== 0) {
           textElements.push(IMD_CATEGORIES[i].toUpperCase());
         }
       }
 
       if (data.nowcast.cat16 && data.nowcast.cat16 !== "0") {
-        textElements.push(data.nowcast.cat16.toUpperCase());
+        textElements.push(String(data.nowcast.cat16).toUpperCase());
       }
       if (data.nowcast.message && data.nowcast.message !== "0") {
-        textElements.push(data.nowcast.message.toUpperCase());
+        textElements.push(String(data.nowcast.message).toUpperCase());
       }
 
       let tickerText = textElements.join(" | ") || "ACTIVE NOWCAST ALERT ISSUED";
@@ -232,8 +315,8 @@
         data.nowcast.vupto !== "0" &&
         data.nowcast.vupto !== "0000"
       ) {
-        const formatTime = (t) => `${t.substring(0, 2)}:${t.substring(2)}`;
-        tickerText += ` (VALID: ${formatTime(data.nowcast.toi)} TO ${formatTime(data.nowcast.vupto)} IST)`;
+        const formatTime = function (t) { return t.substring(0, 2) + ":" + t.substring(2); };
+        tickerText += " (VALID: " + formatTime(data.nowcast.toi) + " TO " + formatTime(data.nowcast.vupto) + " IST)";
       }
 
       const alertColor = data.nowcast.color_name ? data.nowcast.color_name.toUpperCase() : "UNKNOWN";
@@ -241,15 +324,15 @@
       const expired = Boolean(data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms));
 
       if (isImdIssue) {
-        ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT) [IMD SIDE ISSUE - SHOWING LAST ALERT]: ${tickerText}`;
+        ticker.innerText = "🇮🇳 IMD NOWCAST (" + alertColor + " ALERT) [IMD SIDE ISSUE - SHOWING LAST ALERT]: " + tickerText;
       } else if (expired || data.cache_status === "EXPIRED_STALE_UPDATING") {
-        ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT) [EXPIRED - UPDATING...]: ${tickerText}`;
+        ticker.innerText = "🇮🇳 IMD NOWCAST (" + alertColor + " ALERT) [EXPIRED - UPDATING...]: " + tickerText;
       } else {
-        ticker.innerText = `🇮🇳 IMD NOWCAST (${alertColor} ALERT): ${tickerText}`;
+        ticker.innerText = "🇮🇳 IMD NOWCAST (" + alertColor + " ALERT): " + tickerText;
       }
 
       container.className = "nowcast-marquee-container";
-      container.classList.add(`nowcast-color-${data.nowcast.color_name}`);
+      container.classList.add("nowcast-color-" + data.nowcast.color_name);
       container.style.display = "flex";
     } else {
       container.style.display = "none";
@@ -399,7 +482,7 @@
             ? "Showing previous bulletin"
             : data.error_mode
               ? "Showing backup data"
-              : "Updated " + (data.updated_at || data.last_updated_ist || "recently");
+              : "Updated " + getWarningLastUpdatedLabel(data);
     }
 
     renderMapDayControls();
@@ -488,7 +571,7 @@
     if (!daysContainer) return;
     cachedImdData = data;
 
-    if (upEl) upEl.textContent = "System updated: " + (data.updated_at || data.last_updated_ist || "N/A");
+    if (upEl) upEl.textContent = "System updated: " + getWarningLastUpdatedLabel(data);
 
     const activeDayIndex = userPickedDay !== null ? userPickedDay : getTodayDiff(data);
     renderDaysTab(getTodayDiff(data), activeDayIndex);
@@ -551,7 +634,7 @@
     const warnings = decodeWarnings(cachedImdData["Day_" + (i + 1)]);
     const dateLabel = offsetDate(parseBaseDate(cachedImdData.Date), i);
 
-    const tags = warnings.map(w => `<span class="imd-warning-tag">${w}</span>`).join("");
+    const tags = warnings.map(function (w) { return '<span class="imd-warning-tag">' + w + "</span>"; }).join("");
 
     detail.innerHTML = `
       <div class="imd-detail-top">
@@ -564,7 +647,7 @@
 
   window._imdSelect = function (i) {
     userPickedDay = i;
-    document.querySelectorAll(".imd-day-btn").forEach((btn, idx) => {
+    document.querySelectorAll(".imd-day-btn").forEach(function (btn, idx) {
       btn.classList.toggle("active", idx === i);
       btn.setAttribute("aria-selected", idx === i);
     });
@@ -587,7 +670,7 @@
         } catch (_) {}
 
         const err = new Error(
-          (errPayload && errPayload.error) || `Worker responded with HTTP ${response.status}`
+          (errPayload && errPayload.error) || ("Worker responded with HTTP " + response.status)
         );
         err.status = response.status;
         err.payload = errPayload;
@@ -601,13 +684,7 @@
       if (hasMapSection()) renderMapUI(data, false);
       else renderDailyWarningsUI(data);
 
-      const isImdIssue = Boolean(data.imd_issue || data.cache_status === "IMD_SIDE_ISSUE");
-      const isExpired = Boolean(data.is_expired || isNowcastExpired(data.nowcast, data.valid_until_ms));
-      const isUpdating = Boolean(data.updating || data.cache_status === "EXPIRED_STALE_UPDATING");
-
-      // Poll every 3 min while an expired nowcast is actively refreshing;
-      // use 10-min normal polling when valid/fresh or when backing off during a persistent IMD issue.
-      scheduleNextFetch((!isImdIssue && (isExpired || isUpdating)) ? RETRY_POLL_INTERVAL : NORMAL_POLL_INTERVAL);
+      scheduleNextFetch(computeNextPollInterval(data));
 
     } catch (error) {
       console.error("ELWOIC Weather Sync Error:", error);
@@ -655,8 +732,28 @@
         }
       }
 
-      scheduleNextFetch(isPersistentIssue ? NORMAL_POLL_INTERVAL : RETRY_POLL_INTERVAL);
+      scheduleNextFetch(isPersistentIssue ? NORMAL_POLL_INTERVAL : WAKEUP_POLL_INTERVAL);
     }
+  }
+
+  // Pause background timers when tab is hidden; resume when user returns to tab
+  function bindVisibilityHandler() {
+    if (typeof document === "undefined" || typeof document.addEventListener !== "function") return;
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+          pollTimer = null;
+        }
+      } else {
+        const remaining = nextScheduledDueAt - Date.now();
+        if (remaining <= 0) {
+          syncWeatherData();
+        } else {
+          scheduleNextFetch(remaining);
+        }
+      }
+    });
   }
 
   // Demo data — used ONLY off elwoic.in (see IS_LIVE_HOST)
@@ -671,6 +768,7 @@
   // --- INITIALIZATION ---
   function init() {
     bindMapInteractions();
+    bindVisibilityHandler();
     syncWeatherData();
   }
 
