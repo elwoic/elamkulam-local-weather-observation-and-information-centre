@@ -238,10 +238,28 @@
 
   .chart-card{ background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); padding:1.25rem 1.25rem 1rem; margin-bottom:1.2rem; }
   .chart-card h3{ font-family:var(--sans); font-size:.9rem; font-weight:600; color:var(--ink-faint); margin-bottom:.9rem; }
-  .chart-svg-wrap{ width:100%; }
-  .chart-svg-wrap svg{ width:100%; height:auto; display:block; }
+  .chart-svg-wrap{ width:100%; position:relative; }
+  .chart-svg-wrap svg{ width:100%; height:auto; display:block; touch-action:none; }
   .chart-empty, .chart-loading{ font-size:.85rem; color:var(--ink-faint); padding:2.5rem 0; text-align:center; }
   .narrative-line{ font-size:.95rem; color:var(--ink-soft); }
+
+  /* CHART TOOLTIP */
+  .chart-tooltip {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: .5rem .75rem;
+    border-radius: 6px;
+    font-size: .85rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    pointer-events: none;
+    z-index: 100;
+    transform: translate(-50%, -120%);
+    white-space: nowrap;
+    display: none;
+  }
+  .chart-tooltip strong { color: var(--ink-soft); display: block; margin-bottom: 2px; font-weight: normal; font-size: 0.8rem; }
+  .chart-tooltip span { font-weight: 600; font-variant-numeric: tabular-nums; }
 
   /* ── FORECAST SPECIFIC ── */
   .forecast-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
@@ -1037,6 +1055,124 @@
   }
 
   /* ───────────────────────────────────────────────
+     INTERACTIVE CHART LOGIC & AQI COLORS
+  ─────────────────────────────────────────────── */
+  function getAqiColor(param, val, defaultColor) {
+    if (param === "pm02") {
+      if (val <= 30) return "#10b981"; // Good (Green)
+      if (val <= 60) return "#facc15"; // Satisfactory (Yellow)
+      if (val <= 90) return "#f97316"; // Moderate (Orange)
+      if (val <= 120) return "#ef4444"; // Poor (Red)
+      if (val <= 250) return "#a855f7"; // Very Poor (Purple)
+      return "#991b1b"; // Severe (Dark Red)
+    }
+    if (param === "pm10") {
+      if (val <= 50) return "#10b981";
+      if (val <= 100) return "#facc15";
+      if (val <= 250) return "#f97316";
+      if (val <= 350) return "#ef4444";
+      if (val <= 430) return "#a855f7";
+      return "#991b1b";
+    }
+    return defaultColor;
+  }
+
+  function bindChartInteractivity(param, meta, points, isBar) {
+    var wrap = $("recordsChartWrap");
+    var svg = wrap.querySelector("svg");
+    if (!svg || points.length === 0) return;
+
+    var tooltip = $("chartTooltip");
+    if (!tooltip) {
+      tooltip = document.createElement("div");
+      tooltip.id = "chartTooltip";
+      tooltip.className = "chart-tooltip";
+      document.body.appendChild(tooltip);
+    }
+
+    var crosshair = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    crosshair.setAttribute("y1", "20");
+    crosshair.setAttribute("y2", "200");
+    crosshair.setAttribute("stroke", "var(--ink-faint)");
+    crosshair.setAttribute("stroke-dasharray", "4");
+    crosshair.style.display = "none";
+    svg.appendChild(crosshair);
+
+    var hoverDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    hoverDot.setAttribute("r", "4.5");
+    hoverDot.setAttribute("stroke", "var(--surface)");
+    hoverDot.setAttribute("stroke-width", "2");
+    hoverDot.style.display = "none";
+    svg.appendChild(hoverDot);
+
+    var w=640, h=230, pl=46, pr=14, pt=20, pb=30;
+    var iw = w - pl - pr, ih = h - pt - pb;
+    var n = points.length;
+    var vals = points.map(function(p){ return p.value; }).filter(isNum);
+    if(!vals.length) return;
+    var mx = Math.max.apply(null, vals);
+    var mn = Math.min.apply(null, vals);
+    
+    if(isBar){
+      if(mx<=0) mx=1;
+    } else {
+      if(mn===mx){ mn-=1; mx+=1; }
+      var pad = (mx-mn)*0.12; mn-=pad; mx+=pad;
+    }
+
+    function getX(i){ return isBar ? pl+(i+0.5)*(iw/n) : pl+(n<=1?0:(i/(n-1))*iw); }
+    function getY(v){ return isBar ? pt+ih-(v/mx)*ih : pt+ih-((v-mn)/(mx-mn))*ih; }
+
+    function onMove(e) {
+      var rect = svg.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var xRatio = (clientX - rect.left) / rect.width;
+      var svgX = xRatio * w;
+
+      if (svgX < pl || svgX > w - pr) { hide(); return; }
+
+      var idx = isBar ? Math.floor(((svgX - pl) / iw) * n) : Math.round(((svgX - pl) / iw) * (n - 1));
+      if(idx < 0) idx = 0;
+      if(idx >= n) idx = n - 1;
+
+      var ptObj = points[idx];
+      if(!isNum(ptObj.value)) { hide(); return; }
+
+      var cx = getX(idx);
+      var cy = getY(ptObj.value);
+      var pointColor = getAqiColor(param, ptObj.value, meta.color);
+
+      crosshair.setAttribute("x1", cx);
+      crosshair.setAttribute("x2", cx);
+      crosshair.style.display = "block";
+
+      hoverDot.setAttribute("cx", cx);
+      hoverDot.setAttribute("cy", cy);
+      hoverDot.setAttribute("fill", pointColor);
+      hoverDot.style.display = "block";
+
+      var px = rect.left + (cx / w) * rect.width + window.scrollX;
+      var py = rect.top + (cy / h) * rect.height + window.scrollY;
+
+      tooltip.innerHTML = "<strong>" + escX(ptObj.label) + "</strong><span style='color:" + pointColor + "'>" + fmt(ptObj.value, 1) + meta.unit + "</span>";
+      tooltip.style.left = px + "px";
+      tooltip.style.top = py + "px";
+      tooltip.style.display = "block";
+    }
+
+    function hide() {
+      crosshair.style.display = "none";
+      hoverDot.style.display = "none";
+      tooltip.style.display = "none";
+    }
+
+    svg.addEventListener("mousemove", onMove);
+    svg.addEventListener("touchmove", onMove, {passive: true});
+    svg.addEventListener("mouseleave", hide);
+    svg.addEventListener("touchend", hide);
+  }
+
+  /* ───────────────────────────────────────────────
      SVG CHART ENGINE (no external library)
   ─────────────────────────────────────────────── */
   function buildLineChartSVG(points, opts){
@@ -1158,7 +1294,6 @@
         if(!dv){showChartMsg("Pick a date to view.");return;}
         apiOpts.date=dv;
       } else if(recState.range==="today"){
-        // Fetch from 00:00 IST today using the date parameter
         apiOpts.date=getISTDateStr(new Date());
       } else {
         apiOpts.range=recState.range;
@@ -1166,14 +1301,9 @@
 
       var res=await fetchChartsApi(param, apiOpts);
       var labels=res.labels||[];
-      // rain_rate and rain_daily come from the API in inches — convert to mm
-      // rain_daily comes from the API in inches (needs *25.4 to get mm).
-      // rain_rate is already in mm/hr — no conversion needed.
-      var needsConversion=(param==="rain_daily");
-      var rawData=(res.data||[]).map(function(v){
-        return (needsConversion&&isNum(v)) ? Number(v) : v;
-      });
-      var vals=rawData.filter(isNum).map(Number);
+      
+      var rawData = res.data || [];
+      var vals = rawData.filter(isNum).map(Number);
 
       if(!vals.length){
         showChartMsg("No readings available for this period.");
@@ -1181,7 +1311,6 @@
         return;
       }
 
-      // Determine chart type: bar for cumulative rain params, line for rest
       var useBar=(param==="rain_daily"||param==="rain_rate");
       var points=labels.map(function(l,i){return{label:l,value:rawData[i]};});
       var svg;
@@ -1192,16 +1321,16 @@
       }
       $("recordsChartWrap").innerHTML=svg||'<div class="chart-empty">Chart unavailable.</div>';
 
-      // Stats
+      if(svg && points.length > 0) {
+        bindChartInteractivity(param, meta, points, useBar);
+      }
+
       var maxIdx=idxMax(rawData), minIdx=idxMin(rawData);
       var maxV=vals.reduce(function(a,b){return a>b?a:b;});
       var minV=vals.reduce(function(a,b){return a<b?a:b;});
       var avgV=vals.reduce(function(a,b){return a+b;})/vals.length;
 
       if(param==="rain_daily"){
-        // rain_daily is a CUMULATIVE counter that resets at midnight.
-        // Summing readings gives nonsense. The peak value = the day's max accumulation.
-        // For multi-day views the peak of the counter is the best "total" to show.
         renderStats([
           {label:"Peak accumulation",value:fmt(maxV,1)+meta.unit,sub:maxIdx>=0?labels[maxIdx]:""},
           {label:"Latest reading",value:fmt(vals[vals.length-1],1)+meta.unit},
@@ -1209,7 +1338,6 @@
         ]);
         setText("recordsNarrative","The daily rain counter peaked at "+fmt(maxV,1)+meta.unit+(maxIdx>=0?" (at "+labels[maxIdx]+")":"")+". This is a cumulative counter that resets each midnight.");
       } else if(param==="rain_rate"){
-        // rain_rate is a per-minute intensity value — show peak and non-zero average
         var rainingVals=vals.filter(function(v){return v>0;});
         var rainAvg=rainingVals.length?rainingVals.reduce(function(a,b){return a+b;})/rainingVals.length:0;
         renderStats([
@@ -1239,7 +1367,6 @@
   }
 
   function initRecords(){
-    // Parameter tabs
     document.querySelectorAll(".param-tab").forEach(function(btn){
       btn.addEventListener("click",function(){
         document.querySelectorAll(".param-tab").forEach(function(b){b.setAttribute("aria-selected","false");});
@@ -1249,7 +1376,6 @@
       });
     });
 
-    // Range buttons
     document.querySelectorAll("#rangeSegmented button").forEach(function(btn){
       btn.addEventListener("click",function(){
         document.querySelectorAll("#rangeSegmented button").forEach(function(b){b.setAttribute("aria-pressed","false");});
@@ -1260,7 +1386,6 @@
       });
     });
 
-    // Custom date input
     var dateInput=$("customDateInput");
     var todayIST=getISTDateStr(new Date());
     dateInput.value=todayIST;
