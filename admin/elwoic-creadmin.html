@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELWOIC — Admin Credential Vault</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --danger: #dc2626;
+      --surface-subtle: #f1f5f9;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding: 1.5rem 1rem; line-height: 1.45; }
+    .container { max-width: 980px; margin: 0 auto; }
+    header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+    h1 { font-size: 1.3rem; margin: 0; }
+    h3 { margin: 0 0 0.85rem 0; font-size: 1.05rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; align-items: center; }
+    label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.25rem; }
+    input, select {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 0.92rem;
+      background: #fff;
+      color: var(--text);
+    }
+    input:focus, select:focus { outline: 2px solid rgba(15, 118, 110, 0.25); border-color: var(--primary); }
+    button {
+      padding: 0.58rem 0.95rem;
+      border: none;
+      border-radius: 7px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:hover:not(:disabled) { background: var(--primary-hover); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    button.secondary { background: var(--surface-subtle); color: var(--text); border: 1px solid var(--border); }
+    button.secondary:hover:not(:disabled) { background: #e2e8f0; }
+    button.danger { background: var(--danger); }
+    button.danger:hover:not(:disabled) { background: #b91c1c; }
+    button.sm { padding: 0.38rem 0.65rem; font-size: 0.8rem; }
+
+    .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 680px; }
+    th, td { text-align: left; padding: 0.7rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    .secret-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      background: var(--surface-subtle);
+      padding: 0.25rem 0.45rem;
+      border-radius: 5px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-height: 110px;
+      overflow-y: auto;
+      display: block;
+    }
+    .cred-line { margin-bottom: 0.35rem; }
+    .cred-label { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .badge { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #e6f4f1; color: var(--primary); }
+    .hidden { display: none; }
+    .msg-err { font-size: 0.85rem; color: var(--danger); margin-top: 0.55rem; }
+    .msg-ok { font-size: 0.85rem; color: var(--primary); margin-top: 0.55rem; }
+    .editing-banner { background: #fef9c3; border: 1px solid #fde047; color: #713f12; padding: 0.5rem 0.75rem; border-radius: 7px; font-size: 0.85rem; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ELWOIC Admin Vault</h1>
+      <button id="logoutBtn" class="secondary hidden">Sign Out</button>
+    </header>
+
+    <!-- STEP 1: Firebase Login -->
+    <div id="firebaseLoginCard" class="card">
+      <h3>Step 1 — Firebase Authentication</h3>
+      <div class="grid">
+        <div>
+          <label for="fbEmail">Admin Email</label>
+          <input id="fbEmail" type="email" placeholder="info@elwoic.in" />
+        </div>
+        <div>
+          <label for="fbPass">Firebase Password</label>
+          <input id="fbPass" type="password" placeholder="Enter password" />
+        </div>
+      </div>
+      <div class="row-actions">
+        <button id="fbLoginBtn">Continue</button>
+      </div>
+      <div id="fbStatus" class="msg-err"></div>
+    </div>
+
+    <!-- STEP 2: Cloudflare Worker Secondary Gate -->
+    <div id="workerLoginCard" class="card hidden">
+      <h3>Step 2 — Cloudflare Worker Verification</h3>
+      <div class="grid">
+        <div>
+          <label for="wkUser">Worker Username</label>
+          <input id="wkUser" type="text" placeholder="Admin username" />
+        </div>
+        <div>
+          <label for="wkPass">Worker Password</label>
+          <input id="wkPass" type="password" placeholder="Worker password" />
+        </div>
+      </div>
+      <div class="row-actions">
+        <button id="wkLoginBtn">Unlock Vault</button>
+      </div>
+      <div id="wkStatus" class="msg-err"></div>
+    </div>
+
+    <!-- STEP 3: Vault Manager -->
+    <div id="vaultSection" class="hidden">
+      <div class="card">
+        <h3 id="formTitle">Add Credential</h3>
+        <div id="editingBanner" class="editing-banner hidden">
+          Editing existing entry: <strong id="editingName"></strong>
+        </div>
+
+        <div class="grid" style="margin-bottom: 0.75rem;">
+          <div>
+            <label for="serviceName">Service Name *</label>
+            <input id="serviceName" type="text" placeholder="e.g., IMD API, GitHub, Resend" />
+          </div>
+          <div>
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="account" selected>Account Login</option>
+              <option value="api_key">API Key</option>
+              <option value="token">Token / Webhook</option>
+            </select>
+          </div>
+          <div>
+            <label for="username">Username / Email</label>
+            <input id="username" type="text" placeholder="Username or email" />
+          </div>
+          <div>
+            <label for="passwordVal">Password (visible text)</label>
+            <input id="passwordVal" type="text" autocomplete="off" placeholder="Password" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="tokenVal">Token / API Key (visible text — supports long keys)</label>
+            <input id="tokenVal" type="text" autocomplete="off" placeholder="Bearer token, API key, etc." />
+          </div>
+          <div>
+            <label for="notes">Notes</label>
+            <input id="notes" type="text" placeholder="Endpoint, expiry, or usage notes" />
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button id="saveBtn">Encrypt & Save to Firestore</button>
+          <button id="cancelEditBtn" class="secondary hidden">Cancel Edit</button>
+          <button id="refreshBtn" class="secondary">Refresh List</button>
+        </div>
+        <div id="vaultStatus" class="msg-ok"></div>
+      </div>
+
+      <div class="card">
+        <h3>Saved Credentials</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Type</th>
+                <th>Credentials</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vaultTable">
+              <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const WORKER_URL = "https://elwoic-credentials.aswanthkrishnak822.workers.dev";
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyC_Ckz9wFQxXgWivmvIt5ISp7bT9tWbxCY",
+      authDomain: "elwoic.firebaseapp.com",
+      projectId: "elwoic",
+    };
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const auth = getAuth(app);
+
+    let workerToken = sessionStorage.getItem("elwoic_worker_token") || "";
+    let pinVerified = sessionStorage.getItem("elwoic_pin_ok") === "1";
+    let pinRequired = false;
+    let editingId = null;
+    let vaultItems = [];
+    const revealedIds = new Set();
+
+    const $ = (id) => document.getElementById(id);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        $("firebaseLoginCard").classList.remove("hidden");
+        $("workerLoginCard").classList.add("hidden");
+        $("vaultSection").classList.add("hidden");
+        $("logoutBtn").classList.add("hidden");
+        return;
+      }
+      $("logoutBtn").classList.remove("hidden");
+      $("firebaseLoginCard").classList.add("hidden");
+
+      if (workerToken) {
+        $("workerLoginCard").classList.add("hidden");
+        $("vaultSection").classList.remove("hidden");
+        loadVault();
+      } else {
+        $("workerLoginCard").classList.remove("hidden");
+      }
+    });
+
+    $("fbLoginBtn").onclick = async () => {
+      $("fbStatus").textContent = "";
+      $("fbLoginBtn").disabled = true;
+      try {
+        await signInWithEmailAndPassword(auth, $("fbEmail").value.trim(), $("fbPass").value);
+      } catch (e) {
+        $("fbStatus").textContent = e.message;
+      } finally {
+        $("fbLoginBtn").disabled = false;
+      }
+    };
+
+    $("wkLoginBtn").onclick = async () => {
+      $("wkStatus").textContent = "";
+      $("wkLoginBtn").disabled = true;
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch(`${WORKER_URL}/api/worker-login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            username: $("wkUser").value.trim(),
+            password: $("wkPass").value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Worker login failed");
+
+        workerToken = data.workerToken;
+        sessionStorage.setItem("elwoic_worker_token", workerToken);
+        $("workerLoginCard").classList.add("hidden");
+        $("vaultSection").classList.remove("hidden");
+        loadVault();
+      } catch (e) {
+        $("wkStatus").textContent = e.message;
+      } finally {
+        $("wkLoginBtn").disabled = false;
+      }
+    };
+
+    $("logoutBtn").onclick = async () => {
+      sessionStorage.removeItem("elwoic_worker_token");
+      sessionStorage.removeItem("elwoic_pin_ok");
+      workerToken = "";
+      pinVerified = false;
+      await signOut(auth);
+    };
+
+    async function apiCall(path, options = {}) {
+      const idToken = await auth.currentUser.getIdToken();
+      const res = await fetch(`${WORKER_URL}${path}`, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+          "X-Worker-Token": workerToken,
+          ...(options.headers || {}),
+        },
+      });
+      if (res.status === 401 || res.status === 403) {
+        sessionStorage.removeItem("elwoic_worker_token");
+        workerToken = "";
+        location.reload();
+      }
+      return res;
+    }
+
+    async function ensureViewAccess() {
+      if (!pinRequired || pinVerified) return true;
+      const enteredPin = prompt("Enter View PIN to reveal or copy credentials:");
+      if (enteredPin === null) return false;
+
+      const res = await apiCall("/api/verify-pin", {
+        method: "POST",
+        body: JSON.stringify({ pin: enteredPin }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus(data.error || "Invalid PIN", true);
+        return false;
+      }
+      pinVerified = true;
+      sessionStorage.setItem("elwoic_pin_ok", "1");
+      return true;
+    }
+
+    async function loadVault() {
+      setStatus("Loading credentials from Firestore...", false);
+      try {
+        const res = await apiCall("/api/vault");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to load");
+
+        vaultItems = data.items || [];
+        pinRequired = Boolean(data.pinRequired);
+        renderTable();
+        setStatus(`Loaded ${vaultItems.length} entry(s).`, false);
+      } catch (e) {
+        setStatus(e.message, true);
+      }
+    }
+
+    function renderTable() {
+      const tbody = $("vaultTable");
+      if (!vaultItems.length) {
+        tbody.innerHTML = `<tr><td colspan="5">No credentials saved yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = "";
+      vaultItems.forEach((item) => {
+        const isRevealed = revealedIds.has(item.id);
+        const tr = document.createElement("tr");
+
+        const userHtml = item.username
+          ? `<div class="cred-line"><span class="cred-label">User:</span> <span class="secret-box">${escapeHtml(item.username)}</span></div>`
+          : "";
+
+        const passHtml = item.password
+          ? `<div class="cred-line"><span class="cred-label">Password:</span> <span class="secret-box">${
+              isRevealed ? escapeHtml(item.password) : "••••••••"
+            }</span></div>`
+          : "";
+
+        const tokenHtml = item.token
+          ? `<div class="cred-line"><span class="cred-label">Token / Key:</span> <span class="secret-box">${
+              isRevealed ? escapeHtml(item.token) : "••••••••••••"
+            }</span></div>`
+          : "";
+
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(item.serviceName)}</strong></td>
+          <td><span class="badge">${escapeHtml(item.category)}</span></td>
+          <td>${userHtml}${passHtml}${tokenHtml}</td>
+          <td><span class="secret-box" style="background:transparent;padding:0;">${escapeHtml(item.notes || "—")}</span></td>
+          <td>
+            <div style="display:flex;flex-wrap:wrap;gap:0.35rem;">
+              <button class="secondary sm toggleBtn">${isRevealed ? "Hide" : "View"}</button>
+              <button class="secondary sm copyBtn">Copy</button>
+              <button class="secondary sm editBtn">Edit</button>
+              <button class="danger sm delBtn">Delete</button>
+            </div>
+          </td>
+        `;
+
+        tr.querySelector(".toggleBtn").onclick = async () => {
+          if (!isRevealed) {
+            const ok = await ensureViewAccess();
+            if (!ok) return;
+            revealedIds.add(item.id);
+          } else {
+            revealedIds.delete(item.id);
+          }
+          renderTable();
+        };
+
+        tr.querySelector(".copyBtn").onclick = async (e) => {
+          const ok = await ensureViewAccess();
+          if (!ok) return;
+
+          const parts = [];
+          if (item.username) parts.push(`Username: ${item.username}`);
+          if (item.password) parts.push(`Password: ${item.password}`);
+          if (item.token) parts.push(`Token: ${item.token}`);
+          const textToCopy = parts.length === 1 ? (item.token || item.password || item.username) : parts.join("\n");
+
+          await navigator.clipboard.writeText(textToCopy);
+          const btn = e.currentTarget;
+          const prev = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = prev), 1400);
+        };
+
+        tr.querySelector(".editBtn").onclick = () => {
+          editingId = item.id;
+          $("formTitle").textContent = "Edit Credential";
+          $("editingBanner").classList.remove("hidden");
+          $("editingName").textContent = item.serviceName;
+          $("cancelEditBtn").classList.remove("hidden");
+          $("saveBtn").textContent = "Update in Firestore";
+
+          $("serviceName").value = item.serviceName;
+          $("category").value = item.category || "account";
+          $("username").value = item.username || "";
+          $("passwordVal").value = item.password || "";
+          $("tokenVal").value = item.token || "";
+          $("notes").value = item.notes || "";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        tr.querySelector(".delBtn").onclick = async () => {
+          if (!confirm(`Delete "${item.serviceName}"?`)) return;
+          setStatus("Deleting...", false);
+          const res = await apiCall(`/api/vault/${encodeURIComponent(item.id)}`, { method: "DELETE" });
+          if (res.ok) {
+            revealedIds.delete(item.id);
+            if (editingId === item.id) resetForm();
+            await loadVault();
+          } else {
+            const err = await res.json();
+            setStatus(err.error || "Delete failed", true);
+          }
+        };
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    $("saveBtn").onclick = async () => {
+      const payload = {
+        id: editingId || undefined,
+        serviceName: $("serviceName").value.trim(),
+        category: $("category").value,
+        username: $("username").value.trim(),
+        password: $("passwordVal").value,
+        token: $("tokenVal").value.trim(),
+        notes: $("notes").value.trim(),
+      };
+
+      if (!payload.serviceName) {
+        setStatus("Please enter a Service Name.", true);
+        return;
+      }
+      if (!payload.username && !payload.password && !payload.token) {
+        setStatus("Enter at least a Username, Password, or Token.", true);
+        return;
+      }
+
+      $("saveBtn").disabled = true;
+      setStatus(editingId ? "Updating encrypted record in Firestore..." : "Encrypting & saving to Firestore...", false);
+
+      try {
+        const res = await apiCall("/api/vault", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Save failed");
+
+        if (payload.id) revealedIds.add(payload.id);
+        resetForm();
+        await loadVault();
+        setStatus("Saved securely to Firestore.", false);
+      } catch (e) {
+        setStatus(e.message, true);
+      } finally {
+        $("saveBtn").disabled = false;
+      }
+    };
+
+    $("cancelEditBtn").onclick = () => {
+      resetForm();
+      setStatus("Edit cancelled.", false);
+    };
+
+    $("refreshBtn").onclick = () => loadVault();
+
+    function resetForm() {
+      editingId = null;
+      $("formTitle").textContent = "Add Credential";
+      $("editingBanner").classList.add("hidden");
+      $("cancelEditBtn").classList.add("hidden");
+      $("saveBtn").textContent = "Encrypt & Save to Firestore";
+      $("serviceName").value = "";
+      $("category").value = "account";
+      $("username").value = "";
+      $("passwordVal").value = "";
+      $("tokenVal").value = "";
+      $("notes").value = "";
+    }
+
+    function setStatus(text, isError) {
+      const el = $("vaultStatus");
+      el.textContent = text;
+      el.className = isError ? "msg-err" : "msg-ok";
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[m]));
+    }
+  </script>
+</body>
+</html>
