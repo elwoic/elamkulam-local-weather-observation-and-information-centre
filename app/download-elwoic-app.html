@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELWOIC Android App — Official Download | Elamkulam Local Weather Observation &amp; Information Centre</title>
+  <meta
+    name="description"
+    content="Official direct APK download page for the ELWOIC Android application by Elamkulam Local Weather Observation &amp; Information Centre (ELWOIC) in Malappuram, Kerala."
+  />
+  <meta property="og:title" content="ELWOIC Android App — Official Download" />
+  <meta
+    property="og:description"
+    content="Download the official ELWOIC Android APK (v1.0, ~44 MB) directly from ELWOIC's GitHub Releases with transparent signing and integrity details."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://elwoic.in/app/" />
+
+  <style>
+    :root {
+      --bg-canvas: linear-gradient(180deg, #eef6ff 0%, #f7fbff 42%, #f2f9f7 100%);
+      --surface-card: rgba(255, 255, 255, 0.88);
+      --surface-solid: #ffffff;
+      --surface-subtle: #f1f7fd;
+      --text-primary: #0f2537;
+      --text-secondary: #3e586e;
+      --text-muted: #5d778d;
+      --accent-blue: #0284c7;
+      --accent-indigo: #2563eb;
+      --accent-teal: #0d9488;
+      --gradient-primary: linear-gradient(135deg, #0284c7 0%, #2563eb 55%, #0d9488 100%);
+      --gradient-soft-banner: linear-gradient(135deg, rgba(2, 132, 199, 0.10) 0%, rgba(13, 148, 136, 0.10) 100%);
+      --gradient-hero-glow: radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.22), transparent 55%),
+                            radial-gradient(circle at 15% 80%, rgba(45, 212, 191, 0.18), transparent 55%);
+      --border-light: rgba(15, 37, 55, 0.09);
+      --border-strong: rgba(2, 132, 199, 0.22);
+      --shadow-sm: 0 4px 16px rgba(15, 37, 55, 0.05);
+      --shadow-md: 0 14px 36px rgba(15, 52, 86, 0.08);
+      --shadow-cta: 0 12px 26px rgba(2, 132, 199, 0.28);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-pill: 999px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      background: var(--bg-canvas);
+      background-attachment: fixed;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--accent-indigo);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid rgba(2, 132, 199, 0.45);
+      outline-offset: 2px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section {
+      padding: 36px 0;
+    }
+
+    .section-header {
+      margin-bottom: 22px;
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.45rem, 2.6vw, 1.95rem);
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .section-subtitle {
+      margin: 0;
+      color: var(--text-secondary);
+      max-width: 68ch;
+      font-size: 0.98rem;
+    }
+
+    .card {
+      background: var(--surface-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 68px;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+    }
+
+    .brand-mark:hover {
+      text-decoration: none;
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gradient-primary);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 14px rgba(2, 132, 199, 0.22);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.92rem;
+      font-weight: 550;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    .language-toggle {
+      flex-shrink: 0;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-pill);
+      padding: 8px 14px;
+      background: var(--surface-solid);
+      color: var(--text-primary);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .language-toggle:hover {
+      background: var(--surface-subtle);
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        min-height: 60px;
+      }
+
+      .language-toggle {
+        margin-left: auto;
+      }
+    }
+
+    /* Section 1: Hero */
+    .hero-section {
+      padding-top: 28px;
+      padding-bottom: 32px;
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.92) 55%, rgba(240, 253, 250, 0.92) 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: 28px;
+      box-shadow: var(--shadow-md);
+      padding: clamp(24px, 4vw, 44px);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-hero-glow);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .app-identity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .app-icon-box {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      border-radius: 20px;
+      background: var(--gradient-primary);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-cta);
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+    }
+
+    .app-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--gradient-soft-banner);
+      border: 1px solid rgba(2, 132, 199, 0.22);
+      color: #0369a1;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(1.85rem, 3.6vw, 2.65rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+    }
+
+    .hero-lead {
+      margin: 0 0 20px;
+      font-size: 1.04rem;
+      color: var(--text-secondary);
+      max-width: 58ch;
+    }
+
+    .meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      box-shadow: 0 2px 6px rgba(15, 37, 55, 0.03);
+    }
+
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      background: var(--gradient-primary);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: var(--shadow-cta);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .btn-download:hover {
+      text-decoration: none;
+      transform: translateY(-2px);
+      filter: brightness(1.04);
+      box-shadow: 0 15px 30px rgba(2, 132, 199, 0.34);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 48px;
+      padding: 11px 20px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-solid);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      font-weight: 650;
+      text-decoration: none;
+      transition: background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+      border-color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    .download-note {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Hero Preview Frame */
+    .hero-preview-frame {
+      background: linear-gradient(160deg, #ffffff 0%, #e8f4ff 100%);
+      border: 1px solid rgba(2, 132, 199, 0.2);
+      border-radius: 26px;
+      padding: 14px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .phone-screen-slot {
+      position: relative;
+      min-height: 330px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f8fcff 0%, #eaf5ff 100%);
+      border: 1.5px dashed rgba(2, 132, 199, 0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .phone-screen-slot img {
+      width: 100%;
+      height: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+    }
+
+    .placeholder-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(2, 132, 199, 0.12);
+      color: #0369a1;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-title {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .placeholder-desc {
+      margin: 0;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      max-width: 28ch;
+    }
+
+    .placeholder-path {
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+    }
+
+    /* Section 2: About & Screenshot Gallery */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .screenshot-slot {
+      min-height: 270px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, #ffffff 0%, #f1f8ff 100%);
+      border: 1.5px dashed rgba(13, 148, 136, 0.35);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .screenshot-slot img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      display: block;
+    }
+
+    /* Section 3: Specs Grid */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .spec-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      box-shadow: 0 2px 10px rgba(15, 37, 55, 0.03);
+    }
+
+    .spec-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .spec-value {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+    }
+
+    /* Section 4: Distribution Architecture */
+    .dist-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .two-part-cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .part-card {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+
+    .part-card.teal-accent {
+      border-left-color: var(--accent-teal);
+    }
+
+    .part-card h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .part-card p {
+      margin: 0;
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+    }
+
+    .flow-diagram {
+      background: linear-gradient(180deg, #ffffff 0%, #f4faff 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .flow-diagram h3 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .flow-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .flow-node {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.91rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .flow-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-subtle);
+      color: var(--accent-blue);
+      white-space: nowrap;
+    }
+
+    .flow-tag.gh {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--accent-indigo);
+    }
+
+    .flow-tag.os {
+      background: rgba(13, 148, 136, 0.12);
+      color: var(--accent-teal);
+    }
+
+    .flow-arrow {
+      text-align: center;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Section 5: Security & Checksum */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .security-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .security-item h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .security-item p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .transparency-banner {
+      background: var(--gradient-soft-banner);
+      border: 1px solid rgba(2, 132, 199, 0.22);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    details.tech-drawer {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+
+    details.tech-drawer summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-primary);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    details.tech-drawer summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .checksum-box {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .checksum-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .checksum-code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      word-break: break-all;
+      color: var(--text-primary);
+    }
+
+    .btn-copy {
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface-solid);
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-copy:hover {
+      background: #e0f2fe;
+    }
+
+    /* Section 6: Installation Steps */
+    .steps-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .step-card {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .step-card h3 {
+      margin: 0 0 4px;
+      font-size: 0.98rem;
+    }
+
+    .step-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .install-callout {
+      margin-top: 16px;
+      background: linear-gradient(135deg, #fffbeb 0%, #f0f9ff 100%);
+      border: 1px solid rgba(2, 132, 199, 0.22);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section 7: Future Updates */
+    .updates-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .update-card {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .update-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.04rem;
+    }
+
+    .update-card p {
+      margin: 0;
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section 8: FAQ */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    details.faq-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+
+    details.faq-item summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-primary);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    details.faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      flex-shrink: 0;
+    }
+
+    details.faq-item[open] summary::after {
+      content: "−";
+    }
+
+    .faq-answer {
+      margin: 12px 0 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section 9: Footer */
+    .site-footer {
+      margin-top: 32px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, #e7f3fc 100%);
+      border-top: 1px solid var(--border-light);
+      padding: 36px 0 28px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .footer-title {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+      font-weight: 750;
+      color: var(--text-primary);
+    }
+
+    .footer-text {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .footer-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .footer-bottom {
+      padding-top: 18px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .dist-layout,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .specs-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .screenshot-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links {
+        display: none;
+      }
+
+      .specs-grid,
+      .security-grid,
+      .steps-list,
+      .updates-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-download {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand-mark" href="https://elwoic.in">
+        <span class="brand-badge" aria-hidden="true">E</span>
+        <span>ELWOIC</span>
+      </a>
+      <nav class="nav-links" aria-label="Page sections">
+        <a href="#language" hidden></a>
+        <a href="#about">About</a>
+        <a href="#details">Release Info</a>
+        <a href="#distribution">Distribution</a>
+        <a href="#security">Security</a>
+        <a href="#install">Install Guide</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="language-toggle" id="language-toggle" type="button" aria-label="Switch page language to English">English</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Section 1: Hero / Download Area -->
+    <section class="hero-section" aria-labelledby="hero-heading">
+      <div class="container">
+        <div class="hero-card">
+          <div class="hero-grid">
+            <div>
+              <div class="app-identity">
+                <div class="app-icon-box">
+                  <img
+                    src="./assets/elwoic-app-icon.png"
+                    alt="ELWOIC Android application icon"
+                    onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-weight:800;font-size:1.5rem;&quot;>EL</span>';"
+                  />
+                </div>
+                <div>
+                  <span class="status-pill">Official Direct Release</span>
+                  <h1 class="hero-title" id="hero-heading">ELWOIC Android App</h1>
+                </div>
+              </div>
+
+              <p class="hero-lead">
+                Official Android application from the <strong>Elamkulam Local Weather Observation &amp; Information Centre (ELWOIC)</strong> in Malappuram, Kerala—bringing local weather information and digital services directly to your Android device.
+              </p>
+
+              <div class="meta-chips" aria-label="Release summary">
+                <span class="meta-chip">Version <span id="hero-version">1.0</span></span>
+                <span class="meta-chip">Size: <span id="hero-size">~44 MB</span></span>
+                <span class="meta-chip">Android (APK)</span>
+              </div>
+
+              <div class="cta-group">
+                <a
+                  id="primary-download-btn"
+                  class="btn-download"
+                  href="https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/download/v1.0/ELWOIC.apk"
+                  download="ELWOIC.apk"
+                >
+                  <span>Download for Android</span>
+                  <span aria-hidden="true">↓</span>
+                </a>
+                <a
+                  id="release-page-link"
+                  class="btn-secondary"
+                  href="https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/tag/v1.0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Release Notes (v1.0) ↗
+                </a>
+              </div>
+
+              <p class="download-note">
+                Downloaded directly from ELWOIC's official GitHub Releases asset (<span class="mono">ELWOIC.apk</span>). No account required.
+              </p>
+            </div>
+
+            <!-- Dedicated space for primary app screenshot -->
+            <div class="hero-preview-frame">
+              <div class="phone-screen-slot" id="hero-screenshot-slot">
+                <img
+                  src="/pictures/appscreenshot-1.jpeg"
+                  alt="ELWOIC Android app screen preview"
+                  onload="this.nextElementSibling.style.display='none';"
+                  onerror="this.style.display='none';"
+                />
+                <div>
+                  <span class="placeholder-badge">Screenshot Slot</span>
+                  <h2 class="placeholder-title">App Preview Screen</h2>
+                  <p class="placeholder-desc">
+                    Add your main ELWOIC Android app screenshot here once ready.
+                  </p>
+                  <div class="placeholder-path">./assets/app-hero-screenshot.png</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: About the Application -->
+    <section id="about" aria-labelledby="about-heading">
+      <div class="container">
+        <div class="card about-grid">
+          <div class="section-header" style="margin-bottom: 0;">
+            <span class="section-eyebrow">About the App</span>
+            <h2 class="section-title" id="about-heading">Built for Direct Mobile Access in Elamkulam</h2>
+            <p class="section-subtitle">
+              ELWOIC is an independent, student-run, non-profit local weather observation and information initiative operating in Elamkulam, Malappuram, Kerala. The ELWOIC Android application provides a dedicated mobile experience to access ELWOIC's weather information and digital services without relying solely on manual browser visits. The app is independently distributed by ELWOIC and is not currently published on the Google Play Store.
+            </p>
+          </div>
+
+          <!-- Dedicated space for additional real app screenshots -->
+          <div class="screenshot-grid" aria-label="Application screenshots gallery">
+            <div class="screenshot-slot">
+              <img
+                src="/pictures/appscreenshot-2.jpeg"
+                alt="ELWOIC Android app view 1"
+                onload="this.nextElementSibling.style.display='none';"
+                onerror="this.style.display='none';"
+              />
+              <div>
+                <span class="placeholder-badge">Screenshot 1</span>
+                <h3 class="placeholder-title">Add App Screenshot</h3>
+                <p class="placeholder-desc">Replace with an actual screen capture from ELWOIC v1.0.</p>
+                <div class="placeholder-path">./assets/screenshot-1.png</div>
+              </div>
+            </div>
+
+            <div class="screenshot-slot">
+              <img
+                src="/pictures/appscreenshot-3.jpeg"
+                alt="ELWOIC Android app view 2"
+                onload="this.nextElementSibling.style.display='none';"
+                onerror="this.style.display='none';"
+              />
+              <div>
+                <span class="placeholder-badge">Screenshot 2</span>
+                <h3 class="placeholder-title">Add App Screenshot</h3>
+                <p class="placeholder-desc">Replace with an actual screen capture from ELWOIC v1.0.</p>
+                <div class="placeholder-path">./assets/screenshot-2.png</div>
+              </div>
+            </div>
+
+            <div class="screenshot-slot">
+              <img
+                src="/pictures/appscreenshot-4.jpeg"
+                alt="ELWOIC Android app view 3"
+                onload="this.nextElementSibling.style.display='none';"
+                onerror="this.style.display='none';"
+              />
+              <div>
+                <span class="placeholder-badge">Screenshot 3</span>
+                <h3 class="placeholder-title">Add App Screenshot</h3>
+                <p class="placeholder-desc">Replace with an actual screen capture from ELWOIC v1.0.</p>
+                <div class="placeholder-path">./assets/screenshot-3.png</div>
+              </div>
+            </div>
+
+            <div class="screenshot-slot">
+              <img
+                src="/pictues/appscreenshot-5.jpeg"
+                alt="ELWOIC Android app view 4"
+                onload="this.nextElementSibling.style.display='none';"
+                onerror="this.style.display='none';"
+              />
+              <div>
+                <span class="placeholder-badge">Screenshot 4</span>
+                <h3 class="placeholder-title">Add App Screenshot</h3>
+                <p class="placeholder-desc">Replace with an actual screen capture from ELWOIC v1.0.</p>
+                <div class="placeholder-path">./assets/screenshot-4.png</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Download Information -->
+    <section id="details" aria-labelledby="details-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Download Information</span>
+          <h2 class="section-title" id="details-heading">Package &amp; Release Specifications</h2>
+          <p class="section-subtitle">
+            Key technical details for the current public release of the ELWOIC Android application.
+          </p>
+        </div>
+
+        <div class="specs-grid">
+          <div class="spec-item">
+            <div class="spec-label">Application Name</div>
+            <div class="spec-value">ELWOIC</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Current Version</div>
+            <div class="spec-value"><span id="spec-version">1.0</span> (Code <span id="spec-code">1</span>)</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Package ID</div>
+            <div class="spec-value mono">com.aistudio.elwoic.krmvqx</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">File Format</div>
+            <div class="spec-value">Android Package Kit (APK)</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">File Size</div>
+            <div class="spec-value" id="spec-size">Approximately 44 MB</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Distribution</div>
+            <div class="spec-value">Direct APK Download</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">APK Hosting</div>
+            <div class="spec-value">GitHub Releases</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Update Manifest</div>
+            <div class="spec-value">ELWOIC Cloudflare Pages</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: How ELWOIC Distributes the App -->
+    <section id="distribution" aria-labelledby="distribution-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Distribution Architecture</span>
+          <h2 class="section-title" id="distribution-heading">How ELWOIC Distributes the App</h2>
+          <p class="section-subtitle">
+            ELWOIC separates version metadata from the installation binary so release metadata stays lightweight on ELWOIC's domain while large APK files are served as GitHub Release assets.
+          </p>
+        </div>
+
+        <div class="dist-layout">
+          <div class="two-part-cards">
+            <div class="part-card">
+              <h3>1. APK File — GitHub Releases</h3>
+              <p>
+                The installation binary (<span class="mono">ELWOIC.apk</span>) is published as a release asset on ELWOIC's public GitHub Releases page rather than as a regular browser-uploaded repository file, supporting files larger than standard browser upload limits.
+              </p>
+            </div>
+            <div class="part-card teal-accent">
+              <h3>2. Update Manifest — ELWOIC Cloudflare Pages</h3>
+              <p>
+                Version details, release notes, checksums, and download metadata are published at <span class="mono">https://elwoic.in/app/version.json</span> on ELWOIC's official domain via Cloudflare Pages.
+              </p>
+            </div>
+          </div>
+
+          <div class="flow-diagram" aria-label="App update and installation flow diagram">
+            <h3>Update &amp; Installation Flow</h3>
+            <ol class="flow-steps">
+              <li class="flow-node">
+                <span>ELWOIC Android App</span>
+                <span class="flow-tag">Client</span>
+              </li>
+              <li class="flow-arrow" aria-hidden="true">↓</li>
+              <li class="flow-node">
+                <span>Checks official ELWOIC update manifest (<span class="mono">elwoic.in/app/version.json</span>)</span>
+                <span class="flow-tag">ELWOIC Domain</span>
+              </li>
+              <li class="flow-arrow" aria-hidden="true">↓</li>
+              <li class="flow-node">
+                <span>Receives version information and APK download address</span>
+                <span class="flow-tag">Manifest</span>
+              </li>
+              <li class="flow-arrow" aria-hidden="true">↓</li>
+              <li class="flow-node">
+                <span>Downloads APK from GitHub Releases when an update is available</span>
+                <span class="flow-tag gh">GitHub Releases</span>
+              </li>
+              <li class="flow-arrow" aria-hidden="true">↓</li>
+              <li class="flow-node">
+                <span>Verifies the downloaded package (identity, signature, checksum &amp; checks)</span>
+                <span class="flow-tag">Integrity Check</span>
+              </li>
+              <li class="flow-arrow" aria-hidden="true">↓</li>
+              <li class="flow-node">
+                <span>Uses Android's standard installation process</span>
+                <span class="flow-tag os">Android OS</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Security and Authenticity -->
+    <section id="security" aria-labelledby="security-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Security &amp; Authenticity</span>
+          <h2 class="section-title" id="security-heading">Signing, Integrity Checks &amp; Transparency</h2>
+          <p class="section-subtitle">
+            How ELWOIC protects release authenticity and file integrity across independent distribution.
+          </p>
+        </div>
+
+        <div class="transparency-banner">
+          <strong>Independent Distribution Notice:</strong> This application is independently distributed and signed by ELWOIC. It is <strong>not</strong> Google Play Protect certified or officially Google Play verified, and no software download can be claimed as completely risk-free. Please review the concrete security and verification steps below.
+        </div>
+
+        <div class="security-grid">
+          <div class="security-item">
+            <h3>Official Release &amp; HTTPS Transport</h3>
+            <p>
+              The download link points directly to ELWOIC's official GitHub Release asset over HTTPS, and manifest checks target ELWOIC's official <span class="mono">elwoic.in</span> domain.
+            </p>
+          </div>
+          <div class="security-item">
+            <h3>Permanent Signing Key via GitHub Actions</h3>
+            <p>
+              The APK is built and signed using ELWOIC's permanent Android signing key stored in GitHub Actions Secrets, with temporary keystore files removed after build and signatures verified during release. Future updates use the same permanent signing key.
+            </p>
+          </div>
+          <div class="security-item">
+            <h3>In-App Package &amp; Signature Validation</h3>
+            <p>
+              The app's update system performs SHA-256 verification (when supplied in the manifest), APK ZIP/archive validation, package ID and version-code checks, signing-certificate fingerprint checks, host/redirect restrictions, HTTPS handling, and storage checks.
+            </p>
+          </div>
+          <div class="security-item">
+            <h3>Standard Android Installation</h3>
+            <p>
+              Once validated, installation hands off to Android's standard package installer rather than bypassing system protections.
+            </p>
+          </div>
+        </div>
+
+        <details class="tech-drawer">
+          <summary>
+            <span>Technical Verification: Current SHA-256 Checksum</span>
+            <span style="font-size: 0.85rem; color: var(--accent-blue);">Expand / Collapse</span>
+          </summary>
+          <div class="checksum-box">
+            <p class="footer-text">
+              A SHA-256 checksum helps verify that the downloaded <span class="mono">ELWOIC.apk</span> file matches the published release bytes without corruption or alteration—however, a checksum by itself does not establish publisher trustworthiness on its own.
+            </p>
+            <div class="checksum-row">
+              <code class="checksum-code" id="sha256-value">9174cd73a1e72fcad337b823d45166bb4282b879d83237f56636a0d921f763e6</code>
+              <button type="button" class="btn-copy" id="copy-sha256-btn" aria-label="Copy SHA-256 checksum">
+                Copy SHA-256
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Section 6: Installation Guide -->
+    <section id="install" aria-labelledby="install-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Installation Guide</span>
+          <h2 class="section-title" id="install-heading">How to Install ELWOIC on Android</h2>
+          <p class="section-subtitle">
+            Follow these steps to download and install <span class="mono">ELWOIC.apk</span> on your Android device.
+          </p>
+        </div>
+
+        <ol class="steps-list">
+          <li class="step-card">
+            <span class="step-num">1</span>
+            <div>
+              <h3>Tap Download for Android</h3>
+              <p>Select the <strong>Download for Android</strong> button in the download section above to start downloading <span class="mono">ELWOIC.apk</span>.</p>
+            </div>
+          </li>
+          <li class="step-card">
+            <span class="step-num">2</span>
+            <div>
+              <h3>Wait for Download Completion</h3>
+              <p>Allow the ~44 MB APK file to finish downloading completely before opening it.</p>
+            </div>
+          </li>
+          <li class="step-card">
+            <span class="step-num">3</span>
+            <div>
+              <h3>Open ELWOIC.apk</h3>
+              <p>Tap the completed download notification or open the downloaded <span class="mono">ELWOIC.apk</span> file from your browser downloads or Files app.</p>
+            </div>
+          </li>
+          <li class="step-card">
+            <span class="step-num">4</span>
+            <div>
+              <h3>Review Install Permission Prompt</h3>
+              <p>If Android asks for permission to install apps from that browser or file manager, review the prompt and allow it only if you intentionally downloaded the APK from the official ELWOIC page.</p>
+            </div>
+          </li>
+          <li class="step-card">
+            <span class="step-num">5</span>
+            <div>
+              <h3>Tap Install</h3>
+              <p>Confirm the installation prompt in Android's package installer and wait for the setup to finish.</p>
+            </div>
+          </li>
+          <li class="step-card">
+            <span class="step-num">6</span>
+            <div>
+              <h3>Open ELWOIC</h3>
+              <p>Once installed, tap <strong>Open</strong> or launch ELWOIC from your app drawer.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="install-callout">
+          <strong>About Android Installation Warnings:</strong> Android commonly shows a warning when installing apps from outside the Google Play Store. This is a normal Android security prompt for independently distributed APKs—not proof that the file is malicious. You do not need to disable Android security protections globally across your device.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Future Updates -->
+    <section id="updates" aria-labelledby="updates-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Future Updates</span>
+          <h2 class="section-title" id="updates-heading">Staying Up to Date</h2>
+          <p class="section-subtitle">
+            Once installed, you do not need to repeatedly visit this download page to look for new versions.
+          </p>
+        </div>
+
+        <div class="updates-grid">
+          <div class="update-card">
+            <h3>Automatic Background Checks</h3>
+            <p>
+              ELWOIC includes a background update-checking mechanism scheduled via WorkManager (configured for a 24-hour interval) that checks <span class="mono">elwoic.in/app/version.json</span> and notifies you when a newer release is published.
+            </p>
+          </div>
+          <div class="update-card">
+            <h3>Manual Update Check in the App</h3>
+            <p>
+              You can also check for updates anytime directly inside the app by tapping the <strong>Check for Update</strong> button. When a newer version is available, the app can download and validate the new APK before installation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Frequently Asked Questions -->
+    <section id="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">FAQ</span>
+          <h2 class="section-title" id="faq-heading">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Why is ELWOIC not available on Google Play Store?</summary>
+            <p class="faq-answer">
+              ELWOIC is an independent, student-run, non-profit local weather observation and information initiative in Elamkulam, Malappuram, Kerala, and currently distributes its Android APK directly rather than through Google Play Store.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Is this an official ELWOIC application?</summary>
+            <p class="faq-answer">
+              Yes. This download page is part of <span class="mono">elwoic.in</span>, the APK is published to ELWOIC's official GitHub Release, and builds are signed using ELWOIC's permanent Android signing key.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Why does Android show an installation warning?</summary>
+            <p class="faq-answer">
+              Android displays a warning when installing an APK outside the Google Play Store. That prompt is standard Android behavior for independently distributed packages and does not by itself mean the file is malicious.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Where is the APK hosted?</summary>
+            <p class="faq-answer">
+              The APK file (<span class="mono">ELWOIC.apk</span>) is hosted as a release asset on ELWOIC's public GitHub Releases page, while update metadata is served from <span class="mono">https://elwoic.in/app/version.json</span> on Cloudflare Pages.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>How can I verify the downloaded file?</summary>
+            <p class="faq-answer">
+              You can compute the SHA-256 checksum of your downloaded <span class="mono">ELWOIC.apk</span> file and compare it against the published SHA-256 value in the Security section above. The app also performs integrity and signing checks during update handling.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Will the application receive future updates?</summary>
+            <p class="faq-answer">
+              Yes. When ELWOIC publishes a new release to GitHub Releases and updates <span class="mono">elwoic.in/app/version.json</span>, existing installations using the same permanent signing key can detect the update via the app's update-checking system.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Do I need to download the APK again for every update?</summary>
+            <p class="faq-answer">
+              No. You do not need to repeatedly visit this web page to search for new releases—the app checks for updates automatically in the background (every 24 hours) and supports manual checking via its Check for Update button.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Is an internet connection required?</summary>
+            <p class="faq-answer">
+              Yes. An internet connection is needed to download the APK, access live/online weather information and services, and check for updates.
+            </p>
+          </details>
+
+          <details class="faq-item">
+            <summary>What should I do if installation fails?</summary>
+            <p class="faq-answer">
+              Confirm that <span class="mono">ELWOIC.apk</span> finished downloading completely, check that your device has enough free storage space, verify that installation permission was granted to the browser or file manager used to open the file, and try again.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Section 9: Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h2 class="footer-title">ELWOIC</h2>
+          <p class="footer-text">
+            Elamkulam Local Weather Observation &amp; Information Centre — independent, student-run, non-profit local weather observation and information initiative in Elamkulam, Malappuram, Kerala.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="footer-title">Official Links</h2>
+          <ul class="footer-links">
+            <li><a href="https://elwoic.in">Official Website (elwoic.in)</a></li>
+            <li>
+              <a
+                href="https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/tag/v1.0"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub Release v1.0
+              </a>
+            </li>
+            <li><a href="https://elwoic.in/privacy" rel="noopener noreferrer">Privacy Information</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="footer-title">Contact</h2>
+          <ul class="footer-links">
+            <li><a href="https://elwoic.in/contact" rel="noopener noreferrer">Contact ELWOIC</a></li>
+            <li class="footer-text">Elamkulam, Malappuram, Kerala, India</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="copyright-year">2026</span> ELWOIC — Elamkulam Local Weather Observation &amp; Information Centre.</span>
+        <span>Independent Android Distribution (Package: <span class="mono">com.aistudio.elwoic.krmvqx</span>)</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const MANIFEST_URL = "https://elwoic.in/app/version.json";
+      const ALLOWED_HOST = "github.com";
+
+      const translations = {
+        "nav-links a": ["കുറിച്ച്", "റിലീസ് വിവരങ്ങൾ", "വിതരണം", "സുരക്ഷ", "ഇൻസ്റ്റാൾ ഗൈഡ്", "FAQ"],
+        ".status-pill": "ഔദ്യോഗിക നേരിട്ടുള്ള റിലീസ്",
+        ".hero-title": "ELWOIC Android App",
+        ".hero-lead": "<strong>എളംകുളം ലോക്കൽ വെതർ ഒബ്സർവേഷൻ &amp; ഇൻഫർമേഷൻ സെന്റർ (ELWOIC)</strong> അവതരിപ്പിക്കുന്ന ഔദ്യോഗിക Android ആപ്പ്. മലപ്പുറം, കേരളത്തിലെ പ്രാദേശിക കാലാവസ്ഥാ വിവരങ്ങളും ഡിജിറ്റൽ സേവനങ്ങളും നിങ്ങളുടെ Android ഫോണിൽ എളുപ്പത്തിൽ ലഭ്യമാക്കുന്നു.",
+        ".meta-chip": ["പതിപ്പ് <span id=\"hero-version\">1.0</span>", "വലുപ്പം: <span id=\"hero-size\">~44 MB</span>", "Android (APK)"],
+        "#primary-download-btn span:first-child": "Android-നായി ഡൗൺലോഡ് ചെയ്യുക",
+        "#release-page-link": "റിലീസ് കുറിപ്പുകൾ (v1.0) ↗",
+        ".download-note": "ELWOIC-ന്റെ ഔദ്യോഗിക GitHub Releases-ൽ നിന്ന് നേരിട്ട് ഡൗൺലോഡ് ചെയ്യുന്നു (<span class=\"mono\">ELWOIC.apk</span>). അക്കൗണ്ട് ആവശ്യമില്ല.",
+        ".placeholder-badge": ["സ്ക്രീൻഷോട്ട്", "സ്ക്രീൻഷോട്ട് 1", "സ്ക്രീൻഷോട്ട് 2", "സ്ക്രീൻഷോട്ട് 3", "സ്ക്രീൻഷോട്ട് 4"],
+        ".placeholder-title": ["ആപ്പ് പ്രിവ്യൂ", "ആപ്പ് സ്ക്രീൻഷോട്ട് ചേർക്കുക", "ആപ്പ് സ്ക്രീൻഷോട്ട് ചേർക്കുക", "ആപ്പ് സ്ക്രീൻഷോട്ട് ചേർക്കുക", "ആപ്പ് സ്ക്രീൻഷോട്ട് ചേർക്കുക"],
+        ".placeholder-desc": ["ELWOIC Android ആപ്പിന്റെ പ്രധാന സ്ക്രീൻഷോട്ട് ലഭ്യമാകുമ്പോൾ ഇവിടെ ചേർക്കുക.", "ELWOIC v1.0-ൽ നിന്നുള്ള യഥാർത്ഥ സ്ക്രീൻഷോട്ട് ചേർക്കുക.", "ELWOIC v1.0-ൽ നിന്നുള്ള യഥാർത്ഥ സ്ക്രീൻഷോട്ട് ചേർക്കുക.", "ELWOIC v1.0-ൽ നിന്നുള്ള യഥാർത്ഥ സ്ക്രീൻഷോട്ട് ചേർക്കുക.", "ELWOIC v1.0-ൽ നിന്നുള്ള യഥാർത്ഥ സ്ക്രീൻഷോട്ട് ചേർക്കുക."],
+        ".section-eyebrow": ["ആപ്പിനെക്കുറിച്ച്", "ഡൗൺലോഡ് വിവരങ്ങൾ", "വിതരണ രീതി", "സുരക്ഷയും ആധികാരികതയും", "ഇൻസ്റ്റാളേഷൻ ഗൈഡ്", "പുതിയ അപ്‌ഡേറ്റുകൾ", "FAQ"],
+        "#about-heading": "എളംകുളത്തേക്ക് നേരിട്ടുള്ള മൊബൈൽ സേവനം",
+        ".section-subtitle": [
+          "ELWOIC മലപ്പുറം ജില്ലയിലെ എളംകുളത്ത് പ്രവർത്തിക്കുന്ന, വിദ്യാർത്ഥികൾ നേതൃത്വം നൽകുന്ന സ്വതന്ത്രവും ലാഭേച്ഛയില്ലാത്തതുമായ പ്രാദേശിക കാലാവസ്ഥാ നിരീക്ഷണ-വിവര സംരംഭമാണ്. വെബ്‌സൈറ്റ് ഓരോ തവണയും തുറക്കാതെ തന്നെ കാലാവസ്ഥാ വിവരങ്ങളും ഡിജിറ്റൽ സേവനങ്ങളും മൊബൈലിൽ ഉപയോഗിക്കാൻ ഈ ആപ്പ് സഹായിക്കുന്നു. ആപ്പ് ELWOIC നേരിട്ട് വിതരണം ചെയ്യുന്നതാണ്; നിലവിൽ Google Play Store-ൽ ലഭ്യമല്ല.",
+          "ELWOIC Android ആപ്പിന്റെ നിലവിലെ പൊതുവായ റിലീസിന്റെ പ്രധാന സാങ്കേതിക വിവരങ്ങൾ.",
+          "വലിയ APK ഫയലുകൾ GitHub Release assets ആയി നൽകുകയും പതിപ്പ് വിവരങ്ങൾ ELWOIC-ന്റെ വെബ്‌സൈറ്റിൽ സൂക്ഷിക്കുകയും ചെയ്യുന്നു.",
+          "സ്വതന്ത്ര വിതരണത്തിലുടനീളം റിലീസിന്റെ ആധികാരികതയും ഫയലിന്റെ സമഗ്രതയും ഉറപ്പാക്കാൻ സ്വീകരിക്കുന്ന നടപടികൾ.",
+          "<span class=\"mono\">ELWOIC.apk</span> നിങ്ങളുടെ Android ഫോണിൽ ഡൗൺലോഡ് ചെയ്ത് ഇൻസ്റ്റാൾ ചെയ്യാൻ ഈ ഘട്ടങ്ങൾ പിന്തുടരുക.",
+          "പുതിയ പതിപ്പ് ലഭ്യമാകുമ്പോൾ അറിയാൻ ഈ ഡൗൺലോഡ് പേജ് വീണ്ടും വീണ്ടും പരിശോധിക്കേണ്ടതില്ല.",
+          ""
+        ],
+        "#details-heading": "ആപ്പ് പാക്കേജും റിലീസ് വിവരങ്ങളും",
+        ".spec-label": ["ആപ്പിന്റെ പേര്", "നിലവിലെ പതിപ്പ്", "Package ID", "ഫയൽ ഫോർമാറ്റ്", "ഫയൽ വലുപ്പം", "വിതരണ രീതി", "APK ഹോസ്റ്റിംഗ്", "അപ്‌ഡേറ്റ് മാനിഫെസ്റ്റ്"],
+        ".spec-value": ["ELWOIC", "<span id=\"spec-version\">1.0</span> (Code <span id=\"spec-code\">1</span>)", "com.aistudio.elwoic.krmvqx", "Android Package Kit (APK)", "ഏകദേശം 44 MB", "നേരിട്ടുള്ള APK ഡൗൺലോഡ്", "GitHub Releases", "ELWOIC Cloudflare Pages"],
+        "#distribution-heading": "ELWOIC ആപ്പ് വിതരണം ചെയ്യുന്നത് എങ്ങനെ",
+        ".part-card h3": ["1. APK ഫയൽ — GitHub Releases", "2. Update Manifest — ELWOIC Cloudflare Pages"],
+        ".part-card p": [
+          "<span class=\"mono\">ELWOIC.apk</span> ഇൻസ്റ്റാളേഷൻ ഫയൽ സാധാരണ repository ഫയലായി അപ്‌ലോഡ് ചെയ്യുന്നതിന് പകരം ELWOIC-ന്റെ പൊതുവായ GitHub Releases-ൽ പ്രസിദ്ധീകരിക്കുന്നു. വലിയ ഫയലുകൾ വിതരണം ചെയ്യാൻ ഇത് സഹായിക്കുന്നു.",
+          "പതിപ്പ് വിവരങ്ങൾ, റിലീസ് കുറിപ്പുകൾ, checksum, ഡൗൺലോഡ് വിവരങ്ങൾ എന്നിവ ELWOIC-ന്റെ ഔദ്യോഗിക ഡൊമെയ്‌നായ <span class=\"mono\">https://elwoic.in/app/version.json</span>-ൽ Cloudflare Pages വഴി പ്രസിദ്ധീകരിക്കുന്നു."
+        ],
+        ".flow-diagram h3": "അപ്‌ഡേറ്റും ഇൻസ്റ്റാളേഷനും എങ്ങനെ നടക്കുന്നു",
+        ".flow-node > span:first-child": ["ELWOIC Android App", "ഔദ്യോഗിക ELWOIC update manifest പരിശോധിക്കുന്നു (<span class=\"mono\">elwoic.in/app/version.json</span>)", "പതിപ്പ് വിവരവും APK ഡൗൺലോഡ് വിലാസവും ലഭിക്കുന്നു", "പുതിയ പതിപ്പ് ലഭിക്കുമ്പോൾ GitHub Releases-ൽ നിന്ന് APK ഡൗൺലോഡ് ചെയ്യുന്നു", "ഡൗൺലോഡ് ചെയ്ത പാക്കേജ് (identity, signature, checksum, മറ്റ് പരിശോധനകൾ) പരിശോധിക്കുന്നു", "Android-ന്റെ സാധാരണ ഇൻസ്റ്റാളേഷൻ സംവിധാനം ഉപയോഗിക്കുന്നു"],
+        ".flow-tag": ["Client", "ELWOIC ഡൊമെയ്ൻ", "Manifest", "GitHub Releases", "Integrity Check", "Android OS"],
+        "#security-heading": "Signature, Integrity Check, സുതാര്യത",
+        ".transparency-banner": "<strong>സ്വതന്ത്ര വിതരണ അറിയിപ്പ്:</strong> ഈ ആപ്പ് ELWOIC സ്വതന്ത്രമായി വിതരണം ചെയ്ത് sign ചെയ്യുന്നതാണ്. ഇത് <strong>Google Play Protect certified അല്ല, Google Play-ൽ ഔദ്യോഗികമായി verified ചെയ്തതുമല്ല.</strong> ഒരു സോഫ്റ്റ്‌വെയർ ഡൗൺലോഡും പൂർണമായും അപകടരഹിതമാണെന്ന് ഉറപ്പുനൽകാനാവില്ല. താഴെ നൽകിയിരിക്കുന്ന സുരക്ഷാ പരിശോധനകൾ ശ്രദ്ധിക്കുക.",
+        ".security-item h3": ["ഔദ്യോഗിക റിലീസും HTTPS കണക്ഷനും", "GitHub Actions വഴി സ്ഥിരമായ Signing Key", "ആപ്പിലെ Package, Signature പരിശോധന", "Android-ന്റെ സാധാരണ ഇൻസ്റ്റാളേഷൻ"],
+        ".security-item p": [
+          "ഡൗൺലോഡ് ലിങ്ക് HTTPS വഴി ELWOIC-ന്റെ ഔദ്യോഗിക GitHub Release asset-ലേക്കാണ്. Manifest പരിശോധനകൾ ELWOIC-ന്റെ ഔദ്യോഗിക <span class=\"mono\">elwoic.in</span> ഡൊമെയ്‌നിലേക്കാണ്.",
+          "GitHub Actions Secrets-ൽ സൂക്ഷിച്ചിരിക്കുന്ന ELWOIC-ന്റെ സ്ഥിരമായ Android signing key ഉപയോഗിച്ചാണ് APK build ചെയ്ത് sign ചെയ്യുന്നത്. Build കഴിഞ്ഞാൽ താൽക്കാലിക keystore ഫയലുകൾ നീക്കം ചെയ്യുകയും റിലീസിന് മുമ്പ് signature പരിശോധിക്കുകയും ചെയ്യുന്നു. തുടർന്നുള്ള അപ്‌ഡേറ്റുകളിലും ഇതേ key ഉപയോഗിക്കും.",
+          "അപ്‌ഡേറ്റ് സംവിധാനം SHA-256 (manifest-ൽ നൽകിയിട്ടുണ്ടെങ്കിൽ), APK ZIP/archive, package ID, version code, signing-certificate fingerprint, host/redirect, HTTPS, storage എന്നിവ പരിശോധിക്കുന്നു.",
+          "പരിശോധനകൾ വിജയിച്ചാൽ Android-ന്റെ standard package installer വഴിയാണ് ഇൻസ്റ്റാളേഷൻ നടക്കുന്നത്; സിസ്റ്റം സുരക്ഷ മറികടക്കുന്നില്ല."
+        ],
+        ".tech-drawer summary span:first-child": "സാങ്കേതിക പരിശോധന: നിലവിലെ SHA-256 Checksum",
+        ".tech-drawer summary span:last-child": "വികസിപ്പിക്കുക / ചുരുക്കുക",
+        ".checksum-box .footer-text": "ഡൗൺലോഡ് ചെയ്ത <span class=\"mono\">ELWOIC.apk</span> ഫയൽ പ്രസിദ്ധീകരിച്ച ഫയലുമായി പൊരുത്തപ്പെടുന്നുണ്ടോ എന്ന് പരിശോധിക്കാൻ SHA-256 checksum സഹായിക്കുന്നു. എന്നാൽ checksum മാത്രം പ്രസാധകന്റെ വിശ്വാസ്യത ഉറപ്പാക്കില്ല.",
+        ".btn-copy": "SHA-256 പകർത്തുക",
+        "#install-heading": "Android-ൽ ELWOIC ഇൻസ്റ്റാൾ ചെയ്യുന്നത് എങ്ങനെ",
+        ".step-card h3": ["Download for Android അമർത്തുക", "ഡൗൺലോഡ് പൂർത്തിയാകുന്നത് വരെ കാത്തിരിക്കുക", "ELWOIC.apk തുറക്കുക", "ഇൻസ്റ്റാൾ അനുമതി പരിശോധിക്കുക", "Install അമർത്തുക", "ELWOIC തുറക്കുക"],
+        ".step-card p": [
+          "മുകളിലെ <strong>Download for Android</strong> ബട്ടൺ അമർത്തി <span class=\"mono\">ELWOIC.apk</span> ഡൗൺലോഡ് ചെയ്യുക.",
+          "ഫയൽ തുറക്കുന്നതിന് മുമ്പ് ഏകദേശം 44 MB APK പൂർണമായി ഡൗൺലോഡ് ആകുന്നത് വരെ കാത്തിരിക്കുക.",
+          "ഡൗൺലോഡ് അറിയിപ്പിൽ ടാപ്പ് ചെയ്യുക, അല്ലെങ്കിൽ browser downloads / Files app-ൽ നിന്ന് <span class=\"mono\">ELWOIC.apk</span> തുറക്കുക.",
+          "browser അല്ലെങ്കിൽ file manager വഴി ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ Android അനുമതി ചോദിച്ചാൽ, ഔദ്യോഗിക ELWOIC പേജിൽ നിന്നാണ് APK ഡൗൺലോഡ് ചെയ്തതെന്ന് ഉറപ്പാക്കിയ ശേഷം മാത്രം അനുമതി നൽകുക.",
+          "Android package installer കാണിക്കുന്ന നിർദ്ദേശം സ്ഥിരീകരിച്ച് ഇൻസ്റ്റാളേഷൻ പൂർത്തിയാകുന്നത് വരെ കാത്തിരിക്കുക.",
+          "ഇൻസ്റ്റാളേഷൻ കഴിഞ്ഞാൽ <strong>Open</strong> അമർത്തുക അല്ലെങ്കിൽ ആപ്പ് ലിസ്റ്റിൽ നിന്ന് ELWOIC തുറക്കുക."
+        ],
+        ".install-callout": "<strong>Android ഇൻസ്റ്റാളേഷൻ മുന്നറിയിപ്പുകൾ:</strong> Google Play Store-ിന് പുറത്തുനിന്നുള്ള ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ Android സാധാരണയായി മുന്നറിയിപ്പ് കാണിക്കും. സ്വതന്ത്രമായി വിതരണം ചെയ്യുന്ന APK-കൾക്കുള്ള സാധാരണ സുരക്ഷാ അറിയിപ്പാണിത്; ഫയൽ അപകടകരമാണെന്നതിന് തെളിവല്ല. ഫോണിലെ എല്ലാ സുരക്ഷാ ക്രമീകരണങ്ങളും ഓഫ് ചെയ്യേണ്ടതില്ല.",
+        "#updates-heading": "പുതിയ പതിപ്പുകൾ എങ്ങനെ ലഭിക്കും",
+        ".update-card h3": ["പശ്ചാത്തലത്തിൽ സ്വയമേവ പരിശോധിക്കുന്നു", "ആപ്പിൽ നിന്ന് നേരിട്ട് അപ്‌ഡേറ്റ് പരിശോധിക്കുക"],
+        ".update-card p": [
+          "WorkManager ഉപയോഗിച്ചുള്ള പശ്ചാത്തല അപ്‌ഡേറ്റ് പരിശോധന (24 മണിക്കൂർ ഇടവേളയിൽ) <span class=\"mono\">elwoic.in/app/version.json</span> പരിശോധിക്കുകയും പുതിയ റിലീസ് വന്നാൽ അറിയിപ്പ് നൽകുകയും ചെയ്യും.",
+          "ആപ്പിലെ <strong>Check for Update</strong> ബട്ടൺ അമർത്തിയും എപ്പോൾ വേണമെങ്കിലും പരിശോധിക്കാം. പുതിയ പതിപ്പ് ലഭ്യമാണെങ്കിൽ, ഇൻസ്റ്റാൾ ചെയ്യുന്നതിന് മുമ്പ് ആപ്പ് APK ഡൗൺലോഡ് ചെയ്ത് പരിശോധിക്കും."
+        ],
+        "#faq-heading": "പതിവായി ചോദിക്കുന്ന ചോദ്യങ്ങൾ",
+        ".faq-item summary": ["ELWOIC Google Play Store-ൽ ലഭ്യമല്ലാത്തത് എന്തുകൊണ്ട്?", "ഇത് ഔദ്യോഗിക ELWOIC ആപ്പാണോ?", "Android ഇൻസ്റ്റാളേഷൻ മുന്നറിയിപ്പ് കാണിക്കുന്നത് എന്തുകൊണ്ട്?", "APK എവിടെയാണ് ഹോസ്റ്റ് ചെയ്തിരിക്കുന്നത്?", "ഡൗൺലോഡ് ചെയ്ത ഫയൽ എങ്ങനെ പരിശോധിക്കാം?", "ആപ്പിന് ഭാവിയിൽ അപ്‌ഡേറ്റുകൾ ലഭിക്കുമോ?", "ഓരോ അപ്‌ഡേറ്റിനും APK വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?", "ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമുണ്ടോ?", "ഇൻസ്റ്റാളേഷൻ പരാജയപ്പെട്ടാൽ എന്തുചെയ്യണം?"],
+        ".faq-answer": [
+          "ELWOIC മലപ്പുറം ജില്ലയിലെ എളംകുളത്ത് പ്രവർത്തിക്കുന്ന, വിദ്യാർത്ഥികൾ നേതൃത്വം നൽകുന്ന സ്വതന്ത്രവും ലാഭേച്ഛയില്ലാത്തതുമായ പ്രാദേശിക കാലാവസ്ഥാ നിരീക്ഷണ-വിവര സംരംഭമാണ്. നിലവിൽ Android APK നേരിട്ട് വിതരണം ചെയ്യുന്നു; Google Play Store വഴി അല്ല.",
+          "അതെ. ഈ ഡൗൺലോഡ് പേജ് <span class=\"mono\">elwoic.in</span>-ന്റെ ഭാഗമാണ്, APK ELWOIC-ന്റെ ഔദ്യോഗിക GitHub Release-ലാണ് പ്രസിദ്ധീകരിക്കുന്നത്, കൂടാതെ സ്ഥിരമായ Android signing key ഉപയോഗിച്ചാണ് build sign ചെയ്യുന്നത്.",
+          "Google Play Store-ിന് പുറത്തുനിന്ന് APK ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ Android സാധാരണയായി മുന്നറിയിപ്പ് നൽകും. സ്വതന്ത്രമായി വിതരണം ചെയ്യുന്ന app-കൾക്കുള്ള പതിവ് അറിയിപ്പാണിത്; അതുകൊണ്ട് മാത്രം ഫയൽ അപകടകരമാണെന്ന് അർത്ഥമില്ല.",
+          "<span class=\"mono\">ELWOIC.apk</span> ELWOIC-ന്റെ പൊതു GitHub Releases-ലാണ്. അപ്‌ഡേറ്റ് വിവരങ്ങൾ Cloudflare Pages വഴി <span class=\"mono\">https://elwoic.in/app/version.json</span>-ൽ ലഭിക്കും.",
+          "ഡൗൺലോഡ് ചെയ്ത <span class=\"mono\">ELWOIC.apk</span>-യുടെ SHA-256 checksum കണക്കാക്കി മുകളിലെ Security വിഭാഗത്തിൽ നൽകിയിരിക്കുന്നതുമായി താരതമ്യം ചെയ്യാം. അപ്‌ഡേറ്റുകൾ കൈകാര്യം ചെയ്യുമ്പോൾ ആപ്പും integrity, signing പരിശോധനകൾ നടത്തുന്നു.",
+          "അതെ. ELWOIC പുതിയ റിലീസ് പ്രസിദ്ധീകരിച്ച് <span class=\"mono\">elwoic.in/app/version.json</span> പുതുക്കുമ്പോൾ, അതേ സ്ഥിരമായ signing key ഉപയോഗിച്ചുള്ള നിലവിലെ ഇൻസ്റ്റാളേഷനുകൾക്ക് അപ്‌ഡേറ്റ് കണ്ടെത്താനാകും.",
+          "വേണ്ട. പുതിയ പതിപ്പുകൾക്കായി ഈ വെബ് പേജ് വീണ്ടും വീണ്ടും സന്ദർശിക്കേണ്ടതില്ല. ആപ്പ് 24 മണിക്കൂറിലൊരിക്കൽ സ്വയം പരിശോധിക്കുകയും <strong>Check for Update</strong> വഴി നേരിട്ട് പരിശോധിക്കാൻ സൗകര്യം നൽകുകയും ചെയ്യുന്നു.",
+          "അതെ. APK ഡൗൺലോഡ് ചെയ്യാനും ഓൺലൈൻ കാലാവസ്ഥാ വിവരങ്ങളും സേവനങ്ങളും ഉപയോഗിക്കാനും അപ്‌ഡേറ്റുകൾ പരിശോധിക്കാനും ഇന്റർനെറ്റ് ആവശ്യമാണ്.",
+          "<span class=\"mono\">ELWOIC.apk</span> പൂർണമായി ഡൗൺലോഡ് ചെയ്തിട്ടുണ്ടോ, ഫോണിൽ മതിയായ storage ഉണ്ടോ, ഫയൽ തുറക്കാൻ ഉപയോഗിച്ച browser അല്ലെങ്കിൽ file manager-ന് ഇൻസ്റ്റാളേഷൻ അനുമതി നൽകിയിട്ടുണ്ടോ എന്ന് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+        ],
+        ".footer-title": ["ELWOIC", "ഔദ്യോഗിക ലിങ്കുകൾ", "ബന്ധപ്പെടുക"],
+        ".footer-text": ["", "", "എളംകുളം, മലപ്പുറം, കേരളം, ഇന്ത്യ"],
+        ".footer-links a": ["ഔദ്യോഗിക വെബ്‌സൈറ്റ് (elwoic.in)", "GitHub Release v1.0", "സ്വകാര്യതാ വിവരങ്ങൾ", "ELWOIC-നെ ബന്ധപ്പെടുക"],
+        ".footer-bottom span:first-child": "© <span id=\"copyright-year\">2026</span> ELWOIC — Elamkulam Local Weather Observation &amp; Information Centre.",
+        ".footer-bottom span:last-child": "സ്വതന്ത്ര Android വിതരണം (Package: <span class=\"mono\">com.aistudio.elwoic.krmvqx</span>)"
+      };
+
+      const originalContent = new Map();
+      Object.keys(translations).forEach(function (selector) {
+        originalContent.set(selector, Array.from(document.querySelectorAll(selector), function (element) {
+          return element.innerHTML;
+        }));
+      });
+
+      let currentLanguage = "en";
+      const languageButton = document.getElementById("language-toggle");
+      function setLanguage(language) {
+        const useMalayalam = language === "ml";
+        Object.keys(translations).forEach(function (selector) {
+          const elements = document.querySelectorAll(selector);
+          const values = translations[selector];
+          elements.forEach(function (element, index) {
+            element.innerHTML = useMalayalam
+              ? (Array.isArray(values) ? (values[index] || "") : values)
+              : (originalContent.get(selector)[index] || "");
+          });
+        });
+        currentLanguage = language;
+        document.documentElement.lang = language;
+        languageButton.textContent = useMalayalam ? "English" : "മലയാളം";
+        languageButton.setAttribute("aria-label", useMalayalam ? "Switch page language to English" : "ഭാഷ മലയാളത്തിലേക്ക് മാറ്റുക");
+      }
+      languageButton.addEventListener("click", function () {
+        setLanguage(currentLanguage === "ml" ? "en" : "ml");
+      });
+      setLanguage("ml");
+
+      const copyBtn = document.getElementById("copy-sha256-btn");
+      const shaEl = document.getElementById("sha256-value");
+
+      if (copyBtn && shaEl) {
+        copyBtn.addEventListener("click", async function () {
+          const hashText = shaEl.textContent.trim();
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(hashText);
+            } else {
+              const tempInput = document.createElement("textarea");
+              tempInput.value = hashText;
+              tempInput.setAttribute("readonly", "");
+              tempInput.style.position = "absolute";
+              tempInput.style.left = "-9999px";
+              document.body.appendChild(tempInput);
+              tempInput.select();
+              document.execCommand("copy");
+              document.body.removeChild(tempInput);
+            }
+            const originalLabel = copyBtn.textContent;
+            copyBtn.textContent = "Copied";
+            window.setTimeout(function () {
+              copyBtn.textContent = originalLabel;
+            }, 1800);
+          } catch (_) {
+            copyBtn.textContent = "Copy manually";
+          }
+        });
+      }
+
+      // Progressive enhancement: check live manifest without blocking or breaking fallback
+      fetch(MANIFEST_URL, { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) throw new Error("Manifest fetch failed");
+          return response.json();
+        })
+        .then(function (data) {
+          if (!data || typeof data !== "object") return;
+
+          if (typeof data.version === "string" && data.version.trim()) {
+            const ver = data.version.trim();
+            const heroVer = document.getElementById("hero-version");
+            const specVer = document.getElementById("spec-version");
+            if (heroVer) heroVer.textContent = ver;
+            if (specVer) specVer.textContent = ver;
+          }
+
+          if (typeof data.versionCode === "number" || typeof data.versionCode === "string") {
+            const specCode = document.getElementById("spec-code");
+            if (specCode) specCode.textContent = String(data.versionCode);
+          }
+
+          if (typeof data.sha256 === "string" && /^[a-fA-F0-9]{64}$/.test(data.sha256.trim())) {
+            if (shaEl) shaEl.textContent = data.sha256.trim().toLowerCase();
+          }
+
+          if (typeof data.downloadUrl === "string" && data.downloadUrl.trim()) {
+            try {
+              const parsed = new URL(data.downloadUrl.trim());
+              if (parsed.protocol === "https:" && parsed.hostname === ALLOWED_HOST) {
+                const dlBtn = document.getElementById("primary-download-btn");
+                if (dlBtn) dlBtn.href = parsed.toString();
+              }
+            } catch (_) {
+              // Keep existing known-good fallback download URL
+            }
+          }
+        })
+        .catch(function () {
+          // Silently retain static v1.0 fallback values
+        });
+    })();
+  </script>
+</body>
+</html>
