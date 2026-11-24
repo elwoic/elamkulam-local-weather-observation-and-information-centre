@@ -1,0 +1,8 @@
+{
+  "version": "1.0",
+  "versionCode": 1,
+  "downloadUrl": "https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/download/v1.0/ELWOIC.apk",
+  "updateMessage": "Initial official release of ELWOIC.",
+  "forceUpdate": false,
+  "sha256": "9174cd73a1e72fcad337b823d45166bb4282b879d83237f56636a0d921f763e6"
+}
