@@ -494,6 +494,91 @@
       display: block;
     }
 
+    .phone-screen-slot img,
+    .screenshot-slot img {
+      cursor: zoom-in;
+    }
+
+    .image-viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(5, 16, 28, 0.92);
+    }
+
+    .image-viewer.is-open {
+      display: flex;
+    }
+
+    .image-viewer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: min(100%, 1000px);
+      max-height: 100%;
+    }
+
+    .image-viewer img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 150px);
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .image-viewer-caption {
+      margin: 0;
+      color: #ffffff;
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    .image-viewer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .image-viewer-controls button,
+    .image-viewer-controls a {
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: var(--radius-pill);
+      background: #ffffff;
+      color: var(--text-primary);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .image-viewer-controls button:hover,
+    .image-viewer-controls a:hover {
+      background: #eaf5ff;
+      text-decoration: none;
+    }
+
+    .image-viewer-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 46px;
+      height: 46px;
+      padding: 0 !important;
+      font-size: 1.5rem !important;
+      line-height: 1;
+    }
+
     /* Section 3: Specs Grid */
     .specs-grid {
       display: grid;
@@ -1106,7 +1191,7 @@
 
             <div class="screenshot-slot">
               <img
-                src="/pictues/appscreenshot-5.jpeg"
+                src="/pictures/appscreenshot-5.jpeg"
                 alt="ELWOIC Android app view 4"
                 onload="this.nextElementSibling.style.display='none';"
                 onerror="this.style.display='none';"
@@ -1508,6 +1593,20 @@
     </div>
   </footer>
 
+  <div class="image-viewer" id="image-viewer" role="dialog" aria-modal="true" aria-label="ചിത്രം കാണുക" aria-hidden="true">
+    <button class="image-viewer-close" id="image-viewer-close" type="button" aria-label="അടയ്ക്കുക">×</button>
+    <div class="image-viewer-content">
+      <img id="image-viewer-image" src="" alt="" />
+      <p class="image-viewer-caption" id="image-viewer-caption"></p>
+      <div class="image-viewer-controls">
+        <button id="image-viewer-prev" type="button" aria-label="മുമ്പത്തെ ചിത്രം">← മുമ്പത്തെ</button>
+        <button id="image-viewer-next" type="button" aria-label="അടുത്ത ചിത്രം">അടുത്തത് →</button>
+        <a id="image-viewer-download" href="" download>ചിത്രം ഡൗൺലോഡ് ചെയ്യുക</a>
+        <a id="image-viewer-original" href="" target="_blank" rel="noopener noreferrer">പൂർണ്ണ വലുപ്പത്തിൽ തുറക്കുക ↗</a>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       const MANIFEST_URL = "https://elwoic.in/app/version.json";
@@ -1627,6 +1726,89 @@
         setLanguage(currentLanguage === "ml" ? "en" : "ml");
       });
       setLanguage("ml");
+
+      const imageViewer = document.getElementById("image-viewer");
+      const viewerImage = document.getElementById("image-viewer-image");
+      const viewerCaption = document.getElementById("image-viewer-caption");
+      const viewerDownload = document.getElementById("image-viewer-download");
+      const viewerOriginal = document.getElementById("image-viewer-original");
+      const imageSources = Array.from(document.querySelectorAll(".phone-screen-slot img, .screenshot-slot img"));
+      let activeImageIndex = 0;
+      let previouslyFocusedElement = null;
+
+      function availableImages() {
+        return imageSources.filter(function (image) {
+          return image.naturalWidth > 0 && image.style.display !== "none";
+        });
+      }
+
+      function showViewerImage(index) {
+        const images = availableImages();
+        if (!images.length) return;
+        activeImageIndex = (index + images.length) % images.length;
+        const image = images[activeImageIndex];
+        const imageUrl = image.currentSrc || image.src;
+        viewerImage.src = imageUrl;
+        viewerImage.alt = image.alt || "ELWOIC app screenshot";
+        viewerCaption.textContent = (image.alt || "ELWOIC app screenshot") + " — " + (activeImageIndex + 1) + " / " + images.length;
+        viewerDownload.href = imageUrl;
+        viewerDownload.download = imageUrl.split("/").pop().split("?")[0] || "elwoic-screenshot";
+        viewerOriginal.href = imageUrl;
+        document.getElementById("image-viewer-prev").disabled = images.length < 2;
+        document.getElementById("image-viewer-next").disabled = images.length < 2;
+      }
+
+      function openImageViewer(image) {
+        const images = availableImages();
+        const index = images.indexOf(image);
+        if (index < 0) return;
+        previouslyFocusedElement = document.activeElement;
+        showViewerImage(index);
+        imageViewer.classList.add("is-open");
+        imageViewer.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        document.getElementById("image-viewer-close").focus();
+      }
+
+      function closeImageViewer() {
+        imageViewer.classList.remove("is-open");
+        imageViewer.setAttribute("aria-hidden", "true");
+        viewerImage.src = "";
+        document.body.style.overflow = "";
+        if (previouslyFocusedElement) previouslyFocusedElement.focus();
+      }
+
+      imageSources.forEach(function (image, index) {
+        image.tabIndex = 0;
+        image.setAttribute("role", "button");
+        image.setAttribute("aria-haspopup", "dialog");
+        image.addEventListener("click", function () {
+          openImageViewer(image);
+        });
+        image.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openImageViewer(image);
+          }
+        });
+      });
+
+      document.getElementById("image-viewer-close").addEventListener("click", closeImageViewer);
+      document.getElementById("image-viewer-prev").addEventListener("click", function () {
+        showViewerImage(activeImageIndex - 1);
+      });
+      document.getElementById("image-viewer-next").addEventListener("click", function () {
+        showViewerImage(activeImageIndex + 1);
+      });
+      imageViewer.addEventListener("click", function (event) {
+        if (event.target === imageViewer) closeImageViewer();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (!imageViewer.classList.contains("is-open")) return;
+        if (event.key === "Escape") closeImageViewer();
+        if (event.key === "ArrowLeft") showViewerImage(activeImageIndex - 1);
+        if (event.key === "ArrowRight") showViewerImage(activeImageIndex + 1);
+      });
 
       const copyBtn = document.getElementById("copy-sha256-btn");
       const shaEl = document.getElementById("sha256-value");
