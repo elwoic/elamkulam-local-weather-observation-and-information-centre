@@ -1,8 +1,8 @@
 {
-  "version": "1.0",
-  "versionCode": 1,
-  "downloadUrl": "https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/download/v1.0/ELWOIC.apk",
-  "updateMessage": "Initial official release of ELWOIC.",
+  "version": "1.1",
+  "versionCode": 2,
+  "downloadUrl": "https://github.com/elwoic/elamkulam-local-weather-observation-and-information-centre/releases/download/v1.1/ELWOIC.apk",
+  "updateMessage": "Added ELWOIC Citizen Profile with Digital ID card and ward hazard alerts, separated IMD 5-day forecast vs 3-hour nowcast, upgraded live Observations scene, and compact Home cards.",
   "forceUpdate": false,
-  "sha256": "9174cd73a1e72fcad337b823d45166bb4282b879d83237f56636a0d921f763e6"
+  "sha256": "c849abd130b588140032b2449f732d3e00f6bd2a9f95b1b1b74da5d9405bbb45"
 }
